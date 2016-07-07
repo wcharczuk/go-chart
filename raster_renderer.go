@@ -117,6 +117,7 @@ func (rr *rasterRenderer) SetFontSize(size float64) {
 func (rr *rasterRenderer) SetFontColor(c color.RGBA) {
 	println("RasterRenderer :: SetFontColor", ColorAsString(c))
 	rr.fontColor = c
+	rr.gc.SetFillColor(c)
 	rr.gc.SetStrokeColor(c)
 }
 
@@ -124,6 +125,7 @@ func (rr *rasterRenderer) SetFontColor(c color.RGBA) {
 func (rr *rasterRenderer) Text(body string, x, y int) {
 	println("RasterRenderer :: Text", body, x, y)
 	rr.gc.CreateStringPath(body, float64(x), float64(y))
+	rr.gc.Fill()
 }
 
 // MeasureText implements the interface method.
