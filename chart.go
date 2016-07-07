@@ -179,7 +179,7 @@ func (c Chart) drawAxes(r Renderer) {
 			r.SetLineWidth(c.AxisStyle.GetStrokeWidth())
 		} else {
 			r.SetStrokeColor(DefaultAxisColor)
-			r.SetLineWidth(DefaultLineWidth)
+			r.SetLineWidth(DefaultAxisLineWidth)
 		}
 		r.MoveTo(c.GetCanvasLeft(), c.GetCanvasBottom())
 		r.LineTo(c.GetCanvasRight(), c.GetCanvasBottom())
@@ -189,7 +189,30 @@ func (c Chart) drawAxes(r Renderer) {
 }
 
 func (c Chart) drawSeries(r Renderer, s Series) {
+	r.SetLineWidth(s.GetStyle().GetStrokeWidth())
+	r.SetStrokeColor(s.GetStyle().GetStrokeColor())
 
+	xrange := s.GetXRange(c.GetCanvasWidth())
+	yrange := s.GetYRange(c.GetCanvasHeight())
+
+	if s.Len() == 0 {
+		return
+	}
+
+	v0 := s.GetValue(0)
+	x0 := xrange.Translate(v0.X)
+	y0 := yrange.Translate(v0.Y)
+	r.MoveTo(x0, y0)
+
+	var v Point
+	var x, y int
+	for index := 0; index < s.Len(); index++ {
+		v = s.GetValue(0)
+		x = xrange.Translate(v.X)
+		y = yrange.Translate(v.Y)
+		r.LineTo(x, y)
+	}
+	r.FillStroke()
 }
 
 func (c Chart) drawTitle(r Renderer) error {

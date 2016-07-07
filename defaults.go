@@ -17,6 +17,8 @@ const (
 	DefaultPadding = 10
 	// DefaultLineWidth is the default chart line width.
 	DefaultLineWidth = 2.0
+	// DefaultAxisLineWidth is the line width of the axis lines.
+	DefaultAxisLineWidth = 1.0
 	//DefaultDPI is the default dots per inch for the chart.
 	DefaultDPI = 120.0
 	// DefaultMinimumFontSize is the default minimum font size.
