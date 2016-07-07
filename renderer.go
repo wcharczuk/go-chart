@@ -1,0 +1,60 @@
+package chart
+
+import (
+	"image/color"
+	"io"
+
+	"github.com/golang/freetype/truetype"
+)
+
+// RendererProvider is a function that returns a renderer.
+type RendererProvider func(int, int) Renderer
+
+// Renderer represents the basic methods required to draw a chart.
+type Renderer interface {
+	// SetStrokeColor sets the current stroke color.
+	SetStrokeColor(color.RGBA)
+
+	// SetFillColor sets the current fill color.
+	SetFillColor(color.RGBA)
+
+	// SetLineWidth sets the stroke line width.
+	SetLineWidth(width int)
+
+	// MoveTo moves the cursor to a given point.
+	MoveTo(x, y int)
+
+	// LineTo both starts a shape and draws a line to a given point
+	// from the previous point.
+	LineTo(x, y int)
+
+	// Close finalizes a shape as drawn by LineTo.
+	Close()
+
+	// Stroke draws the 'stroke' or line component of a shape.
+	Stroke()
+
+	// FillStroke draws the 'stroke' and 'fills' a shape.
+	FillStroke()
+
+	// Circle draws a circle at the given coords with a given radius.
+	Circle(radius float64, x, y int)
+
+	// SetFont sets a font for a text field.
+	SetFont(*truetype.Font)
+
+	// SetFontColor sets a font's color
+	SetFontColor(color.RGBA)
+
+	// SetFontSize sets the font size for a text field.
+	SetFontSize(size float64)
+
+	// Text draws a text blob.
+	Text(body string, x, y int)
+
+	// MeasureText measures text.
+	MeasureText(body string) int
+
+	// Save writes the image to the given writer.
+	Save(w io.Writer) error
+}
