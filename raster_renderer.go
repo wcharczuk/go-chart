@@ -1,6 +1,7 @@
 package chart
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"image/png"
@@ -34,55 +35,60 @@ type rasterRenderer struct {
 
 // SetStrokeColor implements the interface method.
 func (rr *rasterRenderer) SetStrokeColor(c color.RGBA) {
-	println("SetStrokeColor")
+	println("RasterRenderer :: SetStrokeColor", ColorAsString(c))
 	rr.gc.SetStrokeColor(c)
 }
 
 // SetFillColor implements the interface method.
 func (rr *rasterRenderer) SetFillColor(c color.RGBA) {
-	println("SetFillColor")
+	println("RasterRenderer :: SetFillColor", ColorAsString(c))
 	rr.gc.SetFillColor(c)
 }
 
 // SetLineWidth implements the interface method.
-func (rr *rasterRenderer) SetLineWidth(width int) {
-	println("SetLineWidth", width)
-	rr.gc.SetLineWidth(float64(width))
+func (rr *rasterRenderer) SetLineWidth(width float64) {
+	println("RasterRenderer :: SetLineWidth", width)
+	rr.gc.SetLineWidth(width)
 }
 
 // MoveTo implements the interface method.
 func (rr *rasterRenderer) MoveTo(x, y int) {
-	println("MoveTo", x, y)
+	println("RasterRenderer :: MoveTo", x, y)
 	rr.gc.MoveTo(float64(x), float64(y))
 }
 
 // LineTo implements the interface method.
 func (rr *rasterRenderer) LineTo(x, y int) {
-	println("LineTo", x, y)
+	println("RasterRenderer :: LineTo", x, y)
 	rr.gc.LineTo(float64(x), float64(y))
 }
 
 // Close implements the interface method.
 func (rr *rasterRenderer) Close() {
-	println("Close")
+	println("RasterRenderer :: Close")
 	rr.gc.Close()
 }
 
 // Stroke implements the interface method.
 func (rr *rasterRenderer) Stroke() {
-	println("Stroke")
+	println("RasterRenderer :: Stroke")
 	rr.gc.Stroke()
+}
+
+// Fill implements the interface method.
+func (rr *rasterRenderer) Fill() {
+	println("RasterRenderer :: Fill")
+	rr.gc.Fill()
 }
 
 // FillStroke implements the interface method.
 func (rr *rasterRenderer) FillStroke() {
-	println("FillStroke")
+	println("RasterRenderer :: FillStroke")
 	rr.gc.FillStroke()
 }
 
 // Circle implements the interface method.
 func (rr *rasterRenderer) Circle(radius float64, x, y int) {
-	println("Circle", radius, x, y)
 	xf := float64(x)
 	yf := float64(y)
 	rr.gc.MoveTo(xf-radius, yf)              //9
@@ -96,34 +102,32 @@ func (rr *rasterRenderer) Circle(radius float64, x, y int) {
 
 // SetFont implements the interface method.
 func (rr *rasterRenderer) SetFont(f *truetype.Font) {
-	println("SetFont")
 	rr.font = f
 	rr.gc.SetFont(f)
 }
 
 // SetFontSize implements the interface method.
 func (rr *rasterRenderer) SetFontSize(size float64) {
-	println("SetFontSize", size)
+	println("RasterRenderer :: SetFontSize", fmt.Sprintf("%.2f", size))
 	rr.fontSize = size
 	rr.gc.SetFontSize(size)
 }
 
 // SetFontColor implements the interface method.
 func (rr *rasterRenderer) SetFontColor(c color.RGBA) {
-	println("SetFontColor")
+	println("RasterRenderer :: SetFontColor", ColorAsString(c))
 	rr.fontColor = c
 	rr.gc.SetStrokeColor(c)
 }
 
 // Text implements the interface method.
 func (rr *rasterRenderer) Text(body string, x, y int) {
-	println("Text", body, x, y)
+	println("RasterRenderer :: Text", body, x, y)
 	rr.gc.CreateStringPath(body, float64(x), float64(y))
 }
 
 // MeasureText implements the interface method.
 func (rr *rasterRenderer) MeasureText(body string) int {
-	println("MeasureText", body)
 	if rr.fc == nil && rr.font != nil {
 		rr.fc = &font.Drawer{
 			Face: truetype.NewFace(rr.font, &truetype.Options{
@@ -141,6 +145,6 @@ func (rr *rasterRenderer) MeasureText(body string) int {
 
 // Save implements the interface method.
 func (rr *rasterRenderer) Save(w io.Writer) error {
-	println("Save")
+	println("RasterRenderer :: Save")
 	return png.Encode(w, rr.i)
 }

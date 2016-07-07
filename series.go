@@ -1,16 +1,17 @@
 package chart
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 // Series is a entity data set.
 type Series interface {
 	GetName() string
 	GetStyle() Style
 	Len() int
-	GetValue(index int) (interface{}, float64)
-
-	GetXRange(domain int) Range
-	GetYRange(domain int) Range
+	GetValue(index int) (float64, float64)
+	GetLabel(index int) (string, string)
 }
 
 // TimeSeries is a line on a chart.
@@ -37,19 +38,18 @@ func (ts TimeSeries) Len() int {
 	return len(ts.XValues)
 }
 
-// GetXRange returns the x range.
-func (ts TimeSeries) GetXRange(domain int) Range {
-	return NewRangeOfTime(domain, ts.XValues...)
-}
-
-// GetYRange returns the x range.
-func (ts TimeSeries) GetYRange(domain int) Range {
-	return NewRangeOfFloat64(domain, ts.YValues...)
-}
-
 // GetValue gets a value at a given index.
-func (ts TimeSeries) GetValue(index int) (interface{}, float64) {
-	return ts.XValues[index], ts.YValues[index]
+func (ts TimeSeries) GetValue(index int) (x float64, y float64) {
+	x = float64(ts.XValues[index].Unix())
+	y = ts.YValues[index]
+	return
+}
+
+// GetLabel gets a label for the values at a given index.
+func (ts TimeSeries) GetLabel(index int) (xLabel string, yLabel string) {
+	xLabel = ts.XValues[index].Format(DefaultDateFormat)
+	yLabel = fmt.Sprintf("%0.2f", ts.YValues[index])
+	return
 }
 
 // ContinousSeries represents a line on a chart.
@@ -81,12 +81,9 @@ func (cs ContinousSeries) GetValue(index int) (interface{}, float64) {
 	return cs.XValues[index], cs.YValues[index]
 }
 
-// GetXRange returns the x range.
-func (cs ContinousSeries) GetXRange(domain int) Range {
-	return NewRangeOfFloat64(domain, cs.XValues...)
-}
-
-// GetYRange returns the x range.
-func (cs ContinousSeries) GetYRange(domain int) Range {
-	return NewRangeOfFloat64(domain, cs.YValues...)
+// GetLabel gets a label for the values at a given index.
+func (cs ContinousSeries) GetLabel(index int) (xLabel string, yLabel string) {
+	xLabel = fmt.Sprintf("%0.2f", cs.XValues[index])
+	yLabel = fmt.Sprintf("%0.2f", cs.YValues[index])
+	return
 }

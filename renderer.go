@@ -19,7 +19,7 @@ type Renderer interface {
 	SetFillColor(color.RGBA)
 
 	// SetLineWidth sets the stroke line width.
-	SetLineWidth(width int)
+	SetLineWidth(width float64)
 
 	// MoveTo moves the cursor to a given point.
 	MoveTo(x, y int)
@@ -31,10 +31,13 @@ type Renderer interface {
 	// Close finalizes a shape as drawn by LineTo.
 	Close()
 
-	// Stroke draws the 'stroke' or line component of a shape.
+	// Stroke strokes the path.
 	Stroke()
 
-	// FillStroke draws the 'stroke' and 'fills' a shape.
+	// Fill fills the path, but does not stroke.
+	Fill()
+
+	// FillStroke fills and strokes a path.
 	FillStroke()
 
 	// Circle draws a circle at the given coords with a given radius.

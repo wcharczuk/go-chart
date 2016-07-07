@@ -1,6 +1,7 @@
 package chart
 
 import (
+	"fmt"
 	"image/color"
 	"time"
 )
@@ -8,6 +9,11 @@ import (
 // ColorIsZero returns if a color.RGBA is unset or not.
 func ColorIsZero(c color.RGBA) bool {
 	return c.R == 0 && c.G == 0 && c.B == 0 && c.A == 0
+}
+
+// ColorAsString returns if a color.RGBA is unset or not.
+func ColorAsString(c color.RGBA) string {
+	return fmt.Sprintf("RGBA(%v,%v,%v,%v)", c.R, c.G, c.G, c.A)
 }
 
 // MinAndMax returns both the min and max in one pass.

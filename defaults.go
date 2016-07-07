@@ -12,9 +12,6 @@ const (
 	DefaultChartHeight = 400
 	// DefaultChartWidth is the default chart width.
 	DefaultChartWidth = 200
-	// DefaultPadding is the default gap between the image border and
-	// chart content (referred to as the "canvas").
-	DefaultPadding = 10
 	// DefaultLineWidth is the default chart line width.
 	DefaultLineWidth = 2.0
 	// DefaultAxisLineWidth is the line width of the axis lines.
@@ -23,12 +20,18 @@ const (
 	DefaultDPI = 120.0
 	// DefaultMinimumFontSize is the default minimum font size.
 	DefaultMinimumFontSize = 8.0
+	// DefaultFontSize is the default font size.
+	DefaultFontSize = 10.0
+	// DefaultTitleFontSize is the default title font size.
+	DefaultTitleFontSize = 18.0
+	// DefaultDateFormat is the default date format.
+	DefaultDateFormat = "2006-01-02"
 )
 
 var (
 	// DefaultBackgroundColor is the default chart background color.
 	// It is equivalent to css color:white.
-	DefaultBackgroundColor = color.RGBA{R: 255, G: 255, B: 255, A: 255}
+	DefaultBackgroundColor = color.RGBA{R: 239, G: 239, B: 239, A: 255} //color.RGBA{R: 255, G: 255, B: 255, A: 255}
 	// DefaultCanvasColor is the default chart canvas color.
 	// It is equivalent to css color:white.
 	DefaultCanvasColor = color.RGBA{R: 255, G: 255, B: 255, A: 255}
@@ -43,10 +46,15 @@ var (
 	DefaultBorderColor = color.RGBA{R: 239, G: 239, B: 239, A: 255}
 	// DefaultLineColor is the default (1st) series line color.
 	// It is equivalent to #0074d9.
-	DefaultLineColor = color.RGBA{R: 0, G: 217, B: 116, A: 255}
+	DefaultLineColor = color.RGBA{R: 0, G: 116, B: 217, A: 255}
 	// DefaultFillColor is the default fill color.
 	// It is equivalent to #0074d9.
 	DefaultFillColor = color.RGBA{R: 0, G: 217, B: 116, A: 255}
+)
+
+var (
+	// DefaultCanvasPadding is the default canvas padding config.
+	DefaultCanvasPadding = Box{Top: 5, Left: 5, Right: 15, Bottom: 15}
 )
 
 var (

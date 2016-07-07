@@ -15,9 +15,13 @@ func TestChartSingleSeries(t *testing.T) {
 		Title:  "Hello!",
 		Width:  1024,
 		Height: 400,
+		YRange: Range{
+			Min: 0.0,
+			Max: 4.0,
+		},
 		Series: []Series{
 			TimeSeries{
-				Name:    "Goog",
+				Name:    "goog",
 				XValues: []time.Time{now.AddDate(0, 0, -3), now.AddDate(0, 0, -2), now.AddDate(0, 0, -1)},
 				YValues: []float64{1.0, 2.0, 3.0},
 			},
