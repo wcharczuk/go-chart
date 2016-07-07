@@ -199,20 +199,21 @@ func (c Chart) drawSeries(r Renderer, s Series) {
 		return
 	}
 
-	v0 := s.GetValue(0)
-	x0 := xrange.Translate(v0.X)
-	y0 := yrange.Translate(v0.Y)
+	v0x, v0y := s.GetValue(0)
+	x0 := xrange.Translate(v0x)
+	y0 := yrange.Translate(v0y)
 	r.MoveTo(x0, y0)
 
-	var v Point
+	var vx interface{}
+	var vy float64
 	var x, y int
 	for index := 0; index < s.Len(); index++ {
-		v = s.GetValue(0)
-		x = xrange.Translate(v.X)
-		y = yrange.Translate(v.Y)
+		vx, vy = s.GetValue(index)
+		x = xrange.Translate(vx)
+		y = yrange.Translate(vy)
 		r.LineTo(x, y)
 	}
-	r.FillStroke()
+	r.Stroke()
 }
 
 func (c Chart) drawTitle(r Renderer) error {

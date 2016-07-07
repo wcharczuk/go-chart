@@ -7,7 +7,7 @@ type Series interface {
 	GetName() string
 	GetStyle() Style
 	Len() int
-	GetValue(index int) Point
+	GetValue(index int) (interface{}, float64)
 
 	GetXRange(domain int) Range
 	GetYRange(domain int) Range
@@ -48,8 +48,8 @@ func (ts TimeSeries) GetYRange(domain int) Range {
 }
 
 // GetValue gets a value at a given index.
-func (ts TimeSeries) GetValue(index int) Point {
-	return Point{X: float64(ts.XValues[index].Unix()), Y: ts.YValues[index]}
+func (ts TimeSeries) GetValue(index int) (interface{}, float64) {
+	return ts.XValues[index], ts.YValues[index]
 }
 
 // ContinousSeries represents a line on a chart.
@@ -77,8 +77,8 @@ func (cs ContinousSeries) Len() int {
 }
 
 // GetValue gets a value at a given index.
-func (cs ContinousSeries) GetValue(index int) Point {
-	return Point{X: cs.XValues[index], Y: cs.YValues[index]}
+func (cs ContinousSeries) GetValue(index int) (interface{}, float64) {
+	return cs.XValues[index], cs.YValues[index]
 }
 
 // GetXRange returns the x range.
