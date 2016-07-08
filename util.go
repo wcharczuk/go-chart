@@ -3,7 +3,6 @@ package chart
 import (
 	"fmt"
 	"image/color"
-	"math"
 	"time"
 )
 
@@ -58,10 +57,10 @@ func MinAndMaxOfTime(values ...time.Time) (min time.Time, max time.Time) {
 
 // Slices generates N slices that span the total.
 // The resulting array will be intermediate indexes until total.
-func Slices(count, total int) []int {
-	var values []int
-	sliceWidth := int(math.Floor(float64(total) / float64(count)))
-	for cursor := 0; cursor < total; cursor += sliceWidth {
+func Slices(count int, total float64) []float64 {
+	var values []float64
+	sliceWidth := float64(total) / float64(count)
+	for cursor := 0.0; cursor < total; cursor += sliceWidth {
 		values = append(values, cursor)
 	}
 	return values

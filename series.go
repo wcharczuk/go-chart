@@ -3,6 +3,8 @@ package chart
 import (
 	"fmt"
 	"time"
+
+	"github.com/blendlabs/go-util"
 )
 
 // Series is a entity data set.
@@ -10,8 +12,11 @@ type Series interface {
 	GetName() string
 	GetStyle() Style
 	Len() int
+
 	GetValue(index int) (float64, float64)
-	GetLabel(index int) (string, string)
+
+	GetXFormatter() Formatter
+	GetYFormatter() Formatter
 }
 
 // TimeSeries is a line on a chart.
@@ -45,11 +50,30 @@ func (ts TimeSeries) GetValue(index int) (x float64, y float64) {
 	return
 }
 
-// GetLabel gets a label for the values at a given index.
-func (ts TimeSeries) GetLabel(index int) (xLabel string, yLabel string) {
-	xLabel = ts.XValues[index].Format(DefaultDateFormat)
-	yLabel = fmt.Sprintf("%0.2f", ts.YValues[index])
-	return
+// GetXFormatter returns the x value formatter.
+func (ts TimeSeries) GetXFormatter() Formatter {
+	return func(v interface{}) string {
+		if typed, isTyped := v.(time.Time); isTyped {
+			return typed.Format(DefaultDateFormat)
+		}
+		if typed, isTyped := v.(int64); isTyped {
+			return time.Unix(typed, 0).Format(DefaultDateFormat)
+		}
+		if typed, isTyped := v.(float64); isTyped {
+			return time.Unix(int64(typed), 0).Format(DefaultDateFormat)
+		}
+		return util.StringEmpty
+	}
+}
+
+// GetYFormatter returns the y value formatter.
+func (ts TimeSeries) GetYFormatter() Formatter {
+	return func(v interface{}) string {
+		if typed, isTyped := v.(float64); isTyped {
+			return fmt.Sprintf("%0.2f", typed)
+		}
+		return util.StringEmpty
+	}
 }
 
 // ContinousSeries represents a line on a chart.
@@ -81,9 +105,17 @@ func (cs ContinousSeries) GetValue(index int) (interface{}, float64) {
 	return cs.XValues[index], cs.YValues[index]
 }
 
-// GetLabel gets a label for the values at a given index.
-func (cs ContinousSeries) GetLabel(index int) (xLabel string, yLabel string) {
-	xLabel = fmt.Sprintf("%0.2f", cs.XValues[index])
-	yLabel = fmt.Sprintf("%0.2f", cs.YValues[index])
-	return
+// GetXFormatter returns the xs value formatter.
+func (cs ContinousSeries) GetXFormatter() Formatter {
+	return func(v interface{}) string {
+		if typed, isTyped := v.(float64); isTyped {
+			return fmt.Sprintf("%0.2f", typed)
+		}
+		return util.StringEmpty
+	}
+}
+
+// GetYFormatter returns the y value formatter.
+func (cs ContinousSeries) GetYFormatter() Formatter {
+	return cs.GetXFormatter()
 }

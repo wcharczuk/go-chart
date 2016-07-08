@@ -28,10 +28,20 @@ const (
 	DefaultFinalLabelDeltaWidth = 10
 	// DefaultFinalLabelFontSize is the font size of the final label.
 	DefaultFinalLabelFontSize = 10.0
+	// DefaultAxisFontSize is the font size of the axis labels.
+	DefaultAxisFontSize = 10.0
 	// DefaultTitleTop is the default distance from the top of the chart to put the title.
 	DefaultTitleTop = 10
+	// DefaultXAxisMargin is the default distance from bottom of the canvas to the x axis labels.
+	DefaultXAxisMargin = 10
+	// DefaultMinimumTickHorizontalSpacing is the minimum distance between horizontal ticks.
+	DefaultMinimumTickHorizontalSpacing = 20
+	// DefaultMinimumTickVerticalSpacing is the minimum distance between vertical ticks.
+	DefaultMinimumTickVerticalSpacing = 20
 	// DefaultDateFormat is the default date format.
 	DefaultDateFormat = "2006-01-02"
+	// DefaultMaxTickCount is the maximum number of ticks to draw
+	DefaultMaxTickCount = 7
 )
 
 var (

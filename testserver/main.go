@@ -21,8 +21,8 @@ func main() {
 			TitleStyle: chart.Style{
 				Show: true,
 			},
-			Width:  800,
-			Height: 380,
+			Width:  640,
+			Height: 480,
 			Axes: chart.Style{
 				Show:        true,
 				StrokeWidth: 1.0,
