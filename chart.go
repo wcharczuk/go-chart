@@ -37,7 +37,7 @@ func (c Chart) GetFont() (*truetype.Font, error) {
 		}
 		c.Font = f
 	}
-	return c.Font
+	return c.Font, nil
 }
 
 // Render renders the chart with the given renderer to the given io.Writer.
