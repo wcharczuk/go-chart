@@ -163,8 +163,12 @@ func (c Chart) initRanges(canvasBox Box) (xrange Range, yrange Range) {
 				didSetFirstValues = true
 			}
 		}
-		xrange.Formatter = s.GetXFormatter()
-		yrange.Formatter = s.GetYFormatter()
+		if xrange.Formatter == nil {
+			xrange.Formatter = s.GetXFormatter()
+		}
+		if yrange.Format == nil {
+			yrange.Formatter = s.GetYFormatter()
+		}
 	}
 
 	if c.XRange.IsZero() {
