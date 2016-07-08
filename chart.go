@@ -249,7 +249,7 @@ func (c Chart) drawYAxisLabels(r Renderer, canvasBox Box, yrange Range) {
 	}
 
 	for index := 0; index < count; index++ {
-		v := rangeTicks[index]
+		v := rangeTicks[index] + yrange.Min
 		y := domainTicks[index]
 		ty := canvasBox.Bottom - int(y)
 		r.Text(yrange.Format(v), tx, ty)
