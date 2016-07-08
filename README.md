@@ -43,7 +43,9 @@ graph := chart.Chart{
 graph.Render(chart.PNG, buffer) //thats it!
 ```
 
-The Key areas to note are that we have to explicitly turn on two features, the axes and the last value label.
+The key areas to note are that we have to explicitly turn on two features, the axes and the last value label. When calling `.Render(..)` we add a parameter, `chart.PNG` that tells the renderer to use a raster renderer (in this case, an awesome library called `draw2d`). 
+
+Coming in the near future will be the option to output to SVG.
 
 # Design Philosophy
 
