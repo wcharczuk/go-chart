@@ -172,7 +172,7 @@ func (c Chart) initRanges(canvasBox Box) (xrange Range, yrange Range) {
 		if xrange.Formatter == nil {
 			xrange.Formatter = s.GetXFormatter()
 		}
-		if yrange.Format == nil {
+		if yrange.Formatter == nil {
 			yrange.Formatter = s.GetYFormatter()
 		}
 	}
@@ -187,6 +187,9 @@ func (c Chart) initRanges(canvasBox Box) (xrange Range, yrange Range) {
 	if c.XRange.Formatter != nil {
 		xrange.Formatter = c.XRange.Formatter
 	}
+	if c.XRange.Ticks != nil {
+		xrange.Ticks = c.XRange.Ticks
+	}
 	xrange.Domain = canvasBox.Width
 
 	if c.YRange.IsZero() {
@@ -198,6 +201,9 @@ func (c Chart) initRanges(canvasBox Box) (xrange Range, yrange Range) {
 	}
 	if c.YRange.Formatter != nil {
 		yrange.Formatter = c.YRange.Formatter
+	}
+	if c.YRange.Ticks != nil {
+		yrange.Ticks = c.YRange.Ticks
 	}
 	yrange.Domain = canvasBox.Height
 
@@ -244,68 +250,69 @@ func (c Chart) drawAxes(r Renderer, canvasBox Box, xrange, yrange Range) {
 	}
 }
 
+func (c Chart) generateRangeTicks(r Range, tickCount int, offset float64) []Tick {
+	var ticks []Tick
+	rangeTicks := Slices(tickCount, r.Max-r.Min)
+	for _, rv := range rangeTicks {
+		ticks = append(ticks, Tick{
+			RangeValue: rv + offset,
+			Label:      r.Format(rv + offset),
+		})
+	}
+	return ticks
+}
+
 func (c Chart) drawYAxisLabels(r Renderer, canvasBox Box, yrange Range) {
 	tickFontSize := c.Axes.GetFontSize(DefaultAxisFontSize)
+	asw := c.getAxisWidth()
+	tx := canvasBox.Right + DefaultFinalLabelDeltaWidth + asw
 
 	r.SetFontColor(c.Axes.GetFontColor(DefaultAxisColor))
 	r.SetFontSize(tickFontSize)
 
-	minimumTickHeight := tickFontSize + DefaultMinimumTickVerticalSpacing
-	tickCount := int(math.Floor(float64(yrange.Domain) / float64(minimumTickHeight)))
+	ticks := yrange.Ticks
+	if ticks == nil {
+		minimumTickHeight := tickFontSize + DefaultMinimumTickVerticalSpacing
+		tickCount := int(math.Floor(float64(yrange.Domain) / float64(minimumTickHeight)))
 
-	if tickCount > DefaultMaxTickCount {
-		tickCount = DefaultMaxTickCount
+		if tickCount > DefaultMaxTickCount {
+			tickCount = DefaultMaxTickCount
+		}
+		ticks = c.generateRangeTicks(yrange, tickCount, yrange.Min)
 	}
 
-	rangeTicks := Slices(tickCount, yrange.Max-yrange.Min)
-	domainTicks := Slices(tickCount, float64(yrange.Domain))
-
-	asw := c.getAxisWidth()
-	tx := canvasBox.Right + DefaultFinalLabelDeltaWidth + asw
-
-	count := len(rangeTicks)
-	if len(domainTicks) < count {
-		count = len(domainTicks) //guard against mismatched array sizes.
-	}
-
-	for index := 0; index < count; index++ {
-		v := rangeTicks[index] + yrange.Min
-		y := domainTicks[index]
-		ty := canvasBox.Bottom - int(y)
-		r.Text(yrange.Format(v), tx, ty)
+	for _, t := range ticks {
+		v := t.RangeValue
+		y := yrange.Translate(v)
+		ty := int(y)
+		r.Text(t.Label, tx, ty)
 	}
 }
 
 func (c Chart) drawXAxisLabels(r Renderer, canvasBox Box, xrange Range) {
 	tickFontSize := c.Axes.GetFontSize(DefaultAxisFontSize)
+	ty := canvasBox.Bottom + DefaultXAxisMargin + int(tickFontSize)
 
 	r.SetFontColor(c.Axes.GetFontColor(DefaultAxisColor))
 	r.SetFontSize(tickFontSize)
 
-	maxLabelWidth := 60
+	ticks := xrange.Ticks
+	if ticks == nil {
+		maxLabelWidth := 60
+		minimumTickWidth := maxLabelWidth + DefaultMinimumTickHorizontalSpacing
+		tickCount := int(math.Floor(float64(xrange.Domain) / float64(minimumTickWidth)))
 
-	minimumTickWidth := maxLabelWidth + DefaultMinimumTickHorizontalSpacing
-	tickCount := int(math.Floor(float64(xrange.Domain) / float64(minimumTickWidth)))
-
-	if tickCount > DefaultMaxTickCount {
-		tickCount = DefaultMaxTickCount
+		if tickCount > DefaultMaxTickCount {
+			tickCount = DefaultMaxTickCount
+		}
+		ticks = c.generateRangeTicks(xrange, tickCount, xrange.Min)
 	}
 
-	rangeTicks := Slices(tickCount, xrange.Max-xrange.Min)
-	domainTicks := Slices(tickCount, float64(xrange.Domain))
-
-	ty := canvasBox.Bottom + DefaultXAxisMargin + int(tickFontSize)
-
-	count := len(rangeTicks)
-	if len(domainTicks) < count {
-		count = len(domainTicks) //guard against mismatched array sizes.
-	}
-
-	for index := 0; index < count; index++ {
-		v := rangeTicks[index] + xrange.Min
-		x := domainTicks[index]
+	for _, t := range ticks {
+		v := t.RangeValue
+		x := xrange.Translate(v)
 		tx := canvasBox.Left + int(x)
-		r.Text(xrange.Format(v), tx, ty)
+		r.Text(t.Label, tx, ty)
 	}
 }
 

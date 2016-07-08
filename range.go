@@ -7,11 +7,18 @@ import (
 	"github.com/blendlabs/go-util"
 )
 
+// Tick represents a label on an axis.
+type Tick struct {
+	RangeValue float64
+	Label      string
+}
+
 // Range represents a continuous range,
 type Range struct {
 	Min       float64
 	Max       float64
 	Domain    int
+	Ticks     []Tick
 	Formatter Formatter
 }
 

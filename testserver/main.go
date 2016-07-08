@@ -1,10 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
-	"github.com/blendlabs/go-util"
 	"github.com/wcharczuk/go-chart"
 	"github.com/wcharczuk/go-web"
 )
@@ -29,12 +27,6 @@ func main() {
 			YRange: chart.Range{
 				Min: 0.0,
 				Max: 7.0,
-				Formatter: func(v interface{}) string {
-					if typed, isTyped := v.(float64); isTyped {
-						return fmt.Sprintf("%.4f", typed)
-					}
-					return util.StringEmpty
-				},
 			},
 			FinalValueLabel: chart.Style{
 				Show: true,
