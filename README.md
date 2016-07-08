@@ -28,7 +28,7 @@ graph := chart.Chart{
     Width:  1024,
     Height: 400,
     Axes: chart.Style{
-        Show:        true,
+        Show: true,
     },
     FinalValueLabel: chart.Style{
         Show: true,
@@ -61,12 +61,6 @@ The code to produce the above would be:
 graph := chart.Chart{
     Width:  1024,
     Height: 100,
-    Axes: chart.Style{
-        Show:        false,
-    },
-    FinalValueLabel: chart.Style{
-        Show: false,
-    },
     Series: []chart.Series{
         chart.TimeSeries{
             XValues: xvalues,
