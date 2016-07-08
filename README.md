@@ -47,6 +47,36 @@ The key areas to note are that we have to explicitly turn on two features, the a
 
 Coming in the near future will be the option to output to SVG.
 
+# Alternate Usage
+
+You can alternately turn a bunch of features off and constrain the proportions to something like a spark line:
+
+ ![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/tvix_ltm.png)
+
+The code to produce the above would be:
+
+```go
+// note this assumes that xvalues and yvalues
+// have been pulled from a pricing service.
+graph := chart.Chart{
+    Width:  1024,
+    Height: 100,
+    Axes: chart.Style{
+        Show:        false,
+    },
+    FinalValueLabel: chart.Style{
+        Show: false,
+    },
+    Series: []chart.Series{
+        chart.TimeSeries{
+            XValues: xvalues,
+            YValues: yvalues,
+        },
+    },
+}
+graph.Render(chart.PNG, buffer)
+```
+
 # Design Philosophy
 
 I wanted to make a charting library that used only native golang, that could be stood up on a server (i.e. it had built in fonts).
