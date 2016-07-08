@@ -76,8 +76,8 @@ func (ts TimeSeries) GetYFormatter() Formatter {
 	}
 }
 
-// ContinousSeries represents a line on a chart.
-type ContinousSeries struct {
+// ContinuousSeries represents a line on a chart.
+type ContinuousSeries struct {
 	Name  string
 	Style Style
 
@@ -86,27 +86,27 @@ type ContinousSeries struct {
 }
 
 // GetName returns the name of the time series.
-func (cs ContinousSeries) GetName() string {
+func (cs ContinuousSeries) GetName() string {
 	return cs.Name
 }
 
 // GetStyle returns the line style.
-func (cs ContinousSeries) GetStyle() Style {
+func (cs ContinuousSeries) GetStyle() Style {
 	return cs.Style
 }
 
 // Len returns the number of elements in the series.
-func (cs ContinousSeries) Len() int {
+func (cs ContinuousSeries) Len() int {
 	return len(cs.XValues)
 }
 
 // GetValue gets a value at a given index.
-func (cs ContinousSeries) GetValue(index int) (interface{}, float64) {
+func (cs ContinuousSeries) GetValue(index int) (float64, float64) {
 	return cs.XValues[index], cs.YValues[index]
 }
 
 // GetXFormatter returns the xs value formatter.
-func (cs ContinousSeries) GetXFormatter() Formatter {
+func (cs ContinuousSeries) GetXFormatter() Formatter {
 	return func(v interface{}) string {
 		if typed, isTyped := v.(float64); isTyped {
 			return fmt.Sprintf("%0.2f", typed)
@@ -116,6 +116,6 @@ func (cs ContinousSeries) GetXFormatter() Formatter {
 }
 
 // GetYFormatter returns the y value formatter.
-func (cs ContinousSeries) GetYFormatter() Formatter {
+func (cs ContinuousSeries) GetYFormatter() Formatter {
 	return cs.GetXFormatter()
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"log"
-	"time"
 
 	"github.com/wcharczuk/go-chart"
 	"github.com/wcharczuk/go-web"
@@ -15,7 +14,6 @@ func main() {
 	app.SetLogger(web.NewStandardOutputLogger())
 	app.GET("/", func(rc *web.RequestContext) web.ControllerResult {
 		rc.Response.Header().Set("Content-Type", "image/svg+xml")
-		now := time.Now()
 		c := chart.Chart{
 			Title: "A Test Chart",
 			TitleStyle: chart.Style{
@@ -35,14 +33,14 @@ func main() {
 				Show: true,
 			},
 			Series: []chart.Series{
-				chart.TimeSeries{
+				chart.ContinuousSeries{
 					Name:    "a",
-					XValues: []time.Time{now.AddDate(0, 0, -4), now.AddDate(0, 0, -3), now.AddDate(0, 0, -2), now.AddDate(0, 0, -1)},
-					YValues: []float64{2.5, 5.0, 2.0, 3.0},
+					XValues: []float64{1.0, 2.0, 3.0, 4.0},
+					YValues: []float64{2.5, 5.0, 2.0, 3.3},
 				},
-				chart.TimeSeries{
+				chart.ContinuousSeries{
 					Name:    "b",
-					XValues: []time.Time{now.AddDate(0, 0, -4), now.AddDate(0, 0, -3), now.AddDate(0, 0, -2), now.AddDate(0, 0, -1)},
+					XValues: []float64{3.0, 4.0, 5.0, 6.0},
 					YValues: []float64{6.0, 5.0, 4.0, 1.0},
 				},
 			},
