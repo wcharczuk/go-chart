@@ -28,6 +28,8 @@ const (
 	DefaultFinalLabelDeltaWidth = 10
 	// DefaultFinalLabelFontSize is the font size of the final label.
 	DefaultFinalLabelFontSize = 10.0
+	// DefaultTitleTop is the default distance from the top of the chart to put the title.
+	DefaultTitleTop = 10
 	// DefaultDateFormat is the default date format.
 	DefaultDateFormat = "2006-01-02"
 )
@@ -36,9 +38,15 @@ var (
 	// DefaultBackgroundColor is the default chart background color.
 	// It is equivalent to css color:white.
 	DefaultBackgroundColor = color.RGBA{R: 255, G: 255, B: 255, A: 255}
+	// DefaultBackgroundStrokeColor is the default chart border color.
+	// It is equivalent to color:white.
+	DefaultBackgroundStrokeColor = color.RGBA{R: 255, G: 255, B: 255, A: 255}
 	// DefaultCanvasColor is the default chart canvas color.
 	// It is equivalent to css color:white.
 	DefaultCanvasColor = color.RGBA{R: 255, G: 255, B: 255, A: 255}
+	// DefaultCanvasStrokColor is the default chart canvas stroke color.
+	// It is equivalent to css color:white.
+	DefaultCanvasStrokColor = color.RGBA{R: 255, G: 255, B: 255, A: 255}
 	// DefaultTextColor is the default chart text color.
 	// It is equivalent to #333333.
 	DefaultTextColor = color.RGBA{R: 51, G: 51, B: 51, A: 255}
@@ -75,7 +83,7 @@ var (
 	// DefaultFinalLabelPadding is the padding around the final label.
 	DefaultFinalLabelPadding = Box{Top: 5, Left: 0, Right: 5, Bottom: 5}
 	// DefaultBackgroundPadding is the default canvas padding config.
-	DefaultBackgroundPadding = Box{Top: 5, Left: 5, Right: 40, Bottom: 40}
+	DefaultBackgroundPadding = Box{Top: 5, Left: 5, Right: 5, Bottom: 5}
 )
 
 var (

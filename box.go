@@ -8,6 +8,9 @@ type Box struct {
 	Left   int
 	Right  int
 	Bottom int
+
+	Height int
+	Width  int
 }
 
 // IsZero returns if the box is set or not.

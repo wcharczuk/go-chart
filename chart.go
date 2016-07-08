@@ -27,40 +27,6 @@ type Chart struct {
 	Series []Series
 }
 
-// GetCanvasTop gets the top corner pixel.
-func (c Chart) GetCanvasTop() int {
-	return c.Background.Padding.GetTop(DefaultBackgroundPadding.Top)
-}
-
-// GetCanvasLeft gets the left corner pixel.
-func (c Chart) GetCanvasLeft() int {
-	return c.Background.Padding.GetLeft(DefaultBackgroundPadding.Left)
-}
-
-// GetCanvasBottom gets the bottom corner pixel.
-func (c Chart) GetCanvasBottom() int {
-	return c.Height - c.Background.Padding.GetBottom(DefaultBackgroundPadding.Bottom)
-}
-
-// GetCanvasRight gets the right corner pixel.
-func (c Chart) GetCanvasRight() int {
-	return c.Width - c.Background.Padding.GetRight(DefaultBackgroundPadding.Right)
-}
-
-// GetCanvasWidth returns the width of the canvas.
-func (c Chart) GetCanvasWidth() int {
-	pl := c.Background.Padding.GetLeft(DefaultBackgroundPadding.Left)
-	pr := c.Background.Padding.GetRight(DefaultBackgroundPadding.Right)
-	return c.Width - (pl + pr)
-}
-
-// GetCanvasHeight returns the height of the canvas.
-func (c Chart) GetCanvasHeight() int {
-	pt := c.Background.Padding.GetTop(DefaultBackgroundPadding.Top)
-	pb := c.Background.Padding.GetBottom(DefaultBackgroundPadding.Bottom)
-	return c.Height - (pt + pb)
-}
-
 // GetFont returns the text font.
 func (c Chart) GetFont() (*truetype.Font, error) {
 	if c.Font != nil {
@@ -71,26 +37,78 @@ func (c Chart) GetFont() (*truetype.Font, error) {
 
 // Render renders the chart with the given renderer to the given io.Writer.
 func (c *Chart) Render(provider RendererProvider, w io.Writer) error {
-	xrange, yrange := c.initRanges()
-
-	font, err := c.GetFont()
-	if err != nil {
-		return err
+	r := provider(c.Width, c.Height)
+	if c.hasText() {
+		font, err := c.GetFont()
+		if err != nil {
+			return err
+		}
+		r.SetFont(font)
 	}
 
-	r := provider(c.Width, c.Height)
-	r.SetFont(font)
+	canvasBox := c.calculateCanvasBox(r)
+	xrange, yrange := c.initRanges(canvasBox)
+
 	c.drawBackground(r)
-	c.drawCanvas(r)
-	c.drawAxes(r, xrange, yrange)
+	c.drawCanvas(r, canvasBox)
+	c.drawAxes(r, canvasBox, xrange, yrange)
 	for index, series := range c.Series {
-		c.drawSeries(r, index, series, xrange, yrange)
+		c.drawSeries(r, canvasBox, index, series, xrange, yrange)
 	}
 	c.drawTitle(r)
 	return r.Save(w)
 }
 
-func (c Chart) initRanges() (xrange Range, yrange Range) {
+func (c Chart) hasText() bool {
+	return c.TitleStyle.Show || c.Axes.Show
+}
+
+func (c Chart) calculateCanvasBox(r Renderer) Box {
+	dpr := DefaultBackgroundPadding.Right
+	finalLabelWidth := c.calculateFinalLabelWidth(r)
+	if finalLabelWidth > dpr {
+		dpr = finalLabelWidth
+	}
+	dpb := DefaultBackgroundPadding.Bottom
+
+	cb := Box{
+		Top:    c.Background.Padding.GetTop(DefaultBackgroundPadding.Top),
+		Left:   c.Background.Padding.GetLeft(DefaultBackgroundPadding.Left),
+		Right:  c.Width - c.Background.Padding.GetRight(dpr),
+		Bottom: c.Height - c.Background.Padding.GetBottom(dpb),
+	}
+	cb.Height = cb.Bottom - cb.Top
+	cb.Width = cb.Right - cb.Left
+	return cb
+}
+
+func (c Chart) calculateFinalLabelWidth(r Renderer) int {
+	if !c.FinalValueLabel.Show {
+		return 0
+	}
+	var finalLabelText string
+	for _, s := range c.Series {
+		_, ll := s.GetLabel(s.Len() - 1)
+		if len(finalLabelText) < len(ll) {
+			finalLabelText = ll
+		}
+	}
+
+	r.SetFontSize(c.FinalValueLabel.GetFontSize(DefaultFinalLabelFontSize))
+	textWidth := r.MeasureText(finalLabelText)
+
+	pl := c.FinalValueLabel.Padding.GetLeft(DefaultFinalLabelPadding.Left)
+	pr := c.FinalValueLabel.Padding.GetRight(DefaultFinalLabelPadding.Right)
+
+	asw := int(c.Axes.GetStrokeWidth(DefaultAxisLineWidth))
+	lsw := int(c.FinalValueLabel.GetStrokeWidth(DefaultAxisLineWidth))
+
+	return DefaultFinalLabelDeltaWidth +
+		pl + pr +
+		textWidth + asw + 2*lsw
+}
+
+func (c Chart) initRanges(canvasBox Box) (xrange Range, yrange Range) {
 	//iterate over each series, pull out the min/max for x,y
 	var didSetFirstValues bool
 	var globalMinY, globalMinX float64
@@ -127,7 +145,7 @@ func (c Chart) initRanges() (xrange Range, yrange Range) {
 		xrange.Min = c.XRange.Min
 		xrange.Max = c.XRange.Max
 	}
-	xrange.Domain = c.GetCanvasWidth()
+	xrange.Domain = canvasBox.Width
 
 	if c.YRange.IsZero() {
 		yrange.Min = globalMinY
@@ -136,40 +154,44 @@ func (c Chart) initRanges() (xrange Range, yrange Range) {
 		yrange.Min = c.YRange.Min
 		yrange.Max = c.YRange.Max
 	}
-	yrange.Domain = c.GetCanvasHeight()
+	yrange.Domain = canvasBox.Height
 
 	return
 }
 
 func (c Chart) drawBackground(r Renderer) {
 	r.SetFillColor(c.Background.GetFillColor(DefaultBackgroundColor))
+	r.SetStrokeColor(c.Background.GetStrokeColor(DefaultBackgroundStrokeColor))
+	r.SetLineWidth(c.Background.GetStrokeWidth(DefaultStrokeWidth))
 	r.MoveTo(0, 0)
 	r.LineTo(c.Width, 0)
 	r.LineTo(c.Width, c.Height)
 	r.LineTo(0, c.Height)
 	r.LineTo(0, 0)
 	r.Close()
-	r.Fill()
+	r.FillStroke()
 }
 
-func (c Chart) drawCanvas(r Renderer) {
+func (c Chart) drawCanvas(r Renderer, canvasBox Box) {
 	r.SetFillColor(c.Canvas.GetFillColor(DefaultCanvasColor))
-	r.MoveTo(c.GetCanvasLeft(), c.GetCanvasTop())
-	r.LineTo(c.GetCanvasRight(), c.GetCanvasTop())
-	r.LineTo(c.GetCanvasRight(), c.GetCanvasBottom())
-	r.LineTo(c.GetCanvasLeft(), c.GetCanvasBottom())
-	r.LineTo(c.GetCanvasLeft(), c.GetCanvasTop())
-	r.Fill()
+	r.SetStrokeColor(c.Canvas.GetStrokeColor(DefaultCanvasStrokColor))
+	r.SetLineWidth(c.Canvas.GetStrokeWidth(DefaultStrokeWidth))
+	r.MoveTo(canvasBox.Left, canvasBox.Top)
+	r.LineTo(canvasBox.Right, canvasBox.Top)
+	r.LineTo(canvasBox.Right, canvasBox.Bottom)
+	r.LineTo(canvasBox.Left, canvasBox.Bottom)
+	r.LineTo(canvasBox.Left, canvasBox.Top)
 	r.Close()
+	r.FillStroke()
 }
 
-func (c Chart) drawAxes(r Renderer, xrange, yrange Range) {
+func (c Chart) drawAxes(r Renderer, canvasBox Box, xrange, yrange Range) {
 	if c.Axes.Show {
 		r.SetStrokeColor(c.Axes.GetStrokeColor(DefaultAxisColor))
 		r.SetLineWidth(c.Axes.GetStrokeWidth(DefaultStrokeWidth))
-		r.MoveTo(c.GetCanvasLeft(), c.GetCanvasBottom())
-		r.LineTo(c.GetCanvasRight(), c.GetCanvasBottom())
-		r.LineTo(c.GetCanvasRight(), c.GetCanvasTop())
+		r.MoveTo(canvasBox.Left, canvasBox.Bottom)
+		r.LineTo(canvasBox.Right, canvasBox.Bottom)
+		r.LineTo(canvasBox.Right, canvasBox.Top)
 		r.Stroke()
 
 		c.drawAxesLabels(r, xrange, yrange)
@@ -181,7 +203,7 @@ func (c Chart) drawAxesLabels(r Renderer, xrange, yrange Range) {
 	// do y axis
 }
 
-func (c Chart) drawSeries(r Renderer, index int, s Series, xrange, yrange Range) {
+func (c Chart) drawSeries(r Renderer, canvasBox Box, index int, s Series, xrange, yrange Range) {
 	r.SetStrokeColor(s.GetStyle().GetStrokeColor(GetDefaultSeriesStrokeColor(index)))
 	r.SetLineWidth(s.GetStyle().GetStrokeWidth(DefaultStrokeWidth))
 
@@ -189,9 +211,9 @@ func (c Chart) drawSeries(r Renderer, index int, s Series, xrange, yrange Range)
 		return
 	}
 
-	cx := c.GetCanvasLeft()
-	cy := c.GetCanvasTop()
-	cw := c.GetCanvasWidth()
+	cx := canvasBox.Left
+	cy := canvasBox.Top
+	cw := canvasBox.Width
 
 	v0x, v0y := s.GetValue(0)
 	x0 := cw - xrange.Translate(v0x)
@@ -208,24 +230,23 @@ func (c Chart) drawSeries(r Renderer, index int, s Series, xrange, yrange Range)
 	}
 	r.Stroke()
 
-	c.drawFinalValueLabel(r, index, s, yrange)
+	c.drawFinalValueLabel(r, canvasBox, index, s, yrange)
 }
 
-func (c Chart) drawFinalValueLabel(r Renderer, index int, s Series, yrange Range) {
+func (c Chart) drawFinalValueLabel(r Renderer, canvasBox Box, index int, s Series, yrange Range) {
 	if c.FinalValueLabel.Show {
 		_, lv := s.GetValue(s.Len() - 1)
 		_, ll := s.GetLabel(s.Len() - 1)
 
-		py := c.GetCanvasTop()
+		py := canvasBox.Top
 		ly := yrange.Translate(lv) + py
 
 		r.SetFontSize(c.FinalValueLabel.GetFontSize(DefaultFinalLabelFontSize))
-
 		textWidth := r.MeasureText(ll)
 		textHeight := int(math.Floor(DefaultFinalLabelFontSize))
 		halfTextHeight := textHeight >> 1
 
-		cx := c.GetCanvasRight() + int(c.Axes.GetStrokeWidth(DefaultAxisLineWidth))
+		cx := canvasBox.Right + int(c.Axes.GetStrokeWidth(DefaultAxisLineWidth))
 
 		pt := c.FinalValueLabel.Padding.GetTop(DefaultFinalLabelPadding.Top)
 		pl := c.FinalValueLabel.Padding.GetLeft(DefaultFinalLabelPadding.Left)
@@ -272,7 +293,7 @@ func (c Chart) drawTitle(r Renderer) error {
 		r.SetFontSize(titleFontSize)
 		textWidth := r.MeasureText(c.Title)
 		titleX := (c.Width >> 1) - (textWidth >> 1)
-		titleY := c.GetCanvasTop() + int(titleFontSize)
+		titleY := c.TitleStyle.Padding.GetTop(DefaultTitleTop) + int(titleFontSize)
 		r.Text(c.Title, titleX, titleY)
 	}
 	return nil
