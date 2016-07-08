@@ -45,7 +45,7 @@ graph.Render(chart.PNG, buffer) //thats it!
 
 The key areas to note are that we have to explicitly turn on two features, the axes and the last value label. When calling `.Render(..)` we add a parameter, `chart.PNG` that tells the renderer to use a raster renderer (in this case, an awesome library called `draw2d`). 
 
-Coming in the near future will be the option to output to SVG.
+Another option is to use `chart.SVG` which will use the vector renderer and create an svg representation of the chart. 
 
 # Design Philosophy
 
