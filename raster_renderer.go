@@ -1,7 +1,6 @@
 package chart
 
 import (
-	"fmt"
 	"image"
 	"image/color"
 	"image/png"
@@ -35,55 +34,46 @@ type rasterRenderer struct {
 
 // SetStrokeColor implements the interface method.
 func (rr *rasterRenderer) SetStrokeColor(c color.RGBA) {
-	println("RasterRenderer :: SetStrokeColor", ColorAsString(c))
 	rr.gc.SetStrokeColor(c)
 }
 
 // SetFillColor implements the interface method.
 func (rr *rasterRenderer) SetFillColor(c color.RGBA) {
-	println("RasterRenderer :: SetFillColor", ColorAsString(c))
 	rr.gc.SetFillColor(c)
 }
 
 // SetLineWidth implements the interface method.
 func (rr *rasterRenderer) SetLineWidth(width float64) {
-	println("RasterRenderer :: SetLineWidth", width)
 	rr.gc.SetLineWidth(width)
 }
 
 // MoveTo implements the interface method.
 func (rr *rasterRenderer) MoveTo(x, y int) {
-	println("RasterRenderer :: MoveTo", x, y)
 	rr.gc.MoveTo(float64(x), float64(y))
 }
 
 // LineTo implements the interface method.
 func (rr *rasterRenderer) LineTo(x, y int) {
-	println("RasterRenderer :: LineTo", x, y)
 	rr.gc.LineTo(float64(x), float64(y))
 }
 
 // Close implements the interface method.
 func (rr *rasterRenderer) Close() {
-	println("RasterRenderer :: Close")
 	rr.gc.Close()
 }
 
 // Stroke implements the interface method.
 func (rr *rasterRenderer) Stroke() {
-	println("RasterRenderer :: Stroke")
 	rr.gc.Stroke()
 }
 
 // Fill implements the interface method.
 func (rr *rasterRenderer) Fill() {
-	println("RasterRenderer :: Fill")
 	rr.gc.Fill()
 }
 
 // FillStroke implements the interface method.
 func (rr *rasterRenderer) FillStroke() {
-	println("RasterRenderer :: FillStroke")
 	rr.gc.FillStroke()
 }
 
@@ -108,14 +98,12 @@ func (rr *rasterRenderer) SetFont(f *truetype.Font) {
 
 // SetFontSize implements the interface method.
 func (rr *rasterRenderer) SetFontSize(size float64) {
-	println("RasterRenderer :: SetFontSize", fmt.Sprintf("%.2f", size))
 	rr.fontSize = size
 	rr.gc.SetFontSize(size)
 }
 
 // SetFontColor implements the interface method.
 func (rr *rasterRenderer) SetFontColor(c color.RGBA) {
-	println("RasterRenderer :: SetFontColor", ColorAsString(c))
 	rr.fontColor = c
 	rr.gc.SetFillColor(c)
 	rr.gc.SetStrokeColor(c)
@@ -123,7 +111,6 @@ func (rr *rasterRenderer) SetFontColor(c color.RGBA) {
 
 // Text implements the interface method.
 func (rr *rasterRenderer) Text(body string, x, y int) {
-	println("RasterRenderer :: Text", body, x, y)
 	rr.gc.CreateStringPath(body, float64(x), float64(y))
 	rr.gc.Fill()
 }
@@ -147,6 +134,6 @@ func (rr *rasterRenderer) MeasureText(body string) int {
 
 // Save implements the interface method.
 func (rr *rasterRenderer) Save(w io.Writer) error {
-	println("RasterRenderer :: Save")
+
 	return png.Encode(w, rr.i)
 }

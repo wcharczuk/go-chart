@@ -2,6 +2,7 @@ package chart
 
 import (
 	"io"
+	"math"
 
 	"github.com/golang/freetype/truetype"
 )
@@ -11,9 +12,8 @@ type Chart struct {
 	Title      string
 	TitleStyle Style
 
-	Width   int
-	Height  int
-	Padding Box
+	Width  int
+	Height int
 
 	Background      Style
 	Canvas          Style
@@ -29,32 +29,32 @@ type Chart struct {
 
 // GetCanvasTop gets the top corner pixel.
 func (c Chart) GetCanvasTop() int {
-	return c.Padding.GetTop(DefaultCanvasPadding.Top)
+	return c.Canvas.Padding.GetTop(DefaultCanvasPadding.Top)
 }
 
 // GetCanvasLeft gets the left corner pixel.
 func (c Chart) GetCanvasLeft() int {
-	return c.Padding.GetLeft(DefaultCanvasPadding.Left)
+	return c.Canvas.Padding.GetLeft(DefaultCanvasPadding.Left)
 }
 
 // GetCanvasBottom gets the bottom corner pixel.
 func (c Chart) GetCanvasBottom() int {
-	return c.Height - c.Padding.GetBottom(DefaultCanvasPadding.Bottom)
+	return c.Height - c.Canvas.Padding.GetBottom(DefaultCanvasPadding.Bottom)
 }
 
 // GetCanvasRight gets the right corner pixel.
 func (c Chart) GetCanvasRight() int {
-	return c.Width - c.Padding.GetRight(DefaultCanvasPadding.Right)
+	return c.Width - c.Canvas.Padding.GetRight(DefaultCanvasPadding.Right)
 }
 
 // GetCanvasWidth returns the width of the canvas.
 func (c Chart) GetCanvasWidth() int {
-	return c.Width - (c.Padding.GetLeft(DefaultCanvasPadding.Left) + c.Padding.GetRight(DefaultCanvasPadding.Right))
+	return c.Width - (c.Canvas.Padding.GetLeft(DefaultCanvasPadding.Left) + c.Canvas.Padding.GetRight(DefaultCanvasPadding.Right))
 }
 
 // GetCanvasHeight returns the height of the canvas.
 func (c Chart) GetCanvasHeight() int {
-	return c.Height - (c.Padding.GetTop(DefaultCanvasPadding.Top) + c.Padding.GetBottom(DefaultCanvasPadding.Bottom))
+	return c.Height - (c.Canvas.Padding.GetTop(DefaultCanvasPadding.Top) + c.Canvas.Padding.GetBottom(DefaultCanvasPadding.Bottom))
 }
 
 // GetFont returns the text font.
@@ -68,21 +68,21 @@ func (c Chart) GetFont() (*truetype.Font, error) {
 // Render renders the chart with the given renderer to the given io.Writer.
 func (c *Chart) Render(provider RendererProvider, w io.Writer) error {
 	xrange, yrange := c.initRanges()
-	println("xrange", xrange.String())
-	println("yrange", yrange.String())
 
-	r := provider(c.Width, c.Height)
-	c.drawBackground(r)
-	c.drawCanvas(r)
-	c.drawAxes(r)
-
-	for _, series := range c.Series {
-		c.drawSeries(r, series, xrange, yrange)
-	}
-	err := c.drawTitle(r)
+	font, err := c.GetFont()
 	if err != nil {
 		return err
 	}
+
+	r := provider(c.Width, c.Height)
+	r.SetFont(font)
+	c.drawBackground(r)
+	c.drawCanvas(r)
+	c.drawAxes(r, xrange, yrange)
+	for _, series := range c.Series {
+		c.drawSeries(r, series, xrange, yrange)
+	}
+	c.drawTitle(r)
 	return r.Save(w)
 }
 
@@ -159,7 +159,7 @@ func (c Chart) drawCanvas(r Renderer) {
 	r.Close()
 }
 
-func (c Chart) drawAxes(r Renderer) {
+func (c Chart) drawAxes(r Renderer, xrange, yrange Range) {
 	if c.Axes.Show {
 		r.SetStrokeColor(c.Axes.GetStrokeColor(DefaultAxisColor))
 		r.SetLineWidth(c.Axes.GetStrokeWidth(DefaultLineWidth))
@@ -167,7 +167,13 @@ func (c Chart) drawAxes(r Renderer) {
 		r.LineTo(c.GetCanvasRight(), c.GetCanvasBottom())
 		r.LineTo(c.GetCanvasRight(), c.GetCanvasTop())
 		r.Stroke()
+
+		c.drawAxesLabels(r, xrange, yrange)
 	}
+}
+
+func (c Chart) drawAxesLabels(r Renderer, xrange, yrange Range) {
+
 }
 
 func (c Chart) drawSeries(r Renderer, s Series, xrange, yrange Range) {
@@ -178,8 +184,8 @@ func (c Chart) drawSeries(r Renderer, s Series, xrange, yrange Range) {
 		return
 	}
 
-	px := c.Padding.GetLeft(DefaultCanvasPadding.Left)
-	py := c.Padding.GetTop(DefaultCanvasPadding.Top)
+	px := c.Canvas.Padding.GetLeft(DefaultCanvasPadding.Left)
+	py := c.Canvas.Padding.GetTop(DefaultCanvasPadding.Top)
 
 	cw := c.GetCanvasWidth()
 
@@ -197,16 +203,67 @@ func (c Chart) drawSeries(r Renderer, s Series, xrange, yrange Range) {
 		r.LineTo(x+px, y+py)
 	}
 	r.Stroke()
+
+	c.drawFinalValueLabel(r, s, yrange)
+}
+
+func (c Chart) drawFinalValueLabel(r Renderer, s Series, yrange Range) {
+	if c.FinalValueLabel.Show {
+		_, lv := s.GetValue(s.Len() - 1)
+		_, ll := s.GetLabel(s.Len() - 1)
+
+		py := c.Canvas.Padding.GetTop(DefaultCanvasPadding.Top)
+		ly := yrange.Translate(lv) + py
+
+		r.SetFontSize(c.FinalValueLabel.GetFontSize(DefaultFinalLabelFontSize))
+
+		textWidth := r.MeasureText(ll)
+		textHeight := int(math.Floor(DefaultFinalLabelFontSize))
+		halfTextHeight := textHeight >> 1
+
+		cx := c.GetCanvasRight() + int(c.Axes.GetStrokeWidth(DefaultAxisLineWidth))
+
+		pt := c.FinalValueLabel.Padding.GetTop(DefaultFinalLabelPadding.Top)
+		pl := c.FinalValueLabel.Padding.GetLeft(DefaultFinalLabelPadding.Left)
+		pr := c.FinalValueLabel.Padding.GetRight(DefaultFinalLabelPadding.Right)
+		pb := c.FinalValueLabel.Padding.GetBottom(DefaultFinalLabelPadding.Bottom)
+
+		textX := cx + pl + DefaultFinalLabelDeltaWidth
+		textY := ly + halfTextHeight
+
+		ltlx := cx + pl + DefaultFinalLabelDeltaWidth
+		ltly := ly - (pt + halfTextHeight)
+
+		ltrx := cx + pl + pr + textWidth
+		ltry := ly - (pt + halfTextHeight)
+
+		lbrx := cx + pl + pr + textWidth
+		lbry := ly + (pb + halfTextHeight)
+
+		lblx := cx + DefaultFinalLabelDeltaWidth
+		lbly := ly + (pb + halfTextHeight)
+
+		//draw the shape...
+		r.SetFillColor(c.FinalValueLabel.GetFillColor(DefaultFinalLabelBackgroundColor))
+		r.SetStrokeColor(c.FinalValueLabel.GetStrokeColor(s.GetStyle().GetStrokeColor(DefaultLineColor)))
+		r.SetLineWidth(c.FinalValueLabel.GetStrokeWidth(DefaultAxisLineWidth))
+		r.MoveTo(cx, ly)
+		r.LineTo(ltlx, ltly)
+		r.LineTo(ltrx, ltry)
+		r.LineTo(lbrx, lbry)
+		r.LineTo(lblx, lbly)
+		r.LineTo(cx, ly)
+		r.Close()
+		r.FillStroke()
+
+		r.SetFontColor(c.FinalValueLabel.GetFontColor(DefaultTextColor))
+		r.Text(ll, textX, textY)
+	}
 }
 
 func (c Chart) drawTitle(r Renderer) error {
 	if len(c.Title) > 0 && c.TitleStyle.Show {
-		font, err := c.GetFont()
-		if err != nil {
-			return err
-		}
 		r.SetFontColor(c.Canvas.GetFontColor(DefaultTextColor))
-		r.SetFont(font)
 		titleFontSize := c.Canvas.GetFontSize(DefaultTitleFontSize)
 		r.SetFontSize(titleFontSize)
 		textWidth := r.MeasureText(c.Title)

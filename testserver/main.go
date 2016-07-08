@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"image/color"
 	"log"
 	"time"
 
@@ -17,15 +18,17 @@ func main() {
 		rc.Response.Header().Set("Content-Type", "image/png")
 		now := time.Now()
 		c := chart.Chart{
-			Title: "Hello!",
+			Title: "Stocks Bruh.",
 			TitleStyle: chart.Style{
 				Show: true,
 			},
 			Width:  1024,
 			Height: 400,
-			Padding: chart.Box{
-				Right:  40,
-				Bottom: 40,
+			Canvas: chart.Style{
+				Padding: chart.Box{
+					Right:  40,
+					Bottom: 40,
+				},
 			},
 			Axes: chart.Style{
 				Show:        true,
@@ -35,6 +38,9 @@ func main() {
 				Min: 0.0,
 				Max: 7.0,
 			},
+			FinalValueLabel: chart.Style{
+				Show: true,
+			},
 			Series: []chart.Series{
 				chart.TimeSeries{
 					Name: "goog",
@@ -43,6 +49,15 @@ func main() {
 					},
 					XValues: []time.Time{now.AddDate(0, 0, -4), now.AddDate(0, 0, -3), now.AddDate(0, 0, -2), now.AddDate(0, 0, -1)},
 					YValues: []float64{2.5, 5.0, 2.0, 3.0},
+				},
+				chart.TimeSeries{
+					Name: "aapl",
+					Style: chart.Style{
+						StrokeWidth: 1.0,
+						StrokeColor: color.RGBA{R: 0, G: 217, B: 116, A: 255},
+					},
+					XValues: []time.Time{now.AddDate(0, 0, -5), now.AddDate(0, 0, -4), now.AddDate(0, 0, -2), now.AddDate(0, 0, -1)},
+					YValues: []float64{3.0, 2.7, 2.0, 1.1},
 				},
 			},
 		}

@@ -64,3 +64,14 @@ func TestMinAndMaxOfTimeEmpty(t *testing.T) {
 	assert.Equal(time.Time{}, min)
 	assert.Equal(time.Time{}, max)
 }
+
+func TestSlices(t *testing.T) {
+	assert := assert.New(t)
+
+	s := Slices(10, 100)
+	assert.Len(s, 10)
+	assert.Equal(0, s[0])
+	assert.Equal(10, s[1])
+	assert.Equal(20, s[2])
+	assert.Equal(90, s[9])
+}

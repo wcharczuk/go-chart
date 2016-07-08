@@ -10,6 +10,7 @@ type Style struct {
 	StrokeWidth float64
 	FontSize    float64
 	FontColor   color.RGBA
+	Padding     Box
 }
 
 // IsZero returns if the object is set or not.

@@ -28,6 +28,18 @@ const (
 	DefaultDateFormat = "2006-01-02"
 )
 
+const (
+	// DefaultFinalLabelDeltaWidth is the width of the left triangle out of the final label.
+	DefaultFinalLabelDeltaWidth = 10
+	// DefaultFinalLabelFontSize is the font size of the final label.
+	DefaultFinalLabelFontSize = 10.0
+)
+
+var (
+	// DefaultFinalLabelPadding is the padding around the final label.
+	DefaultFinalLabelPadding = Box{Top: 5, Left: 0, Right: 5, Bottom: 5}
+)
+
 var (
 	// DefaultBackgroundColor is the default chart background color.
 	// It is equivalent to css color:white.
@@ -41,15 +53,17 @@ var (
 	// DefaultAxisColor is the default chart axis line color.
 	// It is equivalent to #333333.
 	DefaultAxisColor = color.RGBA{R: 51, G: 51, B: 51, A: 255}
-	// DefaultBorderColor is the default chart border color.
+	// DefaultStrokeColor is the default chart border color.
 	// It is equivalent to #efefef.
-	DefaultBorderColor = color.RGBA{R: 239, G: 239, B: 239, A: 255}
+	DefaultStrokeColor = color.RGBA{R: 239, G: 239, B: 239, A: 255}
 	// DefaultLineColor is the default (1st) series line color.
 	// It is equivalent to #0074d9.
 	DefaultLineColor = color.RGBA{R: 0, G: 116, B: 217, A: 255}
 	// DefaultFillColor is the default fill color.
 	// It is equivalent to #0074d9.
 	DefaultFillColor = color.RGBA{R: 0, G: 217, B: 116, A: 255}
+	// DefaultFinalLabelBackgroundColor is the default final label background color.
+	DefaultFinalLabelBackgroundColor = color.RGBA{R: 255, G: 255, B: 255, A: 255}
 )
 
 var (
