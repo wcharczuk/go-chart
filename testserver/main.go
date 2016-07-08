@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"image/color"
 	"log"
 	"time"
 
@@ -34,30 +33,14 @@ func main() {
 				Show:        true,
 				StrokeWidth: 1.0,
 			},
-			YRange: chart.Range{
-				Min: 0.0,
-				Max: 7.0,
-			},
 			FinalValueLabel: chart.Style{
 				Show: true,
 			},
 			Series: []chart.Series{
 				chart.TimeSeries{
-					Name: "goog",
-					Style: chart.Style{
-						StrokeWidth: 1.0,
-					},
+					Name:    "goog",
 					XValues: []time.Time{now.AddDate(0, 0, -4), now.AddDate(0, 0, -3), now.AddDate(0, 0, -2), now.AddDate(0, 0, -1)},
 					YValues: []float64{2.5, 5.0, 2.0, 3.0},
-				},
-				chart.TimeSeries{
-					Name: "aapl",
-					Style: chart.Style{
-						StrokeWidth: 1.0,
-						StrokeColor: color.RGBA{R: 0, G: 217, B: 116, A: 255},
-					},
-					XValues: []time.Time{now.AddDate(0, 0, -5), now.AddDate(0, 0, -4), now.AddDate(0, 0, -2), now.AddDate(0, 0, -1)},
-					YValues: []float64{3.0, 2.7, 2.0, 1.1},
 				},
 			},
 		}

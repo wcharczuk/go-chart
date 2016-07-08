@@ -24,7 +24,7 @@ func (s Style) GetStrokeColor(defaults ...color.RGBA) color.RGBA {
 		if len(defaults) > 0 {
 			return defaults[0]
 		}
-		return DefaultLineColor
+		return DefaultStrokeColor
 	}
 	return s.StrokeColor
 }
@@ -46,7 +46,7 @@ func (s Style) GetStrokeWidth(defaults ...float64) float64 {
 		if len(defaults) > 0 {
 			return defaults[0]
 		}
-		return DefaultLineWidth
+		return DefaultStrokeWidth
 	}
 	return s.StrokeWidth
 }
