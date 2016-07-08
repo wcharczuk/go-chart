@@ -30,10 +30,14 @@ type Chart struct {
 
 // GetFont returns the text font.
 func (c Chart) GetFont() (*truetype.Font, error) {
-	if c.Font != nil {
-		return c.Font, nil
+	if c.Font == nil {
+		f, err := GetDefaultFont()
+		if err != nil {
+			return nil, err
+		}
+		c.Font = f
 	}
-	return GetDefaultFont()
+	return c.Font
 }
 
 // Render renders the chart with the given renderer to the given io.Writer.
