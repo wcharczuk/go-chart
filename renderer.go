@@ -18,8 +18,8 @@ type Renderer interface {
 	// SetFillColor sets the current fill color.
 	SetFillColor(color.RGBA)
 
-	// SetLineWidth sets the stroke line width.
-	SetLineWidth(width float64)
+	// SetStrokeWidth sets the stroke width.
+	SetStrokeWidth(width float64)
 
 	// MoveTo moves the cursor to a given point.
 	MoveTo(x, y int)

@@ -13,7 +13,8 @@ func ColorIsZero(c color.RGBA) bool {
 
 // ColorAsString returns if a color.RGBA is unset or not.
 func ColorAsString(c color.RGBA) string {
-	return fmt.Sprintf("RGBA(%v,%v,%v,%v)", c.R, c.G, c.G, c.A)
+	a := float64(c.A) / float64(255)
+	return fmt.Sprintf("rgba(%v,%v,%v,%.1f)", c.R, c.G, c.B, a)
 }
 
 // MinAndMax returns both the min and max in one pass.

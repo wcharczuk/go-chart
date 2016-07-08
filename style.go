@@ -1,6 +1,10 @@
 package chart
 
-import "image/color"
+import (
+	"fmt"
+	"image/color"
+	"strings"
+)
 
 // Style is a simple style set.
 type Style struct {
@@ -71,4 +75,38 @@ func (s Style) GetFontColor(defaults ...color.RGBA) color.RGBA {
 		return DefaultTextColor
 	}
 	return s.FontColor
+}
+
+// SVG returns the style as a svg style string.
+func (s Style) SVG() string {
+	sw := s.StrokeWidth
+	sc := s.StrokeColor
+	fc := s.FillColor
+	fs := s.FontSize
+	fnc := s.FontColor
+
+	strokeWidthText := "stroke-width:0"
+	if sw != 0 {
+		strokeWidthText = "stroke-width:" + fmt.Sprintf("%d", int(sw))
+	}
+
+	strokeText := "stroke:none"
+	if !ColorIsZero(sc) {
+		strokeText = "stroke:" + ColorAsString(sc)
+	}
+
+	fillText := "fill:none"
+	if !ColorIsZero(fc) {
+		fillText = "fill:" + ColorAsString(fc)
+	}
+
+	fontSizeText := ""
+	if fs != 0 {
+		fontSizeText = "font-size:" + fmt.Sprintf("%.1f", fs)
+	}
+
+	if !ColorIsZero(fnc) {
+		fillText = "fill:" + ColorAsString(fnc)
+	}
+	return strings.Join([]string{strokeWidthText, strokeText, fillText, fontSizeText}, ";")
 }

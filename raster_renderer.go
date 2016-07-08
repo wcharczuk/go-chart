@@ -21,7 +21,7 @@ func PNG(width, height int) Renderer {
 	}
 }
 
-// RasterRenderer renders chart commands to a bitmap.
+// rasterRenderer renders chart commands to a bitmap.
 type rasterRenderer struct {
 	i  *image.RGBA
 	gc *drawing.GraphicContext
@@ -43,7 +43,7 @@ func (rr *rasterRenderer) SetFillColor(c color.RGBA) {
 }
 
 // SetLineWidth implements the interface method.
-func (rr *rasterRenderer) SetLineWidth(width float64) {
+func (rr *rasterRenderer) SetStrokeWidth(width float64) {
 	rr.gc.SetLineWidth(width)
 }
 
@@ -115,7 +115,7 @@ func (rr *rasterRenderer) Text(body string, x, y int) {
 	rr.gc.Fill()
 }
 
-// MeasureText implements the interface method.
+// MeasureText uses the truetype font drawer to measure the width of text.
 func (rr *rasterRenderer) MeasureText(body string) int {
 	if rr.fc == nil && rr.font != nil {
 		rr.fc = &font.Drawer{

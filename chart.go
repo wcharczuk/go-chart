@@ -191,7 +191,7 @@ func (c Chart) initRanges(canvasBox Box) (xrange Range, yrange Range) {
 func (c Chart) drawBackground(r Renderer) {
 	r.SetFillColor(c.Background.GetFillColor(DefaultBackgroundColor))
 	r.SetStrokeColor(c.Background.GetStrokeColor(DefaultBackgroundStrokeColor))
-	r.SetLineWidth(c.Background.GetStrokeWidth(DefaultStrokeWidth))
+	r.SetStrokeWidth(c.Background.GetStrokeWidth(DefaultStrokeWidth))
 	r.MoveTo(0, 0)
 	r.LineTo(c.Width, 0)
 	r.LineTo(c.Width, c.Height)
@@ -204,7 +204,7 @@ func (c Chart) drawBackground(r Renderer) {
 func (c Chart) drawCanvas(r Renderer, canvasBox Box) {
 	r.SetFillColor(c.Canvas.GetFillColor(DefaultCanvasColor))
 	r.SetStrokeColor(c.Canvas.GetStrokeColor(DefaultCanvasStrokColor))
-	r.SetLineWidth(c.Canvas.GetStrokeWidth(DefaultStrokeWidth))
+	r.SetStrokeWidth(c.Canvas.GetStrokeWidth(DefaultStrokeWidth))
 	r.MoveTo(canvasBox.Left, canvasBox.Top)
 	r.LineTo(canvasBox.Right, canvasBox.Top)
 	r.LineTo(canvasBox.Right, canvasBox.Bottom)
@@ -217,7 +217,7 @@ func (c Chart) drawCanvas(r Renderer, canvasBox Box) {
 func (c Chart) drawAxes(r Renderer, canvasBox Box, xrange, yrange Range) {
 	if c.Axes.Show {
 		r.SetStrokeColor(c.Axes.GetStrokeColor(DefaultAxisColor))
-		r.SetLineWidth(c.Axes.GetStrokeWidth(DefaultStrokeWidth))
+		r.SetStrokeWidth(c.Axes.GetStrokeWidth(DefaultStrokeWidth))
 		r.MoveTo(canvasBox.Left, canvasBox.Bottom)
 		r.LineTo(canvasBox.Right, canvasBox.Bottom)
 		r.LineTo(canvasBox.Right, canvasBox.Top)
@@ -295,7 +295,7 @@ func (c Chart) drawXAxisLabels(r Renderer, canvasBox Box, xrange Range) {
 
 func (c Chart) drawSeries(r Renderer, canvasBox Box, index int, s Series, xrange, yrange Range) {
 	r.SetStrokeColor(s.GetStyle().GetStrokeColor(GetDefaultSeriesStrokeColor(index)))
-	r.SetLineWidth(s.GetStyle().GetStrokeWidth(DefaultStrokeWidth))
+	r.SetStrokeWidth(s.GetStyle().GetStrokeWidth(DefaultStrokeWidth))
 
 	if s.Len() == 0 {
 		return
@@ -366,7 +366,7 @@ func (c Chart) drawFinalValueLabel(r Renderer, canvasBox Box, index int, s Serie
 		//draw the shape...
 		r.SetFillColor(c.FinalValueLabel.GetFillColor(DefaultFinalLabelBackgroundColor))
 		r.SetStrokeColor(c.FinalValueLabel.GetStrokeColor(s.GetStyle().GetStrokeColor(GetDefaultSeriesStrokeColor(index))))
-		r.SetLineWidth(c.FinalValueLabel.GetStrokeWidth(DefaultAxisLineWidth))
+		r.SetStrokeWidth(c.FinalValueLabel.GetStrokeWidth(DefaultAxisLineWidth))
 		r.MoveTo(cx, ly)
 		r.LineTo(ltlx, ltly)
 		r.LineTo(ltrx, ltry)

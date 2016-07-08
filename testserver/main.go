@@ -14,7 +14,7 @@ func main() {
 	app.SetName("Chart Test Server")
 	app.SetLogger(web.NewStandardOutputLogger())
 	app.GET("/", func(rc *web.RequestContext) web.ControllerResult {
-		rc.Response.Header().Set("Content-Type", "image/png")
+		rc.Response.Header().Set("Content-Type", "image/svg+xml")
 		now := time.Now()
 		c := chart.Chart{
 			Title: "A Test Chart",
@@ -49,7 +49,7 @@ func main() {
 		}
 
 		buffer := bytes.NewBuffer([]byte{})
-		err := c.Render(chart.PNG, buffer)
+		err := c.Render(chart.SVG, buffer)
 		if err != nil {
 			return rc.API().InternalError(err)
 		}
