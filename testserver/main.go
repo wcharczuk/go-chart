@@ -1,9 +1,10 @@
 package main
 
 import (
-	"bytes"
+	"fmt"
 	"log"
 
+	"github.com/blendlabs/go-util"
 	"github.com/wcharczuk/go-chart"
 	"github.com/wcharczuk/go-web"
 )
@@ -13,7 +14,7 @@ func main() {
 	app.SetName("Chart Test Server")
 	app.SetLogger(web.NewStandardOutputLogger())
 	app.GET("/", func(rc *web.RequestContext) web.ControllerResult {
-		rc.Response.Header().Set("Content-Type", "image/svg+xml")
+		rc.Response.Header().Set("Content-Type", "image/png")
 		c := chart.Chart{
 			Title: "A Test Chart",
 			TitleStyle: chart.Style{
@@ -28,6 +29,12 @@ func main() {
 			YRange: chart.Range{
 				Min: 0.0,
 				Max: 7.0,
+				Formatter: func(v interface{}) string {
+					if typed, isTyped := v.(float64); isTyped {
+						return fmt.Sprintf("%.4f", typed)
+					}
+					return util.StringEmpty
+				},
 			},
 			FinalValueLabel: chart.Style{
 				Show: true,
@@ -46,12 +53,11 @@ func main() {
 			},
 		}
 
-		buffer := bytes.NewBuffer([]byte{})
-		err := c.Render(chart.SVG, buffer)
+		err := c.Render(chart.PNG, rc.Response)
 		if err != nil {
 			return rc.API().InternalError(err)
 		}
-		return rc.Raw(buffer.Bytes())
+		return nil
 	})
 	log.Fatal(app.Start())
 }

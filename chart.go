@@ -106,10 +106,16 @@ func (c Chart) calculateFinalLabelWidth(r Renderer) int {
 	if !c.FinalValueLabel.Show {
 		return 0
 	}
+
 	var finalLabelText string
 	for _, s := range c.Series {
 		_, lv := s.GetValue(s.Len() - 1)
-		ll := s.GetYFormatter()(lv)
+		var ll string
+		if c.YRange.Formatter != nil {
+			ll = c.YRange.Formatter(lv)
+		} else {
+			ll = s.GetYFormatter()(lv)
+		}
 		if len(finalLabelText) < len(ll) {
 			finalLabelText = ll
 		}
@@ -178,6 +184,9 @@ func (c Chart) initRanges(canvasBox Box) (xrange Range, yrange Range) {
 		xrange.Min = c.XRange.Min
 		xrange.Max = c.XRange.Max
 	}
+	if c.XRange.Formatter != nil {
+		xrange.Formatter = c.XRange.Formatter
+	}
 	xrange.Domain = canvasBox.Width
 
 	if c.YRange.IsZero() {
@@ -186,6 +195,9 @@ func (c Chart) initRanges(canvasBox Box) (xrange Range, yrange Range) {
 	} else {
 		yrange.Min = c.YRange.Min
 		yrange.Max = c.YRange.Max
+	}
+	if c.YRange.Formatter != nil {
+		yrange.Formatter = c.YRange.Formatter
 	}
 	yrange.Domain = canvasBox.Height
 
@@ -330,7 +342,7 @@ func (c Chart) drawSeries(r Renderer, canvasBox Box, index int, s Series, xrange
 func (c Chart) drawFinalValueLabel(r Renderer, canvasBox Box, index int, s Series, yrange Range) {
 	if c.FinalValueLabel.Show {
 		_, lv := s.GetValue(s.Len() - 1)
-		ll := s.GetYFormatter()(lv)
+		ll := yrange.Format(lv)
 
 		py := canvasBox.Top
 		ly := yrange.Translate(lv) + py
