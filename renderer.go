@@ -1,10 +1,10 @@
 package chart
 
 import (
-	"image/color"
 	"io"
 
 	"github.com/golang/freetype/truetype"
+	"github.com/wcharczuk/go-chart/drawing"
 )
 
 // RendererProvider is a function that returns a renderer.
@@ -16,10 +16,10 @@ type Renderer interface {
 	SetDPI(dpi float64)
 
 	// SetStrokeColor sets the current stroke color.
-	SetStrokeColor(color.RGBA)
+	SetStrokeColor(drawing.Color)
 
 	// SetFillColor sets the current fill color.
-	SetFillColor(color.RGBA)
+	SetFillColor(drawing.Color)
 
 	// SetStrokeWidth sets the stroke width.
 	SetStrokeWidth(width float64)
@@ -50,7 +50,7 @@ type Renderer interface {
 	SetFont(*truetype.Font)
 
 	// SetFontColor sets a font's color
-	SetFontColor(color.RGBA)
+	SetFontColor(drawing.Color)
 
 	// SetFontSize sets the font size for a text field.
 	SetFontSize(size float64)

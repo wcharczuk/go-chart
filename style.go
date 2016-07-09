@@ -2,7 +2,6 @@ package chart
 
 import (
 	"fmt"
-	"image/color"
 	"strings"
 
 	"github.com/wcharczuk/go-chart/drawing"
@@ -11,37 +10,37 @@ import (
 // Style is a simple style set.
 type Style struct {
 	Show        bool
-	StrokeColor color.RGBA
-	FillColor   color.RGBA
+	StrokeColor drawing.Color
+	FillColor   drawing.Color
 	StrokeWidth float64
 	FontSize    float64
-	FontColor   color.RGBA
+	FontColor   drawing.Color
 	Padding     Box
 }
 
 // IsZero returns if the object is set or not.
 func (s Style) IsZero() bool {
-	return ColorIsZero(s.StrokeColor) && ColorIsZero(s.FillColor) && s.StrokeWidth == 0 && s.FontSize == 0
+	return s.StrokeColor.IsZero() && s.FillColor.IsZero() && s.StrokeWidth == 0 && s.FontSize == 0
 }
 
 // GetStrokeColor returns the stroke color.
-func (s Style) GetStrokeColor(defaults ...color.RGBA) color.RGBA {
-	if ColorIsZero(s.StrokeColor) {
+func (s Style) GetStrokeColor(defaults ...drawing.Color) drawing.Color {
+	if s.StrokeColor.IsZero() {
 		if len(defaults) > 0 {
 			return defaults[0]
 		}
-		return color.RGBA{}
+		return drawing.ColorTransparent
 	}
 	return s.StrokeColor
 }
 
 // GetFillColor returns the fill color.
-func (s Style) GetFillColor(defaults ...color.RGBA) color.RGBA {
-	if ColorIsZero(s.FillColor) {
+func (s Style) GetFillColor(defaults ...drawing.Color) drawing.Color {
+	if s.FillColor.IsZero() {
 		if len(defaults) > 0 {
 			return defaults[0]
 		}
-		return color.RGBA{}
+		return drawing.ColorTransparent
 	}
 	return s.FillColor
 }
@@ -69,12 +68,12 @@ func (s Style) GetFontSize(defaults ...float64) float64 {
 }
 
 // GetFontColor gets the font size.
-func (s Style) GetFontColor(defaults ...color.RGBA) color.RGBA {
-	if ColorIsZero(s.FontColor) {
+func (s Style) GetFontColor(defaults ...drawing.Color) drawing.Color {
+	if s.FontColor.IsZero() {
 		if len(defaults) > 0 {
 			return defaults[0]
 		}
-		return color.RGBA{}
+		return drawing.ColorTransparent
 	}
 	return s.FontColor
 }
@@ -93,13 +92,13 @@ func (s Style) SVG(dpi float64) string {
 	}
 
 	strokeText := "stroke:none"
-	if !ColorIsZero(sc) {
-		strokeText = "stroke:" + ColorAsString(sc)
+	if !sc.IsZero() {
+		strokeText = "stroke:" + sc.String()
 	}
 
 	fillText := "fill:none"
-	if !ColorIsZero(fc) {
-		fillText = "fill:" + ColorAsString(fc)
+	if !fc.IsZero() {
+		fillText = "fill:" + fc.String()
 	}
 
 	fontSizeText := ""
@@ -107,8 +106,8 @@ func (s Style) SVG(dpi float64) string {
 		fontSizeText = "font-size:" + fmt.Sprintf("%.1fpx", drawing.PointsToPixels(dpi, fs))
 	}
 
-	if !ColorIsZero(fnc) {
-		fillText = "fill:" + ColorAsString(fnc)
+	if !fnc.IsZero() {
+		fillText = "fill:" + fnc.String()
 	}
 	return strings.Join([]string{strokeWidthText, strokeText, fillText, fontSizeText}, ";")
 }

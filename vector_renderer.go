@@ -3,7 +3,6 @@ package chart
 import (
 	"bytes"
 	"fmt"
-	"image/color"
 	"io"
 	"strings"
 
@@ -43,12 +42,12 @@ func (vr *vectorRenderer) SetDPI(dpi float64) {
 }
 
 // SetStrokeColor implements the interface method.
-func (vr *vectorRenderer) SetStrokeColor(c color.RGBA) {
+func (vr *vectorRenderer) SetStrokeColor(c drawing.Color) {
 	vr.s.StrokeColor = c
 }
 
 // SetFillColor implements the interface method.
-func (vr *vectorRenderer) SetFillColor(c color.RGBA) {
+func (vr *vectorRenderer) SetFillColor(c drawing.Color) {
 	vr.s.FillColor = c
 }
 
@@ -73,22 +72,22 @@ func (vr *vectorRenderer) Close() {
 
 // Stroke draws the path with no fill.
 func (vr *vectorRenderer) Stroke() {
-	vr.s.FillColor = color.RGBA{}
-	vr.s.FontColor = color.RGBA{}
+	vr.s.FillColor = drawing.ColorTransparent
+	vr.s.FontColor = drawing.ColorTransparent
 	vr.drawPath()
 }
 
 // Fill draws the path with no stroke.
 func (vr *vectorRenderer) Fill() {
-	vr.s.StrokeColor = color.RGBA{}
+	vr.s.StrokeColor = drawing.ColorTransparent
 	vr.s.StrokeWidth = 0
-	vr.s.FontColor = color.RGBA{}
+	vr.s.FontColor = drawing.ColorTransparent
 	vr.drawPath()
 }
 
 // FillStroke draws the path with both fill and stroke.
 func (vr *vectorRenderer) FillStroke() {
-	vr.s.FontColor = color.RGBA{}
+	vr.s.FontColor = drawing.ColorTransparent
 	vr.drawPath()
 }
 
@@ -108,7 +107,7 @@ func (vr *vectorRenderer) SetFont(f *truetype.Font) {
 }
 
 // SetFontColor implements the interface method.
-func (vr *vectorRenderer) SetFontColor(c color.RGBA) {
+func (vr *vectorRenderer) SetFontColor(c drawing.Color) {
 	vr.s.FontColor = c
 }
 
@@ -130,8 +129,8 @@ func (vr *vectorRenderer) svgFontFace() string {
 
 // Text draws a text blob.
 func (vr *vectorRenderer) Text(body string, x, y int) {
-	vr.s.FillColor = color.RGBA{}
-	vr.s.StrokeColor = color.RGBA{}
+	vr.s.FillColor = drawing.ColorTransparent
+	vr.s.StrokeColor = drawing.ColorTransparent
 	vr.s.StrokeWidth = 0
 	vr.c.Text(x, y, body, vr.s.SVG(vr.dpi)+";"+vr.svgFontFace())
 }

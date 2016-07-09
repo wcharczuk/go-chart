@@ -1,11 +1,11 @@
 package main
 
 import (
-	"image/color"
 	"log"
 	"net/http"
 
 	"github.com/wcharczuk/go-chart"
+	"github.com/wcharczuk/go-chart/drawing"
 	"github.com/wcharczuk/go-web"
 )
 
@@ -46,7 +46,7 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 				XValues: []float64{1.0, 2.0, 3.0, 4.0},
 				YValues: []float64{2.5, 5.0, 2.0, 3.3},
 				Style: chart.Style{
-					FillColor: color.RGBA{R: 0, G: 116, B: 217, A: 255},
+					FillColor: drawing.Color{R: 0, G: 116, B: 217, A: 128},
 				},
 			},
 			chart.ContinuousSeries{

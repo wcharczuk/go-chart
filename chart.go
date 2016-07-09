@@ -350,7 +350,7 @@ func (c Chart) drawSeries(r Renderer, canvasBox Box, index int, s Series, xrange
 	var x, y int
 
 	fill := s.GetStyle().GetFillColor()
-	if !ColorIsZero(fill) {
+	if !fill.IsZero() {
 		r.SetFillColor(fill)
 		r.MoveTo(x0+cx, y0+cy)
 		for i := 1; i < s.Len(); i++ {

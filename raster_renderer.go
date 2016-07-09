@@ -29,7 +29,7 @@ type rasterRenderer struct {
 	gc *drawing.RasterGraphicContext
 
 	fontSize  float64
-	fontColor color.RGBA
+	fontColor color.Color
 	f         *truetype.Font
 }
 
@@ -39,12 +39,12 @@ func (rr *rasterRenderer) SetDPI(dpi float64) {
 }
 
 // SetStrokeColor implements the interface method.
-func (rr *rasterRenderer) SetStrokeColor(c color.RGBA) {
+func (rr *rasterRenderer) SetStrokeColor(c drawing.Color) {
 	rr.gc.SetStrokeColor(c)
 }
 
 // SetFillColor implements the interface method.
-func (rr *rasterRenderer) SetFillColor(c color.RGBA) {
+func (rr *rasterRenderer) SetFillColor(c drawing.Color) {
 	rr.gc.SetFillColor(c)
 }
 
@@ -109,7 +109,7 @@ func (rr *rasterRenderer) SetFontSize(size float64) {
 }
 
 // SetFontColor implements the interface method.
-func (rr *rasterRenderer) SetFontColor(c color.RGBA) {
+func (rr *rasterRenderer) SetFontColor(c drawing.Color) {
 	rr.fontColor = c
 	rr.gc.SetFillColor(c)
 	rr.gc.SetStrokeColor(c)
