@@ -5,7 +5,6 @@ import (
 	"image/color"
 	"image/png"
 	"io"
-	"math"
 
 	"github.com/golang/freetype/truetype"
 	"github.com/wcharczuk/go-chart/drawing"
@@ -130,8 +129,8 @@ func (rr *rasterRenderer) MeasureText(body string) (width int, height int) {
 	}
 	dw := r - l
 	dh := b - t
-	width = int(math.Ceil(dw * (4.0 / 3.0)))
-	height = int(math.Ceil(dh * (4.0 / 3.0)))
+	width = int(drawing.PointsToPixels(rr.gc.GetDPI(), dw))
+	height = int(drawing.PointsToPixels(rr.gc.GetDPI(), dh))
 	return
 }
 

@@ -91,7 +91,7 @@ func GetDefaultSeriesStrokeColor(index int) color.RGBA {
 
 var (
 	// DefaultFinalLabelPadding is the padding around the final label.
-	DefaultFinalLabelPadding = Box{Top: 5, Left: 0, Right: 5, Bottom: 5}
+	DefaultFinalLabelPadding = Box{Top: 5, Left: 0, Right: 7, Bottom: 5}
 	// DefaultBackgroundPadding is the default canvas padding config.
 	DefaultBackgroundPadding = Box{Top: 5, Left: 5, Right: 5, Bottom: 5}
 )

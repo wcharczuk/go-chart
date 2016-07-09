@@ -9,6 +9,18 @@ import (
 	"github.com/golang/freetype/truetype"
 )
 
+// PixelsToPoints returns the points for a given number of pixels at a DPI.
+func PixelsToPoints(dpi, pixels float64) (points float64) {
+	points = (pixels * 72.0) / dpi
+	return
+}
+
+// PointsToPixels returns the pixels for a given number of points at a DPI.
+func PointsToPixels(dpi, points float64) (pixels float64) {
+	pixels = (points * dpi) / 72.0
+	return
+}
+
 func abs(i int) int {
 	if i < 0 {
 		return -i

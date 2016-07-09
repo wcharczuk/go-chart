@@ -149,9 +149,8 @@ func (rgc *RasterGraphicContext) CreateStringPath(s string, x, y float64) (curso
 	return
 }
 
-// GetStringBounds returns the approximate pixel bounds of a string.
-// The the left edge of the em square of the first character of s
-// and the baseline intersect at 0, 0 in the returned coordinates.
+// GetStringBounds returns the approximate points bounds of a string.
+// It will be required to convert points to pixels for measurement.
 func (rgc *RasterGraphicContext) GetStringBounds(s string) (left, top, right, bottom float64, err error) {
 	f := rgc.GetFont()
 	if f == nil {
@@ -192,7 +191,7 @@ func (rgc *RasterGraphicContext) GetStringBounds(s string) (left, top, right, bo
 // recalc recalculates scale and bounds values from the font size, screen
 // resolution and font metrics, and invalidates the glyph cache.
 func (rgc *RasterGraphicContext) recalc() {
-	rgc.current.Scale = rgc.current.FontSize * float64(rgc.DPI) * EMRatio
+	rgc.current.Scale = rgc.current.FontSizePoints * float64(rgc.DPI)
 }
 
 // SetFont sets the font used to draw text.
@@ -206,8 +205,8 @@ func (rgc *RasterGraphicContext) GetFont() *truetype.Font {
 }
 
 // SetFontSize sets the font size in points (as in ``a 12 point font'').
-func (rgc *RasterGraphicContext) SetFontSize(fontSize float64) {
-	rgc.current.FontSize = fontSize
+func (rgc *RasterGraphicContext) SetFontSize(fontSizePoints float64) {
+	rgc.current.FontSizePoints = fontSizePoints
 	rgc.recalc()
 }
 
