@@ -1,6 +1,7 @@
 package main
 
 import (
+	"image/color"
 	"log"
 	"net/http"
 
@@ -23,7 +24,8 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 	c := chart.Chart{
 		Title: "A Test Chart",
 		TitleStyle: chart.Style{
-			Show: true,
+			Show:     true,
+			FontSize: 26.0,
 		},
 		Width:  640,
 		Height: 480,
@@ -43,6 +45,9 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 				Name:    "a",
 				XValues: []float64{1.0, 2.0, 3.0, 4.0},
 				YValues: []float64{2.5, 5.0, 2.0, 3.3},
+				Style: chart.Style{
+					FillColor: color.RGBA{R: 0, G: 116, B: 217, A: 255},
+				},
 			},
 			chart.ContinuousSeries{
 				Name:    "b",

@@ -333,24 +333,43 @@ func (c Chart) drawXAxisLabels(r Renderer, canvasBox Box, xrange Range) {
 }
 
 func (c Chart) drawSeries(r Renderer, canvasBox Box, index int, s Series, xrange, yrange Range) {
-	r.SetStrokeColor(s.GetStyle().GetStrokeColor(GetDefaultSeriesStrokeColor(index)))
-	r.SetStrokeWidth(s.GetStyle().GetStrokeWidth(DefaultStrokeWidth))
-
 	if s.Len() == 0 {
 		return
 	}
 
 	cx := canvasBox.Left
 	cy := canvasBox.Top
+	cb := canvasBox.Bottom
 	cw := canvasBox.Width
 
 	v0x, v0y := s.GetValue(0)
 	x0 := cw - xrange.Translate(v0x)
 	y0 := yrange.Translate(v0y)
-	r.MoveTo(x0+cx, y0+cy)
 
 	var vx, vy float64
 	var x, y int
+
+	fill := s.GetStyle().GetFillColor()
+	if !ColorIsZero(fill) {
+		r.SetFillColor(fill)
+		r.MoveTo(x0+cx, y0+cy)
+		for i := 1; i < s.Len(); i++ {
+			vx, vy = s.GetValue(i)
+			x = cw - xrange.Translate(vx)
+			y = yrange.Translate(vy)
+			r.LineTo(x+cx, y+cy)
+		}
+		r.LineTo(x+cx, cb)
+		r.LineTo(x0+cx, cb)
+		r.Close()
+		r.Fill()
+	}
+
+	stroke := s.GetStyle().GetStrokeColor(GetDefaultSeriesStrokeColor(index))
+	r.SetStrokeColor(stroke)
+	r.SetStrokeWidth(s.GetStyle().GetStrokeWidth(DefaultStrokeWidth))
+
+	r.MoveTo(x0+cx, y0+cy)
 	for i := 1; i < s.Len(); i++ {
 		vx, vy = s.GetValue(i)
 		x = cw - xrange.Translate(vx)

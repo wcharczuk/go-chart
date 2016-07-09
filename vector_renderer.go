@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"image/color"
 	"io"
-	"math"
 	"strings"
 
 	"golang.org/x/image/font"
 
 	"github.com/golang/freetype/truetype"
+	"github.com/wcharczuk/go-chart/drawing"
 )
 
 // SVG returns a new png/raster renderer.
@@ -93,13 +93,13 @@ func (vr *vectorRenderer) FillStroke() {
 }
 
 func (vr *vectorRenderer) drawPath() {
-	vr.c.Path(strings.Join(vr.p, "\n"), vr.s.SVG())
+	vr.c.Path(strings.Join(vr.p, "\n"), vr.s.SVG(vr.dpi))
 	vr.p = []string{}
 }
 
 // Circle implements the interface method.
 func (vr *vectorRenderer) Circle(radius float64, x, y int) {
-	vr.c.Circle(x, y, int(radius), vr.s.SVG())
+	vr.c.Circle(x, y, int(radius), vr.s.SVG(vr.dpi))
 }
 
 // SetFont implements the interface method.
@@ -133,7 +133,7 @@ func (vr *vectorRenderer) Text(body string, x, y int) {
 	vr.s.FillColor = color.RGBA{}
 	vr.s.StrokeColor = color.RGBA{}
 	vr.s.StrokeWidth = 0
-	vr.c.Text(x, y, body, vr.s.SVG()+";"+vr.svgFontFace())
+	vr.c.Text(x, y, body, vr.s.SVG(vr.dpi)+";"+vr.svgFontFace())
 }
 
 // MeasureText uses the truetype font drawer to measure the width of text.
@@ -145,8 +145,10 @@ func (vr *vectorRenderer) MeasureText(body string) (width, height int) {
 				Size: vr.s.FontSize,
 			}),
 		}
-		width = vr.fc.MeasureString(body).Ceil()
-		height = int(math.Ceil(vr.s.FontSize))
+		w := vr.fc.MeasureString(body).Ceil()
+
+		width = int(drawing.PointsToPixels(vr.dpi, float64(w)))
+		height = int(drawing.PointsToPixels(vr.dpi, vr.s.FontSize))
 	}
 	return
 }

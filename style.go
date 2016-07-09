@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"image/color"
 	"strings"
+
+	"github.com/wcharczuk/go-chart/drawing"
 )
 
 // Style is a simple style set.
@@ -28,7 +30,7 @@ func (s Style) GetStrokeColor(defaults ...color.RGBA) color.RGBA {
 		if len(defaults) > 0 {
 			return defaults[0]
 		}
-		return DefaultStrokeColor
+		return color.RGBA{}
 	}
 	return s.StrokeColor
 }
@@ -39,7 +41,7 @@ func (s Style) GetFillColor(defaults ...color.RGBA) color.RGBA {
 		if len(defaults) > 0 {
 			return defaults[0]
 		}
-		return DefaultFillColor
+		return color.RGBA{}
 	}
 	return s.FillColor
 }
@@ -72,13 +74,13 @@ func (s Style) GetFontColor(defaults ...color.RGBA) color.RGBA {
 		if len(defaults) > 0 {
 			return defaults[0]
 		}
-		return DefaultTextColor
+		return color.RGBA{}
 	}
 	return s.FontColor
 }
 
 // SVG returns the style as a svg style string.
-func (s Style) SVG() string {
+func (s Style) SVG(dpi float64) string {
 	sw := s.StrokeWidth
 	sc := s.StrokeColor
 	fc := s.FillColor
@@ -102,7 +104,7 @@ func (s Style) SVG() string {
 
 	fontSizeText := ""
 	if fs != 0 {
-		fontSizeText = "font-size:" + fmt.Sprintf("%.1fpx", fs)
+		fontSizeText = "font-size:" + fmt.Sprintf("%.1fpx", drawing.PointsToPixels(dpi, fs))
 	}
 
 	if !ColorIsZero(fnc) {
