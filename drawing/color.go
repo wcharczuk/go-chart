@@ -78,6 +78,16 @@ func (c Color) IsTransparent() bool {
 	return c.A == 0
 }
 
+// WithAlpha returns a copy of the color with a given alpha.
+func (c Color) WithAlpha(a uint8) Color {
+	return Color{
+		R: c.R,
+		G: c.G,
+		B: c.B,
+		A: a,
+	}
+}
+
 // String returns a css string representation of the color.
 func (c Color) String() string {
 	fa := float64(c.A) / float64(255)
