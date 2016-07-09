@@ -15,6 +15,7 @@ type Chart struct {
 
 	Width  int
 	Height int
+	DPI    float64
 
 	Background      Style
 	Canvas          Style
@@ -28,6 +29,17 @@ type Chart struct {
 	Series []Series
 }
 
+// GetDPI returns the dpi for the chart.
+func (c Chart) GetDPI(defaults ...float64) float64 {
+	if c.DPI == 0 {
+		if len(defaults) > 0 {
+			return defaults[0]
+		}
+		return DefaultDPI
+	}
+	return c.DPI
+}
+
 // GetFont returns the text font.
 func (c Chart) GetFont() (*truetype.Font, error) {
 	if c.Font == nil {
@@ -35,7 +47,7 @@ func (c Chart) GetFont() (*truetype.Font, error) {
 		if err != nil {
 			return nil, err
 		}
-		c.Font = f
+		return f, nil
 	}
 	return c.Font, nil
 }
@@ -45,7 +57,10 @@ func (c *Chart) Render(provider RendererProvider, w io.Writer) error {
 	if len(c.Series) == 0 {
 		return errors.New("Please provide at least one series")
 	}
-	r := provider(c.Width, c.Height)
+	r, err := provider(c.Width, c.Height)
+	if err != nil {
+		return err
+	}
 	if c.hasText() {
 		font, err := c.GetFont()
 		if err != nil {
@@ -53,6 +68,7 @@ func (c *Chart) Render(provider RendererProvider, w io.Writer) error {
 		}
 		r.SetFont(font)
 	}
+	r.SetDPI(c.GetDPI(DefaultDPI))
 
 	canvasBox := c.calculateCanvasBox(r)
 	xrange, yrange := c.initRanges(canvasBox)
@@ -122,7 +138,7 @@ func (c Chart) calculateFinalLabelWidth(r Renderer) int {
 	}
 
 	r.SetFontSize(c.FinalValueLabel.GetFontSize(DefaultFinalLabelFontSize))
-	textWidth := r.MeasureText(finalLabelText)
+	textWidth, _ := r.MeasureText(finalLabelText)
 	asw := c.getAxisWidth()
 
 	pl := c.FinalValueLabel.Padding.GetLeft(DefaultFinalLabelPadding.Left)
@@ -355,7 +371,7 @@ func (c Chart) drawFinalValueLabel(r Renderer, canvasBox Box, index int, s Serie
 		ly := yrange.Translate(lv) + py
 
 		r.SetFontSize(c.FinalValueLabel.GetFontSize(DefaultFinalLabelFontSize))
-		textWidth := r.MeasureText(ll)
+		textWidth, _ := r.MeasureText(ll)
 		textHeight := int(math.Floor(DefaultFinalLabelFontSize))
 		halfTextHeight := textHeight >> 1
 
@@ -409,7 +425,7 @@ func (c Chart) drawTitle(r Renderer) error {
 		r.SetFontColor(c.Canvas.GetFontColor(DefaultTextColor))
 		titleFontSize := c.Canvas.GetFontSize(DefaultTitleFontSize)
 		r.SetFontSize(titleFontSize)
-		textWidth := r.MeasureText(c.Title)
+		textWidth, _ := r.MeasureText(c.Title)
 		titleX := (c.Width >> 1) - (textWidth >> 1)
 		titleY := c.TitleStyle.Padding.GetTop(DefaultTitleTop) + int(titleFontSize)
 		r.Text(c.Title, titleX, titleY)

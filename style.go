@@ -102,7 +102,7 @@ func (s Style) SVG() string {
 
 	fontSizeText := ""
 	if fs != 0 {
-		fontSizeText = "font-size:" + fmt.Sprintf("%.1f", fs)
+		fontSizeText = "font-size:" + fmt.Sprintf("%.1fpx", fs)
 	}
 
 	if !ColorIsZero(fnc) {

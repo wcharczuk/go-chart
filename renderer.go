@@ -8,10 +8,13 @@ import (
 )
 
 // RendererProvider is a function that returns a renderer.
-type RendererProvider func(int, int) Renderer
+type RendererProvider func(int, int) (Renderer, error)
 
 // Renderer represents the basic methods required to draw a chart.
 type Renderer interface {
+	// SetDPI sets the DPI for the renderer.
+	SetDPI(dpi float64)
+
 	// SetStrokeColor sets the current stroke color.
 	SetStrokeColor(color.RGBA)
 
@@ -56,7 +59,7 @@ type Renderer interface {
 	Text(body string, x, y int)
 
 	// MeasureText measures text.
-	MeasureText(body string) int
+	MeasureText(body string) (width int, height int)
 
 	// Save writes the image to the given writer.
 	Save(w io.Writer) error

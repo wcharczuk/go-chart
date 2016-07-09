@@ -17,7 +17,7 @@ const (
 	// DefaultAxisLineWidth is the line width of the axis lines.
 	DefaultAxisLineWidth = 1.0
 	//DefaultDPI is the default dots per inch for the chart.
-	DefaultDPI = 120.0
+	DefaultDPI = 92.0
 	// DefaultMinimumFontSize is the default minimum font size.
 	DefaultMinimumFontSize = 8.0
 	// DefaultFontSize is the default font size.

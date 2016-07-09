@@ -66,3 +66,7 @@ func Slices(count int, total float64) []float64 {
 	}
 	return values
 }
+
+func flf(v float64) string {
+	return fmt.Sprintf("%.2f", v)
+}

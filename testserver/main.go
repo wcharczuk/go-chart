@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http"
 
 	"github.com/wcharczuk/go-chart"
 	"github.com/wcharczuk/go-web"
@@ -49,6 +50,7 @@ func main() {
 		if err != nil {
 			return rc.API().InternalError(err)
 		}
+		rc.Response.WriteHeader(http.StatusOK)
 		return nil
 	})
 	log.Fatal(app.Start())

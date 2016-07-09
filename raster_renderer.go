@@ -5,31 +5,38 @@ import (
 	"image/color"
 	"image/png"
 	"io"
-
-	"golang.org/x/image/font"
+	"math"
 
 	"github.com/golang/freetype/truetype"
-	drawing "github.com/llgcode/draw2d/draw2dimg"
+	"github.com/wcharczuk/go-chart/drawing"
 )
 
 // PNG returns a new png/raster renderer.
-func PNG(width, height int) Renderer {
+func PNG(width, height int) (Renderer, error) {
 	i := image.NewRGBA(image.Rect(0, 0, width, height))
-	return &rasterRenderer{
-		i:  i,
-		gc: drawing.NewGraphicContext(i),
+	gc, err := drawing.NewRasterGraphicContext(i)
+	if err == nil {
+		return &rasterRenderer{
+			i:  i,
+			gc: gc,
+		}, nil
 	}
+	return nil, err
 }
 
 // rasterRenderer renders chart commands to a bitmap.
 type rasterRenderer struct {
 	i  *image.RGBA
-	gc *drawing.GraphicContext
-	fc *font.Drawer
+	gc *drawing.RasterGraphicContext
 
-	font      *truetype.Font
-	fontColor color.RGBA
 	fontSize  float64
+	fontColor color.RGBA
+	f         *truetype.Font
+}
+
+// SetDPI implements the interface method.
+func (rr *rasterRenderer) SetDPI(dpi float64) {
+	rr.gc.SetDPI(dpi)
 }
 
 // SetStrokeColor implements the interface method.
@@ -92,7 +99,7 @@ func (rr *rasterRenderer) Circle(radius float64, x, y int) {
 
 // SetFont implements the interface method.
 func (rr *rasterRenderer) SetFont(f *truetype.Font) {
-	rr.font = f
+	rr.f = f
 	rr.gc.SetFont(f)
 }
 
@@ -115,25 +122,20 @@ func (rr *rasterRenderer) Text(body string, x, y int) {
 	rr.gc.Fill()
 }
 
-// MeasureText uses the truetype font drawer to measure the width of text.
-func (rr *rasterRenderer) MeasureText(body string) int {
-	if rr.fc == nil && rr.font != nil {
-		rr.fc = &font.Drawer{
-			Face: truetype.NewFace(rr.font, &truetype.Options{
-				DPI:  DefaultDPI,
-				Size: rr.fontSize,
-			}),
-		}
+// MeasureText returns the height and width in pixels of a string.
+func (rr *rasterRenderer) MeasureText(body string) (width int, height int) {
+	l, t, r, b, err := rr.gc.GetStringBounds(body)
+	if err != nil {
+		return
 	}
-	if rr.fc != nil {
-		dimensions := rr.fc.MeasureString(body)
-		return dimensions.Floor()
-	}
-	return 0
+	dw := r - l
+	dh := b - t
+	width = int(math.Ceil(dw * (4.0 / 3.0)))
+	height = int(math.Ceil(dh * (4.0 / 3.0)))
+	return
 }
 
 // Save implements the interface method.
 func (rr *rasterRenderer) Save(w io.Writer) error {
-
 	return png.Encode(w, rr.i)
 }
