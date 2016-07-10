@@ -17,10 +17,9 @@ type Chart struct {
 	Height int
 	DPI    float64
 
-	Background      Style
-	Canvas          Style
-	Axes            Style
-	FinalValueLabel Style
+	Background Style
+	Canvas     Style
+	Axes       Style
 
 	XRange Range
 	YRange Range
@@ -53,21 +52,20 @@ func (c Chart) GetFont() (*truetype.Font, error) {
 }
 
 // Render renders the chart with the given renderer to the given io.Writer.
-func (c *Chart) Render(provider RendererProvider, w io.Writer) error {
+func (c *Chart) Render(rp RendererProvider, w io.Writer) error {
 	if len(c.Series) == 0 {
 		return errors.New("Please provide at least one series")
 	}
-	r, err := provider(c.Width, c.Height)
+	r, err := rp(c.Width, c.Height)
 	if err != nil {
 		return err
 	}
-	if c.hasText() {
-		font, err := c.GetFont()
-		if err != nil {
-			return err
-		}
-		r.SetFont(font)
+
+	font, err := c.GetFont()
+	if err != nil {
+		return err
 	}
+	r.SetFont(font)
 	r.SetDPI(c.GetDPI(DefaultDPI))
 
 	canvasBox := c.calculateCanvasBox(r)
@@ -77,14 +75,10 @@ func (c *Chart) Render(provider RendererProvider, w io.Writer) error {
 	c.drawCanvas(r, canvasBox)
 	c.drawAxes(r, canvasBox, xrange, yrange)
 	for index, series := range c.Series {
-		c.drawSeries(r, canvasBox, index, series, xrange, yrange)
+		c.drawSeries(r, canvasBox, series, xrange, yrange)
 	}
 	c.drawTitle(r)
 	return r.Save(w)
-}
-
-func (c Chart) hasText() bool {
-	return c.TitleStyle.Show || c.Axes.Show || c.FinalValueLabel.Show
 }
 
 func (c Chart) getAxisWidth() int {
@@ -119,21 +113,19 @@ func (c Chart) calculateCanvasBox(r Renderer) Box {
 }
 
 func (c Chart) calculateFinalLabelWidth(r Renderer) int {
-	if !c.FinalValueLabel.Show {
-		return 0
-	}
-
 	var finalLabelText string
 	for _, s := range c.Series {
-		_, lv := s.GetValue(s.Len() - 1)
-		var ll string
-		if c.YRange.Formatter != nil {
-			ll = c.YRange.Formatter(lv)
-		} else {
-			ll = s.GetYFormatter()(lv)
-		}
-		if len(finalLabelText) < len(ll) {
-			finalLabelText = ll
+		if vs, isValueProvider := s.(ValueProvider); isValueProvider {
+			_, lv := vs.GetValue(vs.Len() - 1)
+			var ll string
+			if c.YRange.Formatter != nil {
+				ll = c.YRange.Formatter(lv)
+			} else if fp, isFormatterProvider := s.(FormatterProvider); isFormatterProvider {
+				ll = fp.GetYFormatter()(lv)
+			}
+			if len(finalLabelText) < len(ll) {
+				finalLabelText = ll
+			}
 		}
 	}
 
@@ -145,7 +137,7 @@ func (c Chart) calculateFinalLabelWidth(r Renderer) int {
 	pr := c.FinalValueLabel.Padding.GetRight(DefaultFinalLabelPadding.Right)
 	lsw := int(c.FinalValueLabel.GetStrokeWidth(DefaultAxisLineWidth))
 
-	return DefaultFinalLabelDeltaWidth +
+	return DefaultYAxisMargin +
 		pl + pr +
 		textWidth + asw + 2*lsw
 }
@@ -163,33 +155,37 @@ func (c Chart) initRanges(canvasBox Box) (xrange Range, yrange Range) {
 	var globalMinY, globalMinX float64
 	var globalMaxY, globalMaxX float64
 	for _, s := range c.Series {
-		seriesLength := s.Len()
-		for index := 0; index < seriesLength; index++ {
-			vx, vy := s.GetValue(index)
-			if didSetFirstValues {
-				if globalMinX > vx {
-					globalMinX = vx
+		if vp, isValueProvider := s.(ValueProvider); isValueProvider {
+			seriesLength := vp.Len()
+			for index := 0; index < seriesLength; index++ {
+				vx, vy := vp.GetValue(index)
+				if didSetFirstValues {
+					if globalMinX > vx {
+						globalMinX = vx
+					}
+					if globalMinY > vy {
+						globalMinY = vy
+					}
+					if globalMaxX < vx {
+						globalMaxX = vx
+					}
+					if globalMaxY < vy {
+						globalMaxY = vy
+					}
+				} else {
+					globalMinX, globalMaxX = vx, vx
+					globalMinY, globalMaxY = vy, vy
+					didSetFirstValues = true
 				}
-				if globalMinY > vy {
-					globalMinY = vy
-				}
-				if globalMaxX < vx {
-					globalMaxX = vx
-				}
-				if globalMaxY < vy {
-					globalMaxY = vy
-				}
-			} else {
-				globalMinX, globalMaxX = vx, vx
-				globalMinY, globalMaxY = vy, vy
-				didSetFirstValues = true
 			}
 		}
-		if xrange.Formatter == nil {
-			xrange.Formatter = s.GetXFormatter()
-		}
-		if yrange.Formatter == nil {
-			yrange.Formatter = s.GetYFormatter()
+		if fp, isFormatterProvider := s.(FormatterProvider); isFormatterProvider {
+			if xrange.Formatter == nil {
+				xrange.Formatter = fp.GetXFormatter()
+			}
+			if yrange.Formatter == nil {
+				yrange.Formatter = fp.GetYFormatter()
+			}
 		}
 	}
 
@@ -281,7 +277,7 @@ func (c Chart) generateRangeTicks(r Range, tickCount int, offset float64) []Tick
 func (c Chart) drawYAxisLabels(r Renderer, canvasBox Box, yrange Range) {
 	tickFontSize := c.Axes.GetFontSize(DefaultAxisFontSize)
 	asw := c.getAxisWidth()
-	tx := canvasBox.Right + DefaultFinalLabelDeltaWidth + asw
+	tx := canvasBox.Right + DefaultYAxisMargin + asw
 
 	r.SetFontColor(c.Axes.GetFontColor(DefaultAxisColor))
 	r.SetFontSize(tickFontSize)
@@ -332,111 +328,8 @@ func (c Chart) drawXAxisLabels(r Renderer, canvasBox Box, xrange Range) {
 	}
 }
 
-func (c Chart) drawSeries(r Renderer, canvasBox Box, index int, s Series, xrange, yrange Range) {
-	if s.Len() == 0 {
-		return
-	}
-
-	cx := canvasBox.Left
-	cy := canvasBox.Top
-	cb := canvasBox.Bottom
-	cw := canvasBox.Width
-
-	v0x, v0y := s.GetValue(0)
-	x0 := cw - xrange.Translate(v0x)
-	y0 := yrange.Translate(v0y)
-
-	var vx, vy float64
-	var x, y int
-
-	fill := s.GetStyle().GetFillColor()
-	if !fill.IsZero() {
-		r.SetFillColor(fill)
-		r.MoveTo(x0+cx, y0+cy)
-		for i := 1; i < s.Len(); i++ {
-			vx, vy = s.GetValue(i)
-			x = cw - xrange.Translate(vx)
-			y = yrange.Translate(vy)
-			r.LineTo(x+cx, y+cy)
-		}
-		r.LineTo(x+cx, cb)
-		r.LineTo(x0+cx, cb)
-		r.Close()
-		r.Fill()
-	}
-
-	stroke := s.GetStyle().GetStrokeColor(GetDefaultSeriesStrokeColor(index))
-	r.SetStrokeColor(stroke)
-	r.SetStrokeWidth(s.GetStyle().GetStrokeWidth(DefaultStrokeWidth))
-
-	r.MoveTo(x0+cx, y0+cy)
-	for i := 1; i < s.Len(); i++ {
-		vx, vy = s.GetValue(i)
-		x = cw - xrange.Translate(vx)
-		y = yrange.Translate(vy)
-		r.LineTo(x+cx, y+cy)
-	}
-	r.Stroke()
-
-	c.drawFinalValueLabel(r, canvasBox, index, s, yrange)
-}
-
-func (c Chart) drawFinalValueLabel(r Renderer, canvasBox Box, index int, s Series, yrange Range) {
-	if c.FinalValueLabel.Show {
-		_, lv := s.GetValue(s.Len() - 1)
-		ll := yrange.Format(lv)
-
-		py := canvasBox.Top
-		ly := yrange.Translate(lv) + py
-
-		r.SetFontSize(c.FinalValueLabel.GetFontSize(DefaultFinalLabelFontSize))
-		textWidth, _ := r.MeasureText(ll)
-		textHeight := int(math.Floor(DefaultFinalLabelFontSize))
-		halfTextHeight := textHeight >> 1
-
-		asw := 0
-		if c.Axes.Show {
-			asw = int(c.Axes.GetStrokeWidth(DefaultAxisLineWidth))
-		}
-
-		cx := canvasBox.Right + asw
-
-		pt := c.FinalValueLabel.Padding.GetTop(DefaultFinalLabelPadding.Top)
-		pl := c.FinalValueLabel.Padding.GetLeft(DefaultFinalLabelPadding.Left)
-		pr := c.FinalValueLabel.Padding.GetRight(DefaultFinalLabelPadding.Right)
-		pb := c.FinalValueLabel.Padding.GetBottom(DefaultFinalLabelPadding.Bottom)
-
-		textX := cx + pl + DefaultFinalLabelDeltaWidth
-		textY := ly + halfTextHeight
-
-		ltlx := cx + pl + DefaultFinalLabelDeltaWidth
-		ltly := ly - (pt + halfTextHeight)
-
-		ltrx := cx + pl + pr + textWidth
-		ltry := ly - (pt + halfTextHeight)
-
-		lbrx := cx + pl + pr + textWidth
-		lbry := ly + (pb + halfTextHeight)
-
-		lblx := cx + DefaultFinalLabelDeltaWidth
-		lbly := ly + (pb + halfTextHeight)
-
-		//draw the shape...
-		r.SetFillColor(c.FinalValueLabel.GetFillColor(DefaultFinalLabelBackgroundColor))
-		r.SetStrokeColor(c.FinalValueLabel.GetStrokeColor(s.GetStyle().GetStrokeColor(GetDefaultSeriesStrokeColor(index))))
-		r.SetStrokeWidth(c.FinalValueLabel.GetStrokeWidth(DefaultAxisLineWidth))
-		r.MoveTo(cx, ly)
-		r.LineTo(ltlx, ltly)
-		r.LineTo(ltrx, ltry)
-		r.LineTo(lbrx, lbry)
-		r.LineTo(lblx, lbly)
-		r.LineTo(cx, ly)
-		r.Close()
-		r.FillStroke()
-
-		r.SetFontColor(c.FinalValueLabel.GetFontColor(DefaultTextColor))
-		r.Text(ll, textX, textY)
-	}
+func (c Chart) drawSeries(r Renderer, canvasBox Box, s Series, xrange, yrange Range) {
+	return s.Render(&c, r, canvasBox, xrange, yrange)
 }
 
 func (c Chart) drawTitle(r Renderer) error {
