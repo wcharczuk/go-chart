@@ -15,9 +15,11 @@ func TestChartSingleSeries(t *testing.T) {
 		Title:  "Hello!",
 		Width:  1024,
 		Height: 400,
-		YRange: Range{
-			Min: 0.0,
-			Max: 4.0,
+		YAxis: YAxis{
+			Range: Range{
+				Min: 0.0,
+				Max: 4.0,
+			},
 		},
 		Series: []Series{
 			TimeSeries{
