@@ -55,6 +55,10 @@ func Slices(count int, total float64) []float64 {
 	return values
 }
 
-func flf(v float64) string {
-	return fmt.Sprintf("%.2f", v)
+// Float is an alias for float64 that provides a better .String() method.
+type Float float64
+
+// String returns the string representation of a float.
+func (f Float) String() string {
+	return fmt.Sprintf("%.2f", f)
 }

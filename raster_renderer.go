@@ -33,6 +33,11 @@ type rasterRenderer struct {
 	f         *truetype.Font
 }
 
+// GetDPI returns the dpi.
+func (rr *rasterRenderer) GetDPI() float64 {
+	return rr.gc.GetDPI()
+}
+
 // SetDPI implements the interface method.
 func (rr *rasterRenderer) SetDPI(dpi float64) {
 	rr.gc.SetDPI(dpi)

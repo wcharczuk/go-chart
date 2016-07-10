@@ -4,23 +4,28 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/golang/freetype/truetype"
 	"github.com/wcharczuk/go-chart/drawing"
 )
 
 // Style is a simple style set.
 type Style struct {
-	Show        bool
-	StrokeColor drawing.Color
-	FillColor   drawing.Color
+	Show    bool
+	Padding Box
+
 	StrokeWidth float64
-	FontSize    float64
-	FontColor   drawing.Color
-	Padding     Box
+	StrokeColor drawing.Color
+
+	FillColor drawing.Color
+
+	FontSize  float64
+	FontColor drawing.Color
+	Font      *truetype.Font
 }
 
 // IsZero returns if the object is set or not.
 func (s Style) IsZero() bool {
-	return s.StrokeColor.IsZero() && s.FillColor.IsZero() && s.StrokeWidth == 0 && s.FontSize == 0
+	return s.StrokeColor.IsZero() && s.FillColor.IsZero() && s.StrokeWidth == 0 && s.FontSize == 0 && s.Font == nil
 }
 
 // GetStrokeColor returns the stroke color.
@@ -76,6 +81,39 @@ func (s Style) GetFontColor(defaults ...drawing.Color) drawing.Color {
 		return drawing.ColorTransparent
 	}
 	return s.FontColor
+}
+
+// GetFont returns the font face.
+func (s Style) GetFont(defaults ...*truetype.Font) *truetype.Font {
+	if s.Font == nil {
+		if len(defaults) > 0 {
+			return defaults[0]
+		}
+		return nil
+	}
+	return s.Font
+}
+
+// GetPadding returns the padding.
+func (s Style) GetPadding(defaults ...Box) Box {
+	if s.Padding.IsZero() {
+		if len(defaults) > 0 {
+			return defaults[0]
+		}
+		return Box{}
+	}
+	return s.Padding
+}
+
+// WithDefaultsFrom coalesces two styles into a new style.
+func (s Style) WithDefaultsFrom(defaults Style) (final Style) {
+	final.FillColor = s.GetFillColor(defaults.FillColor)
+	final.FontColor = s.GetFontColor(defaults.FontColor)
+	final.Font = s.GetFont(defaults.Font)
+	final.Padding = s.GetPadding(defaults.Padding)
+	final.StrokeColor = s.GetStrokeColor(defaults.StrokeColor)
+	final.StrokeWidth = s.GetStrokeWidth(defaults.StrokeWidth)
+	return
 }
 
 // SVG returns the style as a svg style string.

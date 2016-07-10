@@ -7,11 +7,11 @@ import (
 	"github.com/wcharczuk/go-chart/drawing"
 )
 
-// RendererProvider is a function that returns a renderer.
-type RendererProvider func(int, int) (Renderer, error)
-
 // Renderer represents the basic methods required to draw a chart.
 type Renderer interface {
+	// GetDPI gets the DPI for the renderer.
+	GetDPI() float64
+
 	// SetDPI sets the DPI for the renderer.
 	SetDPI(dpi float64)
 

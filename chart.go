@@ -3,9 +3,9 @@ package chart
 import (
 	"errors"
 	"io"
-	"math"
 
 	"github.com/golang/freetype/truetype"
+	"github.com/wcharczuk/go-chart/drawing"
 )
 
 // Chart is what we're drawing.
@@ -17,13 +17,12 @@ type Chart struct {
 	Height int
 	DPI    float64
 
-	Background      Style
-	Canvas          Style
-	Axes            Style
-	FinalValueLabel Style
+	Background Style
+	Canvas     Style
 
-	XRange Range
-	YRange Range
+	XAxis          XAxis
+	YAxis          YAxis
+	YAxisSecondary YAxis
 
 	Font   *truetype.Font
 	Series []Series
@@ -53,177 +52,255 @@ func (c Chart) GetFont() (*truetype.Font, error) {
 }
 
 // Render renders the chart with the given renderer to the given io.Writer.
-func (c *Chart) Render(provider RendererProvider, w io.Writer) error {
+func (c Chart) Render(rp RendererProvider, w io.Writer) error {
 	if len(c.Series) == 0 {
 		return errors.New("Please provide at least one series")
 	}
-	r, err := provider(c.Width, c.Height)
+	r, err := rp(c.Width, c.Height)
 	if err != nil {
 		return err
 	}
-	if c.hasText() {
-		font, err := c.GetFont()
-		if err != nil {
-			return err
-		}
-		r.SetFont(font)
+
+	font, err := c.GetFont()
+	if err != nil {
+		return err
 	}
+	c.Font = font
+	r.SetFont(font)
 	r.SetDPI(c.GetDPI(DefaultDPI))
 
-	canvasBox := c.calculateCanvasBox(r)
-	xrange, yrange := c.initRanges(canvasBox)
+	xrange, yrange, yrangeAlt := c.getRanges()
+	canvasBox := c.getDefaultCanvasBox()
+	xf, yf, yfa := c.getValueFormatters()
+
+	xrange, yrange, yrangeAlt = c.setRangeDomains(canvasBox, xrange, yrange, yrangeAlt)
+	xticks, yticks, yticksAlt := c.getAxesTicks(r, xrange, yrange, yrangeAlt, xf, yf, yfa)
+	canvasBox = c.getAdjustedCanvasBox(r, canvasBox, xticks, yticks, yticksAlt)
+
+	// we do a second pass to take the updated domains into account
+	xrange, yrange, yrangeAlt = c.setRangeDomains(canvasBox, xrange, yrange, yrangeAlt)
+	xticks, yticks, yticksAlt = c.getAxesTicks(r, xrange, yrange, yrangeAlt, xf, yf, yfa)
+	canvasBox = c.getAdjustedCanvasBox(r, canvasBox, xticks, yticks, yticksAlt)
 
 	c.drawBackground(r)
 	c.drawCanvas(r, canvasBox)
-	c.drawAxes(r, canvasBox, xrange, yrange)
+	c.drawAxes(r, canvasBox, xrange, yrange, yrangeAlt, xticks, yticks, yticksAlt)
 	for index, series := range c.Series {
-		c.drawSeries(r, canvasBox, index, series, xrange, yrange)
+		c.drawSeries(r, canvasBox, xrange, yrange, yrangeAlt, series, index)
 	}
 	c.drawTitle(r)
 	return r.Save(w)
 }
 
-func (c Chart) hasText() bool {
-	return c.TitleStyle.Show || c.Axes.Show || c.FinalValueLabel.Show
+func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
+	//iterate over each series, pull out the min/max for x,y
+	var didSetFirstValues bool
+
+	var globalMinX, globalMaxX float64
+	var globalMinY, globalMaxY float64
+	var globalMinYA, globalMaxYA float64
+
+	for _, s := range c.Series {
+		if vp, isValueProvider := s.(ValueProvider); isValueProvider {
+			seriesLength := vp.Len()
+			for index := 0; index < seriesLength; index++ {
+				vx, vy := vp.GetValue(index)
+				if didSetFirstValues {
+					if globalMinX > vx {
+						globalMinX = vx
+					}
+					if globalMaxX < vx {
+						globalMaxX = vx
+					}
+					if s.GetYAxis() == YAxisPrimary {
+						if globalMinY > vy {
+							globalMinY = vy
+						}
+						if globalMaxY < vy {
+							globalMaxY = vy
+						}
+					} else if s.GetYAxis() == YAxisSecondary {
+						if globalMinYA > vy {
+							globalMinYA = vy
+						}
+						if globalMaxYA < vy {
+							globalMaxYA = vy
+						}
+					}
+				} else {
+					globalMinX, globalMaxX = vx, vx
+					if s.GetYAxis() == YAxisPrimary {
+						globalMinY, globalMaxY = vy, vy
+					} else if s.GetYAxis() == YAxisSecondary {
+						globalMinYA, globalMaxYA = vy, vy
+					}
+					didSetFirstValues = true
+				}
+			}
+		}
+	}
+
+	if !c.XAxis.Range.IsZero() {
+		xrange.Min = c.XAxis.Range.Min
+		xrange.Max = c.XAxis.Range.Max
+	} else {
+		xrange.Min = globalMinX
+		xrange.Max = globalMaxX
+	}
+
+	if !c.YAxis.Range.IsZero() {
+		yrange.Min = c.YAxis.Range.Min
+		yrange.Max = c.YAxis.Range.Max
+	} else {
+		yrange.Min = globalMinY
+		yrange.Max = globalMaxY
+	}
+
+	if !c.YAxisSecondary.Range.IsZero() {
+		yrangeAlt.Min = c.YAxisSecondary.Range.Min
+		yrangeAlt.Max = c.YAxisSecondary.Range.Max
+	} else {
+		yrangeAlt.Min = globalMinYA
+		yrangeAlt.Max = globalMaxYA
+	}
+	return
 }
 
-func (c Chart) getAxisWidth() int {
-	asw := 0
-	if c.Axes.Show {
-		asw = int(c.Axes.GetStrokeWidth(DefaultAxisLineWidth))
-	}
-	return asw
-}
-
-func (c Chart) calculateCanvasBox(r Renderer) Box {
-	dpr := DefaultBackgroundPadding.Right
-	finalLabelWidth := c.calculateFinalLabelWidth(r)
-	if finalLabelWidth > dpr {
-		dpr = finalLabelWidth
-	}
-	axisBottomHeight := c.calculateBottomLabelHeight()
-	dpb := DefaultBackgroundPadding.Bottom
-	if dpb < axisBottomHeight {
-		dpb = axisBottomHeight
-	}
+func (c Chart) getDefaultCanvasBox() Box {
+	dpl := c.Background.Padding.GetLeft(DefaultBackgroundPadding.Left)
+	dpr := c.Background.Padding.GetRight(DefaultBackgroundPadding.Right)
+	dpb := c.Background.Padding.GetBottom(DefaultBackgroundPadding.Bottom)
 
 	cb := Box{
 		Top:    c.Background.Padding.GetTop(DefaultBackgroundPadding.Top),
-		Left:   c.Background.Padding.GetLeft(DefaultBackgroundPadding.Left),
-		Right:  c.Width - c.Background.Padding.GetRight(dpr),
-		Bottom: c.Height - c.Background.Padding.GetBottom(dpb),
+		Left:   dpl,
+		Right:  c.Width - dpr,
+		Bottom: c.Height - dpb,
 	}
 	cb.Height = cb.Bottom - cb.Top
 	cb.Width = cb.Right - cb.Left
 	return cb
 }
 
-func (c Chart) calculateFinalLabelWidth(r Renderer) int {
-	if !c.FinalValueLabel.Show {
-		return 0
-	}
-
-	var finalLabelText string
+func (c Chart) getValueFormatters() (x, y, ya ValueFormatter) {
 	for _, s := range c.Series {
-		_, lv := s.GetValue(s.Len() - 1)
-		var ll string
-		if c.YRange.Formatter != nil {
-			ll = c.YRange.Formatter(lv)
-		} else {
-			ll = s.GetYFormatter()(lv)
-		}
-		if len(finalLabelText) < len(ll) {
-			finalLabelText = ll
-		}
-	}
-
-	r.SetFontSize(c.FinalValueLabel.GetFontSize(DefaultFinalLabelFontSize))
-	textWidth, _ := r.MeasureText(finalLabelText)
-	asw := c.getAxisWidth()
-
-	pl := c.FinalValueLabel.Padding.GetLeft(DefaultFinalLabelPadding.Left)
-	pr := c.FinalValueLabel.Padding.GetRight(DefaultFinalLabelPadding.Right)
-	lsw := int(c.FinalValueLabel.GetStrokeWidth(DefaultAxisLineWidth))
-
-	return DefaultFinalLabelDeltaWidth +
-		pl + pr +
-		textWidth + asw + 2*lsw
-}
-
-func (c Chart) calculateBottomLabelHeight() int {
-	if c.Axes.Show {
-		return c.getAxisWidth() + int(math.Ceil(c.Axes.GetFontSize(DefaultAxisFontSize))) + DefaultXAxisMargin
-	}
-	return 0
-}
-
-func (c Chart) initRanges(canvasBox Box) (xrange Range, yrange Range) {
-	//iterate over each series, pull out the min/max for x,y
-	var didSetFirstValues bool
-	var globalMinY, globalMinX float64
-	var globalMaxY, globalMaxX float64
-	for _, s := range c.Series {
-		seriesLength := s.Len()
-		for index := 0; index < seriesLength; index++ {
-			vx, vy := s.GetValue(index)
-			if didSetFirstValues {
-				if globalMinX > vx {
-					globalMinX = vx
-				}
-				if globalMinY > vy {
-					globalMinY = vy
-				}
-				if globalMaxX < vx {
-					globalMaxX = vx
-				}
-				if globalMaxY < vy {
-					globalMaxY = vy
-				}
-			} else {
-				globalMinX, globalMaxX = vx, vx
-				globalMinY, globalMaxY = vy, vy
-				didSetFirstValues = true
+		if vfp, isVfp := s.(ValueFormatterProvider); isVfp {
+			sx, sy := vfp.GetValueFormatters()
+			if s.GetYAxis() == YAxisPrimary {
+				x = sx
+				y = sy
+			} else if s.GetYAxis() == YAxisSecondary {
+				x = sx
+				ya = sy
 			}
 		}
-		if xrange.Formatter == nil {
-			xrange.Formatter = s.GetXFormatter()
-		}
-		if yrange.Formatter == nil {
-			yrange.Formatter = s.GetYFormatter()
-		}
 	}
-
-	if c.XRange.IsZero() {
-		xrange.Min = globalMinX
-		xrange.Max = globalMaxX
-	} else {
-		xrange.Min = c.XRange.Min
-		xrange.Max = c.XRange.Max
+	if c.XAxis.ValueFormatter != nil {
+		x = c.XAxis.ValueFormatter
 	}
-	if c.XRange.Formatter != nil {
-		xrange.Formatter = c.XRange.Formatter
+	if c.YAxis.ValueFormatter != nil {
+		y = c.YAxis.ValueFormatter
 	}
-	if c.XRange.Ticks != nil {
-		xrange.Ticks = c.XRange.Ticks
+	if c.YAxisSecondary.ValueFormatter != nil {
+		ya = c.YAxisSecondary.ValueFormatter
 	}
-	xrange.Domain = canvasBox.Width
-
-	if c.YRange.IsZero() {
-		yrange.Min = globalMinY
-		yrange.Max = globalMaxY
-	} else {
-		yrange.Min = c.YRange.Min
-		yrange.Max = c.YRange.Max
-	}
-	if c.YRange.Formatter != nil {
-		yrange.Formatter = c.YRange.Formatter
-	}
-	if c.YRange.Ticks != nil {
-		yrange.Ticks = c.YRange.Ticks
-	}
-	yrange.Domain = canvasBox.Height
-
 	return
+}
+
+func (c Chart) getAxesTicks(r Renderer, xr, yr, yar Range, xf, yf, yfa ValueFormatter) (xticks, yticks, yticksAlt []Tick) {
+	if c.XAxis.Style.Show {
+		xticks = c.XAxis.GetTicks(r, xr, xf)
+	}
+	if c.YAxis.Style.Show {
+		yticks = c.YAxis.GetTicks(r, yr, yf)
+	}
+	if c.YAxisSecondary.Style.Show {
+		yticksAlt = c.YAxisSecondary.GetTicks(r, yar, yf)
+	}
+	return
+}
+
+func (c Chart) getAdjustedCanvasBox(r Renderer, defaults Box, xticks, yticks, yticksAlt []Tick) Box {
+	canvasBox := Box{}
+
+	var dpl, dpr, dpb int
+	if c.XAxis.Style.Show {
+		dpb = c.getXAxisHeight(r, xticks)
+	}
+	if c.YAxis.Style.Show {
+		dpr = c.getYAxisWidth(r, yticks)
+	}
+	if c.YAxisSecondary.Style.Show {
+		dpl = c.getYAxisSecondaryWidth(r, yticksAlt)
+	}
+
+	canvasBox.Top = defaults.Top
+	if dpl != 0 {
+		canvasBox.Left = c.Canvas.Padding.GetLeft(dpl)
+	} else {
+		canvasBox.Left = defaults.Left
+	}
+	if dpr != 0 {
+		canvasBox.Right = c.Width - c.Canvas.Padding.GetRight(dpr)
+	} else {
+		canvasBox.Right = defaults.Right
+	}
+	if dpb != 0 {
+		canvasBox.Bottom = c.Height - c.Canvas.Padding.GetBottom(dpb)
+	} else {
+		canvasBox.Bottom = defaults.Bottom
+	}
+
+	canvasBox.Width = canvasBox.Right - canvasBox.Left
+	canvasBox.Height = canvasBox.Bottom - canvasBox.Top
+	return canvasBox
+}
+
+func (c Chart) getXAxisHeight(r Renderer, ticks []Tick) int {
+	r.SetFontSize(c.XAxis.Style.GetFontSize(DefaultFontSize))
+	r.SetFont(c.XAxis.Style.GetFont(c.Font))
+	var tl int
+	for _, t := range ticks {
+		_, lh := r.MeasureText(t.Label)
+		if lh > tl {
+			tl = lh
+		}
+	}
+	return tl + DefaultXAxisMargin
+}
+
+func (c Chart) getYAxisWidth(r Renderer, ticks []Tick) int {
+	var ll string
+	for _, t := range ticks {
+		if len(t.Label) > len(ll) {
+			ll = t.Label
+		}
+	}
+	r.SetFontSize(c.YAxis.Style.GetFontSize(DefaultFontSize))
+	r.SetFont(c.YAxis.Style.GetFont(c.Font))
+	tw, _ := r.MeasureText(ll)
+	return tw + DefaultYAxisMargin
+}
+
+func (c Chart) getYAxisSecondaryWidth(r Renderer, ticks []Tick) int {
+	var ll string
+	for _, t := range ticks {
+		if len(t.Label) > len(ll) {
+			ll = t.Label
+		}
+	}
+
+	r.SetFontSize(c.YAxisSecondary.Style.GetFontSize(DefaultFontSize))
+	r.SetFont(c.YAxisSecondary.Style.GetFont(c.Font))
+	tw, _ := r.MeasureText(ll)
+	return tw + DefaultYAxisMargin
+}
+
+func (c Chart) setRangeDomains(canvasBox Box, xrange, yrange, yrangeAlt Range) (Range, Range, Range) {
+	xrange.Domain = canvasBox.Width
+	yrange.Domain = canvasBox.Height
+	yrangeAlt.Domain = canvasBox.Height
+	return xrange, yrange, yrangeAlt
 }
 
 func (c Chart) drawBackground(r Renderer) {
@@ -252,202 +329,52 @@ func (c Chart) drawCanvas(r Renderer, canvasBox Box) {
 	r.FillStroke()
 }
 
-func (c Chart) drawAxes(r Renderer, canvasBox Box, xrange, yrange Range) {
-	if c.Axes.Show {
-		r.SetStrokeColor(c.Axes.GetStrokeColor(DefaultAxisColor))
-		r.SetStrokeWidth(c.Axes.GetStrokeWidth(DefaultStrokeWidth))
-		r.MoveTo(canvasBox.Left, canvasBox.Bottom)
-		r.LineTo(canvasBox.Right, canvasBox.Bottom)
-		r.LineTo(canvasBox.Right, canvasBox.Top)
-		r.Stroke()
-
-		c.drawXAxisLabels(r, canvasBox, xrange)
-		c.drawYAxisLabels(r, canvasBox, yrange)
+func (c Chart) drawAxes(r Renderer, canvasBox Box, xrange, yrange, yrangeAlt Range, xticks, yticks, yticksAlt []Tick) {
+	if c.XAxis.Style.Show {
+		c.XAxis.Render(r, canvasBox, xrange, xticks)
+	}
+	if c.YAxis.Style.Show {
+		c.YAxis.Render(r, canvasBox, yrange, YAxisPrimary, yticks)
+	}
+	if c.YAxisSecondary.Style.Show {
+		c.YAxisSecondary.Render(r, canvasBox, yrangeAlt, YAxisSecondary, yticksAlt)
 	}
 }
 
-func (c Chart) generateRangeTicks(r Range, tickCount int, offset float64) []Tick {
-	var ticks []Tick
-	rangeTicks := Slices(tickCount, r.Max-r.Min)
-	for _, rv := range rangeTicks {
-		ticks = append(ticks, Tick{
-			RangeValue: rv + offset,
-			Label:      r.Format(rv + offset),
-		})
-	}
-	return ticks
-}
-
-func (c Chart) drawYAxisLabels(r Renderer, canvasBox Box, yrange Range) {
-	tickFontSize := c.Axes.GetFontSize(DefaultAxisFontSize)
-	asw := c.getAxisWidth()
-	tx := canvasBox.Right + DefaultFinalLabelDeltaWidth + asw
-
-	r.SetFontColor(c.Axes.GetFontColor(DefaultAxisColor))
-	r.SetFontSize(tickFontSize)
-
-	ticks := yrange.Ticks
-	if ticks == nil {
-		minimumTickHeight := tickFontSize + DefaultMinimumTickVerticalSpacing
-		tickCount := int(math.Floor(float64(yrange.Domain) / float64(minimumTickHeight)))
-
-		if tickCount > DefaultMaxTickCount {
-			tickCount = DefaultMaxTickCount
-		}
-		ticks = c.generateRangeTicks(yrange, tickCount, yrange.Min)
-	}
-
-	for _, t := range ticks {
-		v := t.RangeValue
-		y := yrange.Translate(v)
-		ty := int(y)
-		r.Text(t.Label, tx, ty)
+func (c Chart) getSeriesStyleDefaults(seriesIndex int) Style {
+	strokeColor := GetDefaultSeriesStrokeColor(seriesIndex)
+	return Style{
+		StrokeColor: strokeColor,
+		StrokeWidth: DefaultStrokeWidth,
+		FillColor:   strokeColor.WithAlpha(100),
+		Font:        c.Font,
+		FontSize:    DefaultFontSize,
 	}
 }
 
-func (c Chart) drawXAxisLabels(r Renderer, canvasBox Box, xrange Range) {
-	tickFontSize := c.Axes.GetFontSize(DefaultAxisFontSize)
-	ty := canvasBox.Bottom + DefaultXAxisMargin + int(tickFontSize)
-
-	r.SetFontColor(c.Axes.GetFontColor(DefaultAxisColor))
-	r.SetFontSize(tickFontSize)
-
-	ticks := xrange.Ticks
-	if ticks == nil {
-		maxLabelWidth := 60
-		minimumTickWidth := maxLabelWidth + DefaultMinimumTickHorizontalSpacing
-		tickCount := int(math.Floor(float64(xrange.Domain) / float64(minimumTickWidth)))
-
-		if tickCount > DefaultMaxTickCount {
-			tickCount = DefaultMaxTickCount
-		}
-		ticks = c.generateRangeTicks(xrange, tickCount, xrange.Min)
-	}
-
-	for _, t := range ticks {
-		v := t.RangeValue
-		x := xrange.Translate(v)
-		tx := canvasBox.Left + int(x)
-		r.Text(t.Label, tx, ty)
+func (c Chart) drawSeries(r Renderer, canvasBox Box, xrange, yrange, yrangeAlt Range, s Series, seriesIndex int) {
+	if s.GetYAxis() == YAxisPrimary {
+		s.Render(r, canvasBox, xrange, yrange, c.getSeriesStyleDefaults(seriesIndex))
+	} else if s.GetYAxis() == YAxisSecondary {
+		s.Render(r, canvasBox, xrange, yrangeAlt, c.getSeriesStyleDefaults(seriesIndex))
 	}
 }
 
-func (c Chart) drawSeries(r Renderer, canvasBox Box, index int, s Series, xrange, yrange Range) {
-	if s.Len() == 0 {
-		return
-	}
-
-	cx := canvasBox.Left
-	cy := canvasBox.Top
-	cb := canvasBox.Bottom
-	cw := canvasBox.Width
-
-	v0x, v0y := s.GetValue(0)
-	x0 := cw - xrange.Translate(v0x)
-	y0 := yrange.Translate(v0y)
-
-	var vx, vy float64
-	var x, y int
-
-	fill := s.GetStyle().GetFillColor()
-	if !fill.IsZero() {
-		r.SetFillColor(fill)
-		r.MoveTo(x0+cx, y0+cy)
-		for i := 1; i < s.Len(); i++ {
-			vx, vy = s.GetValue(i)
-			x = cw - xrange.Translate(vx)
-			y = yrange.Translate(vy)
-			r.LineTo(x+cx, y+cy)
-		}
-		r.LineTo(x+cx, cb)
-		r.LineTo(x0+cx, cb)
-		r.Close()
-		r.Fill()
-	}
-
-	stroke := s.GetStyle().GetStrokeColor(GetDefaultSeriesStrokeColor(index))
-	r.SetStrokeColor(stroke)
-	r.SetStrokeWidth(s.GetStyle().GetStrokeWidth(DefaultStrokeWidth))
-
-	r.MoveTo(x0+cx, y0+cy)
-	for i := 1; i < s.Len(); i++ {
-		vx, vy = s.GetValue(i)
-		x = cw - xrange.Translate(vx)
-		y = yrange.Translate(vy)
-		r.LineTo(x+cx, y+cy)
-	}
-	r.Stroke()
-
-	c.drawFinalValueLabel(r, canvasBox, index, s, yrange)
-}
-
-func (c Chart) drawFinalValueLabel(r Renderer, canvasBox Box, index int, s Series, yrange Range) {
-	if c.FinalValueLabel.Show {
-		_, lv := s.GetValue(s.Len() - 1)
-		ll := yrange.Format(lv)
-
-		py := canvasBox.Top
-		ly := yrange.Translate(lv) + py
-
-		r.SetFontSize(c.FinalValueLabel.GetFontSize(DefaultFinalLabelFontSize))
-		textWidth, _ := r.MeasureText(ll)
-		textHeight := int(math.Floor(DefaultFinalLabelFontSize))
-		halfTextHeight := textHeight >> 1
-
-		asw := 0
-		if c.Axes.Show {
-			asw = int(c.Axes.GetStrokeWidth(DefaultAxisLineWidth))
-		}
-
-		cx := canvasBox.Right + asw
-
-		pt := c.FinalValueLabel.Padding.GetTop(DefaultFinalLabelPadding.Top)
-		pl := c.FinalValueLabel.Padding.GetLeft(DefaultFinalLabelPadding.Left)
-		pr := c.FinalValueLabel.Padding.GetRight(DefaultFinalLabelPadding.Right)
-		pb := c.FinalValueLabel.Padding.GetBottom(DefaultFinalLabelPadding.Bottom)
-
-		textX := cx + pl + DefaultFinalLabelDeltaWidth
-		textY := ly + halfTextHeight
-
-		ltlx := cx + pl + DefaultFinalLabelDeltaWidth
-		ltly := ly - (pt + halfTextHeight)
-
-		ltrx := cx + pl + pr + textWidth
-		ltry := ly - (pt + halfTextHeight)
-
-		lbrx := cx + pl + pr + textWidth
-		lbry := ly + (pb + halfTextHeight)
-
-		lblx := cx + DefaultFinalLabelDeltaWidth
-		lbly := ly + (pb + halfTextHeight)
-
-		//draw the shape...
-		r.SetFillColor(c.FinalValueLabel.GetFillColor(DefaultFinalLabelBackgroundColor))
-		r.SetStrokeColor(c.FinalValueLabel.GetStrokeColor(s.GetStyle().GetStrokeColor(GetDefaultSeriesStrokeColor(index))))
-		r.SetStrokeWidth(c.FinalValueLabel.GetStrokeWidth(DefaultAxisLineWidth))
-		r.MoveTo(cx, ly)
-		r.LineTo(ltlx, ltly)
-		r.LineTo(ltrx, ltry)
-		r.LineTo(lbrx, lbry)
-		r.LineTo(lblx, lbly)
-		r.LineTo(cx, ly)
-		r.Close()
-		r.FillStroke()
-
-		r.SetFontColor(c.FinalValueLabel.GetFontColor(DefaultTextColor))
-		r.Text(ll, textX, textY)
-	}
-}
-
-func (c Chart) drawTitle(r Renderer) error {
+func (c Chart) drawTitle(r Renderer) {
 	if len(c.Title) > 0 && c.TitleStyle.Show {
-		r.SetFontColor(c.Canvas.GetFontColor(DefaultTextColor))
-		titleFontSize := c.Canvas.GetFontSize(DefaultTitleFontSize)
+		r.SetFont(c.TitleStyle.GetFont(c.Font))
+		r.SetFontColor(c.TitleStyle.GetFontColor(DefaultTextColor))
+		titleFontSize := c.TitleStyle.GetFontSize(DefaultTitleFontSize)
 		r.SetFontSize(titleFontSize)
-		textWidth, _ := r.MeasureText(c.Title)
+
+		textWidthPoints, textHeightPoints := r.MeasureText(c.Title)
+
+		textWidth := int(drawing.PointsToPixels(r.GetDPI(), float64(textWidthPoints)))
+		textHeight := int(drawing.PointsToPixels(r.GetDPI(), float64(textHeightPoints)))
+
 		titleX := (c.Width >> 1) - (textWidth >> 1)
-		titleY := c.TitleStyle.Padding.GetTop(DefaultTitleTop) + int(titleFontSize)
+		titleY := c.TitleStyle.Padding.GetTop(DefaultTitleTop) + textHeight
+
 		r.Text(c.Title, titleX, titleY)
 	}
-	return nil
 }

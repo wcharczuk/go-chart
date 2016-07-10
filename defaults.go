@@ -24,24 +24,33 @@ const (
 	DefaultFontSize = 10.0
 	// DefaultTitleFontSize is the default title font size.
 	DefaultTitleFontSize = 18.0
-	// DefaultFinalLabelDeltaWidth is the width of the left triangle out of the final label.
-	DefaultFinalLabelDeltaWidth = 10
-	// DefaultFinalLabelFontSize is the font size of the final label.
-	DefaultFinalLabelFontSize = 10.0
+	// DefaultAnnotationDeltaWidth is the width of the left triangle out of annotations.
+	DefaultAnnotationDeltaWidth = 10
+	// DefaultAnnotationFontSize is the font size of annotations.
+	DefaultAnnotationFontSize = 10.0
 	// DefaultAxisFontSize is the font size of the axis labels.
 	DefaultAxisFontSize = 10.0
 	// DefaultTitleTop is the default distance from the top of the chart to put the title.
 	DefaultTitleTop = 10
+
+	// DefaultYAxisMargin is the default distance from the right of the canvas to the y axis labels.
+	DefaultYAxisMargin = 10
 	// DefaultXAxisMargin is the default distance from bottom of the canvas to the x axis labels.
 	DefaultXAxisMargin = 10
+
+	//DefaultVerticalTickWidth is half the margin.
+	DefaultVerticalTickWidth = DefaultYAxisMargin >> 1
+
+	//DefaultHorizontalTickWidth is half the margin.
+	DefaultHorizontalTickWidth = DefaultXAxisMargin >> 1
+
 	// DefaultMinimumTickHorizontalSpacing is the minimum distance between horizontal ticks.
 	DefaultMinimumTickHorizontalSpacing = 20
 	// DefaultMinimumTickVerticalSpacing is the minimum distance between vertical ticks.
 	DefaultMinimumTickVerticalSpacing = 20
+
 	// DefaultDateFormat is the default date format.
 	DefaultDateFormat = "2006-01-02"
-	// DefaultMaxTickCount is the maximum number of ticks to draw
-	DefaultMaxTickCount = 7
 )
 
 var (
@@ -69,8 +78,8 @@ var (
 	// DefaultFillColor is the default fill color.
 	// It is equivalent to #0074d9.
 	DefaultFillColor = drawing.Color{R: 0, G: 217, B: 116, A: 255}
-	// DefaultFinalLabelBackgroundColor is the default final label background color.
-	DefaultFinalLabelBackgroundColor = drawing.Color{R: 255, G: 255, B: 255, A: 255}
+	// DefaultAnnotationFillColor is the default annotation background color.
+	DefaultAnnotationFillColor = drawing.Color{R: 255, G: 255, B: 255, A: 255}
 )
 
 var (
@@ -90,8 +99,8 @@ func GetDefaultSeriesStrokeColor(index int) drawing.Color {
 }
 
 var (
-	// DefaultFinalLabelPadding is the padding around the final label.
-	DefaultFinalLabelPadding = Box{Top: 5, Left: 0, Right: 7, Bottom: 5}
+	// DefaultAnnotationPadding is the padding around an annotation.
+	DefaultAnnotationPadding = Box{Top: 5, Left: 0, Right: 7, Bottom: 5}
 	// DefaultBackgroundPadding is the default canvas padding config.
 	DefaultBackgroundPadding = Box{Top: 5, Left: 5, Right: 5, Bottom: 5}
 )
