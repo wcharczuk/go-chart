@@ -36,6 +36,11 @@ type vectorRenderer struct {
 	fc  *font.Drawer
 }
 
+// GetDPI returns the dpi.
+func (vr *vectorRenderer) GetDPI() float64 {
+	return vr.dpi
+}
+
 // SetDPI implements the interface method.
 func (vr *vectorRenderer) SetDPI(dpi float64) {
 	vr.dpi = dpi

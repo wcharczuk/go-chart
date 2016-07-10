@@ -20,7 +20,7 @@ func (b Box) IsZero() bool {
 
 // String returns a string representation of the box.
 func (b Box) String() string {
-	return fmt.Sprintf("Box(%d,%d,%d,%d)", b.Top, b.Left, b.Right, b.Bottom)
+	return fmt.Sprintf("box(%d,%d,%d,%d)", b.Top, b.Left, b.Right, b.Bottom)
 }
 
 // GetTop returns a coalesced value with a default.
