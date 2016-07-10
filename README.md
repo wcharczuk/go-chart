@@ -41,6 +41,9 @@ graph := chart.Chart{
         chart.TimeSeries{
             XValues: xvalues,
             YValues: yvalues,
+            Style: chart.Style {
+                FillColor: chart.DefaultSeriesStrokeColors[0].WithAlpha(64),
+            },
         },
         chart.AnnotationSeries{
             Name: "Last Value,
