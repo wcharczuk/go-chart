@@ -46,7 +46,7 @@ graph := chart.Chart{
             },
         },
         chart.AnnotationSeries{
-            Name: "Last Value,
+            Name: "Last Value",
             Style: chart.Style{
                 Show:        true,
                 StrokeColor: chart.DefaultSeriesStrokeColors[0],
