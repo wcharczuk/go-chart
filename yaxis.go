@@ -1,7 +1,6 @@
 package chart
 
 import (
-	"fmt"
 	"math"
 	"sort"
 )
@@ -55,7 +54,6 @@ func (ya YAxis) getTickStep(r Renderer, ra Range, vf ValueFormatter) float64 {
 func (ya YAxis) generateTicksWithStep(ra Range, step float64, vf ValueFormatter) []Tick {
 	var ticks []Tick
 	for cursor := ra.Min; cursor < ra.Max; cursor += step {
-		println("yaxis tick:", fmt.Sprintf("%.2f", cursor))
 		ticks = append(ticks, Tick{
 			Value: cursor,
 			Label: vf(cursor),
