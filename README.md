@@ -27,25 +27,41 @@ The chart code to produce the above is as follows:
 graph := chart.Chart{
     Width:  1024,
     Height: 400,
-    Axes: chart.Style{
-        Show: true,
+    YAxis: chart.YAxis {
+        Style: chart.Style{
+            Show: true,
+        },
     },
-    FinalValueLabel: chart.Style{
-        Show: true,
+    XAxis: chart.XAxis {
+        Style: chart.Style{
+            Show: true,
+        },
     },
     Series: []chart.Series{
         chart.TimeSeries{
             XValues: xvalues,
             YValues: yvalues,
         },
+        chart.AnnotationSeries{
+            Name: "Last Value,
+            Style: chart.Style{
+                Show:        true,
+                StrokeColor: chart.DefaultSeriesStrokeColors[0],
+            },
+            Annotations: []chart.Annotation{
+                chart.Annotation{
+                    X:     float64(xvalues[len(xvalues)-1].Unix()), //todo: helpers for this.
+                    Y:     yvalues[len(yvalues)-1],
+                    Label: chart.FloatValueFormatter(yvalues[len(yvalues)-1]),
+                },
+            },
+        },
     },
 }
 graph.Render(chart.PNG, buffer) //thats it!
 ```
 
-The key areas to note are that we have to explicitly turn on two features, the axes and the last value label. When calling `.Render(..)` we add a parameter, `chart.PNG` that tells the renderer to use a raster renderer (in this case, an awesome library called `draw2d`). 
-
-Another option is to use `chart.SVG` which will use the vector renderer and create an svg representation of the chart. 
+The key areas to note are that we have to explicitly turn on two features, the axes and add the last value label annotation series. When calling `.Render(..)` we add a parameter, `chart.PNG` that tells the renderer to use a raster renderer. Another option is to use `chart.SVG` which will use the vector renderer and create an svg representation of the chart. 
 
 # Alternate Usage
 
