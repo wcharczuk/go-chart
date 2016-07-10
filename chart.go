@@ -69,24 +69,32 @@ func (c Chart) Render(rp RendererProvider, w io.Writer) error {
 	r.SetFont(font)
 	r.SetDPI(c.GetDPI(DefaultDPI))
 
-	xrange, yrange, yrangeAlt := c.getRanges()
+	c.drawBackground(r)
+
+	var xt, yt, yta []Tick
+	xr, yr, yra := c.getRanges()
 	canvasBox := c.getDefaultCanvasBox()
 	xf, yf, yfa := c.getValueFormatters()
+	xr, yr, yra = c.setRangeDomains(canvasBox, xr, yr, yra)
 
-	xrange, yrange, yrangeAlt = c.setRangeDomains(canvasBox, xrange, yrange, yrangeAlt)
-	xticks, yticks, yticksAlt := c.getAxesTicks(r, xrange, yrange, yrangeAlt, xf, yf, yfa)
-	canvasBox = c.getAdjustedCanvasBox(r, canvasBox, xticks, yticks, yticksAlt)
+	if c.hasAxes() {
+		xt, yt, yta = c.getAxesTicks(r, xr, yr, yra, xf, yf, yfa)
+		canvasBox = c.getAxisAdjustedCanvasBox(r, canvasBox, xt, yt, yta)
+		xr, yr, yra = c.setRangeDomains(canvasBox, xr, yr, yra)
+		xt, yt, yta = c.getAxesTicks(r, xr, yr, yra, xf, yf, yfa)
+	}
 
-	// we do a second pass to take the updated domains into account
-	xrange, yrange, yrangeAlt = c.setRangeDomains(canvasBox, xrange, yrange, yrangeAlt)
-	xticks, yticks, yticksAlt = c.getAxesTicks(r, xrange, yrange, yrangeAlt, xf, yf, yfa)
-	canvasBox = c.getAdjustedCanvasBox(r, canvasBox, xticks, yticks, yticksAlt)
+	if c.hasAnnotationSeries() {
+		canvasBox = c.getAnnotationAdjustedCanvasBox(r, canvasBox, xr, yr, yra, xf, yf, yfa)
+		xr, yr, yra = c.setRangeDomains(canvasBox, xr, yr, yra)
+		xt, yt, yta = c.getAxesTicks(r, xr, yr, yra, xf, yf, yfa)
+	}
 
-	c.drawBackground(r)
 	c.drawCanvas(r, canvasBox)
-	c.drawAxes(r, canvasBox, xrange, yrange, yrangeAlt, xticks, yticks, yticksAlt)
+	c.drawAxes(r, canvasBox, xr, yr, yra, xt, yt, yta)
+	
 	for index, series := range c.Series {
-		c.drawSeries(r, canvasBox, xrange, yrange, yrangeAlt, series, index)
+		c.drawSeries(r, canvasBox, xr, yr, yra, series, index)
 	}
 	c.drawTitle(r)
 	return r.Save(w)
@@ -207,6 +215,10 @@ func (c Chart) getValueFormatters() (x, y, ya ValueFormatter) {
 	return
 }
 
+func (c Chart) hasAxes() bool {
+	return c.XAxis.Style.Show || c.YAxis.Style.Show || c.YAxisSecondary.Style.Show
+}
+
 func (c Chart) getAxesTicks(r Renderer, xr, yr, yar Range, xf, yf, yfa ValueFormatter) (xticks, yticks, yticksAlt []Tick) {
 	if c.XAxis.Style.Show {
 		xticks = c.XAxis.GetTicks(r, xr, xf)
@@ -220,7 +232,7 @@ func (c Chart) getAxesTicks(r Renderer, xr, yr, yar Range, xf, yf, yfa ValueForm
 	return
 }
 
-func (c Chart) getAdjustedCanvasBox(r Renderer, defaults Box, xticks, yticks, yticksAlt []Tick) Box {
+func (c Chart) getAxisAdjustedCanvasBox(r Renderer, defaults Box, xticks, yticks, yticksAlt []Tick) Box {
 	canvasBox := Box{}
 
 	var dpl, dpr, dpb int
@@ -301,6 +313,85 @@ func (c Chart) setRangeDomains(canvasBox Box, xrange, yrange, yrangeAlt Range) (
 	yrange.Domain = canvasBox.Height
 	yrangeAlt.Domain = canvasBox.Height
 	return xrange, yrange, yrangeAlt
+}
+
+func (c Chart) hasAnnotationSeries() bool {
+	for _, s := range c.Series {
+		if as, isAnnotationSeries:= s.(AnnotationSeries); isAnnotationSeries {
+			if as.Style.Show {
+				return true
+			}
+		}
+	}
+	return false 
+}
+
+func (c Chart) getAnnotationAdjustedCanvasBox(r Renderer, canvasBox Box, xr, yr, yra Range, xf, yf, yfa ValueFormatter) Box {
+	annotationMinX, annotationMaxX, annotationMinY, annotationMaxY := canvasBox.Right, canvasBox.Left, canvasBox.Bottom, canvasBox.Top
+	for seriesIndex, s := range c.Series {
+		if as, isAnnotationSeries:= s.(AnnotationSeries); isAnnotationSeries {
+			if as.Style.Show {
+				style := c.getSeriesStyleDefaults(seriesIndex)
+				var annotationBounds Box
+				if as.YAxis == YAxisPrimary {
+					annotationBounds = as.Measure(r, canvasBox, xr, yr, style)
+				} else if as.YAxis == YAxisSecondary {
+					annotationBounds = as.Measure(r, canvasBox, xr, yr, style)
+				}
+				
+				if annotationMinY > annotationBounds.Top {
+					annotationMinY = annotationBounds.Top
+				}
+
+				if annotationMinX > annotationBounds.Left {
+					annotationMinX = annotationBounds.Left
+				}
+
+				if annotationMaxX < annotationBounds.Right {
+					annotationMaxX = annotationBounds.Right
+				}
+
+				if annotationMaxY < annotationBounds.Bottom {
+					annotationMaxY = annotationBounds.Bottom
+				}
+			}
+		}
+	}
+
+	newBox := Box{
+		Top: canvasBox.Top,
+		Left: canvasBox.Left,
+		Right: canvasBox.Right,
+		Bottom: canvasBox.Bottom,
+	}
+	if annotationMinY < 0 {
+		// figure out how much top padding to add
+		delta := -1*annotationMinY
+		newBox.Top = canvasBox.Top+delta
+	}
+
+	if annotationMaxX > c.Width {
+		// figure out how much right padding to add
+		delta := annotationMaxX - c.Width
+		newBox.Right = canvasBox.Right - delta
+	}
+
+	if annotationMinX < 0 {
+		// figure out how much left padding to add
+		delta := -1*annotationMinX
+		newBox.Left = canvasBox.Left + delta
+	}
+
+	if annotationMaxY > c.Height {
+		//figure out how much bottom padding to add
+		delta := annotationMaxY - c.Height 
+		newBox.Bottom = canvasBox.Bottom - delta
+	}
+
+	newBox.Height = newBox.Bottom - newBox.Top
+	newBox.Width = newBox.Right - newBox.Left
+
+	return newBox
 }
 
 func (c Chart) drawBackground(r Renderer) {

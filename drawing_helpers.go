@@ -49,8 +49,36 @@ func DrawLineSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, vs
 	r.Stroke()
 }
 
+// MeasureAnnotation measures how big an annotation would be.
+func MeasureAnnotation(r Renderer, canvasBox Box, xrange, yrange Range, s Style, lx, ly int, label string) Box {
+	r.SetFont(s.GetFont())
+	r.SetFontSize(s.GetFontSize(DefaultAnnotationFontSize))
+	textWidth, _ := r.MeasureText(label)
+	textHeight := int(math.Floor(DefaultAnnotationFontSize))
+	halfTextHeight := textHeight >> 1
+
+	pt := s.Padding.GetTop(DefaultAnnotationPadding.Top)
+	pl := s.Padding.GetLeft(DefaultAnnotationPadding.Left)
+	pr := s.Padding.GetRight(DefaultAnnotationPadding.Right)
+	pb := s.Padding.GetBottom(DefaultAnnotationPadding.Bottom)
+
+	ltly := ly - (pt + halfTextHeight)
+	ltrx := lx + pl + pr + textWidth
+	lbry := ly + (pb + halfTextHeight)
+
+	return Box{
+		Top:    ltly,
+		Left:   lx,
+		Right:  ltrx,
+		Bottom: lbry,
+		Width:  ltrx - lx,
+		Height: lbry - ltly,
+	}
+}
+
 // DrawAnnotation draws an anotation with a renderer.
 func DrawAnnotation(r Renderer, canvasBox Box, xrange, yrange Range, s Style, lx, ly int, label string) {
+	r.SetFont(s.GetFont())
 	r.SetFontSize(s.GetFontSize(DefaultAnnotationFontSize))
 	textWidth, _ := r.MeasureText(label)
 	textHeight := int(math.Floor(DefaultAnnotationFontSize))
