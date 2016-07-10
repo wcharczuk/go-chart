@@ -155,6 +155,14 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 		yrange.Min = globalMinY
 		yrange.Max = globalMaxY
 	}
+
+	if !c.YAxisSecondary.Range.IsZero() {
+		yrangeAlt.Min = c.YAxisSecondary.Range.Min
+		yrangeAlt.Max = c.YAxisSecondary.Range.Max
+	} else {
+		yrangeAlt.Min = globalMinYA
+		yrangeAlt.Max = globalMaxYA
+	}
 	return
 }
 
@@ -207,7 +215,7 @@ func (c Chart) getAxesTicks(r Renderer, xr, yr, yar Range, xf, yf, yfa ValueForm
 		yticks = c.YAxis.GetTicks(r, yr, yf)
 	}
 	if c.YAxisSecondary.Style.Show {
-		yticksAlt = c.YAxisSecondary.GetTicks(r, yr, yf)
+		yticksAlt = c.YAxisSecondary.GetTicks(r, yar, yf)
 	}
 	return
 }
@@ -348,7 +356,7 @@ func (c Chart) drawSeries(r Renderer, canvasBox Box, xrange, yrange, yrangeAlt R
 	if s.GetYAxis() == YAxisPrimary {
 		s.Render(r, canvasBox, xrange, yrange, c.getSeriesStyleDefaults(seriesIndex))
 	} else if s.GetYAxis() == YAxisSecondary {
-		s.Render(r, canvasBox, xrange, yrange, c.getSeriesStyleDefaults(seriesIndex))
+		s.Render(r, canvasBox, xrange, yrangeAlt, c.getSeriesStyleDefaults(seriesIndex))
 	}
 }
 

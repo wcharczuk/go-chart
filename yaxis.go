@@ -1,6 +1,7 @@
 package chart
 
 import (
+	"fmt"
 	"math"
 	"sort"
 )
@@ -54,6 +55,7 @@ func (ya YAxis) getTickStep(r Renderer, ra Range, vf ValueFormatter) float64 {
 func (ya YAxis) generateTicksWithStep(ra Range, step float64, vf ValueFormatter) []Tick {
 	var ticks []Tick
 	for cursor := ra.Min; cursor < ra.Max; cursor += step {
+		println("yaxis tick:", fmt.Sprintf("%.2f", cursor))
 		ticks = append(ticks, Tick{
 			Value: cursor,
 			Label: vf(cursor),
@@ -64,39 +66,62 @@ func (ya YAxis) generateTicksWithStep(ra Range, step float64, vf ValueFormatter)
 
 // Render renders the axis.
 func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, axisType YAxisType, ticks []Tick) {
-	var lx int
-	var tx int
-	if axisType == YAxisPrimary {
-		lx = canvasBox.Right
-		tx = canvasBox.Right + DefaultYAxisMargin
-	} else if axisType == YAxisSecondary {
-		lx = canvasBox.Left
-		tx = canvasBox.Left - DefaultYAxisMargin
-	}
-
 	r.SetStrokeColor(ya.Style.GetStrokeColor(DefaultAxisColor))
 	r.SetStrokeWidth(ya.Style.GetStrokeWidth(DefaultAxisLineWidth))
-
-	r.MoveTo(lx, canvasBox.Bottom)
-	r.LineTo(lx, canvasBox.Top)
-	r.Stroke()
-
 	r.SetFontColor(ya.Style.GetFontColor(DefaultAxisColor))
 	fontSize := ya.Style.GetFontSize(DefaultFontSize)
 	r.SetFontSize(fontSize)
 
 	sort.Sort(Ticks(ticks))
-	for _, t := range ticks {
-		v := t.Value
-		ly := ra.Translate(v) + canvasBox.Top
 
-		th := int(fontSize) >> 1
-		ty := ly + th
+	var lx int
+	var tx int
+	if axisType == YAxisPrimary {
+		lx = canvasBox.Right
+		tx = canvasBox.Right + DefaultYAxisMargin
 
-		r.Text(t.Label, tx, ty)
-
-		r.MoveTo(lx, ly)
-		r.LineTo(lx+DefaultVerticalTickWidth, ly)
+		r.MoveTo(lx, canvasBox.Bottom)
+		r.LineTo(lx, canvasBox.Top)
 		r.Stroke()
+
+		for _, t := range ticks {
+			v := t.Value
+			ly := ra.Translate(v) + canvasBox.Top
+
+			th := int(fontSize) >> 1
+			ty := ly + th
+
+			r.Text(t.Label, tx, ty)
+
+			r.MoveTo(lx, ly)
+			r.LineTo(lx+DefaultVerticalTickWidth, ly)
+			r.Stroke()
+		}
+	} else if axisType == YAxisSecondary {
+		lx = canvasBox.Left
+
+		r.MoveTo(lx, canvasBox.Bottom)
+		r.LineTo(lx, canvasBox.Top)
+		r.Stroke()
+
+		for _, t := range ticks {
+			v := t.Value
+			ly := ra.Translate(v) + canvasBox.Top
+
+			ptw, _ := r.MeasureText(t.Label)
+
+			tw := ptw
+			th := int(fontSize)
+
+			tx = lx - (int(tw) + (DefaultYAxisMargin >> 1))
+			ty := ly + th>>1
+
+			r.Text(t.Label, tx, ty)
+
+			r.MoveTo(lx, ly)
+			r.LineTo(lx-DefaultVerticalTickWidth, ly)
+			r.Stroke()
+		}
 	}
+
 }

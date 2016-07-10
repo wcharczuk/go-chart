@@ -20,11 +20,11 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 		rc.Response.Header().Set("Content-Type", "image/svg+xml")
 	}
 
-	s1x := []float64{1.0, 2.0, 3.0, 4.0}
+	s1x := []float64{2.0, 3.0, 4.0, 5.0}
 	s1y := []float64{2.5, 5.0, 2.0, 3.3}
 
-	s2x := []float64{3.0, 4.0, 5.0, 6.0}
-	s2y := []float64{6.0, 5.0, 4.0, 1.0}
+	s2x := []float64{0.0, 0.5, 1.0, 1.5}
+	s2y := []float64{1.1, 1.2, 1.0, 1.3}
 
 	c := chart.Chart{
 		Title: "A Test Chart",
@@ -35,18 +35,25 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 		Height: 400,
 		XAxis: chart.XAxis{
 			Style: chart.Style{
-				Show:        true,
-				StrokeWidth: 1.0,
+				Show: true,
 			},
 		},
 		YAxis: chart.YAxis{
 			Style: chart.Style{
-				Show:        true,
-				StrokeWidth: 1.0,
+				Show: true,
 			},
 			Range: chart.Range{
 				Min: 0.0,
 				Max: 7.0,
+			},
+		},
+		YAxisSecondary: chart.YAxis{
+			Style: chart.Style{
+				Show: true,
+			},
+			Range: chart.Range{
+				Min: 0.8,
+				Max: 1.5,
 			},
 		},
 		Series: []chart.Series{
@@ -57,6 +64,7 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 			},
 			chart.ContinuousSeries{
 				Name:    "b",
+				YAxis:   chart.YAxisSecondary,
 				XValues: s2x,
 				YValues: s2y,
 			},
@@ -75,7 +83,8 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 				},
 			},
 			chart.AnnotationSeries{
-				Name: "b - last value",
+				Name:  "b - last value",
+				YAxis: chart.YAxisSecondary,
 				Style: chart.Style{
 					Show:        true,
 					StrokeColor: chart.GetDefaultSeriesStrokeColor(1),
