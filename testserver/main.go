@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/wcharczuk/go-chart"
-	"github.com/wcharczuk/go-chart/drawing"
 	"github.com/wcharczuk/go-web"
 )
 
@@ -21,38 +20,73 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 		rc.Response.Header().Set("Content-Type", "image/svg+xml")
 	}
 
+	s1x := []float64{1.0, 2.0, 3.0, 4.0}
+	s1y := []float64{2.5, 5.0, 2.0, 3.3}
+
+	s2x := []float64{3.0, 4.0, 5.0, 6.0}
+	s2y := []float64{6.0, 5.0, 4.0, 1.0}
+
 	c := chart.Chart{
 		Title: "A Test Chart",
 		TitleStyle: chart.Style{
-			Show:     true,
-			FontSize: 26.0,
-		},
-		Width:  640,
-		Height: 480,
-		Axes: chart.Style{
-			Show:        true,
-			StrokeWidth: 1.0,
-		},
-		YRange: chart.Range{
-			Min: 0.0,
-			Max: 7.0,
-		},
-		FinalValueLabel: chart.Style{
 			Show: true,
+		},
+		Width:  1024,
+		Height: 400,
+		XAxis: chart.XAxis{
+			Style: chart.Style{
+				Show:        true,
+				StrokeWidth: 1.0,
+			},
+		},
+		YAxis: chart.YAxis{
+			Style: chart.Style{
+				Show:        true,
+				StrokeWidth: 1.0,
+			},
+			Range: chart.Range{
+				Min: 0.0,
+				Max: 7.0,
+			},
 		},
 		Series: []chart.Series{
 			chart.ContinuousSeries{
 				Name:    "a",
-				XValues: []float64{1.0, 2.0, 3.0, 4.0},
-				YValues: []float64{2.5, 5.0, 2.0, 3.3},
-				Style: chart.Style{
-					FillColor: drawing.Color{R: 0, G: 116, B: 217, A: 128},
-				},
+				XValues: s1x,
+				YValues: s1y,
 			},
 			chart.ContinuousSeries{
 				Name:    "b",
-				XValues: []float64{3.0, 4.0, 5.0, 6.0},
-				YValues: []float64{6.0, 5.0, 4.0, 1.0},
+				XValues: s2x,
+				YValues: s2y,
+			},
+			chart.AnnotationSeries{
+				Name: "a - last value",
+				Style: chart.Style{
+					Show:        true,
+					StrokeColor: chart.GetDefaultSeriesStrokeColor(0),
+				},
+				Annotations: []chart.Annotation{
+					chart.Annotation{
+						X:     s1x[len(s1x)-1],
+						Y:     s1y[len(s1y)-1],
+						Label: chart.FloatValueFormatter(s1y[len(s1y)-1]),
+					},
+				},
+			},
+			chart.AnnotationSeries{
+				Name: "b - last value",
+				Style: chart.Style{
+					Show:        true,
+					StrokeColor: chart.GetDefaultSeriesStrokeColor(1),
+				},
+				Annotations: []chart.Annotation{
+					chart.Annotation{
+						X:     s2x[len(s2x)-1],
+						Y:     s2y[len(s2y)-1],
+						Label: chart.FloatValueFormatter(s2y[len(s2y)-1]),
+					},
+				},
 			},
 		},
 	}
@@ -74,6 +108,9 @@ func main() {
 	app.SetName("Chart Test Server")
 	app.SetLogger(web.NewStandardOutputLogger())
 	app.GET("/", chartHandler)
-	app.GET("/:format", chartHandler)
+	app.GET("/format/:format", chartHandler)
+	app.GET("/favico.ico", func(rc *web.RequestContext) web.ControllerResult {
+		return rc.Raw([]byte{})
+	})
 	log.Fatal(app.Start())
 }

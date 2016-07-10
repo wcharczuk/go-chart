@@ -9,7 +9,7 @@ import (
 
 // Renderer represents the basic methods required to draw a chart.
 type Renderer interface {
-	// GetDPI returns the dpi for the renderer.
+	// GetDPI gets the DPI for the renderer.
 	GetDPI() float64
 
 	// SetDPI sets the DPI for the renderer.

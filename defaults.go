@@ -32,18 +32,25 @@ const (
 	DefaultAxisFontSize = 10.0
 	// DefaultTitleTop is the default distance from the top of the chart to put the title.
 	DefaultTitleTop = 10
+
 	// DefaultYAxisMargin is the default distance from the right of the canvas to the y axis labels.
-	DefaultYAxisMargin = 5
+	DefaultYAxisMargin = 10
 	// DefaultXAxisMargin is the default distance from bottom of the canvas to the x axis labels.
 	DefaultXAxisMargin = 10
+
+	//DefaultVerticalTickWidth is half the margin.
+	DefaultVerticalTickWidth = DefaultYAxisMargin >> 1
+
+	//DefaultHorizontalTickWidth is half the margin.
+	DefaultHorizontalTickWidth = DefaultXAxisMargin >> 1
+
 	// DefaultMinimumTickHorizontalSpacing is the minimum distance between horizontal ticks.
 	DefaultMinimumTickHorizontalSpacing = 20
 	// DefaultMinimumTickVerticalSpacing is the minimum distance between vertical ticks.
 	DefaultMinimumTickVerticalSpacing = 20
+
 	// DefaultDateFormat is the default date format.
 	DefaultDateFormat = "2006-01-02"
-	// DefaultMaxTickCount is the maximum number of ticks to draw
-	DefaultMaxTickCount = 7
 )
 
 var (

@@ -31,6 +31,18 @@ func (cs ContinuousSeries) GetValue(index int) (float64, float64) {
 	return cs.XValues[index], cs.YValues[index]
 }
 
+// GetValueFormatters returns value formatter defaults for the series.
+func (cs ContinuousSeries) GetValueFormatters() (x, y ValueFormatter) {
+	x = FloatValueFormatter
+	y = FloatValueFormatter
+	return
+}
+
+// GetYAxis returns which YAxis the series draws on.
+func (cs ContinuousSeries) GetYAxis() YAxisType {
+	return cs.YAxis
+}
+
 // Render renders the series.
 func (cs ContinuousSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
 	style := cs.Style.WithDefaultsFrom(defaults)

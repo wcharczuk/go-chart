@@ -8,14 +8,13 @@ func DrawLineSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, vs
 		return
 	}
 
-	cx := canvasBox.Left
-	cy := canvasBox.Top
+	ct := canvasBox.Top
 	cb := canvasBox.Bottom
-	cw := canvasBox.Width
+	cr := canvasBox.Right
 
 	v0x, v0y := vs.GetValue(0)
-	x0 := cw - xrange.Translate(v0x)
-	y0 := yrange.Translate(v0y)
+	x0 := cr - xrange.Translate(v0x)
+	y0 := yrange.Translate(v0y) + ct
 
 	var vx, vy float64
 	var x, y int
@@ -23,15 +22,15 @@ func DrawLineSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, vs
 	fill := s.GetFillColor()
 	if !fill.IsZero() {
 		r.SetFillColor(fill)
-		r.MoveTo(x0+cx, y0+cy)
+		r.MoveTo(x0, y0)
 		for i := 1; i < vs.Len(); i++ {
 			vx, vy = vs.GetValue(i)
-			x = cw - xrange.Translate(vx)
-			y = yrange.Translate(vy)
-			r.LineTo(x+cx, y+cy)
+			x = cr - xrange.Translate(vx)
+			y = yrange.Translate(vy) + ct
+			r.LineTo(x, y)
 		}
-		r.LineTo(x+cx, cb)
-		r.LineTo(x0+cx, cb)
+		r.LineTo(x, cb)
+		r.LineTo(x0, cb)
 		r.Close()
 		r.Fill()
 	}
@@ -40,12 +39,12 @@ func DrawLineSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, vs
 	r.SetStrokeColor(stroke)
 	r.SetStrokeWidth(s.GetStrokeWidth(DefaultStrokeWidth))
 
-	r.MoveTo(x0+cx, y0+cy)
+	r.MoveTo(x0, y0)
 	for i := 1; i < vs.Len(); i++ {
 		vx, vy = vs.GetValue(i)
-		x = cw - xrange.Translate(vx)
-		y = yrange.Translate(vy)
-		r.LineTo(x+cx, y+cy)
+		x = cr - xrange.Translate(vx)
+		y = yrange.Translate(vy) + ct
+		r.LineTo(x, y)
 	}
 	r.Stroke()
 }
@@ -81,6 +80,7 @@ func DrawAnnotation(r Renderer, canvasBox Box, xrange, yrange Range, s Style, lx
 	r.SetFillColor(s.GetFillColor(DefaultAnnotationFillColor))
 	r.SetStrokeColor(s.GetStrokeColor())
 	r.SetStrokeWidth(s.GetStrokeWidth())
+
 	r.MoveTo(lx, ly)
 	r.LineTo(ltlx, ltly)
 	r.LineTo(ltrx, ltry)

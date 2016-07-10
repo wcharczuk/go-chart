@@ -3,8 +3,6 @@ package chart
 import (
 	"fmt"
 	"time"
-
-	"github.com/blendlabs/go-util"
 )
 
 // ValueFormatter is a function that takes a value and produces a string.
@@ -26,7 +24,7 @@ func TimeValueFormatterWithFormat(v interface{}, dateFormat string) string {
 	if typed, isTyped := v.(float64); isTyped {
 		return time.Unix(int64(typed), 0).Format(dateFormat)
 	}
-	return util.StringEmpty
+	return ""
 }
 
 // FloatValueFormatter is a ValueFormatter for float64.
@@ -39,5 +37,5 @@ func FloatValueFormatterWithFormat(v interface{}, floatFormat string) string {
 	if typed, isTyped := v.(float64); isTyped {
 		return fmt.Sprintf(floatFormat, typed)
 	}
-	return util.StringEmpty
+	return ""
 }
