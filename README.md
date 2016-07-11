@@ -1,5 +1,6 @@
 go-chart
 ========
+[![Build Status](https://travis-ci.org/wcharczuk/go-chart.svg?branch=master)](https://travis-ci.org/wcharczuk/go-chart)
 
 Package `chart` is a very simple golang native charting library that supports timeseries and continuous
 line charts. 
