@@ -69,8 +69,6 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 				YValues: s2y,
 			},
 		},
-		CreateContinuousSeriesLastValueLabel("a - last value", s1x, s1y, chart.FloatValueFormatter),
-		CreateContinuousSeriesLastValueLabel("b - last value", s2, s2y, chart.FloatValueFormatter),
 	}
 
 	if format == "png" {

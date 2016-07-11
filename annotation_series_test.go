@@ -3,43 +3,10 @@ package chart
 import (
 	"image/color"
 	"testing"
-	"time"
 
 	"github.com/blendlabs/go-assert"
 	"github.com/wcharczuk/go-chart/drawing"
 )
-
-func TestCreateContinuousSeriesLastValueLabel(t *testing.T) {
-	assert := assert.New(t)
-
-	as := CreateContinuousSeriesLastValueLabel("test", []float64{1, 2, 3}, []float64{4, 5, 6}, FloatValueFormatter)
-	assert.Equal("test", as.GetName())
-	assert.False(as.GetStyle().IsZero())
-	assert.True(as.GetStyle().Show)
-	assert.NotEmpty(as.Annotations)
-	assert.Equal(3.0, as.Annotations[0].X)
-	assert.Equal(6.0, as.Annotations[0].Y)
-	assert.Equal("6.00", as.Annotations[0].Label)
-}
-
-func TestCreateTimeSeriesLastValueLabel(t *testing.T) {
-	assert := assert.New(t)
-
-	d := time.Now().AddDate(0, 0, -1)
-
-	as := CreateTimeSeriesLastValueLabel("test", []time.Time{
-		time.Now().AddDate(0, 0, -3),
-		time.Now().AddDate(0, 0, -2),
-		d,
-	}, []float64{4, 5, 6}, FloatValueFormatter)
-	assert.Equal("test", as.GetName())
-	assert.False(as.GetStyle().IsZero())
-	assert.True(as.GetStyle().Show)
-	assert.NotEmpty(as.Annotations)
-	assert.Equal(float64(d.Unix()), as.Annotations[0].X)
-	assert.Equal(6.0, as.Annotations[0].Y)
-	assert.Equal("6.00", as.Annotations[0].Label)
-}
 
 func TestAnnotationSeriesMeasure(t *testing.T) {
 	assert := assert.New(t)
