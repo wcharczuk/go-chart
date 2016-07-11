@@ -77,8 +77,8 @@ func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, axisType YAxisType, 
 			v := t.Value
 			ly := ra.Translate(v) + canvasBox.Top
 
-			th := int(fontSize) >> 1
-			ty := ly + th
+			_, pth := r.MeasureText(t.Label)
+			ty := ly + pth>>1
 
 			r.Text(t.Label, tx, ty)
 
@@ -97,13 +97,12 @@ func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, axisType YAxisType, 
 			v := t.Value
 			ly := ra.Translate(v) + canvasBox.Top
 
-			ptw, _ := r.MeasureText(t.Label)
+			ptw, pth := r.MeasureText(t.Label)
 
 			tw := ptw
-			th := int(fontSize)
 
-			tx = lx - (int(tw) + (DefaultYAxisMargin >> 1))
-			ty := ly + th>>1
+			tx = lx - (tw + DefaultYAxisMargin)
+			ty := ly + pth>>1
 
 			r.Text(t.Label, tx, ty)
 

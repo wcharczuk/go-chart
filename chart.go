@@ -288,17 +288,18 @@ func (c Chart) getYAxisWidth(r Renderer, ticks []Tick) int {
 }
 
 func (c Chart) getYAxisSecondaryWidth(r Renderer, ticks []Tick) int {
-	var ll string
+	r.SetFontSize(c.YAxisSecondary.Style.GetFontSize(DefaultFontSize))
+	r.SetFont(c.YAxisSecondary.Style.GetFont(c.Font))
+
+	var textWidth int
 	for _, t := range ticks {
-		if len(t.Label) > len(ll) {
-			ll = t.Label
+		tw, _ := r.MeasureText(t.Label)
+		if tw > textWidth {
+			textWidth = tw
 		}
 	}
 
-	r.SetFontSize(c.YAxisSecondary.Style.GetFontSize(DefaultFontSize))
-	r.SetFont(c.YAxisSecondary.Style.GetFont(c.Font))
-	tw, _ := r.MeasureText(ll)
-	return tw + DefaultYAxisMargin
+	return textWidth + DefaultYAxisMargin
 }
 
 func (c Chart) setRangeDomains(canvasBox Box, xrange, yrange, yrangeAlt Range) (Range, Range, Range) {
