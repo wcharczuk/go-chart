@@ -36,14 +36,7 @@ func (ya YAxis) GetTicks(r Renderer, ra Range, vf ValueFormatter) []Tick {
 
 func (ya YAxis) generateTicks(r Renderer, ra Range, vf ValueFormatter) []Tick {
 	step := ya.getTickStep(r, ra, vf)
-	return ya.generateTicksWithStep(ra, step, vf)
-}
-
-func (ya YAxis) getTickCount(r Renderer, ra Range, vf ValueFormatter) int {
-	textHeight := int(ya.Style.GetFontSize(DefaultFontSize))
-	height := textHeight + DefaultMinimumTickVerticalSpacing
-	count := int(math.Ceil(float64(ra.Domain) / float64(height)))
-	return count
+	return GenerateTicksWithStep(ra, step, vf)
 }
 
 func (ya YAxis) getTickStep(r Renderer, ra Range, vf ValueFormatter) float64 {
@@ -51,18 +44,11 @@ func (ya YAxis) getTickStep(r Renderer, ra Range, vf ValueFormatter) float64 {
 	return ra.Delta() / float64(tickCount)
 }
 
-func (ya YAxis) generateTicksWithStep(ra Range, step float64, vf ValueFormatter) []Tick {
-	var ticks []Tick
-	for cursor := ra.Min; cursor < ra.Max; cursor += step {
-		ticks = append(ticks, Tick{
-			Value: cursor,
-			Label: vf(cursor),
-		})
-		if len(ticks) == 20 {
-			return ticks
-		}
-	}
-	return ticks
+func (ya YAxis) getTickCount(r Renderer, ra Range, vf ValueFormatter) int {
+	textHeight := int(ya.Style.GetFontSize(DefaultFontSize))
+	height := textHeight + DefaultMinimumTickVerticalSpacing
+	count := int(math.Ceil(float64(ra.Domain) / float64(height)))
+	return count
 }
 
 // Render renders the axis.

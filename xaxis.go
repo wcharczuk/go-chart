@@ -37,7 +37,13 @@ func (xa XAxis) GetTicks(r Renderer, ra Range, vf ValueFormatter) []Tick {
 
 func (xa XAxis) generateTicks(r Renderer, ra Range, vf ValueFormatter) []Tick {
 	step := xa.getTickStep(r, ra, vf)
-	return xa.generateTicksWithStep(ra, step, vf)
+	return GenerateTicksWithStep(ra, step, vf)
+}
+
+func (xa XAxis) getTickStep(r Renderer, ra Range, vf ValueFormatter) float64 {
+	tickCount := xa.getTickCount(r, ra, vf)
+	step := ra.Delta() / float64(tickCount)
+	return step
 }
 
 func (xa XAxis) getTickCount(r Renderer, ra Range, vf ValueFormatter) int {
@@ -56,27 +62,6 @@ func (xa XAxis) getTickCount(r Renderer, ra Range, vf ValueFormatter) int {
 	width := textWidth + DefaultMinimumTickHorizontalSpacing
 	count := int(math.Ceil(float64(ra.Domain) / float64(width)))
 	return count
-}
-
-func (xa XAxis) getTickStep(r Renderer, ra Range, vf ValueFormatter) float64 {
-	tickCount := xa.getTickCount(r, ra, vf)
-	step := ra.Delta() / float64(tickCount)
-	return step
-}
-
-func (xa XAxis) generateTicksWithStep(ra Range, step float64, vf ValueFormatter) []Tick {
-	var ticks []Tick
-	for cursor := ra.Min; cursor < ra.Max; cursor += step {
-		ticks = append(ticks, Tick{
-			Value: cursor,
-			Label: vf(cursor),
-		})
-
-		if len(ticks) == 20 {
-			return ticks
-		}
-	}
-	return ticks
 }
 
 // Render renders the axis

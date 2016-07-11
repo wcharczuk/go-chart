@@ -54,7 +54,7 @@ graph := chart.Chart{
             },
             Annotations: []chart.Annotation{
                 chart.Annotation{
-                    X:     float64(xvalues[len(xvalues)-1].Unix()), //todo: helpers for this.
+                    X:     chart.TimeToFloat64(xvalues[len(xvalues)-1]),
                     Y:     yvalues[len(yvalues)-1],
                     Label: chart.FloatValueFormatter(yvalues[len(yvalues)-1]),
                 },

@@ -1,45 +1,6 @@
 package chart
 
-import (
-	"math"
-	"time"
-)
-
-// CreateContinuousSeriesLastValueLabel returns a (1) value annotation series.
-func CreateContinuousSeriesLastValueLabel(name string, xvalues, yvalues []float64, valueFormatter ValueFormatter) AnnotationSeries {
-	return AnnotationSeries{
-		Name: name,
-		Style: Style{
-			Show:        true,
-			StrokeColor: GetDefaultSeriesStrokeColor(0),
-		},
-		Annotations: []Annotation{
-			Annotation{
-				X:     xvalues[len(xvalues)-1],
-				Y:     yvalues[len(yvalues)-1],
-				Label: valueFormatter(yvalues[len(yvalues)-1]),
-			},
-		},
-	}
-}
-
-// CreateTimeSeriesLastValueLabel returns a (1) value annotation series.
-func CreateTimeSeriesLastValueLabel(name string, xvalues []time.Time, yvalues []float64, valueFormatter ValueFormatter) AnnotationSeries {
-	return AnnotationSeries{
-		Name: name,
-		Style: Style{
-			Show:        true,
-			StrokeColor: GetDefaultSeriesStrokeColor(0),
-		},
-		Annotations: []Annotation{
-			Annotation{
-				X:     float64(xvalues[len(xvalues)-1].Unix()),
-				Y:     yvalues[len(yvalues)-1],
-				Label: valueFormatter(yvalues[len(yvalues)-1]),
-			},
-		},
-	}
-}
+import "math"
 
 // Annotation is a label on the chart.
 type Annotation struct {

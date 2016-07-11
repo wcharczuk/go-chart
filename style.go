@@ -15,17 +15,15 @@ type Style struct {
 
 	StrokeWidth float64
 	StrokeColor drawing.Color
-
-	FillColor drawing.Color
-
-	FontSize  float64
-	FontColor drawing.Color
-	Font      *truetype.Font
+	FillColor   drawing.Color
+	FontSize    float64
+	FontColor   drawing.Color
+	Font        *truetype.Font
 }
 
 // IsZero returns if the object is set or not.
 func (s Style) IsZero() bool {
-	return s.StrokeColor.IsZero() && s.FillColor.IsZero() && s.StrokeWidth == 0 && s.FontSize == 0 && s.Font == nil
+	return s.StrokeColor.IsZero() && s.FillColor.IsZero() && s.StrokeWidth == 0 && s.FontColor.IsZero() && s.FontSize == 0 && s.Font == nil
 }
 
 // GetStrokeColor returns the stroke color.
@@ -107,12 +105,12 @@ func (s Style) GetPadding(defaults ...Box) Box {
 
 // WithDefaultsFrom coalesces two styles into a new style.
 func (s Style) WithDefaultsFrom(defaults Style) (final Style) {
+	final.StrokeColor = s.GetStrokeColor(defaults.StrokeColor)
+	final.StrokeWidth = s.GetStrokeWidth(defaults.StrokeWidth)
 	final.FillColor = s.GetFillColor(defaults.FillColor)
 	final.FontColor = s.GetFontColor(defaults.FontColor)
 	final.Font = s.GetFont(defaults.Font)
 	final.Padding = s.GetPadding(defaults.Padding)
-	final.StrokeColor = s.GetStrokeColor(defaults.StrokeColor)
-	final.StrokeWidth = s.GetStrokeWidth(defaults.StrokeWidth)
 	return
 }
 
