@@ -91,6 +91,13 @@ graph := chart.Chart{
 graph.Render(chart.PNG, buffer)
 ```
 
+# 2 Y-Axis Charts 
+
+ ![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/two_axispng)
+
+It is also possible to draw series against 2 separate y-axis with their own ranges (usually good for comparison charts).
+In order to map the series to an alternate axis make sure to set the `YAxis` property of the series to `YAxisSecondary`.
+
 # Design Philosophy
 
 I wanted to make a charting library that used only native golang, that could be stood up on a server (i.e. it had built in fonts).
