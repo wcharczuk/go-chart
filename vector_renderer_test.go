@@ -47,6 +47,6 @@ func TestVectorRendererMeasureText(t *testing.T) {
 	vr.SetFontSize(12.0)
 
 	w, h := vr.MeasureText("Ljp")
-	assert.Equal(26, w)
+	assert.Equal(21, w)
 	assert.Equal(15, h)
 }
