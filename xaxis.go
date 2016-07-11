@@ -67,8 +67,6 @@ func (xa XAxis) getTickCount(r Renderer, ra Range, vf ValueFormatter) int {
 // Render renders the axis
 func (xa XAxis) Render(r Renderer, canvasBox Box, ra Range, ticks []Tick) {
 	tickFontSize := xa.Style.GetFontSize(DefaultFontSize)
-	tickHeight := drawing.PointsToPixels(r.GetDPI(), tickFontSize)
-	ty := canvasBox.Bottom + DefaultXAxisMargin + int(tickHeight)
 
 	r.SetStrokeColor(xa.Style.GetStrokeColor(DefaultAxisColor))
 	r.SetStrokeWidth(xa.Style.GetStrokeWidth(DefaultAxisLineWidth))
@@ -81,6 +79,17 @@ func (xa XAxis) Render(r Renderer, canvasBox Box, ra Range, ticks []Tick) {
 	r.SetFontSize(tickFontSize)
 
 	sort.Sort(Ticks(ticks))
+
+	textHeight := 0
+	for _, t := range ticks {
+		_, th := r.MeasureText(t.Label)
+		if th > textHeight {
+			textHeight = th
+		}
+	}
+
+	ty := canvasBox.Bottom + DefaultXAxisMargin + int(textHeight)
+
 	for _, t := range ticks {
 		v := t.Value
 		x := ra.Translate(v)

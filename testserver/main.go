@@ -112,13 +112,15 @@ func measureTestHandler(rc *web.RequestContext) web.ControllerResult {
 	}
 	r.SetDPI(96)
 	r.SetFont(f)
-	r.SetFontSize(24.0)
+	r.SetFontSize(10.0)
 	r.SetFontColor(drawing.ColorBlack)
 	r.SetStrokeColor(drawing.ColorBlack)
 
+	label := "goog - 702.23"
+
 	tx, ty := 64, 64
 
-	tw, th := r.MeasureText("test")
+	tw, th := r.MeasureText(label)
 	r.MoveTo(tx, ty)
 	r.LineTo(tx+tw, ty)
 	r.LineTo(tx+tw, ty-th)
@@ -126,7 +128,7 @@ func measureTestHandler(rc *web.RequestContext) web.ControllerResult {
 	r.LineTo(tx, ty)
 	r.Stroke()
 
-	r.Text("test", tx, ty)
+	r.Text(label, tx, ty)
 
 	r.Save(rc.Response)
 	return nil
