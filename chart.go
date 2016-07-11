@@ -261,14 +261,15 @@ func (c Chart) getAxisAdjustedCanvasBox(r Renderer, defaults Box, xticks, yticks
 func (c Chart) getXAxisHeight(r Renderer, ticks []Tick) int {
 	r.SetFontSize(c.XAxis.Style.GetFontSize(DefaultFontSize))
 	r.SetFont(c.XAxis.Style.GetFont(c.Font))
-	var tl int
+
+	var textHeight int
 	for _, t := range ticks {
-		_, lh := r.MeasureText(t.Label)
-		if lh > tl {
-			tl = lh
+		_, th := r.MeasureText(t.Label)
+		if th > textHeight {
+			textHeight = th
 		}
 	}
-	return tl + DefaultXAxisMargin
+	return textHeight + (2 * DefaultXAxisMargin) // top and bottom.
 }
 
 func (c Chart) getYAxisWidth(r Renderer, ticks []Tick) int {

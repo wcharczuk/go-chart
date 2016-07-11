@@ -80,16 +80,14 @@ func (xa XAxis) Render(r Renderer, canvasBox Box, ra Range, ticks []Tick) {
 
 	sort.Sort(Ticks(ticks))
 
-	textHeight := 0
+	var textHeight int
 	for _, t := range ticks {
 		_, th := r.MeasureText(t.Label)
 		if th > textHeight {
 			textHeight = th
 		}
 	}
-
 	ty := canvasBox.Bottom + DefaultXAxisMargin + int(textHeight)
-
 	for _, t := range ticks {
 		v := t.Value
 		x := ra.Translate(v)
