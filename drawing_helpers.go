@@ -105,7 +105,7 @@ func DrawAnnotation(r Renderer, canvasBox Box, xrange, yrange Range, s Style, lx
 	//draw the shape...
 	r.SetFillColor(s.GetFillColor(DefaultAnnotationFillColor))
 	r.SetStrokeColor(s.GetStrokeColor())
-	r.SetStrokeWidth(strokeWidth)
+	r.SetStrokeWidth(s.GetStrokeWidth())
 
 	r.MoveTo(lx, ly)
 	r.LineTo(ltx, lty)
