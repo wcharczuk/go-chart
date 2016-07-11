@@ -1,5 +1,7 @@
 package chart
 
+import "math"
+
 // Annotation is a label on the chart.
 type Annotation struct {
 	X, Y  float64
@@ -32,10 +34,10 @@ func (as AnnotationSeries) GetYAxis() YAxisType {
 // Measure returns a bounds box of the series.
 func (as AnnotationSeries) Measure(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) Box {
 	box := Box{
-		Top:    canvasBox.Bottom,
-		Left:   canvasBox.Right,
-		Right:  canvasBox.Left,
-		Bottom: canvasBox.Top,
+		Top:    math.MaxInt32,
+		Left:   math.MaxInt32,
+		Right:  0,
+		Bottom: 0,
 	}
 	if as.Style.Show {
 		style := as.Style.WithDefaultsFrom(Style{
@@ -49,18 +51,18 @@ func (as AnnotationSeries) Measure(r Renderer, canvasBox Box, xrange, yrange Ran
 		for _, a := range as.Annotations {
 			lx := canvasBox.Right - xrange.Translate(a.X)
 			ly := yrange.Translate(a.Y) + canvasBox.Top
-			aBox := MeasureAnnotation(r, canvasBox, xrange, yrange, style, lx, ly, a.Label)
-			if aBox.Top < box.Top {
-				box.Top = aBox.Top
+			ab := MeasureAnnotation(r, canvasBox, xrange, yrange, style, lx, ly, a.Label)
+			if ab.Top < box.Top {
+				box.Top = ab.Top
 			}
-			if aBox.Left < box.Left {
-				box.Left = aBox.Left
+			if ab.Left < box.Left {
+				box.Left = ab.Left
 			}
-			if aBox.Right > box.Right {
-				box.Right = aBox.Right
+			if ab.Right > box.Right {
+				box.Right = ab.Right
 			}
-			if aBox.Bottom > box.Bottom {
-				box.Bottom = aBox.Bottom
+			if ab.Bottom > box.Bottom {
+				box.Bottom = ab.Bottom
 			}
 		}
 	}
