@@ -60,7 +60,7 @@ func MeasureAnnotation(r Renderer, canvasBox Box, xrange, yrange Range, s Style,
 	pb := s.Padding.GetBottom(DefaultAnnotationPadding.Bottom)
 
 	top := ly - (pt + halfTextHeight)
-	right := lx + pl + pr + textWidth
+	right := lx + pl + pr + textWidth + DefaultAnnotationDeltaWidth
 	bottom := ly + (pb + halfTextHeight)
 
 	return Box{
@@ -88,16 +88,16 @@ func DrawAnnotation(r Renderer, canvasBox Box, xrange, yrange Range, s Style, lx
 	textX := lx + pl + DefaultAnnotationDeltaWidth
 	textY := ly + halfTextHeight
 
-	ltx := lx + pl + DefaultAnnotationDeltaWidth
+	ltx := lx + DefaultAnnotationDeltaWidth
 	lty := ly - (pt + halfTextHeight)
 
-	rtx := lx + pl + pr + textWidth
+	rtx := lx + pl + pr + textWidth + DefaultAnnotationDeltaWidth
 	rty := ly - (pt + halfTextHeight)
 
-	rbx := lx + pl + pr + textWidth
+	rbx := lx + pl + pr + textWidth + DefaultAnnotationDeltaWidth
 	rby := ly + (pb + halfTextHeight)
 
-	lbx := lx + pl + DefaultAnnotationDeltaWidth
+	lbx := lx + DefaultAnnotationDeltaWidth
 	lby := ly + (pb + halfTextHeight)
 
 	//draw the shape...
