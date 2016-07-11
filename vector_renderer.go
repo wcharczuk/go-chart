@@ -77,28 +77,22 @@ func (vr *vectorRenderer) Close() {
 
 // Stroke draws the path with no fill.
 func (vr *vectorRenderer) Stroke() {
-	vr.s.FillColor = drawing.ColorTransparent
-	vr.s.FontColor = drawing.ColorTransparent
-	vr.drawPath()
+	vr.drawPath(vr.s.SVGStroke())
 }
 
 // Fill draws the path with no stroke.
 func (vr *vectorRenderer) Fill() {
-	vr.s.StrokeColor = drawing.ColorTransparent
-	vr.s.StrokeWidth = 0
-	vr.s.FontColor = drawing.ColorTransparent
-	vr.drawPath()
+	vr.drawPath(vr.s.SVGFill())
 }
 
 // FillStroke draws the path with both fill and stroke.
 func (vr *vectorRenderer) FillStroke() {
-	vr.s.FontColor = drawing.ColorTransparent
-	vr.drawPath()
+	vr.drawPath(vr.s.SVGFillAndStroke())
 }
 
-func (vr *vectorRenderer) drawPath() {
-	vr.c.Path(strings.Join(vr.p, "\n"), vr.s.SVG(vr.dpi))
-	vr.p = []string{}
+func (vr *vectorRenderer) drawPath(s Style) {
+	vr.c.Path(strings.Join(vr.p, "\n"), s.SVG(vr.dpi))
+	vr.p = []string{} // clear the path
 }
 
 // Circle implements the interface method.
@@ -134,10 +128,8 @@ func (vr *vectorRenderer) svgFontFace() string {
 
 // Text draws a text blob.
 func (vr *vectorRenderer) Text(body string, x, y int) {
-	vr.s.FillColor = drawing.ColorTransparent
-	vr.s.StrokeColor = drawing.ColorTransparent
-	vr.s.StrokeWidth = 0
-	vr.c.Text(x, y, body, vr.s.SVG(vr.dpi)+";"+vr.svgFontFace())
+	s := vr.s.SVGText()
+	vr.c.Text(x, y, body, s.SVG(vr.dpi)+";"+vr.svgFontFace())
 }
 
 // MeasureText uses the truetype font drawer to measure the width of text.

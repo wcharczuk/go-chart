@@ -69,7 +69,9 @@ func (ya YAxis) generateTicksWithStep(ra Range, step float64, vf ValueFormatter)
 func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, axisType YAxisType, ticks []Tick) {
 	r.SetStrokeColor(ya.Style.GetStrokeColor(DefaultAxisColor))
 	r.SetStrokeWidth(ya.Style.GetStrokeWidth(DefaultAxisLineWidth))
-	r.SetFontColor(ya.Style.GetFontColor(DefaultAxisColor))
+
+	fontColor := ya.Style.GetFontColor(DefaultAxisColor)
+	r.SetFontColor(fontColor)
 	fontSize := ya.Style.GetFontSize(DefaultFontSize)
 	r.SetFontSize(fontSize)
 
