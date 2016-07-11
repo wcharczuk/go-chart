@@ -97,7 +97,7 @@ func DrawAnnotation(r Renderer, canvasBox Box, xrange, yrange Range, s Style, lx
 	rbx := lx + pl + pr + textWidth
 	rby := ly + (pb + halfTextHeight)
 
-	lbx := lx + DefaultAnnotationDeltaWidth
+	lbx := lx + pl + DefaultAnnotationDeltaWidth
 	lby := ly + (pb + halfTextHeight)
 
 	//draw the shape...
