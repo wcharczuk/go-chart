@@ -80,8 +80,7 @@ func MeasureAnnotation(r Renderer, canvasBox Box, xrange, yrange Range, s Style,
 func DrawAnnotation(r Renderer, canvasBox Box, xrange, yrange Range, s Style, lx, ly int, label string) {
 	r.SetFont(s.GetFont())
 	r.SetFontSize(s.GetFontSize(DefaultAnnotationFontSize))
-	textWidth, _ := r.MeasureText(label)
-	textHeight := int(math.Floor(DefaultAnnotationFontSize))
+	textWidth, textHeight := r.MeasureText(label)
 	halfTextHeight := textHeight >> 1
 
 	pt := s.Padding.GetTop(DefaultAnnotationPadding.Top)

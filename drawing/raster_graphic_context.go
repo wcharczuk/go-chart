@@ -191,7 +191,7 @@ func (rgc *RasterGraphicContext) GetStringBounds(s string) (left, top, right, bo
 // recalc recalculates scale and bounds values from the font size, screen
 // resolution and font metrics, and invalidates the glyph cache.
 func (rgc *RasterGraphicContext) recalc() {
-	rgc.current.Scale = rgc.current.FontSizePoints * float64(rgc.DPI)
+	rgc.current.Scale = rgc.current.FontSizePoints * float64(rgc.DPI) * 64.0 / 72.0
 }
 
 // SetFont sets the font used to draw text.
