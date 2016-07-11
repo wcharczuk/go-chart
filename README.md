@@ -93,7 +93,7 @@ graph.Render(chart.PNG, buffer)
 
 # 2 Y-Axis Charts 
 
- ![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/two_axispng)
+ ![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/two_axis.png)
 
 It is also possible to draw series against 2 separate y-axis with their own ranges (usually good for comparison charts).
 In order to map the series to an alternate axis make sure to set the `YAxis` property of the series to `YAxisSecondary`.
