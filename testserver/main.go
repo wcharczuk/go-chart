@@ -68,36 +68,9 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 				XValues: s2x,
 				YValues: s2y,
 			},
-			chart.AnnotationSeries{
-				Name: "a - last value",
-				Style: chart.Style{
-					Show:        true,
-					StrokeColor: chart.GetDefaultSeriesStrokeColor(0),
-				},
-				Annotations: []chart.Annotation{
-					chart.Annotation{
-						X:     s1x[len(s1x)-1],
-						Y:     s1y[len(s1y)-1],
-						Label: chart.FloatValueFormatter(s1y[len(s1y)-1]),
-					},
-				},
-			},
-			chart.AnnotationSeries{
-				Name:  "b - last value",
-				YAxis: chart.YAxisSecondary,
-				Style: chart.Style{
-					Show:        true,
-					StrokeColor: chart.GetDefaultSeriesStrokeColor(1),
-				},
-				Annotations: []chart.Annotation{
-					chart.Annotation{
-						X:     s2x[len(s2x)-1],
-						Y:     s2y[len(s2y)-1],
-						Label: chart.FloatValueFormatter(s2y[len(s2y)-1]),
-					},
-				},
-			},
 		},
+		CreateContinuousSeriesLastValueLabel("a - last value", s1x, s1y, chart.FloatValueFormatter),
+		CreateContinuousSeriesLastValueLabel("b - last value", s2, s2y, chart.FloatValueFormatter),
 	}
 
 	if format == "png" {

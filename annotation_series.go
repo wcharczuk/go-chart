@@ -1,6 +1,47 @@
 package chart
 
-import "math"
+import (
+	"math"
+	"time"
+
+	"github.com/wcharczuk/go-chart"
+)
+
+// CreateContinuousSeriesLastValueLabel returns a (1) value annotation series.
+func CreateContinuousSeriesLastValueLabel(name string, xvalues, yvalues []float64, valueFormatter ValueFormatter) AnnotationSeries {
+	return AnnotationSeries{
+		Name: name,
+		Style: Style{
+			Show:        true,
+			StrokeColor: chart.GetDefaultSeriesStrokeColor(0),
+		},
+		Annotations: []chart.Annotation{
+			Annotation{
+				X:     xvalues[len(xvalues)-1],
+				Y:     yvalues[len(yvalues)-1],
+				Label: valueFormatter(yvalues[len(yvalues)-1]),
+			},
+		},
+	}
+}
+
+// CreateTimeSeriesLastValueLabel returns a (1) value annotation series.
+func CreateTimeSeriesLastValueLabel(name string, xvalues []time.Time, yvalues []float64, valueFormatter ValueFormatter) AnnotationSeries {
+	return AnnotationSeries{
+		Name: name,
+		Style: Style{
+			Show:        true,
+			StrokeColor: chart.GetDefaultSeriesStrokeColor(0),
+		},
+		Annotations: []chart.Annotation{
+			Annotation{
+				X:     xvalues[len(xvalues)-1],
+				Y:     yvalues[len(yvalues)-1],
+				Label: valueFormatter(yvalues[len(yvalues)-1]),
+			},
+		},
+	}
+}
 
 // Annotation is a label on the chart.
 type Annotation struct {
