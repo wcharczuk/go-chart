@@ -143,7 +143,7 @@ func (vr *vectorRenderer) MeasureText(body string) (width, height int) {
 		}
 		w := vr.fc.MeasureString(body).Ceil()
 
-		width = int(drawing.PointsToPixels(vr.dpi, float64(w)))
+		width = w
 		height = int(drawing.PointsToPixels(vr.dpi, vr.s.FontSize))
 	}
 	return
