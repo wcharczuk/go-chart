@@ -273,16 +273,18 @@ func (c Chart) getXAxisHeight(r Renderer, ticks []Tick) int {
 }
 
 func (c Chart) getYAxisWidth(r Renderer, ticks []Tick) int {
-	var ll string
-	for _, t := range ticks {
-		if len(t.Label) > len(ll) {
-			ll = t.Label
-		}
-	}
 	r.SetFontSize(c.YAxis.Style.GetFontSize(DefaultFontSize))
 	r.SetFont(c.YAxis.Style.GetFont(c.Font))
-	tw, _ := r.MeasureText(ll)
-	return tw + DefaultYAxisMargin
+
+	var textWidth int
+	for _, t := range ticks {
+		tw, _ := r.MeasureText(t.Label)
+		if tw > textWidth {
+			textWidth = tw
+		}
+	}
+
+	return textWidth + DefaultYAxisMargin
 }
 
 func (c Chart) getYAxisSecondaryWidth(r Renderer, ticks []Tick) int {
