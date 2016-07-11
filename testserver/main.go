@@ -35,12 +35,12 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 		Height: 400,
 		XAxis: chart.XAxis{
 			Style: chart.Style{
-				Show: false,
+				Show: true,
 			},
 		},
 		YAxis: chart.YAxis{
 			Style: chart.Style{
-				Show: false,
+				Show: true,
 			},
 			Range: chart.Range{
 				Min: 0.0,
@@ -49,7 +49,7 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 		},
 		YAxisSecondary: chart.YAxis{
 			Style: chart.Style{
-				Show: false,
+				Show: true,
 			},
 			Range: chart.Range{
 				Min: 0.8,

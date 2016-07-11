@@ -149,3 +149,35 @@ func (s Style) SVG(dpi float64) string {
 	}
 	return strings.Join([]string{strokeWidthText, strokeText, fillText, fontSizeText}, ";")
 }
+
+// SVGStroke returns the stroke components.
+func (s Style) SVGStroke() Style {
+	return Style{
+		StrokeColor: s.StrokeColor,
+		StrokeWidth: s.StrokeWidth,
+	}
+}
+
+// SVGFill returns the fill components.
+func (s Style) SVGFill() Style {
+	return Style{
+		FillColor: s.FillColor,
+	}
+}
+
+// SVGFillAndStroke returns the fill and stroke components.
+func (s Style) SVGFillAndStroke() Style {
+	return Style{
+		FillColor:   s.FillColor,
+		StrokeColor: s.StrokeColor,
+		StrokeWidth: s.StrokeWidth,
+	}
+}
+
+// SVGText returns just the text components of the style.
+func (s Style) SVGText() Style {
+	return Style{
+		FontColor: s.FontColor,
+		FontSize:  s.FontSize,
+	}
+}
