@@ -3,8 +3,6 @@ package chart
 import (
 	"math"
 	"time"
-
-	"github.com/wcharczuk/go-chart"
 )
 
 // CreateContinuousSeriesLastValueLabel returns a (1) value annotation series.
@@ -13,9 +11,9 @@ func CreateContinuousSeriesLastValueLabel(name string, xvalues, yvalues []float6
 		Name: name,
 		Style: Style{
 			Show:        true,
-			StrokeColor: chart.GetDefaultSeriesStrokeColor(0),
+			StrokeColor: GetDefaultSeriesStrokeColor(0),
 		},
-		Annotations: []chart.Annotation{
+		Annotations: []Annotation{
 			Annotation{
 				X:     xvalues[len(xvalues)-1],
 				Y:     yvalues[len(yvalues)-1],
@@ -31,11 +29,11 @@ func CreateTimeSeriesLastValueLabel(name string, xvalues []time.Time, yvalues []
 		Name: name,
 		Style: Style{
 			Show:        true,
-			StrokeColor: chart.GetDefaultSeriesStrokeColor(0),
+			StrokeColor: GetDefaultSeriesStrokeColor(0),
 		},
-		Annotations: []chart.Annotation{
+		Annotations: []Annotation{
 			Annotation{
-				X:     xvalues[len(xvalues)-1],
+				X:     float64(xvalues[len(xvalues)-1].Unix()),
 				Y:     yvalues[len(yvalues)-1],
 				Label: valueFormatter(yvalues[len(yvalues)-1]),
 			},
