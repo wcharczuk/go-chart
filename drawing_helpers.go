@@ -1,7 +1,5 @@
 package chart
 
-import "math"
-
 // DrawLineSeries draws a line series with a renderer.
 func DrawLineSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, vs ValueProvider) {
 	if vs.Len() == 0 {
@@ -53,8 +51,7 @@ func DrawLineSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, vs
 func MeasureAnnotation(r Renderer, canvasBox Box, xrange, yrange Range, s Style, lx, ly int, label string) Box {
 	r.SetFont(s.GetFont())
 	r.SetFontSize(s.GetFontSize(DefaultAnnotationFontSize))
-	textWidth, _ := r.MeasureText(label)
-	textHeight := int(math.Floor(DefaultAnnotationFontSize))
+	textWidth, textHeight := r.MeasureText(label)
 	halfTextHeight := textHeight >> 1
 
 	pt := s.Padding.GetTop(DefaultAnnotationPadding.Top)
@@ -62,17 +59,17 @@ func MeasureAnnotation(r Renderer, canvasBox Box, xrange, yrange Range, s Style,
 	pr := s.Padding.GetRight(DefaultAnnotationPadding.Right)
 	pb := s.Padding.GetBottom(DefaultAnnotationPadding.Bottom)
 
-	ltly := ly - (pt + halfTextHeight)
-	ltrx := lx + pl + pr + textWidth
-	lbry := ly + (pb + halfTextHeight)
+	top := ly - (pt + halfTextHeight)
+	right := lx + pl + pr + textWidth
+	bottom := ly + (pb + halfTextHeight)
 
 	return Box{
-		Top:    ltly,
+		Top:    top,
 		Left:   lx,
-		Right:  ltrx,
-		Bottom: lbry,
-		Width:  ltrx - lx,
-		Height: lbry - ltly,
+		Right:  right,
+		Bottom: bottom,
+		Width:  right - lx,
+		Height: bottom - top,
 	}
 }
 
@@ -91,17 +88,17 @@ func DrawAnnotation(r Renderer, canvasBox Box, xrange, yrange Range, s Style, lx
 	textX := lx + pl + DefaultAnnotationDeltaWidth
 	textY := ly + halfTextHeight
 
-	ltlx := lx + pl + DefaultAnnotationDeltaWidth
-	ltly := ly - (pt + halfTextHeight)
+	ltx := lx + pl + DefaultAnnotationDeltaWidth
+	lty := ly - (pt + halfTextHeight)
 
-	ltrx := lx + pl + pr + textWidth
-	ltry := ly - (pt + halfTextHeight)
+	rtx := lx + pl + pr + textWidth
+	rty := ly - (pt + halfTextHeight)
 
-	lbrx := lx + pl + pr + textWidth
-	lbry := ly + (pb + halfTextHeight)
+	rbx := lx + pl + pr + textWidth
+	rby := ly + (pb + halfTextHeight)
 
-	lblx := lx + DefaultAnnotationDeltaWidth
-	lbly := ly + (pb + halfTextHeight)
+	lbx := lx + DefaultAnnotationDeltaWidth
+	lby := ly + (pb + halfTextHeight)
 
 	//draw the shape...
 	r.SetFillColor(s.GetFillColor(DefaultAnnotationFillColor))
@@ -109,10 +106,10 @@ func DrawAnnotation(r Renderer, canvasBox Box, xrange, yrange Range, s Style, lx
 	r.SetStrokeWidth(s.GetStrokeWidth())
 
 	r.MoveTo(lx, ly)
-	r.LineTo(ltlx, ltly)
-	r.LineTo(ltrx, ltry)
-	r.LineTo(lbrx, lbry)
-	r.LineTo(lblx, lbly)
+	r.LineTo(ltx, lty)
+	r.LineTo(rtx, rty)
+	r.LineTo(rbx, rby)
+	r.LineTo(lbx, lby)
 	r.LineTo(lx, ly)
 	r.Close()
 	r.FillStroke()
