@@ -3,6 +3,7 @@ package chart
 import (
 	"errors"
 	"io"
+	"math"
 
 	"github.com/golang/freetype/truetype"
 	"github.com/wcharczuk/go-chart/drawing"
@@ -92,7 +93,7 @@ func (c Chart) Render(rp RendererProvider, w io.Writer) error {
 
 	c.drawCanvas(r, canvasBox)
 	c.drawAxes(r, canvasBox, xr, yr, yra, xt, yt, yta)
-	
+
 	for index, series := range c.Series {
 		c.drawSeries(r, canvasBox, xr, yr, yra, series, index)
 	}
@@ -101,48 +102,36 @@ func (c Chart) Render(rp RendererProvider, w io.Writer) error {
 }
 
 func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
-	//iterate over each series, pull out the min/max for x,y
-	var didSetFirstValues bool
-
-	var globalMinX, globalMaxX float64
-	var globalMinY, globalMaxY float64
-	var globalMinYA, globalMaxYA float64
+	var globalMinX, globalMaxX float64 = math.MaxFloat64, 0
+	var globalMinY, globalMaxY float64 = math.MaxFloat64, 0
+	var globalMinYA, globalMaxYA float64 = math.MaxFloat64, 0
 
 	for _, s := range c.Series {
+		seriesAxis := s.GetYAxis()
 		if vp, isValueProvider := s.(ValueProvider); isValueProvider {
 			seriesLength := vp.Len()
 			for index := 0; index < seriesLength; index++ {
 				vx, vy := vp.GetValue(index)
-				if didSetFirstValues {
-					if globalMinX > vx {
-						globalMinX = vx
+				if globalMinX > vx {
+					globalMinX = vx
+				}
+				if globalMaxX < vx {
+					globalMaxX = vx
+				}
+				if seriesAxis == YAxisPrimary {
+					if globalMinY > vy {
+						globalMinY = vy
 					}
-					if globalMaxX < vx {
-						globalMaxX = vx
+					if globalMaxY < vy {
+						globalMaxY = vy
 					}
-					if s.GetYAxis() == YAxisPrimary {
-						if globalMinY > vy {
-							globalMinY = vy
-						}
-						if globalMaxY < vy {
-							globalMaxY = vy
-						}
-					} else if s.GetYAxis() == YAxisSecondary {
-						if globalMinYA > vy {
-							globalMinYA = vy
-						}
-						if globalMaxYA < vy {
-							globalMaxYA = vy
-						}
+				} else if seriesAxis == YAxisSecondary {
+					if globalMinYA > vy {
+						globalMinYA = vy
 					}
-				} else {
-					globalMinX, globalMaxX = vx, vx
-					if s.GetYAxis() == YAxisPrimary {
-						globalMinY, globalMaxY = vy, vy
-					} else if s.GetYAxis() == YAxisSecondary {
-						globalMinYA, globalMaxYA = vy, vy
+					if globalMaxYA < vy {
+						globalMaxYA = vy
 					}
-					didSetFirstValues = true
 				}
 			}
 		}
@@ -171,6 +160,7 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 		yrangeAlt.Min = globalMinYA
 		yrangeAlt.Max = globalMaxYA
 	}
+
 	return
 }
 
@@ -317,28 +307,28 @@ func (c Chart) setRangeDomains(canvasBox Box, xrange, yrange, yrangeAlt Range) (
 
 func (c Chart) hasAnnotationSeries() bool {
 	for _, s := range c.Series {
-		if as, isAnnotationSeries:= s.(AnnotationSeries); isAnnotationSeries {
+		if as, isAnnotationSeries := s.(AnnotationSeries); isAnnotationSeries {
 			if as.Style.Show {
 				return true
 			}
 		}
 	}
-	return false 
+	return false
 }
 
 func (c Chart) getAnnotationAdjustedCanvasBox(r Renderer, canvasBox Box, xr, yr, yra Range, xf, yf, yfa ValueFormatter) Box {
-	annotationMinX, annotationMaxX, annotationMinY, annotationMaxY := canvasBox.Right, canvasBox.Left, canvasBox.Bottom, canvasBox.Top
+	annotationMinX, annotationMaxX, annotationMinY, annotationMaxY := math.MaxInt32, 0, math.MaxInt32, 0
 	for seriesIndex, s := range c.Series {
-		if as, isAnnotationSeries:= s.(AnnotationSeries); isAnnotationSeries {
+		if as, isAnnotationSeries := s.(AnnotationSeries); isAnnotationSeries {
 			if as.Style.Show {
 				style := c.getSeriesStyleDefaults(seriesIndex)
 				var annotationBounds Box
 				if as.YAxis == YAxisPrimary {
 					annotationBounds = as.Measure(r, canvasBox, xr, yr, style)
 				} else if as.YAxis == YAxisSecondary {
-					annotationBounds = as.Measure(r, canvasBox, xr, yr, style)
+					annotationBounds = as.Measure(r, canvasBox, xr, yra, style)
 				}
-				
+
 				if annotationMinY > annotationBounds.Top {
 					annotationMinY = annotationBounds.Top
 				}
@@ -359,15 +349,15 @@ func (c Chart) getAnnotationAdjustedCanvasBox(r Renderer, canvasBox Box, xr, yr,
 	}
 
 	newBox := Box{
-		Top: canvasBox.Top,
-		Left: canvasBox.Left,
-		Right: canvasBox.Right,
+		Top:    canvasBox.Top,
+		Left:   canvasBox.Left,
+		Right:  canvasBox.Right,
 		Bottom: canvasBox.Bottom,
 	}
 	if annotationMinY < 0 {
 		// figure out how much top padding to add
-		delta := -1*annotationMinY
-		newBox.Top = canvasBox.Top+delta
+		delta := -1 * annotationMinY
+		newBox.Top = canvasBox.Top + delta
 	}
 
 	if annotationMaxX > c.Width {
@@ -378,13 +368,14 @@ func (c Chart) getAnnotationAdjustedCanvasBox(r Renderer, canvasBox Box, xr, yr,
 
 	if annotationMinX < 0 {
 		// figure out how much left padding to add
-		delta := -1*annotationMinX
+		delta := -1 * annotationMinX
 		newBox.Left = canvasBox.Left + delta
 	}
 
 	if annotationMaxY > c.Height {
 		//figure out how much bottom padding to add
-		delta := annotationMaxY - c.Height 
+		delta := annotationMaxY - c.Height
+		println("bottom delta", annotationMaxY, c.Height)
 		newBox.Bottom = canvasBox.Bottom - delta
 	}
 

@@ -71,6 +71,10 @@ func (xa XAxis) generateTicksWithStep(ra Range, step float64, vf ValueFormatter)
 			Value: cursor,
 			Label: vf(cursor),
 		})
+
+		if len(ticks) == 20 {
+			return ticks
+		}
 	}
 	return ticks
 }
