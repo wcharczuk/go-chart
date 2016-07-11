@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/wcharczuk/go-chart"
+	"github.com/wcharczuk/go-chart/drawing"
 	"github.com/wcharczuk/go-web"
 )
 
@@ -83,6 +84,54 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 	return nil
 }
 
+func measureTestHandler(rc *web.RequestContext) web.ControllerResult {
+	format, err := rc.RouteParameter("format")
+	if err != nil {
+		format = "png"
+	}
+
+	if format == "png" {
+		rc.Response.Header().Set("Content-Type", "image/png")
+	} else {
+		rc.Response.Header().Set("Content-Type", "image/svg+xml")
+	}
+
+	var r chart.Renderer
+	if format == "png" {
+		r, err = chart.PNG(512, 512)
+	} else {
+		r, err = chart.SVG(512, 512)
+	}
+	if err != nil {
+		return rc.API().InternalError(err)
+	}
+
+	f, err := chart.GetDefaultFont()
+	if err != nil {
+		return rc.API().InternalError(err)
+	}
+	r.SetDPI(96)
+	r.SetFont(f)
+	r.SetFontSize(24.0)
+	r.SetFontColor(drawing.ColorBlack)
+	r.SetStrokeColor(drawing.ColorBlack)
+
+	tx, ty := 64, 64
+
+	tw, th := r.MeasureText("test")
+	r.MoveTo(tx, ty)
+	r.LineTo(tx+tw, ty)
+	r.LineTo(tx+tw, ty-th)
+	r.LineTo(tx, ty-th)
+	r.LineTo(tx, ty)
+	r.Stroke()
+
+	r.Text("test", tx, ty)
+
+	r.Save(rc.Response)
+	return nil
+}
+
 func main() {
 	app := web.New()
 	app.SetName("Chart Test Server")
@@ -92,5 +141,6 @@ func main() {
 	app.GET("/favico.ico", func(rc *web.RequestContext) web.ControllerResult {
 		return rc.Raw([]byte{})
 	})
+	app.GET("/measure", measureTestHandler)
 	log.Fatal(app.Start())
 }

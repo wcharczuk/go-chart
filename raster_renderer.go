@@ -132,10 +132,8 @@ func (rr *rasterRenderer) MeasureText(body string) (width int, height int) {
 	if err != nil {
 		return
 	}
-	dw := r - l
-	dh := b - t
-	width = int(drawing.PointsToPixels(rr.gc.GetDPI(), dw))
-	height = int(drawing.PointsToPixels(rr.gc.GetDPI(), dh))
+	width = int(r - l)
+	height = int(b - t)
 	return
 }
 

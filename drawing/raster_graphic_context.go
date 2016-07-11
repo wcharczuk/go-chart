@@ -149,8 +149,7 @@ func (rgc *RasterGraphicContext) CreateStringPath(s string, x, y float64) (curso
 	return
 }
 
-// GetStringBounds returns the approximate points bounds of a string.
-// It will be required to convert points to pixels for measurement.
+// GetStringBounds returns the approximate pixel bounds of a string.
 func (rgc *RasterGraphicContext) GetStringBounds(s string) (left, top, right, bottom float64, err error) {
 	f := rgc.GetFont()
 	if f == nil {
