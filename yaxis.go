@@ -56,7 +56,10 @@ func (ya YAxis) getTickStep(r Renderer, ra Range, vf ValueFormatter) float64 {
 }
 
 func (ya YAxis) getTickCount(r Renderer, ra Range, vf ValueFormatter) int {
-	return DefaultTickCount
+	//given the domain, figure out how many ticks we can draw ...
+	label := vf(ra.Min)
+	tb := r.MeasureText(label)
+	return int(math.Ceil(float64(ra.Domain) / float64(tb.Height+DefaultMinimumTickVerticalSpacing)))
 }
 
 // Measure returns the bounds of the axis.
