@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
@@ -60,6 +61,20 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 				Name:    "a",
 				XValues: s1x,
 				YValues: s1y,
+			},
+			chart.AnnotationSeries{
+				Name: fmt.Sprintf("%s - Last Value", "Test"),
+				Style: chart.Style{
+					Show:        true,
+					StrokeColor: chart.DefaultSeriesStrokeColors[0],
+				},
+				Annotations: []chart.Annotation{
+					chart.Annotation{
+						X:     float64(s1x[len(s1x)-1].Unix()),
+						Y:     s1y[len(s1y)-1],
+						Label: fmt.Sprintf("%s - %s", "test", chart.FloatValueFormatter(s1y[len(s1y)-1])),
+					},
+				},
 			},
 		},
 	}
