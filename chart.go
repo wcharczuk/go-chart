@@ -144,7 +144,7 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 	} else {
 		xrange.Min = globalMinX
 		xrange.Max = globalMaxX
-		xrange.Min, xrange.Max = xrange.GetRoundedRangeBounds()
+		//xrange.Min, xrange.Max = xrange.GetRoundedRangeBounds()
 	}
 
 	if !c.YAxis.Range.IsZero() {
@@ -285,11 +285,14 @@ func (c Chart) getAxisAdjustedCanvasBox(r Renderer, canvasBox Box, xr, yr, yra R
 	return newBox
 }
 
-func (c Chart) setRangeDomains(canvasBox Box, xrange, yrange, yrangeAlt Range) (Range, Range, Range) {
-	xrange.Domain = canvasBox.Width
-	yrange.Domain = canvasBox.Height
-	yrangeAlt.Domain = canvasBox.Height
-	return xrange, yrange, yrangeAlt
+func (c Chart) setRangeDomains(canvasBox Box, xr, yr, yra Range) (xr2, yr2, yra2 Range) {
+	xr2.Min, xr2.Max = xr.Min, xr.Max
+	xr2.Domain = canvasBox.Width
+	yr2.Min, yr2.Max = yr.Min, yr.Max
+	yr2.Domain = canvasBox.Height
+	yra2.Min, yra2.Max = yra.Min, yra.Max
+	yra2.Domain = canvasBox.Height
+	return
 }
 
 func (c Chart) hasAnnotationSeries() bool {

@@ -3,7 +3,7 @@ package chart
 // GenerateTicksWithStep generates a set of ticks.
 func GenerateTicksWithStep(ra Range, step float64, vf ValueFormatter) []Tick {
 	var ticks []Tick
-	min, max := ra.GetRoundedRangeBounds()
+	min, max := ra.Min, ra.Max
 	for cursor := min; cursor <= max; cursor += step {
 		ticks = append(ticks, Tick{
 			Value: cursor,

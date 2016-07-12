@@ -55,9 +55,9 @@ func TestAnnotationSeriesMeasure(t *testing.T) {
 
 	box := as.Measure(r, cb, xrange, yrange, sd)
 	assert.False(box.IsZero())
-	assert.Equal(-5.0, box.Top)
+	assert.Equal(-3.0, box.Top)
 	assert.Equal(5.0, box.Left)
-	assert.Equal(146.0, box.Right) //the top,left annotation sticks up 5px and out ~44px.
+	assert.Equal(147.0, box.Right) //the top,left annotation sticks up 5px and out ~44px.
 	assert.Equal(115.0, box.Bottom)
 }
 
@@ -114,10 +114,10 @@ func TestAnnotationSeriesRender(t *testing.T) {
 	assert.True(isRaster)
 	assert.NotNil(rr)
 
-	c := rr.i.At(39, 70)
+	c := rr.i.At(38, 70)
 	converted, isRGBA := color.RGBAModel.Convert(c).(color.RGBA)
 	assert.True(isRGBA)
-	assert.Equal(3, converted.R)
-	assert.Equal(3, converted.G)
-	assert.Equal(3, converted.B)
+	assert.Equal(0, converted.R)
+	assert.Equal(0, converted.G)
+	assert.Equal(0, converted.B)
 }

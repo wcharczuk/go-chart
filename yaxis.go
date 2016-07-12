@@ -122,10 +122,10 @@ func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, ticks []Tick) {
 	var tx int
 	if ya.AxisType == YAxisPrimary {
 		lx = canvasBox.Right
-		tx = canvasBox.Right + DefaultYAxisMargin
+		tx = lx + DefaultYAxisMargin
 	} else if ya.AxisType == YAxisSecondary {
 		lx = canvasBox.Left
-		tx = canvasBox.Left - DefaultYAxisMargin
+		tx = lx - DefaultYAxisMargin
 	}
 
 	r.MoveTo(lx, canvasBox.Bottom)
