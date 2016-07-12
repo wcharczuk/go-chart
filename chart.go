@@ -406,7 +406,6 @@ func (c Chart) getSeriesStyleDefaults(seriesIndex int) Style {
 	return Style{
 		StrokeColor: strokeColor,
 		StrokeWidth: DefaultStrokeWidth,
-		FillColor:   strokeColor.WithAlpha(100),
 		Font:        c.Font,
 		FontSize:    DefaultFontSize,
 	}
