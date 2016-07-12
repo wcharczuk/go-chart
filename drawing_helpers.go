@@ -6,13 +6,12 @@ func DrawLineSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, vs
 		return
 	}
 
-	ct := canvasBox.Top
 	cb := canvasBox.Bottom
-	cr := canvasBox.Right
+	cl := canvasBox.Left
 
 	v0x, v0y := vs.GetValue(0)
-	x0 := cr - xrange.Translate(v0x)
-	y0 := yrange.Translate(v0y) + ct
+	x0 := cl + xrange.Translate(v0x)
+	y0 := cb - yrange.Translate(v0y)
 
 	var vx, vy float64
 	var x, y int
@@ -23,8 +22,8 @@ func DrawLineSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, vs
 		r.MoveTo(x0, y0)
 		for i := 1; i < vs.Len(); i++ {
 			vx, vy = vs.GetValue(i)
-			x = cr - xrange.Translate(vx)
-			y = yrange.Translate(vy) + ct
+			x = cl + xrange.Translate(vx)
+			y = cb - yrange.Translate(vy)
 			r.LineTo(x, y)
 		}
 		r.LineTo(x, cb)
@@ -40,19 +39,19 @@ func DrawLineSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, vs
 	r.MoveTo(x0, y0)
 	for i := 1; i < vs.Len(); i++ {
 		vx, vy = vs.GetValue(i)
-		x = cr - xrange.Translate(vx)
-		y = yrange.Translate(vy) + ct
+		x = cl + xrange.Translate(vx)
+		y = cb - yrange.Translate(vy)
 		r.LineTo(x, y)
 	}
 	r.Stroke()
 }
 
 // MeasureAnnotation measures how big an annotation would be.
-func MeasureAnnotation(r Renderer, canvasBox Box, xrange, yrange Range, s Style, lx, ly int, label string) Box {
+func MeasureAnnotation(r Renderer, canvasBox Box, s Style, lx, ly int, label string) Box {
 	r.SetFont(s.GetFont())
 	r.SetFontSize(s.GetFontSize(DefaultAnnotationFontSize))
-	textWidth, textHeight := r.MeasureText(label)
-	halfTextHeight := textHeight >> 1
+	textBox := r.MeasureText(label)
+	halfTextHeight := textBox.Height >> 1
 
 	pt := s.Padding.GetTop(DefaultAnnotationPadding.Top)
 	pl := s.Padding.GetLeft(DefaultAnnotationPadding.Left)
@@ -62,7 +61,7 @@ func MeasureAnnotation(r Renderer, canvasBox Box, xrange, yrange Range, s Style,
 	strokeWidth := s.GetStrokeWidth()
 
 	top := ly - (pt + halfTextHeight)
-	right := lx + pl + pr + textWidth + DefaultAnnotationDeltaWidth + int(strokeWidth)
+	right := lx + pl + pr + textBox.Width + DefaultAnnotationDeltaWidth + int(strokeWidth)
 	bottom := ly + (pb + halfTextHeight)
 
 	return Box{
@@ -76,11 +75,11 @@ func MeasureAnnotation(r Renderer, canvasBox Box, xrange, yrange Range, s Style,
 }
 
 // DrawAnnotation draws an anotation with a renderer.
-func DrawAnnotation(r Renderer, canvasBox Box, xrange, yrange Range, s Style, lx, ly int, label string) {
+func DrawAnnotation(r Renderer, canvasBox Box, s Style, lx, ly int, label string) {
 	r.SetFont(s.GetFont())
 	r.SetFontSize(s.GetFontSize(DefaultAnnotationFontSize))
-	textWidth, textHeight := r.MeasureText(label)
-	halfTextHeight := textHeight >> 1
+	textBox := r.MeasureText(label)
+	halfTextHeight := textBox.Height >> 1
 
 	pt := s.Padding.GetTop(DefaultAnnotationPadding.Top)
 	pl := s.Padding.GetLeft(DefaultAnnotationPadding.Left)
@@ -93,10 +92,10 @@ func DrawAnnotation(r Renderer, canvasBox Box, xrange, yrange Range, s Style, lx
 	ltx := lx + DefaultAnnotationDeltaWidth
 	lty := ly - (pt + halfTextHeight)
 
-	rtx := lx + pl + pr + textWidth + DefaultAnnotationDeltaWidth
+	rtx := lx + pl + pr + textBox.Width + DefaultAnnotationDeltaWidth
 	rty := ly - (pt + halfTextHeight)
 
-	rbx := lx + pl + pr + textWidth + DefaultAnnotationDeltaWidth
+	rbx := lx + pl + pr + textBox.Width + DefaultAnnotationDeltaWidth
 	rby := ly + (pb + halfTextHeight)
 
 	lbx := lx + DefaultAnnotationDeltaWidth
@@ -118,4 +117,17 @@ func DrawAnnotation(r Renderer, canvasBox Box, xrange, yrange Range, s Style, lx
 
 	r.SetFontColor(s.GetFontColor(DefaultTextColor))
 	r.Text(label, textX, textY)
+}
+
+// DrawBox draws a box with a given style.
+func DrawBox(r Renderer, b Box, s Style) {
+	r.SetFillColor(s.GetFillColor())
+	r.SetStrokeColor(s.GetStrokeColor(DefaultStrokeColor))
+	r.SetStrokeWidth(s.GetStrokeWidth(DefaultStrokeWidth))
+	r.MoveTo(b.Left, b.Top)
+	r.LineTo(b.Right, b.Top)
+	r.LineTo(b.Right, b.Bottom)
+	r.LineTo(b.Left, b.Bottom)
+	r.LineTo(b.Left, b.Top)
+	r.FillStroke()
 }

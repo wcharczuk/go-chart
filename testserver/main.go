@@ -2,14 +2,16 @@ package main
 
 import (
 	"log"
+	"math/rand"
 	"net/http"
+	"time"
 
 	"github.com/wcharczuk/go-chart"
-	"github.com/wcharczuk/go-chart/drawing"
 	"github.com/wcharczuk/go-web"
 )
 
 func chartHandler(rc *web.RequestContext) web.ControllerResult {
+	rnd := rand.New(rand.NewSource(0))
 	format, err := rc.RouteParameter("format")
 	if err != nil {
 		format = "png"
@@ -21,11 +23,14 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 		rc.Response.Header().Set("Content-Type", "image/svg+xml")
 	}
 
-	s1x := []float64{2.0, 3.0, 4.0, 5.0}
-	s1y := []float64{2.5, 5.0, 2.0, 3.3}
-
-	s2x := []float64{0.0, 0.5, 1.0, 1.5}
-	s2y := []float64{1.1, 1.2, 1.0, 1.3}
+	var s1x []time.Time
+	for x := 0; x < 100; x++ {
+		s1x = append([]time.Time{time.Now().AddDate(0, 0, -1*x)}, s1x...)
+	}
+	var s1y []float64
+	for x := 0; x < 100; x++ {
+		s1y = append(s1y, rnd.Float64()*1024)
+	}
 
 	c := chart.Chart{
 		Title: "A Test Chart",
@@ -43,31 +48,18 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 			Style: chart.Style{
 				Show: true,
 			},
-			Range: chart.Range{
-				Min: 0.0,
-				Max: 7.0,
-			},
-		},
-		YAxisSecondary: chart.YAxis{
-			Style: chart.Style{
-				Show: true,
-			},
-			Range: chart.Range{
-				Min: 0.8,
-				Max: 1.5,
+			Zero: chart.GridLine{
+				Style: chart.Style{
+					Show:        true,
+					StrokeWidth: 1.0,
+				},
 			},
 		},
 		Series: []chart.Series{
-			chart.ContinuousSeries{
+			chart.TimeSeries{
 				Name:    "a",
 				XValues: s1x,
 				YValues: s1y,
-			},
-			chart.ContinuousSeries{
-				Name:    "b",
-				YAxis:   chart.YAxisSecondary,
-				XValues: s2x,
-				YValues: s2y,
 			},
 		},
 	}
@@ -84,56 +76,6 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 	return nil
 }
 
-func measureTestHandler(rc *web.RequestContext) web.ControllerResult {
-	format, err := rc.RouteParameter("format")
-	if err != nil {
-		format = "png"
-	}
-
-	if format == "png" {
-		rc.Response.Header().Set("Content-Type", "image/png")
-	} else {
-		rc.Response.Header().Set("Content-Type", "image/svg+xml")
-	}
-
-	var r chart.Renderer
-	if format == "png" {
-		r, err = chart.PNG(512, 512)
-	} else {
-		r, err = chart.SVG(512, 512)
-	}
-	if err != nil {
-		return rc.API().InternalError(err)
-	}
-
-	f, err := chart.GetDefaultFont()
-	if err != nil {
-		return rc.API().InternalError(err)
-	}
-	r.SetDPI(96)
-	r.SetFont(f)
-	r.SetFontSize(10.0)
-	r.SetFontColor(drawing.ColorBlack)
-	r.SetStrokeColor(drawing.ColorBlack)
-
-	label := "goog - 702.23"
-
-	tx, ty := 64, 64
-
-	tw, th := r.MeasureText(label)
-	r.MoveTo(tx, ty)
-	r.LineTo(tx+tw, ty)
-	r.LineTo(tx+tw, ty-th)
-	r.LineTo(tx, ty-th)
-	r.LineTo(tx, ty)
-	r.Stroke()
-
-	r.Text(label, tx, ty)
-
-	r.Save(rc.Response)
-	return nil
-}
-
 func main() {
 	app := web.New()
 	app.SetName("Chart Test Server")
@@ -143,6 +85,5 @@ func main() {
 	app.GET("/favico.ico", func(rc *web.RequestContext) web.ControllerResult {
 		return rc.Raw([]byte{})
 	})
-	app.GET("/measure", measureTestHandler)
 	log.Fatal(app.Start())
 }

@@ -6,7 +6,6 @@ import (
 	"math"
 
 	"github.com/golang/freetype/truetype"
-	"github.com/wcharczuk/go-chart/drawing"
 )
 
 // Chart is what we're drawing.
@@ -57,6 +56,8 @@ func (c Chart) Render(rp RendererProvider, w io.Writer) error {
 	if len(c.Series) == 0 {
 		return errors.New("Please provide at least one series")
 	}
+	c.YAxisSecondary.AxisType = YAxisSecondary
+
 	r, err := rp(c.Width, c.Height)
 	if err != nil {
 		return err
@@ -80,7 +81,7 @@ func (c Chart) Render(rp RendererProvider, w io.Writer) error {
 
 	if c.hasAxes() {
 		xt, yt, yta = c.getAxesTicks(r, xr, yr, yra, xf, yf, yfa)
-		canvasBox = c.getAxisAdjustedCanvasBox(r, canvasBox, xt, yt, yta)
+		canvasBox = c.getAxisAdjustedCanvasBox(r, canvasBox, xr, yr, yra, xt, yt, yta)
 		xr, yr, yra = c.setRangeDomains(canvasBox, xr, yr, yra)
 		xt, yt, yta = c.getAxesTicks(r, xr, yr, yra, xf, yf, yfa)
 	}
@@ -143,6 +144,7 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 	} else {
 		xrange.Min = globalMinX
 		xrange.Max = globalMaxX
+		xrange.Min, xrange.Max = xrange.GetRoundedRangeBounds()
 	}
 
 	if !c.YAxis.Range.IsZero() {
@@ -151,6 +153,7 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 	} else {
 		yrange.Min = globalMinY
 		yrange.Max = globalMaxY
+		yrange.Min, yrange.Max = yrange.GetRoundedRangeBounds()
 	}
 
 	if !c.YAxisSecondary.Range.IsZero() {
@@ -159,6 +162,7 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 	} else {
 		yrangeAlt.Min = globalMinYA
 		yrangeAlt.Max = globalMaxYA
+		yrangeAlt.Min, yrangeAlt.Max = yrangeAlt.GetRoundedRangeBounds()
 	}
 
 	return
@@ -222,84 +226,63 @@ func (c Chart) getAxesTicks(r Renderer, xr, yr, yar Range, xf, yf, yfa ValueForm
 	return
 }
 
-func (c Chart) getAxisAdjustedCanvasBox(r Renderer, defaults Box, xticks, yticks, yticksAlt []Tick) Box {
-	canvasBox := Box{}
-
-	var dpl, dpr, dpb int
+func (c Chart) getAxisAdjustedCanvasBox(r Renderer, canvasBox Box, xr, yr, yra Range, xticks, yticks, yticksAlt []Tick) Box {
+	axesMinX, axesMaxX, axesMinY, axesMaxY := math.MaxInt32, 0, math.MaxInt32, 0
 	if c.XAxis.Style.Show {
-		dpb = c.getXAxisHeight(r, xticks)
+		axesBounds := c.XAxis.Measure(r, canvasBox, xr, xticks)
+		axesMinY = MinInt(axesMinX, axesBounds.Top)
+		axesMinX = MinInt(axesMinY, axesBounds.Left)
+		axesMaxX = MaxInt(axesMaxX, axesBounds.Right)
+		axesMaxY = MaxInt(axesMaxY, axesBounds.Bottom)
 	}
 	if c.YAxis.Style.Show {
-		dpr = c.getYAxisWidth(r, yticks)
+		axesBounds := c.YAxis.Measure(r, canvasBox, yr, yticks)
+		axesMinY = MinInt(axesMinX, axesBounds.Top)
+		axesMinX = MinInt(axesMinY, axesBounds.Left)
+		axesMaxX = MaxInt(axesMaxX, axesBounds.Right)
+		axesMaxY = MaxInt(axesMaxY, axesBounds.Bottom)
 	}
 	if c.YAxisSecondary.Style.Show {
-		dpl = c.getYAxisSecondaryWidth(r, yticksAlt)
+		axesBounds := c.YAxisSecondary.Measure(r, canvasBox, yra, yticksAlt)
+		axesMinY = MinInt(axesMinX, axesBounds.Top)
+		axesMinX = MinInt(axesMinY, axesBounds.Left)
+		axesMaxX = MaxInt(axesMaxX, axesBounds.Right)
+		axesMaxY = MaxInt(axesMaxY, axesBounds.Bottom)
+	}
+	newBox := Box{
+		Top:    canvasBox.Top,
+		Left:   canvasBox.Left,
+		Right:  canvasBox.Right,
+		Bottom: canvasBox.Bottom,
 	}
 
-	canvasBox.Top = defaults.Top
-	if dpl != 0 {
-		canvasBox.Left = c.Canvas.Padding.GetLeft(dpl)
-	} else {
-		canvasBox.Left = defaults.Left
-	}
-	if dpr != 0 {
-		canvasBox.Right = c.Width - c.Canvas.Padding.GetRight(dpr)
-	} else {
-		canvasBox.Right = defaults.Right
-	}
-	if dpb != 0 {
-		canvasBox.Bottom = c.Height - c.Canvas.Padding.GetBottom(dpb)
-	} else {
-		canvasBox.Bottom = defaults.Bottom
+	if axesMinY < 0 {
+		// figure out how much top padding to add
+		delta := -1 * axesMinY
+		newBox.Top = canvasBox.Top + delta
 	}
 
-	canvasBox.Width = canvasBox.Right - canvasBox.Left
-	canvasBox.Height = canvasBox.Bottom - canvasBox.Top
-	return canvasBox
-}
-
-func (c Chart) getXAxisHeight(r Renderer, ticks []Tick) int {
-	r.SetFontSize(c.XAxis.Style.GetFontSize(DefaultFontSize))
-	r.SetFont(c.XAxis.Style.GetFont(c.Font))
-
-	var textHeight int
-	for _, t := range ticks {
-		_, th := r.MeasureText(t.Label)
-		if th > textHeight {
-			textHeight = th
-		}
-	}
-	return textHeight + (2 * DefaultXAxisMargin) // top and bottom.
-}
-
-func (c Chart) getYAxisWidth(r Renderer, ticks []Tick) int {
-	r.SetFontSize(c.YAxis.Style.GetFontSize(DefaultFontSize))
-	r.SetFont(c.YAxis.Style.GetFont(c.Font))
-
-	var textWidth int
-	for _, t := range ticks {
-		tw, _ := r.MeasureText(t.Label)
-		if tw > textWidth {
-			textWidth = tw
-		}
+	if axesMinX < 0 {
+		// figure out how much left padding to add
+		delta := -1 * axesMinX
+		newBox.Left = canvasBox.Left + delta
 	}
 
-	return textWidth + DefaultYAxisMargin
-}
-
-func (c Chart) getYAxisSecondaryWidth(r Renderer, ticks []Tick) int {
-	r.SetFontSize(c.YAxisSecondary.Style.GetFontSize(DefaultFontSize))
-	r.SetFont(c.YAxisSecondary.Style.GetFont(c.Font))
-
-	var textWidth int
-	for _, t := range ticks {
-		tw, _ := r.MeasureText(t.Label)
-		if tw > textWidth {
-			textWidth = tw
-		}
+	if axesMaxX > c.Width {
+		// figure out how much right padding to add
+		delta := axesMaxX - c.Width
+		newBox.Right = canvasBox.Right - delta
 	}
 
-	return textWidth + DefaultYAxisMargin
+	if axesMaxY > c.Height {
+		//figure out how much bottom padding to add
+		delta := axesMaxY - c.Height
+		newBox.Bottom = canvasBox.Bottom - delta
+	}
+
+	newBox.Height = newBox.Bottom - newBox.Top
+	newBox.Width = newBox.Right - newBox.Left
+	return newBox
 }
 
 func (c Chart) setRangeDomains(canvasBox Box, xrange, yrange, yrangeAlt Range) (Range, Range, Range) {
@@ -333,21 +316,10 @@ func (c Chart) getAnnotationAdjustedCanvasBox(r Renderer, canvasBox Box, xr, yr,
 					annotationBounds = as.Measure(r, canvasBox, xr, yra, style)
 				}
 
-				if annotationMinY > annotationBounds.Top {
-					annotationMinY = annotationBounds.Top
-				}
-
-				if annotationMinX > annotationBounds.Left {
-					annotationMinX = annotationBounds.Left
-				}
-
-				if annotationMaxX < annotationBounds.Right {
-					annotationMaxX = annotationBounds.Right
-				}
-
-				if annotationMaxY < annotationBounds.Bottom {
-					annotationMaxY = annotationBounds.Bottom
-				}
+				annotationMinY = MinInt(annotationMinY, annotationBounds.Top)
+				annotationMinX = MinInt(annotationMinX, annotationBounds.Left)
+				annotationMaxX = MaxInt(annotationMaxX, annotationBounds.Right)
+				annotationMaxY = MaxInt(annotationMaxY, annotationBounds.Bottom)
 			}
 		}
 	}
@@ -364,22 +336,21 @@ func (c Chart) getAnnotationAdjustedCanvasBox(r Renderer, canvasBox Box, xr, yr,
 		newBox.Top = canvasBox.Top + delta
 	}
 
-	if annotationMaxX > c.Width {
-		// figure out how much right padding to add
-		delta := annotationMaxX - c.Width
-		newBox.Right = canvasBox.Right - delta
-	}
-
 	if annotationMinX < 0 {
 		// figure out how much left padding to add
 		delta := -1 * annotationMinX
 		newBox.Left = canvasBox.Left + delta
 	}
 
+	if annotationMaxX > c.Width {
+		// figure out how much right padding to add
+		delta := annotationMaxX - c.Width
+		newBox.Right = canvasBox.Right - delta
+	}
+
 	if annotationMaxY > c.Height {
 		//figure out how much bottom padding to add
 		delta := annotationMaxY - c.Height
-		println("bottom delta", annotationMaxY, c.Height)
 		newBox.Bottom = canvasBox.Bottom - delta
 	}
 
@@ -420,10 +391,10 @@ func (c Chart) drawAxes(r Renderer, canvasBox Box, xrange, yrange, yrangeAlt Ran
 		c.XAxis.Render(r, canvasBox, xrange, xticks)
 	}
 	if c.YAxis.Style.Show {
-		c.YAxis.Render(r, canvasBox, yrange, YAxisPrimary, yticks)
+		c.YAxis.Render(r, canvasBox, yrange, yticks)
 	}
 	if c.YAxisSecondary.Style.Show {
-		c.YAxisSecondary.Render(r, canvasBox, yrangeAlt, YAxisSecondary, yticksAlt)
+		c.YAxisSecondary.Render(r, canvasBox, yrangeAlt, yticksAlt)
 	}
 }
 
@@ -453,10 +424,10 @@ func (c Chart) drawTitle(r Renderer) {
 		titleFontSize := c.TitleStyle.GetFontSize(DefaultTitleFontSize)
 		r.SetFontSize(titleFontSize)
 
-		textWidthPoints, textHeightPoints := r.MeasureText(c.Title)
+		textBox := r.MeasureText(c.Title)
 
-		textWidth := int(drawing.PointsToPixels(r.GetDPI(), float64(textWidthPoints)))
-		textHeight := int(drawing.PointsToPixels(r.GetDPI(), float64(textHeightPoints)))
+		textWidth := textBox.Width
+		textHeight := textBox.Height
 
 		titleX := (c.Width >> 1) - (textWidth >> 1)
 		titleY := c.TitleStyle.Padding.GetTop(DefaultTitleTop) + textHeight

@@ -61,6 +61,11 @@ func (vr *vectorRenderer) SetStrokeWidth(width float64) {
 	vr.s.StrokeWidth = width
 }
 
+// StrokeDashArray sets the stroke dash array.
+func (vr *vectorRenderer) SetStrokeDashArray(dashArray []float64) {
+	vr.s.StrokeDashArray = dashArray
+}
+
 // MoveTo implements the interface method.
 func (vr *vectorRenderer) MoveTo(x, y int) {
 	vr.p = append(vr.p, fmt.Sprintf("M %d %d", x, y))
@@ -71,6 +76,7 @@ func (vr *vectorRenderer) LineTo(x, y int) {
 	vr.p = append(vr.p, fmt.Sprintf("L %d %d", x, y))
 }
 
+// Close closes a shape.
 func (vr *vectorRenderer) Close() {
 	vr.p = append(vr.p, fmt.Sprintf("Z"))
 }
@@ -90,6 +96,7 @@ func (vr *vectorRenderer) FillStroke() {
 	vr.drawPath(vr.s.SVGFillAndStroke())
 }
 
+// drawPath draws a path.
 func (vr *vectorRenderer) drawPath(s Style) {
 	vr.c.Path(strings.Join(vr.p, "\n"), s.SVG(vr.dpi))
 	vr.p = []string{} // clear the path
@@ -115,6 +122,7 @@ func (vr *vectorRenderer) SetFontSize(size float64) {
 	vr.s.FontSize = size
 }
 
+// svgFontFace returns the font face component of an svg element style.
 func (vr *vectorRenderer) svgFontFace() string {
 	family := "sans-serif"
 	if vr.f != nil {
@@ -133,7 +141,7 @@ func (vr *vectorRenderer) Text(body string, x, y int) {
 }
 
 // MeasureText uses the truetype font drawer to measure the width of text.
-func (vr *vectorRenderer) MeasureText(body string) (width, height int) {
+func (vr *vectorRenderer) MeasureText(body string) (box Box) {
 	if vr.f != nil {
 		vr.fc = &font.Drawer{
 			Face: truetype.NewFace(vr.f, &truetype.Options{
@@ -143,12 +151,15 @@ func (vr *vectorRenderer) MeasureText(body string) (width, height int) {
 		}
 		w := vr.fc.MeasureString(body).Ceil()
 
-		width = w
-		height = int(drawing.PointsToPixels(vr.dpi, vr.s.FontSize))
+		box.Right = w
+		box.Bottom = int(drawing.PointsToPixels(vr.dpi, vr.s.FontSize))
+		box.Width = w
+		box.Height = int(drawing.PointsToPixels(vr.dpi, vr.s.FontSize))
 	}
 	return
 }
 
+// Save saves the renderer's contents to a writer.
 func (vr *vectorRenderer) Save(w io.Writer) error {
 	vr.c.End()
 	_, err := w.Write(vr.b.Bytes())

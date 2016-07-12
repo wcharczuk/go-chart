@@ -49,21 +49,13 @@ func (as AnnotationSeries) Measure(r Renderer, canvasBox Box, xrange, yrange Ran
 			Padding:     DefaultAnnotationPadding,
 		})
 		for _, a := range as.Annotations {
-			lx := canvasBox.Right - xrange.Translate(a.X)
-			ly := yrange.Translate(a.Y) + canvasBox.Top
-			ab := MeasureAnnotation(r, canvasBox, xrange, yrange, style, lx, ly, a.Label)
-			if ab.Top < box.Top {
-				box.Top = ab.Top
-			}
-			if ab.Left < box.Left {
-				box.Left = ab.Left
-			}
-			if ab.Right > box.Right {
-				box.Right = ab.Right
-			}
-			if ab.Bottom > box.Bottom {
-				box.Bottom = ab.Bottom
-			}
+			lx := canvasBox.Left - xrange.Translate(a.X)
+			ly := canvasBox.Bottom - yrange.Translate(a.Y)
+			ab := MeasureAnnotation(r, canvasBox, style, lx, ly, a.Label)
+			box.Top = MinInt(box.Top, ab.Top)
+			box.Left = MinInt(box.Left, ab.Left)
+			box.Right = MaxInt(box.Right, ab.Right)
+			box.Bottom = MaxInt(box.Bottom, ab.Bottom)
 		}
 	}
 	return box
@@ -81,9 +73,9 @@ func (as AnnotationSeries) Render(r Renderer, canvasBox Box, xrange, yrange Rang
 			Padding:     DefaultAnnotationPadding,
 		})
 		for _, a := range as.Annotations {
-			lx := canvasBox.Right - xrange.Translate(a.X)
-			ly := yrange.Translate(a.Y) + canvasBox.Top
-			DrawAnnotation(r, canvasBox, xrange, yrange, style, lx, ly, a.Label)
+			lx := canvasBox.Left + xrange.Translate(a.X)
+			ly := canvasBox.Bottom - yrange.Translate(a.Y)
+			DrawAnnotation(r, canvasBox, style, lx, ly, a.Label)
 		}
 	}
 }

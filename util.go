@@ -2,8 +2,17 @@ package chart
 
 import (
 	"fmt"
+	"math"
 	"time"
 )
+
+// Float is an alias for float64 that provides a better .String() method.
+type Float float64
+
+// String returns the string representation of a float.
+func (f Float) String() string {
+	return fmt.Sprintf("%.2f", f)
+}
 
 // TimeToFloat64 returns a float64 representation of a time.
 func TimeToFloat64(t time.Time) float64 {
@@ -60,10 +69,48 @@ func Slices(count int, total float64) []float64 {
 	return values
 }
 
-// Float is an alias for float64 that provides a better .String() method.
-type Float float64
+// GetRoundToForDelta returns a `roundTo` value for a given delta.
+func GetRoundToForDelta(delta float64) float64 {
+	startingDeltaBound := math.Pow(10.0, 10.0)
+	for cursor := startingDeltaBound; cursor > 0; cursor /= 10.0 {
+		if delta > cursor {
+			return cursor / 10.0
+		}
+	}
 
-// String returns the string representation of a float.
-func (f Float) String() string {
-	return fmt.Sprintf("%.2f", f)
+	return 0.0
+}
+
+// RoundUp rounds up to a given roundTo value.
+func RoundUp(value, roundTo float64) float64 {
+	d1 := math.Ceil(value / roundTo)
+	return d1 * roundTo
+}
+
+// RoundDown rounds down to a given roundTo value.
+func RoundDown(value, roundTo float64) float64 {
+	d1 := math.Floor(value / roundTo)
+	return d1 * roundTo
+}
+
+// MinInt returns the minimum of a set of integers.
+func MinInt(values ...int) int {
+	min := math.MaxInt32
+	for _, v := range values {
+		if v < min {
+			min = v
+		}
+	}
+	return min
+}
+
+// MaxInt returns the maximum of a set of integers.
+func MaxInt(values ...int) int {
+	max := math.MinInt32
+	for _, v := range values {
+		if v > max {
+			max = v
+		}
+	}
+	return max
 }

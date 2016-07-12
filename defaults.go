@@ -38,11 +38,13 @@ const (
 	// DefaultXAxisMargin is the default distance from bottom of the canvas to the x axis labels.
 	DefaultXAxisMargin = 10
 
-	//DefaultVerticalTickWidth is half the margin.
-	DefaultVerticalTickWidth = DefaultYAxisMargin >> 1
-
+	//DefaultVerticalTickHeight is half the margin.
+	DefaultVerticalTickHeight = DefaultXAxisMargin >> 1
 	//DefaultHorizontalTickWidth is half the margin.
-	DefaultHorizontalTickWidth = DefaultXAxisMargin >> 1
+	DefaultHorizontalTickWidth = DefaultYAxisMargin >> 1
+
+	// DefaultTickCount is the defautl number of ticks to show
+	DefaultTickCount = 10
 
 	// DefaultMinimumTickHorizontalSpacing is the minimum distance between horizontal ticks.
 	DefaultMinimumTickHorizontalSpacing = 20
@@ -91,6 +93,17 @@ var (
 	}
 )
 
+var (
+	// DashArrayDots is a dash array that represents '....' style stroke dashes.
+	DashArrayDots = []int{1, 1}
+	// DashArrayDashesSmall is a dash array that represents '- - -' style stroke dashes.
+	DashArrayDashesSmall = []int{3, 3}
+	// DashArrayDashesMedium is a dash array that represents '-- -- --' style stroke dashes.
+	DashArrayDashesMedium = []int{5, 5}
+	// DashArrayDashesLarge is a dash array that represents '----- ----- -----' style stroke dashes.
+	DashArrayDashesLarge = []int{10, 10}
+)
+
 // GetDefaultSeriesStrokeColor returns a color from the default list by index.
 // NOTE: the index will wrap around (using a modulo).g
 func GetDefaultSeriesStrokeColor(index int) drawing.Color {
@@ -100,7 +113,7 @@ func GetDefaultSeriesStrokeColor(index int) drawing.Color {
 
 var (
 	// DefaultAnnotationPadding is the padding around an annotation.
-	DefaultAnnotationPadding = Box{Top: 5, Left: 5, Right: 5, Bottom: 5}
+	DefaultAnnotationPadding = Box{Top: 3, Left: 5, Right: 5, Bottom: 5}
 	// DefaultBackgroundPadding is the default canvas padding config.
 	DefaultBackgroundPadding = Box{Top: 5, Left: 5, Right: 5, Bottom: 5}
 )

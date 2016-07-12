@@ -24,6 +24,9 @@ type Renderer interface {
 	// SetStrokeWidth sets the stroke width.
 	SetStrokeWidth(width float64)
 
+	// SetStrokeDashArray sets the stroke dash array.
+	SetStrokeDashArray(dashArray []float64)
+
 	// MoveTo moves the cursor to a given point.
 	MoveTo(x, y int)
 
@@ -59,7 +62,7 @@ type Renderer interface {
 	Text(body string, x, y int)
 
 	// MeasureText measures text.
-	MeasureText(body string) (width int, height int)
+	MeasureText(body string) Box
 
 	// Save writes the image to the given writer.
 	Save(w io.Writer) error

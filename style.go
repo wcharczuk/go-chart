@@ -13,12 +13,14 @@ type Style struct {
 	Show    bool
 	Padding Box
 
-	StrokeWidth float64
-	StrokeColor drawing.Color
-	FillColor   drawing.Color
-	FontSize    float64
-	FontColor   drawing.Color
-	Font        *truetype.Font
+	StrokeWidth     float64
+	StrokeColor     drawing.Color
+	StrokeDashArray []float64
+
+	FillColor drawing.Color
+	FontSize  float64
+	FontColor drawing.Color
+	Font      *truetype.Font
 }
 
 // IsZero returns if the object is set or not.
@@ -57,6 +59,17 @@ func (s Style) GetStrokeWidth(defaults ...float64) float64 {
 		return DefaultStrokeWidth
 	}
 	return s.StrokeWidth
+}
+
+// GetStrokeDashArray returns the stroke dash array.
+func (s Style) GetStrokeDashArray(defaults ...[]float64) []float64 {
+	if len(s.StrokeDashArray) == 0 {
+		if len(defaults) > 0 {
+			return defaults[0]
+		}
+		return nil
+	}
+	return s.StrokeDashArray
 }
 
 // GetFontSize gets the font size.

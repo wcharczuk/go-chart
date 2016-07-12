@@ -28,9 +28,15 @@ func (r Range) String() string {
 }
 
 // Translate maps a given value into the range space.
-// An example would be a 600 px image, with a min of 10 and a max of 100.
-// Translate(50) would yield (50.0/90.0)*600 ~= 333.33
 func (r Range) Translate(value float64) int {
-	finalValue := ((r.Max - value) / r.Delta()) * float64(r.Domain)
-	return int(math.Floor(finalValue))
+	normalized := value - r.Min
+	ratio := normalized / r.Delta()
+	return int(math.Ceil(ratio * float64(r.Domain)))
+}
+
+// GetRoundedRangeBounds returns some `prettified` range bounds.
+func (r Range) GetRoundedRangeBounds() (min, max float64) {
+	delta := r.Max - r.Min
+	roundTo := GetRoundToForDelta(delta)
+	return RoundDown(r.Min, roundTo), RoundUp(r.Max, roundTo)
 }

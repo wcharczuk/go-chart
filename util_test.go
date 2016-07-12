@@ -75,3 +75,11 @@ func TestSlices(t *testing.T) {
 	assert.Equal(20, s[2])
 	assert.Equal(90, s[9])
 }
+
+func TestGetRoundToForDelta(t *testing.T) {
+	assert := assert.New(t)
+
+	assert.Equal(100.0, GetRoundToForDelta(1001.00))
+	assert.Equal(10.0, GetRoundToForDelta(101.00))
+	assert.Equal(1.0, GetRoundToForDelta(11.00))
+}

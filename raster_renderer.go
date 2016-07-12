@@ -5,6 +5,7 @@ import (
 	"image/color"
 	"image/png"
 	"io"
+	"math"
 
 	"github.com/golang/freetype/truetype"
 	"github.com/wcharczuk/go-chart/drawing"
@@ -48,14 +49,19 @@ func (rr *rasterRenderer) SetStrokeColor(c drawing.Color) {
 	rr.gc.SetStrokeColor(c)
 }
 
-// SetFillColor implements the interface method.
-func (rr *rasterRenderer) SetFillColor(c drawing.Color) {
-	rr.gc.SetFillColor(c)
-}
-
 // SetLineWidth implements the interface method.
 func (rr *rasterRenderer) SetStrokeWidth(width float64) {
 	rr.gc.SetLineWidth(width)
+}
+
+// StrokeDashArray sets the stroke dash array.
+func (rr *rasterRenderer) SetStrokeDashArray(dashArray []float64) {
+	rr.gc.SetLineDash(dashArray, 0.0)
+}
+
+// SetFillColor implements the interface method.
+func (rr *rasterRenderer) SetFillColor(c drawing.Color) {
+	rr.gc.SetFillColor(c)
 }
 
 // MoveTo implements the interface method.
@@ -127,14 +133,38 @@ func (rr *rasterRenderer) Text(body string, x, y int) {
 }
 
 // MeasureText returns the height and width in pixels of a string.
-func (rr *rasterRenderer) MeasureText(body string) (width int, height int) {
+func (rr *rasterRenderer) MeasureText(body string) Box {
 	l, t, r, b, err := rr.gc.GetStringBounds(body)
 	if err != nil {
-		return
+		return Box{}
 	}
-	width = int(r - l)
-	height = int(b - t)
-	return
+	if l < 0 {
+		r = r - l // equivalent to r+(-1*l)
+		l = 0
+	}
+	if t < 0 {
+		b = b - t
+		t = 0
+	}
+
+	if l > 0 {
+		r = r + l
+		l = 0
+	}
+
+	if t > 0 {
+		b = b + t
+		t = 0
+	}
+
+	return Box{
+		Top:    int(math.Ceil(t)),
+		Left:   int(math.Ceil(l)),
+		Right:  int(math.Ceil(r)),
+		Bottom: int(math.Ceil(b)),
+		Width:  int(math.Ceil(r - l)),
+		Height: int(math.Ceil(b - t)),
+	}
 }
 
 // Save implements the interface method.
