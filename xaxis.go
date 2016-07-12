@@ -56,7 +56,7 @@ func (xa XAxis) getTickCount(r Renderer, ra Range, vf ValueFormatter) int {
 		ll = ln
 	}
 	llb := r.MeasureText(ll)
-	textWidth := llb.Width
+	textWidth := llb.Width()
 	width := textWidth + DefaultMinimumTickHorizontalSpacing
 	count := int(math.Ceil(float64(ra.Domain) / float64(width)))
 	return count
@@ -77,11 +77,11 @@ func (xa XAxis) Measure(r Renderer, canvasBox Box, ra Range, ticks []Tick) Box {
 		tb := r.MeasureText(t.Label)
 
 		tx := canvasBox.Left + lx
-		ty := canvasBox.Bottom + DefaultXAxisMargin + tb.Height
+		ty := canvasBox.Bottom + DefaultXAxisMargin + tb.Height()
 
 		top = MinInt(top, canvasBox.Bottom)
-		left = MinInt(left, tx-(tb.Width>>1))
-		right = MaxInt(right, tx+(tb.Width>>1))
+		left = MinInt(left, tx-(tb.Width()>>1))
+		right = MaxInt(right, tx+(tb.Width()>>1))
 		bottom = MaxInt(bottom, ty)
 	}
 
@@ -90,8 +90,6 @@ func (xa XAxis) Measure(r Renderer, canvasBox Box, ra Range, ticks []Tick) Box {
 		Left:   left,
 		Right:  right,
 		Bottom: bottom,
-		Width:  right - left,
-		Height: bottom - top,
 	}
 }
 
@@ -116,8 +114,8 @@ func (xa XAxis) Render(r Renderer, canvasBox Box, ra Range, ticks []Tick) {
 		lx := ra.Translate(v)
 		tb := r.MeasureText(t.Label)
 		tx := canvasBox.Left + lx
-		ty := canvasBox.Bottom + DefaultXAxisMargin + tb.Height
-		r.Text(t.Label, tx-tb.Width>>1, ty)
+		ty := canvasBox.Bottom + DefaultXAxisMargin + tb.Height()
+		r.Text(t.Label, tx-tb.Width()>>1, ty)
 
 		r.MoveTo(tx, canvasBox.Bottom)
 		r.LineTo(tx, canvasBox.Bottom+DefaultVerticalTickHeight)

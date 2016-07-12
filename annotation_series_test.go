@@ -45,8 +45,6 @@ func TestAnnotationSeriesMeasure(t *testing.T) {
 		Left:   5,
 		Right:  105,
 		Bottom: 105,
-		Height: 100,
-		Width:  100,
 	}
 	sd := Style{
 		FontSize: 10.0,
@@ -100,8 +98,6 @@ func TestAnnotationSeriesRender(t *testing.T) {
 		Left:   5,
 		Right:  105,
 		Bottom: 105,
-		Height: 100,
-		Width:  100,
 	}
 	sd := Style{
 		FontSize: 10.0,

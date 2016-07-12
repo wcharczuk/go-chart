@@ -114,3 +114,11 @@ func MaxInt(values ...int) int {
 	}
 	return max
 }
+
+// AbsInt returns the absolute value of an integer.
+func AbsInt(value int) int {
+	if value < 0 {
+		return -value
+	}
+	return value
+}

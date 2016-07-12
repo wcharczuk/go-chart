@@ -59,7 +59,7 @@ func (ya YAxis) getTickCount(r Renderer, ra Range, vf ValueFormatter) int {
 	//given the domain, figure out how many ticks we can draw ...
 	label := vf(ra.Min)
 	tb := r.MeasureText(label)
-	return int(math.Ceil(float64(ra.Domain) / float64(tb.Height+DefaultMinimumTickVerticalSpacing)))
+	return int(math.Ceil(float64(ra.Domain) / float64(tb.Height()+DefaultMinimumTickVerticalSpacing)))
 }
 
 // Measure returns the bounds of the axis.
@@ -85,18 +85,18 @@ func (ya YAxis) Measure(r Renderer, canvasBox Box, ra Range, ticks []Tick) Box {
 		tb := r.MeasureText(t.Label)
 		finalTextX := tx
 		if ya.AxisType == YAxisSecondary {
-			finalTextX = tx - tb.Width
+			finalTextX = tx - tb.Width()
 		}
 
 		if ya.AxisType == YAxisPrimary {
 			minx = canvasBox.Right
-			maxx = MaxInt(maxx, tx+tb.Width)
+			maxx = MaxInt(maxx, tx+tb.Width())
 		} else if ya.AxisType == YAxisSecondary {
 			minx = MinInt(minx, finalTextX)
 			maxx = MaxInt(maxx, tx)
 		}
-		miny = MinInt(miny, ly-tb.Height>>1)
-		maxy = MaxInt(maxy, ly+tb.Height>>1)
+		miny = MinInt(miny, ly-tb.Height()>>1)
+		maxy = MaxInt(maxy, ly+tb.Height()>>1)
 	}
 
 	return Box{
@@ -104,8 +104,6 @@ func (ya YAxis) Measure(r Renderer, canvasBox Box, ra Range, ticks []Tick) Box {
 		Left:   minx,
 		Right:  maxx,
 		Bottom: maxy,
-		Width:  maxx - minx,
-		Height: maxy - miny,
 	}
 }
 
@@ -142,9 +140,9 @@ func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, ticks []Tick) {
 		tb := r.MeasureText(t.Label)
 
 		finalTextX := tx
-		finalTextY := ly + tb.Height>>1
+		finalTextY := ly + tb.Height()>>1
 		if ya.AxisType == YAxisSecondary {
-			finalTextX = tx - tb.Width
+			finalTextX = tx - tb.Width()
 		}
 
 		r.Text(t.Label, finalTextX, finalTextY)

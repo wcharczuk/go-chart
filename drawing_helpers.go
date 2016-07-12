@@ -51,7 +51,9 @@ func MeasureAnnotation(r Renderer, canvasBox Box, s Style, lx, ly int, label str
 	r.SetFont(s.GetFont())
 	r.SetFontSize(s.GetFontSize(DefaultAnnotationFontSize))
 	textBox := r.MeasureText(label)
-	halfTextHeight := textBox.Height >> 1
+	textWidth := textBox.Width()
+	textHeight := textBox.Height()
+	halfTextHeight := textHeight >> 1
 
 	pt := s.Padding.GetTop(DefaultAnnotationPadding.Top)
 	pl := s.Padding.GetLeft(DefaultAnnotationPadding.Left)
@@ -61,7 +63,7 @@ func MeasureAnnotation(r Renderer, canvasBox Box, s Style, lx, ly int, label str
 	strokeWidth := s.GetStrokeWidth()
 
 	top := ly - (pt + halfTextHeight)
-	right := lx + pl + pr + textBox.Width + DefaultAnnotationDeltaWidth + int(strokeWidth)
+	right := lx + pl + pr + textWidth + DefaultAnnotationDeltaWidth + int(strokeWidth)
 	bottom := ly + (pb + halfTextHeight)
 
 	return Box{
@@ -69,8 +71,6 @@ func MeasureAnnotation(r Renderer, canvasBox Box, s Style, lx, ly int, label str
 		Left:   lx,
 		Right:  right,
 		Bottom: bottom,
-		Width:  right - lx,
-		Height: bottom - top,
 	}
 }
 
@@ -79,7 +79,8 @@ func DrawAnnotation(r Renderer, canvasBox Box, s Style, lx, ly int, label string
 	r.SetFont(s.GetFont())
 	r.SetFontSize(s.GetFontSize(DefaultAnnotationFontSize))
 	textBox := r.MeasureText(label)
-	halfTextHeight := textBox.Height >> 1
+	textWidth := textBox.Width()
+	halfTextHeight := textBox.Height() >> 1
 
 	pt := s.Padding.GetTop(DefaultAnnotationPadding.Top)
 	pl := s.Padding.GetLeft(DefaultAnnotationPadding.Left)
@@ -92,10 +93,10 @@ func DrawAnnotation(r Renderer, canvasBox Box, s Style, lx, ly int, label string
 	ltx := lx + DefaultAnnotationDeltaWidth
 	lty := ly - (pt + halfTextHeight)
 
-	rtx := lx + pl + pr + textBox.Width + DefaultAnnotationDeltaWidth
+	rtx := lx + pl + pr + textWidth + DefaultAnnotationDeltaWidth
 	rty := ly - (pt + halfTextHeight)
 
-	rbx := lx + pl + pr + textBox.Width + DefaultAnnotationDeltaWidth
+	rbx := lx + pl + pr + textWidth + DefaultAnnotationDeltaWidth
 	rby := ly + (pb + halfTextHeight)
 
 	lbx := lx + DefaultAnnotationDeltaWidth
@@ -130,4 +131,28 @@ func DrawBox(r Renderer, b Box, s Style) {
 	r.LineTo(b.Left, b.Bottom)
 	r.LineTo(b.Left, b.Top)
 	r.FillStroke()
+}
+
+// DrawText draws text with a given style.
+func DrawText(r Renderer, text string, x, y int, s Style) {
+	r.SetFillColor(s.GetFillColor())
+	r.SetStrokeColor(s.GetStrokeColor())
+	r.SetStrokeWidth(s.GetStrokeWidth())
+	r.SetFont(s.GetFont())
+	r.SetFontSize(s.GetFontSize())
+	r.Text(text, x, y)
+}
+
+// DrawTextCentered draws text with a given style centered.
+func DrawTextCentered(r Renderer, text string, x, y int, s Style) {
+	r.SetFillColor(s.GetFillColor())
+	r.SetStrokeColor(s.GetStrokeColor())
+	r.SetStrokeWidth(s.GetStrokeWidth())
+	r.SetFont(s.GetFont())
+	r.SetFontSize(s.GetFontSize())
+
+	tb := r.MeasureText(text)
+	tx := x - (tb.Width() >> 1)
+	ty := y - (tb.Height() >> 1)
+	r.Text(text, tx, ty)
 }

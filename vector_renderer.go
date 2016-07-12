@@ -153,8 +153,6 @@ func (vr *vectorRenderer) MeasureText(body string) (box Box) {
 
 		box.Right = w
 		box.Bottom = int(drawing.PointsToPixels(vr.dpi, vr.s.FontSize))
-		box.Width = w
-		box.Height = int(drawing.PointsToPixels(vr.dpi, vr.s.FontSize))
 	}
 	return
 }

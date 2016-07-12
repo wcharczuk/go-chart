@@ -67,7 +67,7 @@ var (
 	DefaultCanvasColor = drawing.Color{R: 255, G: 255, B: 255, A: 255}
 	// DefaultCanvasStrokColor is the default chart canvas stroke color.
 	// It is equivalent to css color:white.
-	DefaultCanvasStrokColor = drawing.Color{R: 255, G: 255, B: 255, A: 255}
+	DefaultCanvasStrokeColor = drawing.Color{R: 255, G: 255, B: 255, A: 255}
 	// DefaultTextColor is the default chart text color.
 	// It is equivalent to #333333.
 	DefaultTextColor = drawing.Color{R: 51, G: 51, B: 51, A: 255}

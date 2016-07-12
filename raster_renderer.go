@@ -162,8 +162,6 @@ func (rr *rasterRenderer) MeasureText(body string) Box {
 		Left:   int(math.Ceil(l)),
 		Right:  int(math.Ceil(r)),
 		Bottom: int(math.Ceil(b)),
-		Width:  int(math.Ceil(r - l)),
-		Height: int(math.Ceil(b - t)),
 	}
 }
 

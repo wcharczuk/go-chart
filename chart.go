@@ -99,13 +99,14 @@ func (c Chart) Render(rp RendererProvider, w io.Writer) error {
 		c.drawSeries(r, canvasBox, xr, yr, yra, series, index)
 	}
 	c.drawTitle(r)
+
 	return r.Save(w)
 }
 
 func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
-	var globalMinX, globalMaxX float64 = math.MaxFloat64, 0
-	var globalMinY, globalMaxY float64 = math.MaxFloat64, 0
-	var globalMinYA, globalMaxYA float64 = math.MaxFloat64, 0
+	var minx, maxx float64 = math.MaxFloat64, 0
+	var miny, maxy float64 = math.MaxFloat64, 0
+	var minya, maxya float64 = math.MaxFloat64, 0
 
 	for _, s := range c.Series {
 		seriesAxis := s.GetYAxis()
@@ -113,26 +114,16 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 			seriesLength := vp.Len()
 			for index := 0; index < seriesLength; index++ {
 				vx, vy := vp.GetValue(index)
-				if globalMinX > vx {
-					globalMinX = vx
-				}
-				if globalMaxX < vx {
-					globalMaxX = vx
-				}
+
+				minx = math.Min(minx, vx)
+				maxx = math.Max(maxx, vx)
+
 				if seriesAxis == YAxisPrimary {
-					if globalMinY > vy {
-						globalMinY = vy
-					}
-					if globalMaxY < vy {
-						globalMaxY = vy
-					}
+					miny = math.Min(miny, vy)
+					maxy = math.Max(maxy, vy)
 				} else if seriesAxis == YAxisSecondary {
-					if globalMinYA > vy {
-						globalMinYA = vy
-					}
-					if globalMaxYA < vy {
-						globalMaxYA = vy
-					}
+					minya = math.Min(minya, vy)
+					maxya = math.Max(maxya, vy)
 				}
 			}
 		}
@@ -142,17 +133,16 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 		xrange.Min = c.XAxis.Range.Min
 		xrange.Max = c.XAxis.Range.Max
 	} else {
-		xrange.Min = globalMinX
-		xrange.Max = globalMaxX
-		//xrange.Min, xrange.Max = xrange.GetRoundedRangeBounds()
+		xrange.Min = minx
+		xrange.Max = maxx
 	}
 
 	if !c.YAxis.Range.IsZero() {
 		yrange.Min = c.YAxis.Range.Min
 		yrange.Max = c.YAxis.Range.Max
 	} else {
-		yrange.Min = globalMinY
-		yrange.Max = globalMaxY
+		yrange.Min = miny
+		yrange.Max = maxy
 		yrange.Min, yrange.Max = yrange.GetRoundedRangeBounds()
 	}
 
@@ -160,8 +150,8 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 		yrangeAlt.Min = c.YAxisSecondary.Range.Min
 		yrangeAlt.Max = c.YAxisSecondary.Range.Max
 	} else {
-		yrangeAlt.Min = globalMinYA
-		yrangeAlt.Max = globalMaxYA
+		yrangeAlt.Min = minya
+		yrangeAlt.Max = maxya
 		yrangeAlt.Min, yrangeAlt.Max = yrangeAlt.GetRoundedRangeBounds()
 	}
 
@@ -169,19 +159,17 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 }
 
 func (c Chart) getDefaultCanvasBox() Box {
+	dpt := c.Background.Padding.GetTop(DefaultBackgroundPadding.Top)
 	dpl := c.Background.Padding.GetLeft(DefaultBackgroundPadding.Left)
 	dpr := c.Background.Padding.GetRight(DefaultBackgroundPadding.Right)
 	dpb := c.Background.Padding.GetBottom(DefaultBackgroundPadding.Bottom)
 
-	cb := Box{
-		Top:    c.Background.Padding.GetTop(DefaultBackgroundPadding.Top),
+	return Box{
+		Top:    dpt,
 		Left:   dpl,
 		Right:  c.Width - dpr,
 		Bottom: c.Height - dpb,
 	}
-	cb.Height = cb.Bottom - cb.Top
-	cb.Width = cb.Right - cb.Left
-	return cb
 }
 
 func (c Chart) getValueFormatters() (x, y, ya ValueFormatter) {
@@ -227,71 +215,30 @@ func (c Chart) getAxesTicks(r Renderer, xr, yr, yar Range, xf, yf, yfa ValueForm
 }
 
 func (c Chart) getAxisAdjustedCanvasBox(r Renderer, canvasBox Box, xr, yr, yra Range, xticks, yticks, yticksAlt []Tick) Box {
-	axesMinX, axesMaxX, axesMinY, axesMaxY := math.MaxInt32, 0, math.MaxInt32, 0
+	axesOuterBox := canvasBox.Clone()
 	if c.XAxis.Style.Show {
 		axesBounds := c.XAxis.Measure(r, canvasBox, xr, xticks)
-		axesMinY = MinInt(axesMinX, axesBounds.Top)
-		axesMinX = MinInt(axesMinY, axesBounds.Left)
-		axesMaxX = MaxInt(axesMaxX, axesBounds.Right)
-		axesMaxY = MaxInt(axesMaxY, axesBounds.Bottom)
+		axesOuterBox = axesOuterBox.Grow(axesBounds)
 	}
 	if c.YAxis.Style.Show {
 		axesBounds := c.YAxis.Measure(r, canvasBox, yr, yticks)
-		axesMinY = MinInt(axesMinX, axesBounds.Top)
-		axesMinX = MinInt(axesMinY, axesBounds.Left)
-		axesMaxX = MaxInt(axesMaxX, axesBounds.Right)
-		axesMaxY = MaxInt(axesMaxY, axesBounds.Bottom)
+		axesOuterBox = axesOuterBox.Grow(axesBounds)
 	}
 	if c.YAxisSecondary.Style.Show {
 		axesBounds := c.YAxisSecondary.Measure(r, canvasBox, yra, yticksAlt)
-		axesMinY = MinInt(axesMinX, axesBounds.Top)
-		axesMinX = MinInt(axesMinY, axesBounds.Left)
-		axesMaxX = MaxInt(axesMaxX, axesBounds.Right)
-		axesMaxY = MaxInt(axesMaxY, axesBounds.Bottom)
-	}
-	newBox := Box{
-		Top:    canvasBox.Top,
-		Left:   canvasBox.Left,
-		Right:  canvasBox.Right,
-		Bottom: canvasBox.Bottom,
+		axesOuterBox = axesOuterBox.Grow(axesBounds)
 	}
 
-	if axesMinY < 0 {
-		// figure out how much top padding to add
-		delta := -1 * axesMinY
-		newBox.Top = canvasBox.Top + delta
-	}
-
-	if axesMinX < 0 {
-		// figure out how much left padding to add
-		delta := -1 * axesMinX
-		newBox.Left = canvasBox.Left + delta
-	}
-
-	if axesMaxX > c.Width {
-		// figure out how much right padding to add
-		delta := axesMaxX - c.Width
-		newBox.Right = canvasBox.Right - delta
-	}
-
-	if axesMaxY > c.Height {
-		//figure out how much bottom padding to add
-		delta := axesMaxY - c.Height
-		newBox.Bottom = canvasBox.Bottom - delta
-	}
-
-	newBox.Height = newBox.Bottom - newBox.Top
-	newBox.Width = newBox.Right - newBox.Left
-	return newBox
+	return canvasBox.OuterConstrain(c.asBox(), axesOuterBox)
 }
 
 func (c Chart) setRangeDomains(canvasBox Box, xr, yr, yra Range) (xr2, yr2, yra2 Range) {
 	xr2.Min, xr2.Max = xr.Min, xr.Max
-	xr2.Domain = canvasBox.Width
+	xr2.Domain = canvasBox.Width()
 	yr2.Min, yr2.Max = yr.Min, yr.Max
-	yr2.Domain = canvasBox.Height
+	yr2.Domain = canvasBox.Height()
 	yra2.Min, yra2.Max = yra.Min, yra.Max
-	yra2.Domain = canvasBox.Height
+	yra2.Domain = canvasBox.Height()
 	return
 }
 
@@ -307,11 +254,11 @@ func (c Chart) hasAnnotationSeries() bool {
 }
 
 func (c Chart) getAnnotationAdjustedCanvasBox(r Renderer, canvasBox Box, xr, yr, yra Range, xf, yf, yfa ValueFormatter) Box {
-	annotationMinX, annotationMaxX, annotationMinY, annotationMaxY := math.MaxInt32, 0, math.MaxInt32, 0
+	annotationSeriesBox := canvasBox.Clone()
 	for seriesIndex, s := range c.Series {
 		if as, isAnnotationSeries := s.(AnnotationSeries); isAnnotationSeries {
 			if as.Style.Show {
-				style := c.getSeriesStyleDefaults(seriesIndex)
+				style := c.seriesStyleDefaults(seriesIndex)
 				var annotationBounds Box
 				if as.YAxis == YAxisPrimary {
 					annotationBounds = as.Measure(r, canvasBox, xr, yr, style)
@@ -319,74 +266,28 @@ func (c Chart) getAnnotationAdjustedCanvasBox(r Renderer, canvasBox Box, xr, yr,
 					annotationBounds = as.Measure(r, canvasBox, xr, yra, style)
 				}
 
-				annotationMinY = MinInt(annotationMinY, annotationBounds.Top)
-				annotationMinX = MinInt(annotationMinX, annotationBounds.Left)
-				annotationMaxX = MaxInt(annotationMaxX, annotationBounds.Right)
-				annotationMaxY = MaxInt(annotationMaxY, annotationBounds.Bottom)
+				annotationSeriesBox = annotationSeriesBox.Grow(annotationBounds)
 			}
 		}
 	}
 
-	newBox := Box{
-		Top:    canvasBox.Top,
-		Left:   canvasBox.Left,
-		Right:  canvasBox.Right,
-		Bottom: canvasBox.Bottom,
-	}
-	if annotationMinY < 0 {
-		// figure out how much top padding to add
-		delta := -1 * annotationMinY
-		newBox.Top = canvasBox.Top + delta
-	}
-
-	if annotationMinX < 0 {
-		// figure out how much left padding to add
-		delta := -1 * annotationMinX
-		newBox.Left = canvasBox.Left + delta
-	}
-
-	if annotationMaxX > c.Width {
-		// figure out how much right padding to add
-		delta := annotationMaxX - c.Width
-		newBox.Right = canvasBox.Right - delta
-	}
-
-	if annotationMaxY > c.Height {
-		//figure out how much bottom padding to add
-		delta := annotationMaxY - c.Height
-		newBox.Bottom = canvasBox.Bottom - delta
-	}
-
-	newBox.Height = newBox.Bottom - newBox.Top
-	newBox.Width = newBox.Right - newBox.Left
-
-	return newBox
+	return canvasBox.OuterConstrain(c.asBox(), annotationSeriesBox)
 }
 
 func (c Chart) drawBackground(r Renderer) {
-	r.SetFillColor(c.Background.GetFillColor(DefaultBackgroundColor))
-	r.SetStrokeColor(c.Background.GetStrokeColor(DefaultBackgroundStrokeColor))
-	r.SetStrokeWidth(c.Background.GetStrokeWidth(DefaultStrokeWidth))
-	r.MoveTo(0, 0)
-	r.LineTo(c.Width, 0)
-	r.LineTo(c.Width, c.Height)
-	r.LineTo(0, c.Height)
-	r.LineTo(0, 0)
-	r.Close()
-	r.FillStroke()
+	DrawBox(r, Box{Right: c.Width, Bottom: c.Height}, c.Canvas.WithDefaultsFrom(Style{
+		FillColor:   DefaultBackgroundColor,
+		StrokeColor: DefaultBackgroundStrokeColor,
+		StrokeWidth: DefaultStrokeWidth,
+	}))
 }
 
 func (c Chart) drawCanvas(r Renderer, canvasBox Box) {
-	r.SetFillColor(c.Canvas.GetFillColor(DefaultCanvasColor))
-	r.SetStrokeColor(c.Canvas.GetStrokeColor(DefaultCanvasStrokColor))
-	r.SetStrokeWidth(c.Canvas.GetStrokeWidth(DefaultStrokeWidth))
-	r.MoveTo(canvasBox.Left, canvasBox.Top)
-	r.LineTo(canvasBox.Right, canvasBox.Top)
-	r.LineTo(canvasBox.Right, canvasBox.Bottom)
-	r.LineTo(canvasBox.Left, canvasBox.Bottom)
-	r.LineTo(canvasBox.Left, canvasBox.Top)
-	r.Close()
-	r.FillStroke()
+	DrawBox(r, canvasBox, c.Canvas.WithDefaultsFrom(Style{
+		FillColor:   DefaultCanvasColor,
+		StrokeColor: DefaultCanvasStrokeColor,
+		StrokeWidth: DefaultStrokeWidth,
+	}))
 }
 
 func (c Chart) drawAxes(r Renderer, canvasBox Box, xrange, yrange, yrangeAlt Range, xticks, yticks, yticksAlt []Tick) {
@@ -401,21 +302,11 @@ func (c Chart) drawAxes(r Renderer, canvasBox Box, xrange, yrange, yrangeAlt Ran
 	}
 }
 
-func (c Chart) getSeriesStyleDefaults(seriesIndex int) Style {
-	strokeColor := GetDefaultSeriesStrokeColor(seriesIndex)
-	return Style{
-		StrokeColor: strokeColor,
-		StrokeWidth: DefaultStrokeWidth,
-		Font:        c.Font,
-		FontSize:    DefaultFontSize,
-	}
-}
-
 func (c Chart) drawSeries(r Renderer, canvasBox Box, xrange, yrange, yrangeAlt Range, s Series, seriesIndex int) {
 	if s.GetYAxis() == YAxisPrimary {
-		s.Render(r, canvasBox, xrange, yrange, c.getSeriesStyleDefaults(seriesIndex))
+		s.Render(r, canvasBox, xrange, yrange, c.seriesStyleDefaults(seriesIndex))
 	} else if s.GetYAxis() == YAxisSecondary {
-		s.Render(r, canvasBox, xrange, yrangeAlt, c.getSeriesStyleDefaults(seriesIndex))
+		s.Render(r, canvasBox, xrange, yrangeAlt, c.seriesStyleDefaults(seriesIndex))
 	}
 }
 
@@ -428,12 +319,26 @@ func (c Chart) drawTitle(r Renderer) {
 
 		textBox := r.MeasureText(c.Title)
 
-		textWidth := textBox.Width
-		textHeight := textBox.Height
+		textWidth := textBox.Width()
+		textHeight := textBox.Height()
 
 		titleX := (c.Width >> 1) - (textWidth >> 1)
 		titleY := c.TitleStyle.Padding.GetTop(DefaultTitleTop) + textHeight
 
 		r.Text(c.Title, titleX, titleY)
 	}
+}
+
+func (c Chart) seriesStyleDefaults(seriesIndex int) Style {
+	strokeColor := GetDefaultSeriesStrokeColor(seriesIndex)
+	return Style{
+		StrokeColor: strokeColor,
+		StrokeWidth: DefaultStrokeWidth,
+		Font:        c.Font,
+		FontSize:    DefaultFontSize,
+	}
+}
+
+func (c Chart) asBox() Box {
+	return Box{Right: c.Width, Bottom: c.Height}
 }
