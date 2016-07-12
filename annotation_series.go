@@ -49,7 +49,7 @@ func (as AnnotationSeries) Measure(r Renderer, canvasBox Box, xrange, yrange Ran
 			Padding:     DefaultAnnotationPadding,
 		})
 		for _, a := range as.Annotations {
-			lx := canvasBox.Left - xrange.Translate(a.X)
+			lx := canvasBox.Left + xrange.Translate(a.X)
 			ly := canvasBox.Bottom - yrange.Translate(a.Y)
 			ab := MeasureAnnotation(r, canvasBox, style, lx, ly, a.Label)
 			box.Top = MinInt(box.Top, ab.Top)
