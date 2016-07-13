@@ -72,7 +72,7 @@ The key areas to note are that we have to explicitly turn on two features, the a
 
 # Alternate Usage
 
-You can alternately turn a bunch of features off and constrain the proportions to something like a spark line:
+You can alternately leave a bunch of features turned off and constrain the proportions to something like a spark line:
 
  ![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/tvix_ltm.png)
 
@@ -100,6 +100,77 @@ graph.Render(chart.PNG, buffer)
 
 It is also possible to draw series against 2 separate y-axis with their own ranges (usually good for comparison charts).
 In order to map the series to an alternate axis make sure to set the `YAxis` property of the series to `YAxisSecondary`.
+
+```go
+graph := chart.Chart{
+		Title: stock.Name,
+		TitleStyle: chart.Style{
+			Show: false,
+		},
+		Width:  width,
+		Height: height,
+		XAxis: chart.XAxis{
+			Style: chart.Style{
+				Show: showAxes,
+			},
+		},
+		YAxis: chart.YAxis{
+			Style: chart.Style{
+				Show: showAxes,
+			},
+		},
+		Series: []chart.Series{
+			chart.TimeSeries{
+				Name:    "vea",
+				XValues: vx,
+				YValues: vy,
+				Style: chart.Style{
+					StrokeColor: chart.GetDefaultSeriesStrokeColor(0),
+                    FillColor:   chart.GetDefaultSeriesStrokeColor(0).WithAlpha(64),
+				},
+			},
+            chart.TimeSeries{
+                Name:    "spy",
+                XValues: cx,
+                YValues: cy,
+                YAxis:   chart.YAxisSecondary,  // key (!)
+                Style: chart.Style{
+                    StrokeColor: chart.GetDefaultSeriesStrokeColor(1),
+                    FillColor:   chart.GetDefaultSeriesStrokeColor(1).WithAlpha(64),
+                },
+            },
+			chart.AnnotationSeries{
+				Name: fmt.Sprintf("%s - Last Value", "vea"),
+				Style: chart.Style{
+					Show:        true,
+                    StrokeColor: chart.GetDefaultSeriesStrokeColor(0),
+				},
+				Annotations: []chart.Annotation{
+					chart.Annotation{
+						X:     float64(vx[len(vx)-1].Unix()),
+						Y:     vy[len(vy)-1],
+						Label: fmt.Sprintf("%s - %s", "vea", chart.FloatValueFormatter(vy[len(vy)-1])),
+					},
+				},
+			},
+            chart.AnnotationSeries{
+                Name: fmt.Sprintf("%s - Last Value", "goog"),
+                Style: chart.Style{
+                    Show:        true,
+                    StrokeColor: chart.GetDefaultSeriesStrokeColor(1),
+                },
+                YAxis: chart.YAxisSecondary, // key (!)
+                Annotations: []chart.Annotation{
+                    chart.Annotation{
+                        X:     float64(cx[len(cx)-1].Unix()),
+                        Y:     cy[len(cy)-1],
+                        Label: fmt.Sprintf("%s - %s", "goog", chart.FloatValueFormatter(cy[len(cy)-1])),
+                    },
+                },
+            },
+		},
+	}
+```
 
 # Design Philosophy
 
