@@ -103,75 +103,76 @@ In order to map the series to an alternate axis make sure to set the `YAxis` pro
 
 ```go
 graph := chart.Chart{
-		Title: stock.Name,
-		TitleStyle: chart.Style{
-			Show: false,
-		},
-		Width:  width,
-		Height: height,
-		XAxis: chart.XAxis{
-			Style: chart.Style{
-				Show: true,
-			},
-		},
-		YAxis: chart.YAxis{
-			Style: chart.Style{
-				Show: true,
-			},
-		},
-		Series: []chart.Series{
-			chart.TimeSeries{
-				Name:    "vea",
-				XValues: vx,
-				YValues: vy,
-				Style: chart.Style{
-                    Show: true,
-					StrokeColor: chart.GetDefaultSeriesStrokeColor(0),
-                    FillColor:   chart.GetDefaultSeriesStrokeColor(0).WithAlpha(64),
-				},
-			},
-            chart.TimeSeries{
-                Name:    "spy",
-                XValues: cx,
-                YValues: cy,
-                YAxis:   chart.YAxisSecondary,  // key (!)
-                Style: chart.Style{
-                    Show: true,
-                    StrokeColor: chart.GetDefaultSeriesStrokeColor(1),
-                    FillColor:   chart.GetDefaultSeriesStrokeColor(1).WithAlpha(64),
+    Title: stock.Name,
+    TitleStyle: chart.Style{
+        Show: false,
+    },
+    Width:  width,
+    Height: height,
+    XAxis: chart.XAxis{
+        Style: chart.Style{
+            Show: true,
+        },
+    },
+    YAxis: chart.YAxis{
+        Style: chart.Style{
+            Show: true,
+        },
+    },
+    Series: []chart.Series{
+        chart.TimeSeries{
+            Name:    "vea",
+            XValues: vx,
+            YValues: vy,
+            Style: chart.Style{
+                Show: true,
+                StrokeColor: chart.GetDefaultSeriesStrokeColor(0),
+                FillColor:   chart.GetDefaultSeriesStrokeColor(0).WithAlpha(64),
+            },
+        },
+        chart.TimeSeries{
+            Name:    "spy",
+            XValues: cx,
+            YValues: cy,
+            YAxis:   chart.YAxisSecondary,  // key (!)
+            Style: chart.Style{
+                Show: true,
+                StrokeColor: chart.GetDefaultSeriesStrokeColor(1),
+                FillColor:   chart.GetDefaultSeriesStrokeColor(1).WithAlpha(64),
+            },
+        },
+        chart.AnnotationSeries{
+            Name: fmt.Sprintf("%s - Last Value", "vea"),
+            Style: chart.Style{
+                Show:        true,
+                StrokeColor: chart.GetDefaultSeriesStrokeColor(0),
+            },
+            Annotations: []chart.Annotation{
+                chart.Annotation{
+                    X:     float64(vx[len(vx)-1].Unix()),
+                    Y:     vy[len(vy)-1],
+                    Label: fmt.Sprintf("%s - %s", "vea", chart.FloatValueFormatter(vy[len(vy)-1])),
                 },
             },
-			chart.AnnotationSeries{
-				Name: fmt.Sprintf("%s - Last Value", "vea"),
-				Style: chart.Style{
-					Show:        true,
-                    StrokeColor: chart.GetDefaultSeriesStrokeColor(0),
-				},
-				Annotations: []chart.Annotation{
-					chart.Annotation{
-						X:     float64(vx[len(vx)-1].Unix()),
-						Y:     vy[len(vy)-1],
-						Label: fmt.Sprintf("%s - %s", "vea", chart.FloatValueFormatter(vy[len(vy)-1])),
-					},
-				},
-			},
-            chart.AnnotationSeries{
-                Name: fmt.Sprintf("%s - Last Value", "goog"),
-                Style: chart.Style{
-                    Show:        true,
-                    StrokeColor: chart.GetDefaultSeriesStrokeColor(1),
-                },
-                YAxis: chart.YAxisSecondary, // key (!)
-                Annotations: []chart.Annotation{
-                    chart.Annotation{
-                        X:     float64(cx[len(cx)-1].Unix()),
-                        Y:     cy[len(cy)-1],
-                        Label: fmt.Sprintf("%s - %s", "goog", chart.FloatValueFormatter(cy[len(cy)-1])),
-                    },
+        },
+        chart.AnnotationSeries{
+            Name: fmt.Sprintf("%s - Last Value", "goog"),
+            Style: chart.Style{
+                Show:        true,
+                StrokeColor: chart.GetDefaultSeriesStrokeColor(1),
+            },
+            YAxis: chart.YAxisSecondary, // key (!)
+            Annotations: []chart.Annotation{
+                chart.Annotation{
+                    X:     float64(cx[len(cx)-1].Unix()),
+                    Y:     cy[len(cy)-1],
+                    Label: fmt.Sprintf("%s - %s", "goog", chart.FloatValueFormatter(cy[len(cy)-1])),
                 },
             },
-		},
-	}
+        },
+    },
+}
+graph.Render(chart.PNG, buffer)
 ```
 
 # Design Philosophy
