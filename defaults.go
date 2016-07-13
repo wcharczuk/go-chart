@@ -82,6 +82,8 @@ var (
 	DefaultFillColor = drawing.Color{R: 0, G: 217, B: 116, A: 255}
 	// DefaultAnnotationFillColor is the default annotation background color.
 	DefaultAnnotationFillColor = drawing.Color{R: 255, G: 255, B: 255, A: 255}
+	// DefaultGridLineColor is the default grid line color.
+	DefaultGridLineColor = drawing.Color{R: 239, G: 239, B: 239, A: 255}
 )
 
 var (

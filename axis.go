@@ -15,5 +15,6 @@ type Axis interface {
 	GetName() string
 	GetStyle() Style
 	GetTicks(r Renderer, ra Range, vf ValueFormatter) []Tick
+	GetGridLines(ticks []Tick) []GridLine
 	Render(c *Chart, r Renderer, canvasBox Box, ra Range, ticks []Tick)
 }

@@ -18,6 +18,10 @@ type YAxis struct {
 	ValueFormatter ValueFormatter
 	Range          Range
 	Ticks          []Tick
+
+	GridLines      []GridLine
+	GridMajorStyle Style
+	GridMinorStyle Style
 }
 
 // GetName returns the name.
@@ -60,6 +64,40 @@ func (ya YAxis) getTickCount(r Renderer, ra Range, vf ValueFormatter) int {
 	label := vf(ra.Min)
 	tb := r.MeasureText(label)
 	return int(math.Ceil(float64(ra.Domain) / float64(tb.Height()+DefaultMinimumTickVerticalSpacing)))
+}
+
+// GetGridLines returns the gridlines for the axis.
+func (ya YAxis) GetGridLines(ticks []Tick) []GridLine {
+	if len(ya.GridLines) > 0 {
+		return ya.GridLines
+	}
+	return ya.generateGridLines(ticks)
+}
+
+func (ya YAxis) generateGridLines(ticks []Tick) []GridLine {
+	var gl []GridLine
+	isMinor := false
+	minorStyle := Style{
+		StrokeColor: DefaultGridLineColor.WithAlpha(100),
+		StrokeWidth: 1.0,
+	}
+	majorStyle := Style{
+		StrokeColor: DefaultGridLineColor,
+		StrokeWidth: 1.0,
+	}
+	for _, t := range ticks {
+		s := majorStyle
+		if isMinor {
+			s = minorStyle
+		}
+		gl = append(gl, GridLine{
+			Style:   s,
+			IsMinor: isMinor,
+			Value:   t.Value,
+		})
+		isMinor = !isMinor
+	}
+	return gl
 }
 
 // Measure returns the bounds of the axis.
@@ -158,5 +196,14 @@ func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, ticks []Tick) {
 
 	if ya.Zero.Style.Show {
 		ya.Zero.Render(r, canvasBox, ra)
+	}
+
+	if ya.GridMajorStyle.Show || ya.GridMinorStyle.Show {
+		for _, gl := range ya.GetGridLines(ticks) {
+			if (gl.IsMinor && ya.GridMinorStyle.Show) ||
+				(!gl.IsMinor && ya.GridMajorStyle.Show) {
+				gl.Render(r, canvasBox, ra)
+			}
+		}
 	}
 }

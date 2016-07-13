@@ -30,14 +30,27 @@ func (gl GridLine) Horizontal() bool {
 
 // Render renders the gridline
 func (gl GridLine) Render(r Renderer, canvasBox Box, ra Range) {
-	lineleft := canvasBox.Left
-	lineright := canvasBox.Right
-	lineheight := canvasBox.Bottom - ra.Translate(gl.Value)
+	if gl.IsVertical {
+		lineLeft := canvasBox.Left + ra.Translate(gl.Value)
+		lineBottom := canvasBox.Bottom
+		lineTop := canvasBox.Top
 
-	r.SetStrokeColor(gl.Style.GetStrokeColor(DefaultAxisColor))
-	r.SetStrokeWidth(gl.Style.GetStrokeWidth(DefaultAxisLineWidth))
+		r.SetStrokeColor(gl.Style.GetStrokeColor(DefaultAxisColor))
+		r.SetStrokeWidth(gl.Style.GetStrokeWidth(DefaultAxisLineWidth))
 
-	r.MoveTo(lineleft, lineheight)
-	r.LineTo(lineright, lineheight)
-	r.Stroke()
+		r.MoveTo(lineLeft, lineBottom)
+		r.LineTo(lineLeft, lineTop)
+		r.Stroke()
+	} else {
+		lineLeft := canvasBox.Left
+		lineRight := canvasBox.Right
+		lineHeight := canvasBox.Bottom - ra.Translate(gl.Value)
+
+		r.SetStrokeColor(gl.Style.GetStrokeColor(DefaultAxisColor))
+		r.SetStrokeWidth(gl.Style.GetStrokeWidth(DefaultAxisLineWidth))
+
+		r.MoveTo(lineLeft, lineHeight)
+		r.LineTo(lineRight, lineHeight)
+		r.Stroke()
+	}
 }

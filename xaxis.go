@@ -12,6 +12,10 @@ type XAxis struct {
 	ValueFormatter ValueFormatter
 	Range          Range
 	Ticks          []Tick
+
+	GridLines      []GridLine
+	GridMajorStyle Style
+	GridMinorStyle Style
 }
 
 // GetName returns the name.
@@ -60,6 +64,41 @@ func (xa XAxis) getTickCount(r Renderer, ra Range, vf ValueFormatter) int {
 	width := textWidth + DefaultMinimumTickHorizontalSpacing
 	count := int(math.Ceil(float64(ra.Domain) / float64(width)))
 	return count
+}
+
+// GetGridLines returns the gridlines for the axis.
+func (xa XAxis) GetGridLines(ticks []Tick) []GridLine {
+	if len(xa.GridLines) > 0 {
+		return xa.GridLines
+	}
+	return xa.generateGridLines(ticks)
+}
+
+func (xa XAxis) generateGridLines(ticks []Tick) []GridLine {
+	var gl []GridLine
+	isMinor := false
+	minorStyle := Style{
+		StrokeColor: DefaultGridLineColor.WithAlpha(100),
+		StrokeWidth: 1.0,
+	}
+	majorStyle := Style{
+		StrokeColor: DefaultGridLineColor,
+		StrokeWidth: 1.0,
+	}
+	for _, t := range ticks {
+		s := majorStyle
+		if isMinor {
+			s = minorStyle
+		}
+		gl = append(gl, GridLine{
+			Style:      s,
+			IsMinor:    isMinor,
+			IsVertical: true,
+			Value:      t.Value,
+		})
+		isMinor = !isMinor
+	}
+	return gl
 }
 
 // Measure returns the bounds of the axis.
@@ -120,5 +159,14 @@ func (xa XAxis) Render(r Renderer, canvasBox Box, ra Range, ticks []Tick) {
 		r.MoveTo(tx, canvasBox.Bottom)
 		r.LineTo(tx, canvasBox.Bottom+DefaultVerticalTickHeight)
 		r.Stroke()
+	}
+
+	if xa.GridMajorStyle.Show || xa.GridMinorStyle.Show {
+		for _, gl := range xa.GetGridLines(ticks) {
+			if (gl.IsMinor && xa.GridMinorStyle.Show) ||
+				(!gl.IsMinor && xa.GridMajorStyle.Show) {
+				gl.Render(r, canvasBox, ra)
+			}
+		}
 	}
 }

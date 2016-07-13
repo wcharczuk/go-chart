@@ -24,8 +24,9 @@ type Chart struct {
 	YAxis          YAxis
 	YAxisSecondary YAxis
 
-	Font   *truetype.Font
-	Series []Series
+	Font     *truetype.Font
+	Series   []Series
+	Elements []Renderable
 }
 
 // GetDPI returns the dpi for the chart.
@@ -99,6 +100,10 @@ func (c Chart) Render(rp RendererProvider, w io.Writer) error {
 		c.drawSeries(r, canvasBox, xr, yr, yra, series, index)
 	}
 	c.drawTitle(r)
+
+	for _, a := range c.Elements {
+		a(r, canvasBox)
+	}
 
 	return r.Save(w)
 }

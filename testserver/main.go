@@ -46,6 +46,12 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 			Style: chart.Style{
 				Show: true,
 			},
+			GridMajorStyle: chart.Style{
+				Show: true,
+			},
+			GridMinorStyle: chart.Style{
+				Show: true,
+			},
 		},
 		YAxis: chart.YAxis{
 			Style: chart.Style{
@@ -56,6 +62,12 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 					Show:        true,
 					StrokeWidth: 1.0,
 				},
+			},
+			GridMajorStyle: chart.Style{
+				Show: true,
+			},
+			GridMinorStyle: chart.Style{
+				Show: true,
 			},
 		},
 		Series: []chart.Series{
