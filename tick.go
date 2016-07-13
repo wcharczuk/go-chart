@@ -9,6 +9,11 @@ func GenerateTicksWithStep(ra Range, step float64, vf ValueFormatter) []Tick {
 			Value: cursor,
 			Label: vf(cursor),
 		})
+
+		// this guard is in place in case step is super, super small.
+		if len(ticks) > DefaultTickCountSanityCheck {
+			return ticks
+		}
 	}
 	return ticks
 }

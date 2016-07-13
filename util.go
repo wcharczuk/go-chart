@@ -122,3 +122,16 @@ func AbsInt(value int) int {
 	}
 	return value
 }
+
+// Seq produces an array of floats from [start,end] by optional steps.
+func Seq(start, end float64, steps ...float64) []float64 {
+	var values []float64
+	step := 1.0
+	if len(steps) > 0 {
+		step = steps[0]
+	}
+	for x := start; x <= end; x += step {
+		values = append(values, x)
+	}
+	return values
+}

@@ -30,7 +30,7 @@ func (ts TimeSeries) Len() int {
 
 // GetValue gets a value at a given index.
 func (ts TimeSeries) GetValue(index int) (x float64, y float64) {
-	x = float64(ts.XValues[index].Unix())
+	x = TimeToFloat64(ts.XValues[index])
 	y = ts.YValues[index]
 	return
 }

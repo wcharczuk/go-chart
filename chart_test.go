@@ -2,6 +2,7 @@ package chart
 
 import (
 	"bytes"
+	"math"
 	"testing"
 	"time"
 
@@ -264,4 +265,42 @@ func TestChartSingleSeries(t *testing.T) {
 	buffer := bytes.NewBuffer([]byte{})
 	c.Render(PNG, buffer)
 	assert.NotEmpty(buffer.Bytes())
+}
+
+func TestChartRegressionBadRanges(t *testing.T) {
+	assert := assert.New(t)
+
+	c := Chart{
+		Series: []Series{
+			ContinuousSeries{
+				XValues: []float64{math.Inf(1), math.Inf(1), math.Inf(1), math.Inf(1), math.Inf(1)},
+				YValues: []float64{1.0, 2.0, 3.0, 4.0, 4.5},
+			},
+		},
+	}
+	buffer := bytes.NewBuffer([]byte{})
+	c.Render(PNG, buffer)
+	assert.True(true, "Render needs to finish.")
+}
+
+func TestChartRegressionBadRangesByUser(t *testing.T) {
+	assert := assert.New(t)
+
+	c := Chart{
+		YAxis: YAxis{
+			Range: Range{
+				Min: math.Inf(-1),
+				Max: math.Inf(1), // this could really happen? eh.
+			},
+		},
+		Series: []Series{
+			ContinuousSeries{
+				XValues: Seq(1.0, 10.0),
+				YValues: Seq(1.0, 10.0),
+			},
+		},
+	}
+	buffer := bytes.NewBuffer([]byte{})
+	c.Render(PNG, buffer)
+	assert.True(true, "Render needs to finish.")
 }

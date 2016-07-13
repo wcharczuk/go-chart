@@ -43,8 +43,10 @@ const (
 	//DefaultHorizontalTickWidth is half the margin.
 	DefaultHorizontalTickWidth = DefaultYAxisMargin >> 1
 
-	// DefaultTickCount is the defautl number of ticks to show
+	// DefaultTickCount is the default number of ticks to show
 	DefaultTickCount = 10
+	// DefaultTickCountSanityCheck is a hard limit on number of ticks to prevent infinite loops.
+	DefaultTickCountSanityCheck = 1 << 10 //1024
 
 	// DefaultMinimumTickHorizontalSpacing is the minimum distance between horizontal ticks.
 	DefaultMinimumTickHorizontalSpacing = 20
