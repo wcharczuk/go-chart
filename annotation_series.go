@@ -66,6 +66,7 @@ func (as AnnotationSeries) Render(r Renderer, canvasBox Box, xrange, yrange Rang
 	if as.Style.Show {
 		style := as.Style.WithDefaultsFrom(Style{
 			Font:        defaults.Font,
+			FontColor:   DefaultTextColor,
 			FillColor:   DefaultAnnotationFillColor,
 			FontSize:    DefaultAnnotationFontSize,
 			StrokeColor: defaults.StrokeColor,

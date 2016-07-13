@@ -32,8 +32,7 @@ func DrawLineSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, vs
 		r.Fill()
 	}
 
-	stroke := s.GetStrokeColor()
-	r.SetStrokeColor(stroke)
+	r.SetStrokeColor(s.GetStrokeColor())
 	r.SetStrokeWidth(s.GetStrokeWidth(DefaultStrokeWidth))
 
 	r.MoveTo(x0, y0)
@@ -48,8 +47,13 @@ func DrawLineSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, vs
 
 // MeasureAnnotation measures how big an annotation would be.
 func MeasureAnnotation(r Renderer, canvasBox Box, s Style, lx, ly int, label string) Box {
+	r.SetFillColor(s.GetFillColor(DefaultAnnotationFillColor))
+	r.SetStrokeColor(s.GetStrokeColor())
+	r.SetStrokeWidth(s.GetStrokeWidth())
 	r.SetFont(s.GetFont())
+	r.SetFontColor(s.GetFontColor(DefaultTextColor))
 	r.SetFontSize(s.GetFontSize(DefaultAnnotationFontSize))
+
 	textBox := r.MeasureText(label)
 	textWidth := textBox.Width()
 	textHeight := textBox.Height()
@@ -76,8 +80,10 @@ func MeasureAnnotation(r Renderer, canvasBox Box, s Style, lx, ly int, label str
 
 // DrawAnnotation draws an anotation with a renderer.
 func DrawAnnotation(r Renderer, canvasBox Box, s Style, lx, ly int, label string) {
-	r.SetFont(s.GetFont())
-	r.SetFontSize(s.GetFontSize(DefaultAnnotationFontSize))
+	r.SetFillColor(s.GetFillColor(DefaultAnnotationFillColor))
+	r.SetStrokeColor(s.GetStrokeColor())
+	r.SetStrokeWidth(s.GetStrokeWidth())
+
 	textBox := r.MeasureText(label)
 	textWidth := textBox.Width()
 	halfTextHeight := textBox.Height() >> 1
@@ -102,11 +108,6 @@ func DrawAnnotation(r Renderer, canvasBox Box, s Style, lx, ly int, label string
 	lbx := lx + DefaultAnnotationDeltaWidth
 	lby := ly + (pb + halfTextHeight)
 
-	//draw the shape...
-	r.SetFillColor(s.GetFillColor(DefaultAnnotationFillColor))
-	r.SetStrokeColor(s.GetStrokeColor())
-	r.SetStrokeWidth(s.GetStrokeWidth())
-
 	r.MoveTo(lx, ly)
 	r.LineTo(ltx, lty)
 	r.LineTo(rtx, rty)
@@ -116,7 +117,10 @@ func DrawAnnotation(r Renderer, canvasBox Box, s Style, lx, ly int, label string
 	r.Close()
 	r.FillStroke()
 
+	r.SetFont(s.GetFont())
 	r.SetFontColor(s.GetFontColor(DefaultTextColor))
+	r.SetFontSize(s.GetFontSize(DefaultAnnotationFontSize))
+
 	r.Text(label, textX, textY)
 }
 
@@ -125,6 +129,7 @@ func DrawBox(r Renderer, b Box, s Style) {
 	r.SetFillColor(s.GetFillColor())
 	r.SetStrokeColor(s.GetStrokeColor(DefaultStrokeColor))
 	r.SetStrokeWidth(s.GetStrokeWidth(DefaultStrokeWidth))
+
 	r.MoveTo(b.Left, b.Top)
 	r.LineTo(b.Right, b.Top)
 	r.LineTo(b.Right, b.Bottom)
@@ -135,17 +140,18 @@ func DrawBox(r Renderer, b Box, s Style) {
 
 // DrawText draws text with a given style.
 func DrawText(r Renderer, text string, x, y int, s Style) {
-	r.SetFillColor(s.GetFillColor())
+	r.SetFillColor(s.GetFillColor(DefaultTextColor))
 	r.SetStrokeColor(s.GetStrokeColor())
 	r.SetStrokeWidth(s.GetStrokeWidth())
 	r.SetFont(s.GetFont())
 	r.SetFontSize(s.GetFontSize())
+
 	r.Text(text, x, y)
 }
 
 // DrawTextCentered draws text with a given style centered.
 func DrawTextCentered(r Renderer, text string, x, y int, s Style) {
-	r.SetFillColor(s.GetFillColor())
+	r.SetFillColor(s.GetFillColor(DefaultTextColor))
 	r.SetStrokeColor(s.GetStrokeColor())
 	r.SetStrokeWidth(s.GetStrokeWidth())
 	r.SetFont(s.GetFont())

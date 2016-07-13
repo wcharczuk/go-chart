@@ -75,10 +75,12 @@ func (ya YAxis) GetGridLines(ticks []Tick) []GridLine {
 }
 
 // Measure returns the bounds of the axis.
-func (ya YAxis) Measure(r Renderer, canvasBox Box, ra Range, ticks []Tick) Box {
-	defaultFont, _ := GetDefaultFont()
-	r.SetFont(ya.Style.GetFont(defaultFont))
-	r.SetFontSize(ya.Style.GetFontSize(DefaultFontSize))
+func (ya YAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, ticks []Tick) Box {
+	r.SetStrokeColor(ya.Style.GetStrokeColor(defaults.StrokeColor))
+	r.SetStrokeWidth(ya.Style.GetStrokeWidth(defaults.StrokeWidth))
+	r.SetFont(ya.Style.GetFont(defaults.GetFont()))
+	r.SetFontColor(ya.Style.GetFontColor(DefaultAxisColor))
+	r.SetFontSize(ya.Style.GetFontSize(defaults.GetFontSize()))
 
 	sort.Sort(Ticks(ticks))
 
@@ -120,14 +122,12 @@ func (ya YAxis) Measure(r Renderer, canvasBox Box, ra Range, ticks []Tick) Box {
 }
 
 // Render renders the axis.
-func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, ticks []Tick) {
-	r.SetStrokeColor(ya.Style.GetStrokeColor(DefaultAxisColor))
-	r.SetStrokeWidth(ya.Style.GetStrokeWidth(DefaultAxisLineWidth))
-
-	fontColor := ya.Style.GetFontColor(DefaultAxisColor)
-	r.SetFontColor(fontColor)
-	fontSize := ya.Style.GetFontSize(DefaultFontSize)
-	r.SetFontSize(fontSize)
+func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, ticks []Tick) {
+	r.SetStrokeColor(ya.Style.GetStrokeColor(defaults.StrokeColor))
+	r.SetStrokeWidth(ya.Style.GetStrokeWidth(defaults.StrokeWidth))
+	r.SetFont(ya.Style.GetFont(defaults.GetFont()))
+	r.SetFontColor(ya.Style.GetFontColor(DefaultAxisColor))
+	r.SetFontSize(ya.Style.GetFontSize(defaults.GetFontSize()))
 
 	sort.Sort(Ticks(ticks))
 
