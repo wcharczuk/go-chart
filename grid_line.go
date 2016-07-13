@@ -1,5 +1,33 @@
 package chart
 
+// GenerateGridLines generates grid lines.
+func GenerateGridLines(ticks []Tick, isVertical bool) []GridLine {
+	var gl []GridLine
+	isMinor := false
+	minorStyle := Style{
+		StrokeColor: DefaultGridLineColor.WithAlpha(100),
+		StrokeWidth: 1.0,
+	}
+	majorStyle := Style{
+		StrokeColor: DefaultGridLineColor,
+		StrokeWidth: 1.0,
+	}
+	for _, t := range ticks {
+		s := majorStyle
+		if isMinor {
+			s = minorStyle
+		}
+		gl = append(gl, GridLine{
+			Style:      s,
+			IsMinor:    isMinor,
+			IsVertical: isVertical,
+			Value:      t.Value,
+		})
+		isMinor = !isMinor
+	}
+	return gl
+}
+
 // GridLine is a line on a graph canvas.
 type GridLine struct {
 	IsMinor    bool
