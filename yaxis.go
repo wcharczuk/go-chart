@@ -36,30 +36,32 @@ func (ya YAxis) GetStyle() Style {
 
 // GetTicks returns the ticks for a series. It coalesces between user provided ticks and
 // generated ticks.
-func (ya YAxis) GetTicks(r Renderer, ra Range, vf ValueFormatter) []Tick {
+func (ya YAxis) GetTicks(r Renderer, ra Range, defaults Style, vf ValueFormatter) []Tick {
 	var ticks []Tick
 	if len(ya.Ticks) > 0 {
 		ticks = ya.Ticks
 	} else {
-		ticks = ya.generateTicks(r, ra, vf)
+		ticks = ya.generateTicks(r, ra, defaults, vf)
 	}
 
 	return ticks
 }
 
-func (ya YAxis) generateTicks(r Renderer, ra Range, vf ValueFormatter) []Tick {
-	step := ya.getTickStep(r, ra, vf)
+func (ya YAxis) generateTicks(r Renderer, ra Range, defaults Style, vf ValueFormatter) []Tick {
+	step := ya.getTickStep(r, ra, defaults, vf)
 	ticks := GenerateTicksWithStep(ra, step, vf)
 	return ticks
 }
 
-func (ya YAxis) getTickStep(r Renderer, ra Range, vf ValueFormatter) float64 {
-	tickCount := ya.getTickCount(r, ra, vf)
+func (ya YAxis) getTickStep(r Renderer, ra Range, defaults Style, vf ValueFormatter) float64 {
+	tickCount := ya.getTickCount(r, ra, defaults, vf)
 	step := ra.Delta() / float64(tickCount)
 	return step
 }
 
-func (ya YAxis) getTickCount(r Renderer, ra Range, vf ValueFormatter) int {
+func (ya YAxis) getTickCount(r Renderer, ra Range, defaults Style, vf ValueFormatter) int {
+	r.SetFont(ya.Style.GetFont(defaults.GetFont()))
+	r.SetFontSize(ya.Style.GetFontSize(defaults.GetFontSize(DefaultFontSize)))
 	//given the domain, figure out how many ticks we can draw ...
 	label := vf(ra.Min)
 	tb := r.MeasureText(label)
@@ -127,7 +129,7 @@ func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 	r.SetStrokeWidth(ya.Style.GetStrokeWidth(defaults.StrokeWidth))
 	r.SetFont(ya.Style.GetFont(defaults.GetFont()))
 	r.SetFontColor(ya.Style.GetFontColor(DefaultAxisColor))
-	r.SetFontSize(ya.Style.GetFontSize(defaults.GetFontSize()))
+	r.SetFontSize(ya.Style.GetFontSize(defaults.GetFontSize(DefaultFontSize)))
 
 	sort.Sort(Ticks(ticks))
 

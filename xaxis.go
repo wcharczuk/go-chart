@@ -30,27 +30,27 @@ func (xa XAxis) GetStyle() Style {
 
 // GetTicks returns the ticks for a series. It coalesces between user provided ticks and
 // generated ticks.
-func (xa XAxis) GetTicks(r Renderer, ra Range, vf ValueFormatter) []Tick {
+func (xa XAxis) GetTicks(r Renderer, ra Range, defaults Style, vf ValueFormatter) []Tick {
 	if len(xa.Ticks) > 0 {
 		return xa.Ticks
 	}
-	return xa.generateTicks(r, ra, vf)
+	return xa.generateTicks(r, ra, defaults, vf)
 }
 
-func (xa XAxis) generateTicks(r Renderer, ra Range, vf ValueFormatter) []Tick {
-	step := xa.getTickStep(r, ra, vf)
+func (xa XAxis) generateTicks(r Renderer, ra Range, defaults Style, vf ValueFormatter) []Tick {
+	step := xa.getTickStep(r, ra, defaults, vf)
 	return GenerateTicksWithStep(ra, step, vf)
 }
 
-func (xa XAxis) getTickStep(r Renderer, ra Range, vf ValueFormatter) float64 {
-	tickCount := xa.getTickCount(r, ra, vf)
+func (xa XAxis) getTickStep(r Renderer, ra Range, defaults Style, vf ValueFormatter) float64 {
+	tickCount := xa.getTickCount(r, ra, defaults, vf)
 	step := ra.Delta() / float64(tickCount)
 	return step
 }
 
-func (xa XAxis) getTickCount(r Renderer, ra Range, vf ValueFormatter) int {
-	fontSize := xa.Style.GetFontSize(DefaultFontSize)
-	r.SetFontSize(fontSize)
+func (xa XAxis) getTickCount(r Renderer, ra Range, defaults Style, vf ValueFormatter) int {
+	r.SetFont(xa.Style.GetFont(defaults.GetFont()))
+	r.SetFontSize(xa.Style.GetFontSize(defaults.GetFontSize(DefaultFontSize)))
 
 	// take a cut at determining the 'widest' value.
 	l0 := vf(ra.Min)

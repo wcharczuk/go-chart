@@ -225,13 +225,13 @@ func (c Chart) hasAxes() bool {
 
 func (c Chart) getAxesTicks(r Renderer, xr, yr, yar Range, xf, yf, yfa ValueFormatter) (xticks, yticks, yticksAlt []Tick) {
 	if c.XAxis.Style.Show {
-		xticks = c.XAxis.GetTicks(r, xr, xf)
+		xticks = c.XAxis.GetTicks(r, xr, c.styleDefaultsAxis(), xf)
 	}
 	if c.YAxis.Style.Show {
-		yticks = c.YAxis.GetTicks(r, yr, yf)
+		yticks = c.YAxis.GetTicks(r, yr, c.styleDefaultsAxis(), yf)
 	}
 	if c.YAxisSecondary.Style.Show {
-		yticksAlt = c.YAxisSecondary.GetTicks(r, yar, yf)
+		yticksAlt = c.YAxisSecondary.GetTicks(r, yar, c.styleDefaultsAxis(), yfa)
 	}
 	return
 }

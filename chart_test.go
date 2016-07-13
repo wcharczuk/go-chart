@@ -122,7 +122,123 @@ func TestChartGetRanges(t *testing.T) {
 	assert.Equal(19.7, yra2.Max)
 }
 
-// TestChartSingleSeries is more of a sanity check than anything.
+func TestChartGetDefaultCanvasBox(t *testing.T) {
+	assert := assert.New(t)
+
+	c := Chart{}
+	canvasBoxDefault := c.getDefaultCanvasBox()
+	assert.False(canvasBoxDefault.IsZero())
+	assert.Equal(DefaultBackgroundPadding.Top, canvasBoxDefault.Top)
+	assert.Equal(DefaultBackgroundPadding.Left, canvasBoxDefault.Left)
+	assert.Equal(c.GetWidth()-DefaultBackgroundPadding.Right, canvasBoxDefault.Right)
+	assert.Equal(c.GetHeight()-DefaultBackgroundPadding.Bottom, canvasBoxDefault.Bottom)
+
+	custom := Chart{
+		Background: Style{
+			Padding: Box{
+				Top:    DefaultBackgroundPadding.Top + 1,
+				Left:   DefaultBackgroundPadding.Left + 1,
+				Right:  DefaultBackgroundPadding.Right + 1,
+				Bottom: DefaultBackgroundPadding.Bottom + 1,
+			},
+		},
+	}
+	canvasBoxCustom := custom.getDefaultCanvasBox()
+	assert.False(canvasBoxCustom.IsZero())
+	assert.Equal(DefaultBackgroundPadding.Top+1, canvasBoxCustom.Top)
+	assert.Equal(DefaultBackgroundPadding.Left+1, canvasBoxCustom.Left)
+	assert.Equal(c.GetWidth()-(DefaultBackgroundPadding.Right+1), canvasBoxCustom.Right)
+	assert.Equal(c.GetHeight()-(DefaultBackgroundPadding.Bottom+1), canvasBoxCustom.Bottom)
+}
+
+func TestChartGetValueFormatters(t *testing.T) {
+	assert := assert.New(t)
+
+	c := Chart{
+		Series: []Series{
+			ContinuousSeries{
+				XValues: []float64{-2.0, -1.0, 0, 1.0, 2.0},
+				YValues: []float64{1.0, 2.0, 3.0, 4.0, 4.5},
+			},
+			ContinuousSeries{
+				XValues: []float64{1.0, 2.0, 3.0, 4.0, 5.0},
+				YValues: []float64{-2.1, -1.0, 0, 1.0, 2.0},
+			},
+			ContinuousSeries{
+				YAxis:   YAxisSecondary,
+				XValues: []float64{1.0, 2.0, 3.0, 4.0, 5.0},
+				YValues: []float64{10.0, 11.0, 12.0, 13.0, 14.0},
+			},
+		},
+	}
+
+	dxf, dyf, dyaf := c.getValueFormatters()
+	assert.NotNil(dxf)
+	assert.NotNil(dyf)
+	assert.NotNil(dyaf)
+}
+
+func TestChartHasAxes(t *testing.T) {
+	assert := assert.New(t)
+
+	assert.False(Chart{}.hasAxes())
+
+	x := Chart{
+		XAxis: XAxis{
+			Style: Style{
+				Show: true,
+			},
+		},
+	}
+	assert.True(x.hasAxes())
+
+	y := Chart{
+		YAxis: YAxis{
+			Style: Style{
+				Show: true,
+			},
+		},
+	}
+	assert.True(y.hasAxes())
+
+	ya := Chart{
+		YAxisSecondary: YAxis{
+			Style: Style{
+				Show: true,
+			},
+		},
+	}
+	assert.True(ya.hasAxes())
+}
+
+func TestChartGetAxesTicks(t *testing.T) {
+	assert := assert.New(t)
+
+	r, err := PNG(1024, 1024)
+	assert.Nil(err)
+
+	c := Chart{
+		XAxis: XAxis{
+			Style: Style{Show: true},
+			Range: Range{Min: 9.8, Max: 19.8},
+		},
+		YAxis: YAxis{
+			Style: Style{Show: true},
+			Range: Range{Min: 9.9, Max: 19.9},
+		},
+		YAxisSecondary: YAxis{
+			Style: Style{Show: true},
+			Range: Range{Min: 9.7, Max: 19.7},
+		},
+	}
+	xr, yr, yar := c.getRanges()
+
+	xt, yt, yat := c.getAxesTicks(r, xr, yr, yar, FloatValueFormatter, FloatValueFormatter, FloatValueFormatter)
+	assert.NotEmpty(xt)
+	assert.NotEmpty(yt)
+	assert.NotEmpty(yat)
+}
+
 func TestChartSingleSeries(t *testing.T) {
 	assert := assert.New(t)
 	now := time.Now()
