@@ -111,12 +111,12 @@ graph := chart.Chart{
 		Height: height,
 		XAxis: chart.XAxis{
 			Style: chart.Style{
-				Show: showAxes,
+				Show: true,
 			},
 		},
 		YAxis: chart.YAxis{
 			Style: chart.Style{
-				Show: showAxes,
+				Show: true,
 			},
 		},
 		Series: []chart.Series{
@@ -125,6 +125,7 @@ graph := chart.Chart{
 				XValues: vx,
 				YValues: vy,
 				Style: chart.Style{
+                    Show: true,
 					StrokeColor: chart.GetDefaultSeriesStrokeColor(0),
                     FillColor:   chart.GetDefaultSeriesStrokeColor(0).WithAlpha(64),
 				},
@@ -135,6 +136,7 @@ graph := chart.Chart{
                 YValues: cy,
                 YAxis:   chart.YAxisSecondary,  // key (!)
                 Style: chart.Style{
+                    Show: true,
                     StrokeColor: chart.GetDefaultSeriesStrokeColor(1),
                     FillColor:   chart.GetDefaultSeriesStrokeColor(1).WithAlpha(64),
                 },
