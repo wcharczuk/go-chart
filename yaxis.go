@@ -37,14 +37,10 @@ func (ya YAxis) GetStyle() Style {
 // GetTicks returns the ticks for a series. It coalesces between user provided ticks and
 // generated ticks.
 func (ya YAxis) GetTicks(r Renderer, ra Range, defaults Style, vf ValueFormatter) []Tick {
-	var ticks []Tick
 	if len(ya.Ticks) > 0 {
-		ticks = ya.Ticks
-	} else {
-		ticks = ya.generateTicks(r, ra, defaults, vf)
+		return ya.Ticks
 	}
-
-	return ticks
+	return ya.generateTicks(r, ra, defaults, vf)
 }
 
 func (ya YAxis) generateTicks(r Renderer, ra Range, defaults Style, vf ValueFormatter) []Tick {
@@ -65,7 +61,8 @@ func (ya YAxis) getTickCount(r Renderer, ra Range, defaults Style, vf ValueForma
 	//given the domain, figure out how many ticks we can draw ...
 	label := vf(ra.Min)
 	tb := r.MeasureText(label)
-	return int(math.Ceil(float64(ra.Domain) / float64(tb.Height()+DefaultMinimumTickVerticalSpacing)))
+	count := int(math.Ceil(float64(ra.Domain) / float64(tb.Height()+DefaultMinimumTickVerticalSpacing)))
+	return count
 }
 
 // GetGridLines returns the gridlines for the axis.

@@ -95,6 +95,11 @@ func (c Chart) Render(rp RendererProvider, w io.Writer) error {
 	xf, yf, yfa := c.getValueFormatters()
 	xr, yr, yra = c.setRangeDomains(canvasBox, xr, yr, yra)
 
+	err = c.checkRanges(xr, yr, yra)
+	if err != nil {
+		return err
+	}
+
 	if c.hasAxes() {
 		xt, yt, yta = c.getAxesTicks(r, xr, yr, yra, xf, yf, yfa)
 		canvasBox = c.getAxisAdjustedCanvasBox(r, canvasBox, xr, yr, yra, xt, yt, yta)
@@ -178,6 +183,23 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 	}
 
 	return
+}
+
+func (c Chart) checkRanges(xr, yr, yra Range) error {
+
+	if math.IsInf(xr.Delta(), 0) || math.IsNaN(xr.Delta()) {
+		return errors.New("Invalid (infinite or NaN) x-range delta")
+	}
+	if math.IsInf(yr.Delta(), 0) || math.IsNaN(yr.Delta()) {
+		return errors.New("Invalid (infinite or NaN) y-range delta")
+	}
+	if c.hasSecondarySeries() {
+		if math.IsInf(yra.Delta(), 0) || math.IsNaN(yra.Delta()) {
+			return errors.New("Invalid (infinite or NaN) y-secondary-range delta")
+		}
+	}
+
+	return nil
 }
 
 func (c Chart) getDefaultCanvasBox() Box {
@@ -270,6 +292,15 @@ func (c Chart) hasAnnotationSeries() bool {
 			if as.Style.IsZero() || as.Style.Show {
 				return true
 			}
+		}
+	}
+	return false
+}
+
+func (c Chart) hasSecondarySeries() bool {
+	for _, s := range c.Series {
+		if s.GetYAxis() == YAxisSecondary {
+			return true
 		}
 	}
 	return false
