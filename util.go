@@ -136,8 +136,8 @@ func Seq(start, end float64, steps ...float64) []float64 {
 	return values
 }
 
-// PercentageDifference computes the percentage difference between two values.
+// PercentDifference computes the percentage difference between two values.
 // The formula is (v2-v1)/v1.
-func PercentageDifference(v1, v2 float64) float64 {
+func PercentDifference(v1, v2 float64) float64 {
 	return (v2 - v1) / v1
 }
