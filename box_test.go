@@ -85,3 +85,24 @@ func TestBoxFit(t *testing.T) {
 	assert.Equal(a.Bottom, fac.Bottom)
 	assert.True(math.Abs(c.Aspect()-fac.Aspect()) < 0.02)
 }
+
+func TestBoxOuterConstrain(t *testing.T) {
+	assert := assert.New(t)
+
+	box := Box{0, 0, 100, 100}
+	canvas := Box{5, 5, 95, 95}
+	taller := Box{-10, 5, 50, 50}
+
+	c := canvas.OuterConstrain(box, taller)
+	assert.Equal(15, c.Top, c.String())
+	assert.Equal(5, c.Left, c.String())
+	assert.Equal(95, c.Right, c.String())
+	assert.Equal(95, c.Bottom, c.String())
+
+	wider := Box{5, 5, 110, 50}
+	d := canvas.OuterConstrain(box, wider)
+	assert.Equal(5, d.Top, d.String())
+	assert.Equal(5, d.Left, d.String())
+	assert.Equal(85, d.Right, d.String())
+	assert.Equal(95, d.Bottom, d.String())
+}
