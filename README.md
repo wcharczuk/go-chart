@@ -175,6 +175,14 @@ graph := chart.Chart{
 graph.Render(chart.PNG, buffer)
 ```
 
+# Moving Averages
+
+You can now also graph a moving average of a series using a special `MovingAverageSeries` that takes an `InnerSeries` as it's required argument.
+
+ ![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/goog_ltm_ma.png)
+ 
+ There is a helper method, `GetLastValue` on the `MovingAverageSeries` to aid in creating a last value annotation for the series.
+
 # Design Philosophy
 
 I wanted to make a charting library that used only native golang, that could be stood up on a server (i.e. it had built in fonts).
