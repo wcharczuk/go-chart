@@ -55,6 +55,10 @@ const (
 
 	// DefaultDateFormat is the default date format.
 	DefaultDateFormat = "2006-01-02"
+	// DefaultDateHourFormat is the date format for hour timestamp formats.
+	DefaultDateHourFormat = "01-02 3pm"
+	// DefaultFloatFormat is the default float format.
+	DefaultFloatFormat = "%.2f"
 )
 
 var (
@@ -67,7 +71,7 @@ var (
 	// DefaultCanvasColor is the default chart canvas color.
 	// It is equivalent to css color:white.
 	DefaultCanvasColor = drawing.Color{R: 255, G: 255, B: 255, A: 255}
-	// DefaultCanvasStrokColor is the default chart canvas stroke color.
+	// DefaultCanvasStrokeColor is the default chart canvas stroke color.
 	// It is equivalent to css color:white.
 	DefaultCanvasStrokeColor = drawing.Color{R: 255, G: 255, B: 255, A: 255}
 	// DefaultTextColor is the default chart text color.
