@@ -37,6 +37,15 @@ func FloatValueFormatter(v interface{}) string {
 	return FloatValueFormatterWithFormat(v, DefaultFloatFormat)
 }
 
+// PercentValueFormatter is a formatter for percent values.
+// NOTE: it normalizes the values, i.e. multiplies by 100.0.
+func PercentValueFormatter(v interface{}) string {
+	if typed, isTyped := v.(float64); isTyped {
+		return FloatValueFormatterWithFormat(typed*100.0, DefaultPercentValueFormat)
+	}
+	return ""
+}
+
 // FloatValueFormatterWithFormat is a ValueFormatter for float64 with a given format.
 func FloatValueFormatterWithFormat(v interface{}, floatFormat string) string {
 	if typed, isTyped := v.(float64); isTyped {

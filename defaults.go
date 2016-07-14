@@ -59,6 +59,8 @@ const (
 	DefaultDateHourFormat = "01-02 3pm"
 	// DefaultFloatFormat is the default float format.
 	DefaultFloatFormat = "%.2f"
+	// DefaultPercentValueFormat is the default percent format.
+	DefaultPercentValueFormat = "%0.2f%%"
 )
 
 var (
