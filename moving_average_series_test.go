@@ -51,3 +51,22 @@ func TestMovingAverageSeriesGetValue(t *testing.T) {
 	assert.Equal(6.5, yvalues[7])
 	assert.Equal(6.0, yvalues[8])
 }
+
+func TestMovingAverageSeriesGetLastValue(t *testing.T) {
+	assert := assert.New(t)
+
+	mockSeries := mockValueProvider{
+		Seq(1.0, 10.0),
+		Seq(10, 1.0),
+	}
+	assert.Equal(10, mockSeries.Len())
+
+	mas := &MovingAverageSeries{
+		InnerSeries: mockSeries,
+		WindowSize:  10,
+	}
+
+	lx, ly := mas.GetLastValue()
+	assert.Equal(10.0, lx)
+	assert.Equal(5.5, ly)
+}
