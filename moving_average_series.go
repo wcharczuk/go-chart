@@ -64,7 +64,7 @@ func (mas MovingAverageSeries) GetLastValue() (x float64, y float64) {
 	windowSize := mas.GetWindowSize()
 	seriesLength := mas.InnerSeries.Len()
 	startAt := seriesLength - (windowSize + 1)
-	if (seriesLength - startAt) < 0 {
+	if startAt < 0 {
 		startAt = 0
 	}
 	vb := NewRingBufferWithCapacity(windowSize)
@@ -95,7 +95,7 @@ func (mas MovingAverageSeries) getAverage(valueBuffer *RingBuffer) float64 {
 			accum += typed
 		}
 	})
-	return accum / float64(mas.valueBuffer.Len())
+	return accum / float64(valueBuffer.Len())
 }
 
 // Render renders the series.
