@@ -42,7 +42,7 @@ func (mas *MovingAverageSeries) GetValue(index int) (x float64, y float64) {
 	if mas.InnerSeries == nil {
 		return
 	}
-	if mas.valueBuffer == nil {
+	if mas.valueBuffer == nil || index == 0 {
 		mas.valueBuffer = NewRingBufferWithCapacity(mas.GetWindowSize())
 	}
 	if mas.valueBuffer.Len() >= mas.GetWindowSize() {
@@ -63,7 +63,7 @@ func (mas MovingAverageSeries) GetLastValue() (x float64, y float64) {
 	}
 	windowSize := mas.GetWindowSize()
 	seriesLength := mas.InnerSeries.Len()
-	startAt := seriesLength - (windowSize + 1)
+	startAt := seriesLength - windowSize
 	if startAt < 0 {
 		startAt = 0
 	}

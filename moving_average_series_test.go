@@ -52,7 +52,7 @@ func TestMovingAverageSeriesGetValue(t *testing.T) {
 	assert.Equal(6.0, yvalues[8])
 }
 
-func TestMovingAverageSeriesGetLastValue(t *testing.T) {
+func TestMovingAverageSeriesGetLastValueWindowOverlap(t *testing.T) {
 	assert := assert.New(t)
 
 	mockSeries := mockValueProvider{
@@ -63,10 +63,29 @@ func TestMovingAverageSeriesGetLastValue(t *testing.T) {
 
 	mas := &MovingAverageSeries{
 		InnerSeries: mockSeries,
-		WindowSize:  10,
+		WindowSize:  15,
 	}
 
 	lx, ly := mas.GetLastValue()
 	assert.Equal(10.0, lx)
+	assert.Equal(5.5, ly)
+}
+
+func TestMovingAverageSeriesGetLastValue(t *testing.T) {
+	assert := assert.New(t)
+
+	mockSeries := mockValueProvider{
+		Seq(1.0, 100.0),
+		Seq(100, 1.0),
+	}
+	assert.Equal(100, mockSeries.Len())
+
+	mas := &MovingAverageSeries{
+		InnerSeries: mockSeries,
+		WindowSize:  10,
+	}
+
+	lx, ly := mas.GetLastValue()
+	assert.Equal(100.0, lx)
 	assert.Equal(5.5, ly)
 }

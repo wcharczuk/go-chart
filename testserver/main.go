@@ -45,6 +45,49 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 		},
 	}
 
+	s1lv := chart.AnnotationSeries{
+		Name: fmt.Sprintf("Last Value"),
+		Style: chart.Style{
+			Show:        true,
+			StrokeColor: chart.GetDefaultSeriesStrokeColor(0),
+		},
+		Annotations: []chart.Annotation{
+			chart.Annotation{
+				X:     float64(s1x[len(s1x)-1].Unix()),
+				Y:     s1y[len(s1y)-1],
+				Label: fmt.Sprintf("%s - %s", "test", chart.FloatValueFormatter(s1y[len(s1y)-1])),
+			},
+		},
+	}
+
+	s1ma := &chart.MovingAverageSeries{
+		Name: "Average",
+		Style: chart.Style{
+			Show:            true,
+			StrokeColor:     drawing.ColorRed,
+			StrokeDashArray: []float64{5, 1, 1},
+		},
+		WindowSize:  10,
+		InnerSeries: s1,
+	}
+
+	s1malx, s1maly := s1ma.GetLastValue()
+
+	s1malv := chart.AnnotationSeries{
+		Name: fmt.Sprintf("Last Value"),
+		Style: chart.Style{
+			Show:        true,
+			StrokeColor: drawing.ColorRed,
+		},
+		Annotations: []chart.Annotation{
+			chart.Annotation{
+				X:     s1malx,
+				Y:     s1maly,
+				Label: fmt.Sprintf("%s - %s", "test", chart.FloatValueFormatter(s1maly)),
+			},
+		},
+	}
+
 	c := chart.Chart{
 		Title: "A Test Chart",
 		TitleStyle: chart.Style{
@@ -76,30 +119,9 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 		},
 		Series: []chart.Series{
 			s1,
-			&chart.MovingAverageSeries{
-				Name: "Average",
-				Style: chart.Style{
-					Show:            true,
-					StrokeColor:     drawing.ColorRed,
-					StrokeDashArray: []float64{5, 1, 1},
-				},
-				WindowSize:  10,
-				InnerSeries: s1,
-			},
-			chart.AnnotationSeries{
-				Name: fmt.Sprintf("Last Value"),
-				Style: chart.Style{
-					Show:        true,
-					StrokeColor: chart.GetDefaultSeriesStrokeColor(0),
-				},
-				Annotations: []chart.Annotation{
-					chart.Annotation{
-						X:     float64(s1x[len(s1x)-1].Unix()),
-						Y:     s1y[len(s1y)-1],
-						Label: fmt.Sprintf("%s - %s", "test", chart.FloatValueFormatter(s1y[len(s1y)-1])),
-					},
-				},
-			},
+			s1ma,
+			s1lv,
+			s1malv,
 		},
 	}
 
