@@ -130,8 +130,15 @@ func Seq(start, end float64, steps ...float64) []float64 {
 	if len(steps) > 0 {
 		step = steps[0]
 	}
-	for x := start; x <= end; x += step {
-		values = append(values, x)
+
+	if start < end {
+		for x := start; x <= end; x += step {
+			values = append(values, x)
+		}
+	} else {
+		for x := start; x >= end; x = x - step {
+			values = append(values, x)
+		}
 	}
 	return values
 }
