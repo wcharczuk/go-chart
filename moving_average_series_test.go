@@ -85,7 +85,14 @@ func TestMovingAverageSeriesGetLastValue(t *testing.T) {
 		WindowSize:  10,
 	}
 
+	var yvalues []float64
+	for x := 0; x < mas.Len(); x++ {
+		_, y := mas.GetValue(x)
+		yvalues = append(yvalues, y)
+	}
+
 	lx, ly := mas.GetLastValue()
 	assert.Equal(100.0, lx)
 	assert.Equal(5.5, ly)
+	assert.Equal(yvalues[len(yvalues)-1], ly)
 }
