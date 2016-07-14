@@ -13,6 +13,7 @@ type MovingAverageSeries struct {
 
 	WindowSize  int
 	InnerSeries ValueProvider
+
 	valueBuffer *RingBuffer
 }
 
@@ -44,11 +45,9 @@ func (mas *MovingAverageSeries) GetValue(index int) (x float64, y float64) {
 	if mas.valueBuffer.Len() >= mas.GetWindowSize() {
 		mas.valueBuffer.Dequeue()
 	}
-	x, y = mas.InnerSeries.GetValue(index)
-	mas.valueBuffer.Enqueue(y)
-	if mas.valueBuffer.Len() < mas.GetWindowSize() {
-		return
-	}
+	px, py := mas.InnerSeries.GetValue(index)
+	mas.valueBuffer.Enqueue(py)
+	x = px
 	y = mas.getAverage()
 	return
 }

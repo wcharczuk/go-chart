@@ -33,9 +33,7 @@ func DrawLineSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, vs
 	}
 
 	r.SetStrokeColor(s.GetStrokeColor())
-	if len(s.GetStrokeDashArray()) > 0 {
-		r.SetStrokeDashArray(s.GetStrokeDashArray())
-	}
+	r.SetStrokeDashArray(s.GetStrokeDashArray())
 	r.SetStrokeWidth(s.GetStrokeWidth(DefaultStrokeWidth))
 
 	r.MoveTo(x0, y0)
@@ -86,6 +84,7 @@ func DrawAnnotation(r Renderer, canvasBox Box, s Style, lx, ly int, label string
 	r.SetFillColor(s.GetFillColor(DefaultAnnotationFillColor))
 	r.SetStrokeColor(s.GetStrokeColor())
 	r.SetStrokeWidth(s.GetStrokeWidth())
+	r.SetStrokeDashArray(s.GetStrokeDashArray())
 
 	textBox := r.MeasureText(label)
 	textWidth := textBox.Width()
@@ -132,6 +131,7 @@ func DrawBox(r Renderer, b Box, s Style) {
 	r.SetFillColor(s.GetFillColor())
 	r.SetStrokeColor(s.GetStrokeColor(DefaultStrokeColor))
 	r.SetStrokeWidth(s.GetStrokeWidth(DefaultStrokeWidth))
+	r.SetStrokeDashArray(s.GetStrokeDashArray())
 
 	r.MoveTo(b.Left, b.Top)
 	r.LineTo(b.Right, b.Top)
