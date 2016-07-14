@@ -56,7 +56,7 @@ const (
 	// DefaultDateFormat is the default date format.
 	DefaultDateFormat = "2006-01-02"
 	// DefaultDateHourFormat is the date format for hour timestamp formats.
-	DefaultDateHourFormat = "01-02 3pm"
+	DefaultDateHourFormat = "01-02 3PM"
 	// DefaultFloatFormat is the default float format.
 	DefaultFloatFormat = "%.2f"
 	// DefaultPercentValueFormat is the default percent format.
