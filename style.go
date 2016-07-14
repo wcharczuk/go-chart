@@ -120,6 +120,7 @@ func (s Style) GetPadding(defaults ...Box) Box {
 func (s Style) WithDefaultsFrom(defaults Style) (final Style) {
 	final.StrokeColor = s.GetStrokeColor(defaults.StrokeColor)
 	final.StrokeWidth = s.GetStrokeWidth(defaults.StrokeWidth)
+	final.StrokeDashArray = s.GetStrokeDashArray(defaults.StrokeDashArray)
 	final.FillColor = s.GetFillColor(defaults.FillColor)
 	final.FontColor = s.GetFontColor(defaults.FontColor)
 	final.Font = s.GetFont(defaults.Font)

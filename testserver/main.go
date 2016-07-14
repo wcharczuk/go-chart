@@ -35,6 +35,16 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 		s1y = append(s1y, rnd.Float64()*1024)
 	}
 
+	s1 := chart.TimeSeries{
+		Name:    "a",
+		XValues: s1x,
+		YValues: s1y,
+		Style: chart.Style{
+			Show:      true,
+			FillColor: chart.GetDefaultSeriesStrokeColor(0).WithAlpha(64),
+		},
+	}
+
 	c := chart.Chart{
 		Title: "A Test Chart",
 		TitleStyle: chart.Style{
@@ -65,17 +75,19 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 			},
 		},
 		Series: []chart.Series{
-			chart.TimeSeries{
-				Name:    "a",
-				XValues: s1x,
-				YValues: s1y,
+			s1,
+			&chart.MovingAverageSeries{
+				Name: "Average",
 				Style: chart.Style{
-					Show:      true,
-					FillColor: chart.GetDefaultSeriesStrokeColor(0).WithAlpha(64),
+					Show:            true,
+					StrokeColor:     drawing.ColorRed,
+					StrokeDashArray: []float64{5, 1, 1},
 				},
+				WindowSize:  10,
+				InnerSeries: s1,
 			},
 			chart.AnnotationSeries{
-				Name: fmt.Sprintf("%s - Last Value", "Test"),
+				Name: fmt.Sprintf("Last Value"),
 				Style: chart.Style{
 					Show:        true,
 					StrokeColor: chart.GetDefaultSeriesStrokeColor(0),

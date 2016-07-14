@@ -33,6 +33,9 @@ func DrawLineSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, vs
 	}
 
 	r.SetStrokeColor(s.GetStrokeColor())
+	if len(s.GetStrokeDashArray()) > 0 {
+		r.SetStrokeDashArray(s.GetStrokeDashArray())
+	}
 	r.SetStrokeWidth(s.GetStrokeWidth(DefaultStrokeWidth))
 
 	r.MoveTo(x0, y0)
