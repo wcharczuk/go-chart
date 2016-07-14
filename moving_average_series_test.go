@@ -66,9 +66,16 @@ func TestMovingAverageSeriesGetLastValueWindowOverlap(t *testing.T) {
 		WindowSize:  15,
 	}
 
+	var yvalues []float64
+	for x := 0; x < mas.Len(); x++ {
+		_, y := mas.GetValue(x)
+		yvalues = append(yvalues, y)
+	}
+
 	lx, ly := mas.GetLastValue()
 	assert.Equal(10.0, lx)
 	assert.Equal(5.5, ly)
+	assert.Equal(yvalues[len(yvalues)-1], ly)
 }
 
 func TestMovingAverageSeriesGetLastValue(t *testing.T) {
