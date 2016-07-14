@@ -179,7 +179,7 @@ graph.Render(chart.PNG, buffer)
 
 You can now also graph a moving average of a series using a special `MovingAverageSeries` that takes an `InnerSeries` as a required argument.
 
- ![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/goog_ltm_ma.png)
+ ![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/ma_goog_ltm.png)
  
  There is a helper method, `GetLastValue` on the `MovingAverageSeries` to aid in creating a last value annotation for the series.
 
