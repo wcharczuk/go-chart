@@ -177,7 +177,7 @@ graph.Render(chart.PNG, buffer)
 
 # Moving Averages
 
-You can now also graph a moving average of a series using a special `MovingAverageSeries` that takes an `InnerSeries` as it's required argument.
+You can now also graph a moving average of a series using a special `MovingAverageSeries` that takes an `InnerSeries` as a required argument.
 
  ![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/goog_ltm_ma.png)
  
