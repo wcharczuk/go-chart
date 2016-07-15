@@ -143,7 +143,7 @@ func DrawBox(r Renderer, b Box, s Style) {
 
 // DrawText draws text with a given style.
 func DrawText(r Renderer, text string, x, y int, s Style) {
-	r.SetFillColor(s.GetFillColor(DefaultTextColor))
+	r.SetFontColor(s.GetFontColor(DefaultTextColor))
 	r.SetStrokeColor(s.GetStrokeColor())
 	r.SetStrokeWidth(s.GetStrokeWidth())
 	r.SetFont(s.GetFont())
@@ -154,7 +154,7 @@ func DrawText(r Renderer, text string, x, y int, s Style) {
 
 // DrawTextCentered draws text with a given style centered.
 func DrawTextCentered(r Renderer, text string, x, y int, s Style) {
-	r.SetFillColor(s.GetFillColor(DefaultTextColor))
+	r.SetFontColor(s.GetFontColor(DefaultTextColor))
 	r.SetStrokeColor(s.GetStrokeColor())
 	r.SetStrokeWidth(s.GetStrokeWidth())
 	r.SetFont(s.GetFont())

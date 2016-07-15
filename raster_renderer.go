@@ -2,7 +2,6 @@ package chart
 
 import (
 	"image"
-	"image/color"
 	"image/png"
 	"io"
 	"math"
@@ -29,9 +28,7 @@ type rasterRenderer struct {
 	i  *image.RGBA
 	gc *drawing.RasterGraphicContext
 
-	fontSize  float64
-	fontColor color.Color
-	f         *truetype.Font
+	s Style
 }
 
 // GetDPI returns the dpi.
@@ -46,22 +43,22 @@ func (rr *rasterRenderer) SetDPI(dpi float64) {
 
 // SetStrokeColor implements the interface method.
 func (rr *rasterRenderer) SetStrokeColor(c drawing.Color) {
-	rr.gc.SetStrokeColor(c)
+	rr.s.StrokeColor = c
 }
 
 // SetLineWidth implements the interface method.
 func (rr *rasterRenderer) SetStrokeWidth(width float64) {
-	rr.gc.SetLineWidth(width)
+	rr.s.StrokeWidth = width
 }
 
 // StrokeDashArray sets the stroke dash array.
 func (rr *rasterRenderer) SetStrokeDashArray(dashArray []float64) {
-	rr.gc.SetLineDash(dashArray, 0.0)
+	rr.s.StrokeDashArray = dashArray
 }
 
 // SetFillColor implements the interface method.
 func (rr *rasterRenderer) SetFillColor(c drawing.Color) {
-	rr.gc.SetFillColor(c)
+	rr.s.FillColor = c
 }
 
 // MoveTo implements the interface method.
@@ -81,16 +78,22 @@ func (rr *rasterRenderer) Close() {
 
 // Stroke implements the interface method.
 func (rr *rasterRenderer) Stroke() {
+	rr.gc.SetStrokeColor(rr.s.StrokeColor)
+	rr.gc.SetLineWidth(rr.s.StrokeWidth)
 	rr.gc.Stroke()
 }
 
 // Fill implements the interface method.
 func (rr *rasterRenderer) Fill() {
+	rr.gc.SetFillColor(rr.s.FillColor)
 	rr.gc.Fill()
 }
 
 // FillStroke implements the interface method.
 func (rr *rasterRenderer) FillStroke() {
+	rr.gc.SetFillColor(rr.s.FillColor)
+	rr.gc.SetStrokeColor(rr.s.StrokeColor)
+	rr.gc.SetLineWidth(rr.s.StrokeWidth)
 	rr.gc.FillStroke()
 }
 
@@ -109,31 +112,33 @@ func (rr *rasterRenderer) Circle(radius float64, x, y int) {
 
 // SetFont implements the interface method.
 func (rr *rasterRenderer) SetFont(f *truetype.Font) {
-	rr.f = f
-	rr.gc.SetFont(f)
+	rr.s.Font = f
 }
 
 // SetFontSize implements the interface method.
 func (rr *rasterRenderer) SetFontSize(size float64) {
-	rr.fontSize = size
-	rr.gc.SetFontSize(size)
+	rr.s.FontSize = size
 }
 
 // SetFontColor implements the interface method.
 func (rr *rasterRenderer) SetFontColor(c drawing.Color) {
-	rr.fontColor = c
-	rr.gc.SetFillColor(c)
-	rr.gc.SetStrokeColor(c)
+	rr.s.FontColor = c
 }
 
 // Text implements the interface method.
 func (rr *rasterRenderer) Text(body string, x, y int) {
+	rr.gc.SetFont(rr.s.Font)
+	rr.gc.SetFontSize(rr.s.FontSize)
+	rr.gc.SetFillColor(rr.s.FontColor)
 	rr.gc.CreateStringPath(body, float64(x), float64(y))
 	rr.gc.Fill()
 }
 
 // MeasureText returns the height and width in pixels of a string.
 func (rr *rasterRenderer) MeasureText(body string) Box {
+	rr.gc.SetFont(rr.s.Font)
+	rr.gc.SetFontSize(rr.s.FontSize)
+	rr.gc.SetFillColor(rr.s.FontColor)
 	l, t, r, b, err := rr.gc.GetStringBounds(body)
 	if err != nil {
 		return Box{}
