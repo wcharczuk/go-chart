@@ -136,7 +136,27 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 	for _, s := range c.Series {
 		if s.GetStyle().IsZero() || s.GetStyle().Show {
 			seriesAxis := s.GetYAxis()
-			if vp, isValueProvider := s.(ValueProvider); isValueProvider {
+			if bvp, isBoundedValueProvider := s.(BoundedValueProvider); isBoundedValueProvider {
+				seriesLength := bvp.Len()
+				for index := 0; index < seriesLength; index++ {
+					vx, vy1, vy2 := bvp.GetBoundedValue(index)
+
+					minx = math.Min(minx, vx)
+					maxx = math.Max(maxx, vx)
+
+					if seriesAxis == YAxisPrimary {
+						miny = math.Min(miny, vy1)
+						miny = math.Min(miny, vy2)
+						maxy = math.Max(maxy, vy1)
+						maxy = math.Max(maxy, vy2)
+					} else if seriesAxis == YAxisSecondary {
+						minya = math.Min(minya, vy1)
+						minya = math.Min(minya, vy2)
+						maxya = math.Max(maxya, vy1)
+						maxya = math.Max(maxya, vy2)
+					}
+				}
+			} else if vp, isValueProvider := s.(ValueProvider); isValueProvider {
 				seriesLength := vp.Len()
 				for index := 0; index < seriesLength; index++ {
 					vx, vy := vp.GetValue(index)

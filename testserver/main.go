@@ -40,8 +40,8 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 		XValues: s1x,
 		YValues: s1y,
 		Style: chart.Style{
-			Show:      true,
-			FillColor: chart.GetDefaultSeriesStrokeColor(0).WithAlpha(64),
+			Show: true,
+			//FillColor: chart.GetDefaultSeriesStrokeColor(0).WithAlpha(64),
 		},
 	}
 
@@ -60,32 +60,16 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 		},
 	}
 
-	s1ma := &chart.MovingAverageSeries{
-		Name: "Average",
-		Style: chart.Style{
-			Show:            true,
-			StrokeColor:     drawing.ColorRed,
-			StrokeDashArray: []float64{5, 1, 1},
-		},
-		WindowSize:  10,
-		InnerSeries: s1,
-	}
-
-	s1malx, s1maly := s1ma.GetLastValue()
-
-	s1malv := chart.AnnotationSeries{
-		Name: fmt.Sprintf("Last Value"),
+	s1ma := &chart.BollingerBandsSeries{
+		Name: "BBS",
 		Style: chart.Style{
 			Show:        true,
-			StrokeColor: drawing.ColorRed,
+			StrokeColor: chart.DefaultAxisColor,
+			FillColor:   chart.DefaultAxisColor.WithAlpha(64),
 		},
-		Annotations: []chart.Annotation{
-			chart.Annotation{
-				X:     s1malx,
-				Y:     s1maly,
-				Label: fmt.Sprintf("%s - %s", "test", chart.FloatValueFormatter(s1maly)),
-			},
-		},
+		K:           2.0,
+		WindowSize:  10,
+		InnerSeries: s1,
 	}
 
 	c := chart.Chart{
@@ -121,7 +105,6 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 			s1,
 			s1ma,
 			s1lv,
-			s1malv,
 		},
 	}
 
