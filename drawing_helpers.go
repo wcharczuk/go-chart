@@ -168,8 +168,17 @@ func DrawTextCentered(r Renderer, text string, x, y int, s Style) {
 	r.Text(text, tx, ty)
 }
 
-func CreateLegend(c *Chart) Renderable {
+// CreateLegend returns a legend renderable function.
+func CreateLegend(c *Chart, style Style) Renderable {
 	return func(r Renderer, cb Box, defaults Style) {
+		workingStyle := style.WithDefaultsFrom(defaults.WithDefaultsFrom(Style{
+			FillColor:   drawing.ColorWhite,
+			FontColor:   DefaultTextColor,
+			FontSize:    8.0,
+			StrokeColor: DefaultAxisColor,
+			StrokeWidth: DefaultAxisLineWidth,
+		}))
+
 		// DEFAULTS
 		legendPadding := 5
 		lineTextGap := 5
@@ -196,8 +205,8 @@ func CreateLegend(c *Chart) Renderable {
 			Left: legend.Left + legendPadding,
 		}
 
-		r.SetFontColor(DefaultTextColor)
-		r.SetFontSize(8.0)
+		r.SetFontColor(workingStyle.GetFontColor())
+		r.SetFontSize(workingStyle.GetFontSize())
 
 		// measure
 		for x := 0; x < len(labels); x++ {
@@ -210,11 +219,7 @@ func CreateLegend(c *Chart) Renderable {
 		}
 
 		legend = legend.Grow(legendContent)
-		DrawBox(r, legend, Style{
-			FillColor:   drawing.ColorWhite,
-			StrokeColor: DefaultAxisColor,
-			StrokeWidth: 1.0,
-		})
+		DrawBox(r, legend, workingStyle)
 
 		legendContent.Right = legend.Right - legendPadding
 		legendContent.Bottom = legend.Bottom - legendPadding
