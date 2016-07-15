@@ -1,5 +1,7 @@
 package chart
 
+import "github.com/wcharczuk/go-chart/drawing"
+
 // DrawLineSeries draws a line series with a renderer.
 func DrawLineSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, vs ValueProvider) {
 	if vs.Len() == 0 {
@@ -164,4 +166,84 @@ func DrawTextCentered(r Renderer, text string, x, y int, s Style) {
 	tx := x - (tb.Width() >> 1)
 	ty := y - (tb.Height() >> 1)
 	r.Text(text, tx, ty)
+}
+
+func CreateLegend(c *Chart) Renderable {
+	return func(r Renderer, cb Box, defaults Style) {
+		// DEFAULTS
+		legendPadding := 5
+		lineTextGap := 5
+		lineLengthMinimum := 25
+
+		var labels []string
+		var lines []Style
+		for _, s := range c.Series {
+			if s.GetStyle().IsZero() || s.GetStyle().Show {
+				if _, isAnnotationSeries := s.(AnnotationSeries); !isAnnotationSeries {
+					labels = append(labels, s.GetName())
+					lines = append(lines, s.GetStyle())
+				}
+			}
+		}
+
+		legend := Box{
+			Top:  cb.Top, //padding
+			Left: cb.Left,
+		}
+
+		legendContent := Box{
+			Top:  legend.Top + legendPadding,
+			Left: legend.Left + legendPadding,
+		}
+
+		r.SetFontColor(DefaultTextColor)
+		r.SetFontSize(8.0)
+
+		// measure
+		for x := 0; x < len(labels); x++ {
+			if len(labels[x]) > 0 {
+				tb := r.MeasureText(labels[x])
+				legendContent.Bottom += (tb.Height() + DefaultMinimumTickVerticalSpacing)
+				rowRight := tb.Width() + legendContent.Left + lineLengthMinimum + lineTextGap
+				legendContent.Right = MaxInt(legendContent.Right, rowRight)
+			}
+		}
+
+		legend = legend.Grow(legendContent)
+		DrawBox(r, legend, Style{
+			FillColor:   drawing.ColorWhite,
+			StrokeColor: DefaultAxisColor,
+			StrokeWidth: 1.0,
+		})
+
+		legendContent.Right = legend.Right - legendPadding
+		legendContent.Bottom = legend.Bottom - legendPadding
+
+		ycursor := legendContent.Top
+		tx := legendContent.Left
+		for x := 0; x < len(labels); x++ {
+			if len(labels[x]) > 0 {
+				tb := r.MeasureText(labels[x])
+				ycursor += tb.Height()
+
+				//r.SetFillColor(DefaultTextColor)
+				r.Text(labels[x], tx, ycursor)
+				th2 := tb.Height() >> 1
+
+				lx := tx + tb.Width() + lineTextGap
+				ly := ycursor - th2
+				lx2 := legendContent.Right - legendPadding
+
+				r.SetStrokeColor(lines[x].GetStrokeColor())
+				r.SetStrokeWidth(lines[x].GetStrokeWidth())
+				r.SetStrokeDashArray(lines[x].GetStrokeDashArray())
+
+				r.MoveTo(lx, ly)
+				r.LineTo(lx2, ly)
+				r.Stroke()
+
+				ycursor += DefaultMinimumTickVerticalSpacing
+			}
+		}
+	}
 }
