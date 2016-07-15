@@ -123,7 +123,7 @@ func GetDefaultSeriesStrokeColor(index int) drawing.Color {
 
 var (
 	// DefaultAnnotationPadding is the padding around an annotation.
-	DefaultAnnotationPadding = Box{Top: 3, Left: 5, Right: 5, Bottom: 5}
+	DefaultAnnotationPadding = Box{Top: 5, Left: 5, Right: 5, Bottom: 5}
 	// DefaultBackgroundPadding is the default canvas padding config.
 	DefaultBackgroundPadding = Box{Top: 5, Left: 5, Right: 5, Bottom: 5}
 )
