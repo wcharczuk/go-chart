@@ -5,8 +5,7 @@ go-chart
 Package `chart` is a very simple golang native charting library that supports timeseries and continuous
 line charts. 
 
-The API is still in a bit of flux, so it is adviseable to wait until I tag a v1.0 release before using
-in a production capacity.
+The v1.0 release has been tagged so things should be more or less stable, if something changes please log an issue.
 
 # Installation
 
