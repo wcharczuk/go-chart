@@ -97,9 +97,9 @@ var (
 var (
 	// DefaultSeriesStrokeColors are a couple default series colors.
 	DefaultSeriesStrokeColors = []drawing.Color{
-		drawing.Color{R: 0, G: 116, B: 217, A: 255},
-		drawing.Color{R: 0, G: 217, B: 116, A: 255},
-		drawing.Color{R: 217, G: 0, B: 116, A: 255},
+		{R: 0, G: 116, B: 217, A: 255},
+		{R: 0, G: 217, B: 116, A: 255},
+		{R: 217, G: 0, B: 116, A: 255},
 	}
 )
 
