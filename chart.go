@@ -122,7 +122,7 @@ func (c Chart) Render(rp RendererProvider, w io.Writer) error {
 	c.drawTitle(r)
 
 	for _, a := range c.Elements {
-		a(r, canvasBox)
+		a(r, canvasBox, c.styleDefaultsElements())
 	}
 
 	return r.Save(w)
@@ -273,7 +273,7 @@ func (c Chart) getAxisAdjustedCanvasBox(r Renderer, canvasBox Box, xr, yr, yra R
 		axesOuterBox = axesOuterBox.Grow(axesBounds)
 	}
 
-	return canvasBox.OuterConstrain(c.asBox(), axesOuterBox)
+	return canvasBox.OuterConstrain(c.Box(), axesOuterBox)
 }
 
 func (c Chart) setRangeDomains(canvasBox Box, xr, yr, yra Range) (xr2, yr2, yra2 Range) {
@@ -324,23 +324,15 @@ func (c Chart) getAnnotationAdjustedCanvasBox(r Renderer, canvasBox Box, xr, yr,
 		}
 	}
 
-	return canvasBox.OuterConstrain(c.asBox(), annotationSeriesBox)
+	return canvasBox.OuterConstrain(c.Box(), annotationSeriesBox)
 }
 
 func (c Chart) drawBackground(r Renderer) {
-	DrawBox(r, c.asBox(), c.Canvas.WithDefaultsFrom(Style{
-		FillColor:   DefaultBackgroundColor,
-		StrokeColor: DefaultBackgroundStrokeColor,
-		StrokeWidth: DefaultStrokeWidth,
-	}))
+	DrawBox(r, c.Box(), c.Canvas.WithDefaultsFrom(c.styleDefaultsBackground()))
 }
 
 func (c Chart) drawCanvas(r Renderer, canvasBox Box) {
-	DrawBox(r, canvasBox, c.Canvas.WithDefaultsFrom(Style{
-		FillColor:   DefaultCanvasColor,
-		StrokeColor: DefaultCanvasStrokeColor,
-		StrokeWidth: DefaultStrokeWidth,
-	}))
+	DrawBox(r, canvasBox, c.Canvas.WithDefaultsFrom(c.styleDefaultsCanvas()))
 }
 
 func (c Chart) drawAxes(r Renderer, canvasBox Box, xrange, yrange, yrangeAlt Range, xticks, yticks, yticksAlt []Tick) {
@@ -384,6 +376,22 @@ func (c Chart) drawTitle(r Renderer) {
 	}
 }
 
+func (c Chart) styleDefaultsBackground() Style {
+	return Style{
+		FillColor:   DefaultBackgroundColor,
+		StrokeColor: DefaultBackgroundStrokeColor,
+		StrokeWidth: DefaultStrokeWidth,
+	}
+}
+
+func (c Chart) styleDefaultsCanvas() Style {
+	return Style{
+		FillColor:   DefaultCanvasColor,
+		StrokeColor: DefaultCanvasStrokeColor,
+		StrokeWidth: DefaultStrokeWidth,
+	}
+}
+
 func (c Chart) styleDefaultsSeries(seriesIndex int) Style {
 	strokeColor := GetDefaultSeriesStrokeColor(seriesIndex)
 	return Style{
@@ -403,6 +411,13 @@ func (c Chart) styleDefaultsAxis() Style {
 	}
 }
 
-func (c Chart) asBox() Box {
+func (c Chart) styleDefaultsElements() Style {
+	return Style{
+		Font: c.GetFont(),
+	}
+}
+
+// Box returns the chart bounds as a box.
+func (c Chart) Box() Box {
 	return Box{Right: c.GetWidth(), Bottom: c.GetHeight()}
 }
