@@ -1,6 +1,7 @@
 package chart
 
 import (
+	"math"
 	"testing"
 
 	"github.com/blendlabs/go-assert"
@@ -29,4 +30,22 @@ func TestBollingerBandSeries(t *testing.T) {
 	for x := bbs.GetWindowSize(); x < 100; x++ {
 		assert.True(y1values[x] > y2values[x])
 	}
+}
+
+func TestBollingerBandLastValue(t *testing.T) {
+	assert := assert.New(t)
+
+	s1 := mockValueProvider{
+		X: Seq(1.0, 100.0),
+		Y: Seq(1.0, 100.0),
+	}
+
+	bbs := &BollingerBandsSeries{
+		InnerSeries: s1,
+	}
+
+	x, y1, y2 := bbs.GetLastBoundedValue()
+	assert.Equal(100.0, x)
+	assert.Equal(100, math.Floor(y1))
+	assert.Equal(95, math.Floor(y2))
 }

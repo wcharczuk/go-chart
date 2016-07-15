@@ -81,6 +81,34 @@ func (bbs *BollingerBandsSeries) GetBoundedValue(index int) (x, y1, y2 float64) 
 	return
 }
 
+// GetLastBoundedValue returns the last bounded value for the series.
+func (bbs *BollingerBandsSeries) GetLastBoundedValue() (x, y1, y2 float64) {
+	if bbs.InnerSeries == nil {
+		return
+	}
+	windowSize := bbs.GetWindowSize()
+	seriesLength := bbs.InnerSeries.Len()
+	startAt := seriesLength - windowSize
+	if startAt < 0 {
+		startAt = 0
+	}
+
+	vb := NewRingBufferWithCapacity(windowSize)
+	for index := startAt; index < seriesLength; index++ {
+		xn, yn := bbs.InnerSeries.GetValue(index)
+		vb.Enqueue(yn)
+		x = xn
+	}
+
+	ay := bbs.getAverage(vb)
+	std := bbs.getStdDev(vb)
+
+	y1 = ay + (bbs.GetK() * std)
+	y2 = ay - (bbs.GetK() * std)
+
+	return
+}
+
 // Render renders the series.
 func (bbs BollingerBandsSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
 	s := bbs.Style.WithDefaultsFrom(defaults)
