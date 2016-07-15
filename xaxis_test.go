@@ -76,7 +76,7 @@ func TestXAxisGetTicksWithUserDefaults(t *testing.T) {
 	assert.Nil(err)
 
 	xa := XAxis{
-		Ticks: []Tick{Tick{Value: 1.0, Label: "1.0"}},
+		Ticks: []Tick{{Value: 1.0, Label: "1.0"}},
 	}
 	xr := Range{Min: 10, Max: 100, Domain: 1024}
 	styleDefaults := Style{

@@ -16,10 +16,10 @@ func TestAnnotationSeriesMeasure(t *testing.T) {
 			Show: true,
 		},
 		Annotations: []Annotation{
-			Annotation{X: 1.0, Y: 1.0, Label: "1.0"},
-			Annotation{X: 2.0, Y: 2.0, Label: "2.0"},
-			Annotation{X: 3.0, Y: 3.0, Label: "3.0"},
-			Annotation{X: 4.0, Y: 4.0, Label: "4.0"},
+			{X: 1.0, Y: 1.0, Label: "1.0"},
+			{X: 2.0, Y: 2.0, Label: "2.0"},
+			{X: 3.0, Y: 3.0, Label: "3.0"},
+			{X: 4.0, Y: 4.0, Label: "4.0"},
 		},
 	}
 
@@ -69,10 +69,10 @@ func TestAnnotationSeriesRender(t *testing.T) {
 			StrokeColor: drawing.ColorBlack,
 		},
 		Annotations: []Annotation{
-			Annotation{X: 1.0, Y: 1.0, Label: "1.0"},
-			Annotation{X: 2.0, Y: 2.0, Label: "2.0"},
-			Annotation{X: 3.0, Y: 3.0, Label: "3.0"},
-			Annotation{X: 4.0, Y: 4.0, Label: "4.0"},
+			{X: 1.0, Y: 1.0, Label: "1.0"},
+			{X: 2.0, Y: 2.0, Label: "2.0"},
+			{X: 3.0, Y: 3.0, Label: "3.0"},
+			{X: 4.0, Y: 4.0, Label: "4.0"},
 		},
 	}
 

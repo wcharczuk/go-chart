@@ -52,7 +52,7 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 			StrokeColor: chart.GetDefaultSeriesStrokeColor(0),
 		},
 		Annotations: []chart.Annotation{
-			chart.Annotation{
+			{
 				X:     float64(s1x[len(s1x)-1].Unix()),
 				Y:     s1y[len(s1y)-1],
 				Label: fmt.Sprintf("%s - %s", "test", chart.FloatValueFormatter(s1y[len(s1y)-1])),
