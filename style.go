@@ -123,6 +123,7 @@ func (s Style) WithDefaultsFrom(defaults Style) (final Style) {
 	final.StrokeDashArray = s.GetStrokeDashArray(defaults.StrokeDashArray)
 	final.FillColor = s.GetFillColor(defaults.FillColor)
 	final.FontColor = s.GetFontColor(defaults.FontColor)
+	final.FontSize = s.GetFontSize(defaults.FontSize)
 	final.Font = s.GetFont(defaults.Font)
 	final.Padding = s.GetPadding(defaults.Padding)
 	return
