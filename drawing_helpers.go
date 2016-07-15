@@ -231,7 +231,6 @@ func CreateLegend(c *Chart, style Style) Renderable {
 				tb := r.MeasureText(labels[x])
 				ycursor += tb.Height()
 
-				//r.SetFillColor(DefaultTextColor)
 				r.Text(labels[x], tx, ycursor)
 				th2 := tb.Height() >> 1
 
