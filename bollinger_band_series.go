@@ -42,6 +42,17 @@ func (bbs BollingerBandsSeries) GetWindowSize(defaults ...int) int {
 	return bbs.WindowSize
 }
 
+// GetK returns the K value.
+func (bbs BollingerBandsSeries) GetK(defaults ...float64) float64 {
+	if bbs.K == 0 {
+		if len(defaults) > 0 {
+			return defaults[0]
+		}
+		return 2.0
+	}
+	return bbs.K
+}
+
 // Len returns the number of elements in the series.
 func (bbs *BollingerBandsSeries) Len() int {
 	return bbs.InnerSeries.Len()
@@ -65,8 +76,8 @@ func (bbs *BollingerBandsSeries) GetBoundedValue(index int) (x, y1, y2 float64) 
 	ay := bbs.getAverage(bbs.valueBuffer)
 	std := bbs.getStdDev(bbs.valueBuffer)
 
-	y1 = ay + (bbs.K * std)
-	y2 = ay - (bbs.K * std)
+	y1 = ay + (bbs.GetK() * std)
+	y2 = ay - (bbs.GetK() * std)
 	return
 }
 

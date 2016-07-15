@@ -3,6 +3,7 @@ package chart
 import (
 	"fmt"
 	"math"
+	"math/rand"
 	"time"
 )
 
@@ -140,6 +141,18 @@ func Seq(start, end float64, steps ...float64) []float64 {
 			values = append(values, x)
 		}
 	}
+	return values
+}
+
+// SeqRand generates a random sequence.
+func SeqRand(samples int, scale float64) []float64 {
+	rnd := rand.New(rand.NewSource(time.Now().Unix()))
+	values := make([]float64, samples)
+
+	for x := 0; x < samples; x++ {
+		values[x] = rnd.Float64() * scale
+	}
+
 	return values
 }
 
