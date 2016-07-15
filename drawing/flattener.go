@@ -64,27 +64,33 @@ func Flatten(path *Path, flattener Flattener, scale float64) {
 	flattener.End()
 }
 
+// SegmentedPath is a path of disparate point sectinos.
 type SegmentedPath struct {
 	Points []float64
 }
 
+// MoveTo implements the path interface.
 func (p *SegmentedPath) MoveTo(x, y float64) {
 	p.Points = append(p.Points, x, y)
 	// TODO need to mark this point as moveto
 }
 
+// LineTo implements the path interface.
 func (p *SegmentedPath) LineTo(x, y float64) {
 	p.Points = append(p.Points, x, y)
 }
 
+// LineJoin implements the path interface.
 func (p *SegmentedPath) LineJoin() {
 	// TODO need to mark the current point as linejoin
 }
 
+// Close implements the path interface.
 func (p *SegmentedPath) Close() {
 	// TODO Close
 }
 
+// End implements the path interface.
 func (p *SegmentedPath) End() {
 	// Nothing to do
 }

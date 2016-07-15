@@ -40,7 +40,7 @@ func minMax(x, y float64) (min, max float64) {
 	return x, y
 }
 
-// Transform applies the transformation matrix to the rectangle represented by the min and the max point of the rectangle
+// TransformRectangle applies the transformation matrix to the rectangle represented by the min and the max point of the rectangle
 func (tr Matrix) TransformRectangle(x0, y0, x2, y2 float64) (nx0, ny0, nx2, ny2 float64) {
 	points := []float64{x0, y0, x2, y0, x2, y2, x0, y2}
 	tr.Transform(points)
@@ -129,6 +129,7 @@ func (tr *Matrix) Inverse() {
 	tr[5] = (tr1*tr4 - tr0*tr5) / d
 }
 
+// Copy copies the matrix.
 func (tr Matrix) Copy() Matrix {
 	var result Matrix
 	copy(result[:], tr[:])
@@ -174,12 +175,12 @@ func (tr *Matrix) Rotate(angle float64) {
 	tr[3] = t3
 }
 
-// GetTranslation
+// GetTranslation gets the matrix traslation.
 func (tr Matrix) GetTranslation() (x, y float64) {
 	return tr[4], tr[5]
 }
 
-// GetScaling
+// GetScaling gets the matrix scaling.
 func (tr Matrix) GetScaling() (x, y float64) {
 	return tr[0], tr[3]
 }
@@ -194,9 +195,9 @@ func (tr Matrix) GetScale() float64 {
 // ******************** Testing ********************
 
 // Equals tests if a two transformation are equal. A tolerance is applied when comparing matrix elements.
-func (tr1 Matrix) Equals(tr2 Matrix) bool {
+func (tr Matrix) Equals(tr2 Matrix) bool {
 	for i := 0; i < 6; i = i + 1 {
-		if !fequals(tr1[i], tr2[i]) {
+		if !fequals(tr[i], tr2[i]) {
 			return false
 		}
 	}

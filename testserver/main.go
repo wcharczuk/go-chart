@@ -215,6 +215,9 @@ func boxHandler(rc *web.RequestContext) web.ControllerResult {
 	rc.Response.Header().Set("Content-Type", "image/png")
 	buffer := bytes.NewBuffer([]byte{})
 	err = r.Save(buffer)
+	if err != nil {
+		return rc.API().InternalError(err)
+	}
 	return rc.Raw(buffer.Bytes())
 }
 
