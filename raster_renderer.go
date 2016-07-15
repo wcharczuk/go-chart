@@ -80,6 +80,7 @@ func (rr *rasterRenderer) Close() {
 func (rr *rasterRenderer) Stroke() {
 	rr.gc.SetStrokeColor(rr.s.StrokeColor)
 	rr.gc.SetLineWidth(rr.s.StrokeWidth)
+	rr.gc.SetLineDash(rr.s.StrokeDashArray, 0)
 	rr.gc.Stroke()
 }
 
@@ -94,6 +95,7 @@ func (rr *rasterRenderer) FillStroke() {
 	rr.gc.SetFillColor(rr.s.FillColor)
 	rr.gc.SetStrokeColor(rr.s.StrokeColor)
 	rr.gc.SetLineWidth(rr.s.StrokeWidth)
+	rr.gc.SetLineDash(rr.s.StrokeDashArray, 0)
 	rr.gc.FillStroke()
 }
 
