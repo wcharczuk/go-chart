@@ -184,7 +184,7 @@ You can now also graph a moving average of a series using a special `MovingAvera
 
 # More Intense Technical Analysis
 
-You can also have series that produce two values, i.e. a series that implements `BoundedValueProvider` and the `GetBoundedValue(int)(x,y1,y2 float64)` method.
+You can also have series that produce two values, i.e. a series that implements `BoundedValueProvider` and the `GetBoundedValue(int)(x,y1,y2 float64)` method. An example of a `BoundedValueProvider` is the included `BollingerBandsSeries`.
 
 ![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/spy_ltm_bbs.png)
 
