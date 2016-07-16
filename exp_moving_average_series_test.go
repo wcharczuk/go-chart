@@ -28,4 +28,8 @@ func TestExponentialMovingAverageSeries(t *testing.T) {
 
 	assert.Equal(10.0, yvalues[0])
 	assert.True(math.Abs(yvalues[9]-3.77) < 0.01)
+
+	lvx, lvy := mas.GetLastValue()
+	assert.Equal(10.0, lvx)
+	assert.True(math.Abs(lvy-3.77) < 0.01)
 }

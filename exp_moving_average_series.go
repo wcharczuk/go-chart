@@ -78,7 +78,13 @@ func (mas ExponentialMovingAverageSeries) GetLastValue() (x float64, y float64) 
 		return
 	}
 
-	return 0.0, 0.0 //this one is going to be a bitch.
+	seriesLength := mas.InnerSeries.Len()
+	for index := 0; index < seriesLength; index++ {
+		x, _ = mas.GetValue(index)
+	}
+
+	y = mas.valueBuffer[seriesLength-1]
+	return
 }
 
 // Render renders the series.
