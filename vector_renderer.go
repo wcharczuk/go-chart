@@ -31,7 +31,6 @@ type vectorRenderer struct {
 	b   *bytes.Buffer
 	c   *canvas
 	s   *Style
-	f   *truetype.Font
 	p   []string
 	fc  *font.Drawer
 }
@@ -44,6 +43,7 @@ func (vr *vectorRenderer) GetDPI() float64 {
 // SetDPI implements the interface method.
 func (vr *vectorRenderer) SetDPI(dpi float64) {
 	vr.dpi = dpi
+	vr.c.dpi = dpi
 }
 
 // SetStrokeColor implements the interface method.
@@ -93,23 +93,25 @@ func (vr *vectorRenderer) Fill() {
 
 // FillStroke draws the path with both fill and stroke.
 func (vr *vectorRenderer) FillStroke() {
-	vr.drawPath(vr.s.SVGFillAndStroke())
+	s := vr.s.SVGFillAndStroke()
+	vr.drawPath(s)
 }
 
 // drawPath draws a path.
 func (vr *vectorRenderer) drawPath(s Style) {
-	vr.c.Path(strings.Join(vr.p, "\n"), s.SVG(vr.dpi))
+	vr.c.Path(strings.Join(vr.p, "\n"), &s)
 	vr.p = []string{} // clear the path
 }
 
 // Circle implements the interface method.
 func (vr *vectorRenderer) Circle(radius float64, x, y int) {
-	vr.c.Circle(x, y, int(radius), vr.s.SVG(vr.dpi))
+	style := vr.s.SVGFillAndStroke()
+	vr.c.Circle(x, y, int(radius), &style)
 }
 
 // SetFont implements the interface method.
 func (vr *vectorRenderer) SetFont(f *truetype.Font) {
-	vr.f = f
+	vr.s.Font = f
 }
 
 // SetFontColor implements the interface method.
@@ -122,29 +124,17 @@ func (vr *vectorRenderer) SetFontSize(size float64) {
 	vr.s.FontSize = size
 }
 
-// svgFontFace returns the font face component of an svg element style.
-func (vr *vectorRenderer) svgFontFace() string {
-	family := "sans-serif"
-	if vr.f != nil {
-		name := vr.f.Name(truetype.NameIDFontFamily)
-		if len(name) != 0 {
-			family = fmt.Sprintf(`'%s',%s`, name, family)
-		}
-	}
-	return fmt.Sprintf("font-family:%s", family)
-}
-
 // Text draws a text blob.
 func (vr *vectorRenderer) Text(body string, x, y int) {
-	s := vr.s.SVGText()
-	vr.c.Text(x, y, body, s.SVG(vr.dpi)+";"+vr.svgFontFace())
+	style := vr.s.SVGText()
+	vr.c.Text(x, y, body, &style)
 }
 
 // MeasureText uses the truetype font drawer to measure the width of text.
 func (vr *vectorRenderer) MeasureText(body string) (box Box) {
-	if vr.f != nil {
+	if vr.s.GetFont() != nil {
 		vr.fc = &font.Drawer{
-			Face: truetype.NewFace(vr.f, &truetype.Options{
+			Face: truetype.NewFace(vr.s.GetFont(), &truetype.Options{
 				DPI:  vr.dpi,
 				Size: vr.s.FontSize,
 			}),
@@ -172,6 +162,7 @@ func newCanvas(w io.Writer) *canvas {
 
 type canvas struct {
 	w      io.Writer
+	dpi    float64
 	width  int
 	height int
 }
@@ -182,28 +173,20 @@ func (c *canvas) Start(width, height int) {
 	c.w.Write([]byte(fmt.Sprintf(`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="%d" height="%d">\n`, c.width, c.height)))
 }
 
-func (c *canvas) Path(d string, style ...string) {
-	if len(style) > 0 {
-		c.w.Write([]byte(fmt.Sprintf(`<path d="%s" style="%s"/>\n`, d, style[0])))
-	} else {
-		c.w.Write([]byte(fmt.Sprintf(`<path d="%s"/>\n`, d)))
+func (c *canvas) Path(d string, style *Style) {
+	var strokeDashArrayProperty string
+	if len(style.StrokeDashArray) > 0 {
+		strokeDashArrayProperty = style.SVGStrokeDashArray()
 	}
+	c.w.Write([]byte(fmt.Sprintf(`<path %s d="%s" style="%s"/>\n`, strokeDashArrayProperty, d, style.SVG(c.dpi))))
 }
 
-func (c *canvas) Text(x, y int, body string, style ...string) {
-	if len(style) > 0 {
-		c.w.Write([]byte(fmt.Sprintf(`<text x="%d" y="%d" style="%s">%s</text>`, x, y, style[0], body)))
-	} else {
-		c.w.Write([]byte(fmt.Sprintf(`<text x="%d" y="%d">%s</text>`, x, y, body)))
-	}
+func (c *canvas) Text(x, y int, body string, style *Style) {
+	c.w.Write([]byte(fmt.Sprintf(`<text x="%d" y="%d" style="%s">%s</text>`, x, y, style.SVG(c.dpi), body)))
 }
 
-func (c *canvas) Circle(x, y, r int, style ...string) {
-	if len(style) > 0 {
-		c.w.Write([]byte(fmt.Sprintf(`<circle cx="%d" cy="%d" r="%d" style="%s">`, x, y, r, style[0])))
-	} else {
-		c.w.Write([]byte(fmt.Sprintf(`<circle cx="%d" cy="%d" r="%d">`, x, y, r)))
-	}
+func (c *canvas) Circle(x, y, r int, style *Style) {
+	c.w.Write([]byte(fmt.Sprintf(`<circle cx="%d" cy="%d" r="%d" style="%s">`, x, y, r, style.SVG(c.dpi))))
 }
 
 func (c *canvas) End() {

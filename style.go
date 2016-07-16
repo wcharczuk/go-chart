@@ -160,14 +160,17 @@ func (s Style) SVG(dpi float64) string {
 	if !fnc.IsZero() {
 		fillText = "fill:" + fnc.String()
 	}
-	return strings.Join([]string{strokeWidthText, strokeText, fillText, fontSizeText}, ";")
+
+	fontText := s.SVGFontFace()
+	return strings.Join([]string{strokeWidthText, strokeText, fillText, fontSizeText, fontText}, ";")
 }
 
 // SVGStroke returns the stroke components.
 func (s Style) SVGStroke() Style {
 	return Style{
-		StrokeColor: s.StrokeColor,
-		StrokeWidth: s.StrokeWidth,
+		StrokeDashArray: s.StrokeDashArray,
+		StrokeColor:     s.StrokeColor,
+		StrokeWidth:     s.StrokeWidth,
 	}
 }
 
@@ -181,9 +184,10 @@ func (s Style) SVGFill() Style {
 // SVGFillAndStroke returns the fill and stroke components.
 func (s Style) SVGFillAndStroke() Style {
 	return Style{
-		FillColor:   s.FillColor,
-		StrokeColor: s.StrokeColor,
-		StrokeWidth: s.StrokeWidth,
+		StrokeDashArray: s.StrokeDashArray,
+		FillColor:       s.FillColor,
+		StrokeColor:     s.StrokeColor,
+		StrokeWidth:     s.StrokeWidth,
 	}
 }
 
@@ -193,4 +197,28 @@ func (s Style) SVGText() Style {
 		FontColor: s.FontColor,
 		FontSize:  s.FontSize,
 	}
+}
+
+// SVGFontFace returns the font face for the style.
+func (s Style) SVGFontFace() string {
+	family := "sans-serif"
+	if s.GetFont() != nil {
+		name := s.GetFont().Name(truetype.NameIDFontFamily)
+		if len(name) != 0 {
+			family = fmt.Sprintf(`'%s',%s`, name, family)
+		}
+	}
+	return fmt.Sprintf("font-family:%s", family)
+}
+
+// SVGStrokeDashArray returns the stroke-dasharray property of a style.
+func (s Style) SVGStrokeDashArray() string {
+	if len(s.StrokeDashArray) > 0 {
+		var values []string
+		for _, v := range s.StrokeDashArray {
+			values = append(values, fmt.Sprintf("%0.1f", v))
+		}
+		return "stroke-dasharray=\"" + strings.Join(values, ", ") + "\""
+	}
+	return ""
 }
