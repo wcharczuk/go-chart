@@ -182,6 +182,14 @@ You can now also graph a moving average of a series using a special `MovingAvera
  
  There is a helper method, `GetLastValue` on the `MovingAverageSeries` to aid in creating a last value annotation for the series.
 
+# More Intense Technical Analysis
+
+You can also have series that produce two values, i.e. a series that implements `BoundedValueProvider` and the `GetBoundedValue(int)(x,y1,y2 float64)` method.
+
+![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/spy_ltm_bbs.png)
+
+Like the `MovingAverageSeries` this series takes an `InnerSeries` argument as required, and defaults to 10 samples and a `K` value of 2.0 (or two standard deviations in either direction).
+
 # Design Philosophy
 
 I wanted to make a charting library that used only native golang, that could be stood up on a server (i.e. it had built in fonts).
