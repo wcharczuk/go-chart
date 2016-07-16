@@ -174,13 +174,13 @@ graph := chart.Chart{
 graph.Render(chart.PNG, buffer)
 ```
 
-# Moving Averages
+# Moving Averages (Simple & Exponential)
 
-You can now also graph a moving average of a series using a special `MovingAverageSeries` that takes an `InnerSeries` as a required argument.
+You can now also graph a moving average of a series using a special `SimpleMovingAverageSeries` that takes an `InnerSeries` as a required argument.
 
  ![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/ma_goog_ltm.png)
  
- There is a helper method, `GetLastValue` on the `MovingAverageSeries` to aid in creating a last value annotation for the series.
+ There is a helper method, `GetLastValue` on the `SimpleMovingAverageSeries` to aid in creating a last value annotation for the series.
 
 # More Intense Technical Analysis
 
@@ -188,7 +188,7 @@ You can also have series that produce two values, i.e. a series that implements 
 
 ![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/spy_ltm_bbs.png)
 
-Like the `MovingAverageSeries` this series takes an `InnerSeries` argument as required, and defaults to 10 samples and a `K` value of 2.0 (or two standard deviations in either direction).
+Like the `SimpleMovingAverageSeries` this series takes an `InnerSeries` argument as required, and defaults to 10 samples and a `K` value of 2.0 (or two standard deviations in either direction).
 
 # Design Philosophy
 
