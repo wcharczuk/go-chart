@@ -48,6 +48,60 @@ func DrawLineSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, vs
 	r.Stroke()
 }
 
+// DrawBoundedSeries draws a series that implements BoundedValueProvider.
+func DrawBoundedSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, bbs BoundedValueProvider, drawOffsetIndexes ...int) {
+	drawOffsetIndex := 0
+	if len(drawOffsetIndexes) > 0 {
+		drawOffsetIndex = drawOffsetIndexes[0]
+	}
+
+	r.SetStrokeColor(s.GetStrokeColor())
+	r.SetStrokeDashArray(s.GetStrokeDashArray())
+	r.SetStrokeWidth(s.GetStrokeWidth())
+	r.SetFillColor(s.GetFillColor())
+
+	cb := canvasBox.Bottom
+	cl := canvasBox.Left
+
+	v0x, v0y1, v0y2 := bbs.GetBoundedValue(0)
+	x0 := cl + xrange.Translate(v0x)
+	y0 := cb - yrange.Translate(v0y1)
+
+	var vx, vy1, vy2 float64
+	var x, y int
+
+	xvalues := make([]float64, bbs.Len())
+	xvalues[0] = v0x
+	y2values := make([]float64, bbs.Len())
+	y2values[0] = v0y2
+
+	r.MoveTo(x0, y0)
+	for i := 1; i < bbs.Len(); i++ {
+		vx, vy1, vy2 = bbs.GetBoundedValue(i)
+
+		xvalues[i] = vx
+		y2values[i] = vy2
+
+		x = cl + xrange.Translate(vx)
+		y = cb - yrange.Translate(vy1)
+		if i > drawOffsetIndex {
+			r.LineTo(x, y)
+		} else {
+			r.MoveTo(x, y)
+		}
+	}
+	y = cb - yrange.Translate(vy2)
+	r.LineTo(x, y)
+	for i := bbs.Len() - 1; i >= drawOffsetIndex; i-- {
+		vx, vy2 = xvalues[i], y2values[i]
+		x = cl + xrange.Translate(vx)
+		y = cb - yrange.Translate(vy2)
+		r.LineTo(x, y)
+	}
+	r.Close()
+	r.FillStroke()
+}
+
 // MeasureAnnotation measures how big an annotation would be.
 func MeasureAnnotation(r Renderer, canvasBox Box, s Style, lx, ly int, label string) Box {
 	r.SetFillColor(s.GetFillColor(DefaultAnnotationFillColor))
