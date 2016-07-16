@@ -60,7 +60,7 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 		},
 	}
 
-	s1ma := &chart.BollingerBandsSeries{
+	s1bb := &chart.BollingerBandsSeries{
 		Name: "BBS",
 		Style: chart.Style{
 			Show:        true,
@@ -69,6 +69,24 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 		},
 		K:           2.0,
 		WindowSize:  10,
+		InnerSeries: s1,
+	}
+
+	s1sma := &chart.SimpleMovingAverageSeries{
+		Style: chart.Style{
+			Show:            true,
+			StrokeColor:     drawing.ColorRed,
+			StrokeDashArray: []float64{5.0, 5.0},
+		},
+		InnerSeries: s1,
+	}
+
+	s1ema := &chart.ExponentialMovingAverageSeries{
+		Style: chart.Style{
+			Show:            true,
+			StrokeColor:     drawing.ColorBlue,
+			StrokeDashArray: []float64{5.0, 5.0},
+		},
 		InnerSeries: s1,
 	}
 
@@ -102,9 +120,11 @@ func chartHandler(rc *web.RequestContext) web.ControllerResult {
 			},
 		},
 		Series: []chart.Series{
+			s1bb,
 			s1,
-			s1ma,
 			s1lv,
+			s1sma,
+			s1ema,
 		},
 	}
 

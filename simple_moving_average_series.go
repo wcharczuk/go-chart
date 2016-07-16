@@ -5,8 +5,8 @@ const (
 	DefaultMovingAverageWindowSize = 5
 )
 
-// MovingAverageSeries is a computed series.
-type MovingAverageSeries struct {
+// SimpleMovingAverageSeries is a computed series.
+type SimpleMovingAverageSeries struct {
 	Name  string
 	Style Style
 	YAxis YAxisType
@@ -18,27 +18,27 @@ type MovingAverageSeries struct {
 }
 
 // GetName returns the name of the time series.
-func (mas MovingAverageSeries) GetName() string {
+func (mas SimpleMovingAverageSeries) GetName() string {
 	return mas.Name
 }
 
 // GetStyle returns the line style.
-func (mas MovingAverageSeries) GetStyle() Style {
+func (mas SimpleMovingAverageSeries) GetStyle() Style {
 	return mas.Style
 }
 
 // GetYAxis returns which YAxis the series draws on.
-func (mas MovingAverageSeries) GetYAxis() YAxisType {
+func (mas SimpleMovingAverageSeries) GetYAxis() YAxisType {
 	return mas.YAxis
 }
 
 // Len returns the number of elements in the series.
-func (mas *MovingAverageSeries) Len() int {
+func (mas *SimpleMovingAverageSeries) Len() int {
 	return mas.InnerSeries.Len()
 }
 
 // GetValue gets a value at a given index.
-func (mas *MovingAverageSeries) GetValue(index int) (x float64, y float64) {
+func (mas *SimpleMovingAverageSeries) GetValue(index int) (x float64, y float64) {
 	if mas.InnerSeries == nil {
 		return
 	}
@@ -57,7 +57,7 @@ func (mas *MovingAverageSeries) GetValue(index int) (x float64, y float64) {
 
 // GetLastValue computes the last moving average value but walking back window size samples,
 // and recomputing the last moving average chunk.
-func (mas MovingAverageSeries) GetLastValue() (x float64, y float64) {
+func (mas SimpleMovingAverageSeries) GetLastValue() (x float64, y float64) {
 	if mas.InnerSeries == nil {
 		return
 	}
@@ -78,7 +78,7 @@ func (mas MovingAverageSeries) GetLastValue() (x float64, y float64) {
 }
 
 // GetWindowSize returns the window size.
-func (mas MovingAverageSeries) GetWindowSize(defaults ...int) int {
+func (mas SimpleMovingAverageSeries) GetWindowSize(defaults ...int) int {
 	if mas.WindowSize == 0 {
 		if len(defaults) > 0 {
 			return defaults[0]
@@ -88,7 +88,7 @@ func (mas MovingAverageSeries) GetWindowSize(defaults ...int) int {
 	return mas.WindowSize
 }
 
-func (mas MovingAverageSeries) getAverage(valueBuffer *RingBuffer) float64 {
+func (mas SimpleMovingAverageSeries) getAverage(valueBuffer *RingBuffer) float64 {
 	var accum float64
 	valueBuffer.Each(func(v interface{}) {
 		if typed, isTyped := v.(float64); isTyped {
@@ -99,7 +99,7 @@ func (mas MovingAverageSeries) getAverage(valueBuffer *RingBuffer) float64 {
 }
 
 // Render renders the series.
-func (mas *MovingAverageSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
+func (mas *SimpleMovingAverageSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
 	style := mas.Style.WithDefaultsFrom(defaults)
 	DrawLineSeries(r, canvasBox, xrange, yrange, style, mas)
 }
