@@ -84,7 +84,7 @@ func (sma SMASeries) getAverage(index int) float64 {
 }
 
 // Render renders the series.
-func (sma *SMASeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
+func (sma SMASeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
 	style := sma.Style.WithDefaultsFrom(defaults)
 	DrawLineSeries(r, canvasBox, xrange, yrange, style, sma)
 }
