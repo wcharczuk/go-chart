@@ -253,17 +253,7 @@ func (c Chart) checkRanges(xr, yr, yra Range) error {
 }
 
 func (c Chart) getDefaultCanvasBox() Box {
-	dpt := c.Background.Padding.GetTop(DefaultBackgroundPadding.Top)
-	dpl := c.Background.Padding.GetLeft(DefaultBackgroundPadding.Left)
-	dpr := c.Background.Padding.GetRight(DefaultBackgroundPadding.Right)
-	dpb := c.Background.Padding.GetBottom(DefaultBackgroundPadding.Bottom)
-
-	return Box{
-		Top:    dpt,
-		Left:   dpl,
-		Right:  c.GetWidth() - dpr,
-		Bottom: c.GetHeight() - dpb,
-	}
+	return c.Box()
 }
 
 func (c Chart) getValueFormatters() (x, y, ya ValueFormatter) {
@@ -323,7 +313,7 @@ func (c Chart) getAxisAdjustedCanvasBox(r Renderer, canvasBox Box, xr, yr, yra R
 		axesOuterBox = axesOuterBox.Grow(axesBounds)
 	}
 
-	return canvasBox.OuterConstrain(canvasBox, axesOuterBox)
+	return canvasBox.OuterConstrain(c.Box(), axesOuterBox)
 }
 
 func (c Chart) setRangeDomains(canvasBox Box, xr, yr, yra Range) (xr2, yr2, yra2 Range) {
@@ -382,7 +372,10 @@ func (c Chart) getBackgroundStyle() Style {
 }
 
 func (c Chart) drawBackground(r Renderer) {
-	DrawBox(r, c.Box(), c.getBackgroundStyle())
+	DrawBox(r, Box{
+		Right:  c.GetWidth(),
+		Bottom: c.GetHeight(),
+	}, c.getBackgroundStyle())
 }
 
 func (c Chart) getCanvasStyle() Style {
@@ -477,5 +470,13 @@ func (c Chart) styleDefaultsElements() Style {
 
 // Box returns the chart bounds as a box.
 func (c Chart) Box() Box {
-	return Box{Right: c.GetWidth(), Bottom: c.GetHeight()}
+	dpr := c.Background.Padding.GetRight(DefaultBackgroundPadding.Right)
+	dpb := c.Background.Padding.GetBottom(DefaultBackgroundPadding.Bottom)
+
+	return Box{
+		Top:    c.Background.Padding.GetTop(DefaultBackgroundPadding.Top),
+		Left:   c.Background.Padding.GetLeft(DefaultBackgroundPadding.Left),
+		Right:  c.GetWidth() - dpr,
+		Bottom: c.GetHeight() - dpb,
+	}
 }

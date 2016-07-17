@@ -11,7 +11,7 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 	graph := chart.Chart{
 		Background: chart.Style{
 			Padding: chart.Box{
-				Top:    10,
+				Top:    50,
 				Left:   25,
 				Right:  25,
 				Bottom: 10,
@@ -40,7 +40,35 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 	graph.Render(chart.PNG, res)
 }
 
+func drawChartDefault(res http.ResponseWriter, req *http.Request) {
+	graph := chart.Chart{
+		Background: chart.Style{
+			FillColor: drawing.ColorFromHex("efefef"),
+		},
+		XAxis: chart.XAxis{
+			Style: chart.Style{
+				Show: true,
+			},
+		},
+		YAxis: chart.YAxis{
+			Style: chart.Style{
+				Show: true,
+			},
+		},
+		Series: []chart.Series{
+			chart.ContinuousSeries{
+				XValues: chart.Seq(1.0, 100.0),
+				YValues: chart.SeqRand(100.0, 256.0),
+			},
+		},
+	}
+
+	res.Header().Set("Content-Type", "image/png")
+	graph.Render(chart.PNG, res)
+}
+
 func main() {
 	http.HandleFunc("/", drawChart)
+	http.HandleFunc("/default", drawChartDefault)
 	http.ListenAndServe(":8080", nil)
 }
