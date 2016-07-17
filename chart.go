@@ -323,7 +323,7 @@ func (c Chart) getAxisAdjustedCanvasBox(r Renderer, canvasBox Box, xr, yr, yra R
 		axesOuterBox = axesOuterBox.Grow(axesBounds)
 	}
 
-	return canvasBox.OuterConstrain(c.Box(), axesOuterBox)
+	return canvasBox.OuterConstrain(canvasBox, axesOuterBox)
 }
 
 func (c Chart) setRangeDomains(canvasBox Box, xr, yr, yra Range) (xr2, yr2, yra2 Range) {
