@@ -16,12 +16,18 @@ func (m mockValueProvider) Len() int {
 }
 
 func (m mockValueProvider) GetValue(index int) (x, y float64) {
+	if index < 0 {
+		panic("negative index at GetValue()")
+	}
+	if index > MinInt(len(m.X), len(m.Y)) {
+		panic("index is outside the length of m.X or m.Y")
+	}
 	x = m.X[index]
 	y = m.Y[index]
 	return
 }
 
-func TestSimpleMovingAverageSeriesGetValue(t *testing.T) {
+func TestSMASeriesGetValue(t *testing.T) {
 	assert := assert.New(t)
 
 	mockSeries := mockValueProvider{
@@ -30,9 +36,9 @@ func TestSimpleMovingAverageSeriesGetValue(t *testing.T) {
 	}
 	assert.Equal(10, mockSeries.Len())
 
-	mas := &SimpleMovingAverageSeries{
+	mas := &SMASeries{
 		InnerSeries: mockSeries,
-		WindowSize:  10,
+		Period:      10,
 	}
 
 	var yvalues []float64
@@ -52,7 +58,7 @@ func TestSimpleMovingAverageSeriesGetValue(t *testing.T) {
 	assert.Equal(6.0, yvalues[8])
 }
 
-func TestSimpleMovingAverageSeriesGetLastValueWindowOverlap(t *testing.T) {
+func TestSMASeriesGetLastValueWindowOverlap(t *testing.T) {
 	assert := assert.New(t)
 
 	mockSeries := mockValueProvider{
@@ -61,9 +67,9 @@ func TestSimpleMovingAverageSeriesGetLastValueWindowOverlap(t *testing.T) {
 	}
 	assert.Equal(10, mockSeries.Len())
 
-	mas := &SimpleMovingAverageSeries{
+	mas := &SMASeries{
 		InnerSeries: mockSeries,
-		WindowSize:  15,
+		Period:      15,
 	}
 
 	var yvalues []float64
@@ -78,7 +84,7 @@ func TestSimpleMovingAverageSeriesGetLastValueWindowOverlap(t *testing.T) {
 	assert.Equal(yvalues[len(yvalues)-1], ly)
 }
 
-func TestSimpleMovingAverageSeriesGetLastValue(t *testing.T) {
+func TestSMASeriesGetLastValue(t *testing.T) {
 	assert := assert.New(t)
 
 	mockSeries := mockValueProvider{
@@ -87,9 +93,9 @@ func TestSimpleMovingAverageSeriesGetLastValue(t *testing.T) {
 	}
 	assert.Equal(100, mockSeries.Len())
 
-	mas := &SimpleMovingAverageSeries{
+	mas := &SMASeries{
 		InnerSeries: mockSeries,
-		WindowSize:  10,
+		Period:      10,
 	}
 
 	var yvalues []float64
@@ -100,6 +106,6 @@ func TestSimpleMovingAverageSeriesGetLastValue(t *testing.T) {
 
 	lx, ly := mas.GetLastValue()
 	assert.Equal(100.0, lx)
-	assert.Equal(5.5, ly)
+	assert.Equal(6, ly)
 	assert.Equal(yvalues[len(yvalues)-1], ly)
 }

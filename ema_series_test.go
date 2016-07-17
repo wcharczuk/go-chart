@@ -7,7 +7,7 @@ import (
 	"github.com/blendlabs/go-assert"
 )
 
-func TestExponentialMovingAverageSeries(t *testing.T) {
+func TestEMASeries(t *testing.T) {
 	assert := assert.New(t)
 
 	mockSeries := mockValueProvider{
@@ -16,7 +16,7 @@ func TestExponentialMovingAverageSeries(t *testing.T) {
 	}
 	assert.Equal(10, mockSeries.Len())
 
-	mas := &ExponentialMovingAverageSeries{
+	mas := &EMASeries{
 		InnerSeries: mockSeries,
 	}
 

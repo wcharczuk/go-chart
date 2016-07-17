@@ -37,7 +37,7 @@ func (bbs BollingerBandsSeries) GetWindowSize(defaults ...int) int {
 		if len(defaults) > 0 {
 			return defaults[0]
 		}
-		return DefaultMovingAverageWindowSize
+		return DefaultSimpleMovingAveragePeriod
 	}
 	return bbs.WindowSize
 }
