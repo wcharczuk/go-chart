@@ -163,8 +163,6 @@ func TestChartGetRangesUseTicks(t *testing.T) {
 func TestChartGetRangesUseUserRanges(t *testing.T) {
 	assert := assert.New(t)
 
-	// this test asserts that ticks should supercede manual ranges when generating the overall ranges.
-
 	c := Chart{
 		YAxis: YAxis{
 			Range: Range{
