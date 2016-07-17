@@ -21,7 +21,7 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 
 	// note we create a SimpleMovingAverage series by assignin the inner series.
 	// we need to use a reference because `.Render()` needs to modify state within the series.
-	smaSeries := &chart.SimpleMovingAverageSeries{
+	smaSeries := &chart.SMASeries{
 		InnerSeries: mainSeries,
 	} // we can optionally set the `WindowSize` property which alters how the moving average is calculated.
 
