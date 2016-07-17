@@ -156,6 +156,15 @@ func SeqRand(samples int, scale float64) []float64 {
 	return values
 }
 
+// SeqDays generates a sequence of timestamps by day, from -days to today.
+func SeqDays(days int) []time.Time {
+	var values []time.Time
+	for day := days; day >= 0; day-- {
+		values = append(values, time.Now().AddDate(0, 0, -day))
+	}
+	return values
+}
+
 // PercentDifference computes the percentage difference between two values.
 // The formula is (v2-v1)/v1.
 func PercentDifference(v1, v2 float64) float64 {
