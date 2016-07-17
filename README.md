@@ -17,178 +17,68 @@ To install `chart` run the following:
 
 Most of the components are interchangeable so feel free to crib whatever you want. 
 
-# Usage 
+# Ouptut Examples 
 
- ![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/goog_ltm.png)
+Spark Lines:
 
+![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/tvix_ltm.png)
 
-The chart code to produce the above is as follows:
+Single axis:
 
-```go
-// note this assumes that xvalues and yvalues
-// have been pulled from a pricing service.
-graph := chart.Chart{
-    Width:  1024,
-    Height: 400,
-    YAxis: chart.YAxis {
-        Style: chart.Style{
-            Show: true,
-        },
-    },
-    XAxis: chart.XAxis {
-        Style: chart.Style{
-            Show: true,
-        },
-    },
-    Series: []chart.Series{
-        chart.TimeSeries{
-            XValues: xvalues,
-            YValues: yvalues,
-            Style: chart.Style {
-                FillColor: chart.DefaultSeriesStrokeColors[0].WithAlpha(64),
-            },
-        },
-        chart.AnnotationSeries{
-            Name: "Last Value",
-            Style: chart.Style{
-                Show:        true,
-                StrokeColor: chart.DefaultSeriesStrokeColors[0],
-            },
-            Annotations: []chart.Annotation{
-                chart.Annotation{
-                    X:     chart.TimeToFloat64(xvalues[len(xvalues)-1]),
-                    Y:     yvalues[len(yvalues)-1],
-                    Label: chart.FloatValueFormatter(yvalues[len(yvalues)-1]),
-                },
-            },
-        },
-    },
-}
-graph.Render(chart.PNG, buffer) //thats it!
-```
+![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/goog_ltm.png)
 
-The key areas to note are that we have to explicitly turn on two features, the axes and add the last value label annotation series. When calling `.Render(..)` we add a parameter, `chart.PNG` that tells the renderer to use a raster renderer. Another option is to use `chart.SVG` which will use the vector renderer and create an svg representation of the chart. 
+Two axis:
 
-# Alternate Usage
+![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/two_axis.png)
 
-You can alternately leave a bunch of features turned off and constrain the proportions to something like a spark line:
+Simple Moving Average:
 
- ![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/tvix_ltm.png)
+![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/ma_goog_ltm.png)
 
-The code to produce the above would be:
-
-```go
-// note this assumes that xvalues and yvalues
-// have been pulled from a pricing service.
-graph := chart.Chart{
-    Width:  1024,
-    Height: 100,
-    Series: []chart.Series{
-        chart.TimeSeries{
-            XValues: xvalues,
-            YValues: yvalues,
-        },
-    },
-}
-graph.Render(chart.PNG, buffer)
-```
-
-# 2 Y-Axis Charts 
-
- ![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/two_axis.png)
-
-It is also possible to draw series against 2 separate y-axis with their own ranges (usually good for comparison charts).
-In order to map the series to an alternate axis make sure to set the `YAxis` property of the series to `YAxisSecondary`.
-
-```go
-graph := chart.Chart{
-    Title: stock.Name,
-    TitleStyle: chart.Style{
-        Show: false,
-    },
-    Width:  width,
-    Height: height,
-    XAxis: chart.XAxis{
-        Style: chart.Style{
-            Show: true,
-        },
-    },
-    YAxis: chart.YAxis{
-        Style: chart.Style{
-            Show: true,
-        },
-    },
-    Series: []chart.Series{
-        chart.TimeSeries{
-            Name:    "vea",
-            XValues: vx,
-            YValues: vy,
-            Style: chart.Style{
-                Show: true,
-                StrokeColor: chart.GetDefaultSeriesStrokeColor(0),
-                FillColor:   chart.GetDefaultSeriesStrokeColor(0).WithAlpha(64),
-            },
-        },
-        chart.TimeSeries{
-            Name:    "spy",
-            XValues: cx,
-            YValues: cy,
-            YAxis:   chart.YAxisSecondary,  // key (!)
-            Style: chart.Style{
-                Show: true,
-                StrokeColor: chart.GetDefaultSeriesStrokeColor(1),
-                FillColor:   chart.GetDefaultSeriesStrokeColor(1).WithAlpha(64),
-            },
-        },
-        chart.AnnotationSeries{
-            Name: fmt.Sprintf("%s - Last Value", "vea"),
-            Style: chart.Style{
-                Show:        true,
-                StrokeColor: chart.GetDefaultSeriesStrokeColor(0),
-            },
-            Annotations: []chart.Annotation{
-                chart.Annotation{
-                    X:     float64(vx[len(vx)-1].Unix()),
-                    Y:     vy[len(vy)-1],
-                    Label: fmt.Sprintf("%s - %s", "vea", chart.FloatValueFormatter(vy[len(vy)-1])),
-                },
-            },
-        },
-        chart.AnnotationSeries{
-            Name: fmt.Sprintf("%s - Last Value", "goog"),
-            Style: chart.Style{
-                Show:        true,
-                StrokeColor: chart.GetDefaultSeriesStrokeColor(1),
-            },
-            YAxis: chart.YAxisSecondary, // key (!)
-            Annotations: []chart.Annotation{
-                chart.Annotation{
-                    X:     float64(cx[len(cx)-1].Unix()),
-                    Y:     cy[len(cy)-1],
-                    Label: fmt.Sprintf("%s - %s", "goog", chart.FloatValueFormatter(cy[len(cy)-1])),
-                },
-            },
-        },
-    },
-}
-graph.Render(chart.PNG, buffer)
-```
-
-# Moving Averages
-
-You can now also graph a moving average of a series using a special `MovingAverageSeries` that takes an `InnerSeries` as a required argument.
-
- ![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/ma_goog_ltm.png)
- 
- There is a helper method, `GetLastValue` on the `MovingAverageSeries` to aid in creating a last value annotation for the series.
-
-# More Intense Technical Analysis
-
-You can also have series that produce two values, i.e. a series that implements `BoundedValueProvider` and the `GetBoundedValue(int)(x,y1,y2 float64)` method. An example of a `BoundedValueProvider` is the included `BollingerBandsSeries`.
+Bollinger Bounds:
 
 ![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/spy_ltm_bbs.png)
 
-Like the `MovingAverageSeries` this series takes an `InnerSeries` argument as required, and defaults to 10 samples and a `K` value of 2.0 (or two standard deviations in either direction).
+# Code Examples
+
+Actual chart configurations and examples can be found in the `./examples/` directory. They are web servers, so start them with `go run main.go` then access `http://localhost:8080` to see the output.
+
+# Usage
+
+Everything starts with the `chart.Chart` object. The bare minimum to draw a chart would be the following:
+
+```golang
+
+import (
+    ...
+    "bytes"
+    ...
+    "github.com/wcharczuk/go-chart" //exposes "chart"
+)
+
+graph := chart.Chart{
+    Series: []chart.Series{
+        chart.ContinuousSeries{
+            XValues: []float64{1.0, 2.0, 3.0, 4.0},
+            YValues: []float64{1.0, 2.0, 3.0, 4.0},
+        },
+    },
+}
+
+buffer := bytes.NewBuffer([]byte{})
+err := graph.Render(chart.PNG, buffer)
+```
+
+Explanation of the above: A `chart` can have many `Series`, a `Series` is a collection of things that need to be drawn according to the X range and the Y range(s).
+
+Here, we have a single series with x range values as float64s, rendered to a PNG. Note; we can pass any type of `io.Writer` into `Render(...)`, meaning that we can render the chart to a file or a resonse or anything else that implements `io.Writer`.
+
+# API Overview
+
+Everything on the `chart.Chart` object has defaults that can be overriden. Whenever a developer sets a property on the chart object, it is to be assumed that value will be used instead of the default. One complication here
+is any object's root `chart.Style` object (i.e named `Style`) and the `Show` property specifically, if any other property is set and the `Show` property is unset, it is assumed to be it's default value of `False`.
+
+The best way to see the api in action is to look at the examples in the `./examples/` directory.
 
 # Design Philosophy
 

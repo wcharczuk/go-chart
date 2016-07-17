@@ -133,6 +133,8 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 	var miny, maxy float64 = math.MaxFloat64, 0
 	var minya, maxya float64 = math.MaxFloat64, 0
 
+	// note: a possible future optimization is to not scan the series values if
+	// all axis are represented by either custom ticks or custom ranges.
 	for _, s := range c.Series {
 		if s.GetStyle().IsZero() || s.GetStyle().Show {
 			seriesAxis := s.GetYAxis()
@@ -176,7 +178,15 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 		}
 	}
 
-	if !c.XAxis.Range.IsZero() {
+	if len(c.XAxis.Ticks) > 0 {
+		tickMin, tickMax := math.MaxFloat64, 0.0
+		for _, t := range c.XAxis.Ticks {
+			tickMin = math.Min(tickMin, t.Value)
+			tickMax = math.Max(tickMax, t.Value)
+		}
+		xrange.Min = tickMin
+		xrange.Max = tickMax
+	} else if !c.XAxis.Range.IsZero() {
 		xrange.Min = c.XAxis.Range.Min
 		xrange.Max = c.XAxis.Range.Max
 	} else {
@@ -184,7 +194,15 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 		xrange.Max = maxx
 	}
 
-	if !c.YAxis.Range.IsZero() {
+	if len(c.YAxis.Ticks) > 0 {
+		tickMin, tickMax := math.MaxFloat64, 0.0
+		for _, t := range c.YAxis.Ticks {
+			tickMin = math.Min(tickMin, t.Value)
+			tickMax = math.Max(tickMax, t.Value)
+		}
+		yrange.Min = tickMin
+		yrange.Max = tickMax
+	} else if !c.YAxis.Range.IsZero() {
 		yrange.Min = c.YAxis.Range.Min
 		yrange.Max = c.YAxis.Range.Max
 	} else {
@@ -193,7 +211,15 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 		yrange.Min, yrange.Max = yrange.GetRoundedRangeBounds()
 	}
 
-	if !c.YAxisSecondary.Range.IsZero() {
+	if len(c.YAxisSecondary.Ticks) > 0 {
+		tickMin, tickMax := math.MaxFloat64, 0.0
+		for _, t := range c.YAxis.Ticks {
+			tickMin = math.Min(tickMin, t.Value)
+			tickMax = math.Max(tickMax, t.Value)
+		}
+		yrangeAlt.Min = tickMin
+		yrangeAlt.Max = tickMax
+	} else if !c.YAxisSecondary.Range.IsZero() {
 		yrangeAlt.Min = c.YAxisSecondary.Range.Min
 		yrangeAlt.Max = c.YAxisSecondary.Range.Max
 	} else {
@@ -348,7 +374,7 @@ func (c Chart) getAnnotationAdjustedCanvasBox(r Renderer, canvasBox Box, xr, yr,
 }
 
 func (c Chart) drawBackground(r Renderer) {
-	DrawBox(r, c.Box(), c.Canvas.WithDefaultsFrom(c.styleDefaultsBackground()))
+	DrawBox(r, c.Box(), c.Background.WithDefaultsFrom(c.styleDefaultsBackground()))
 }
 
 func (c Chart) drawCanvas(r Renderer, canvasBox Box) {

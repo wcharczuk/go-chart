@@ -11,7 +11,7 @@ const (
 	// DefaultChartHeight is the default chart height.
 	DefaultChartHeight = 400
 	// DefaultChartWidth is the default chart width.
-	DefaultChartWidth = 200
+	DefaultChartWidth = 1024
 	// DefaultStrokeWidth is the default chart line/stroke width.
 	DefaultStrokeWidth = 1.0
 	// DefaultAxisLineWidth is the line width of the axis lines.

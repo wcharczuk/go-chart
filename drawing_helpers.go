@@ -185,7 +185,7 @@ func DrawAnnotation(r Renderer, canvasBox Box, s Style, lx, ly int, label string
 // DrawBox draws a box with a given style.
 func DrawBox(r Renderer, b Box, s Style) {
 	r.SetFillColor(s.GetFillColor())
-	r.SetStrokeColor(s.GetStrokeColor(DefaultStrokeColor))
+	r.SetStrokeColor(s.GetStrokeColor())
 	r.SetStrokeWidth(s.GetStrokeWidth(DefaultStrokeWidth))
 	r.SetStrokeDashArray(s.GetStrokeDashArray())
 
@@ -223,15 +223,22 @@ func DrawTextCentered(r Renderer, text string, x, y int, s Style) {
 }
 
 // CreateLegend returns a legend renderable function.
-func CreateLegend(c *Chart, style Style) Renderable {
-	return func(r Renderer, cb Box, defaults Style) {
-		workingStyle := style.WithDefaultsFrom(defaults.WithDefaultsFrom(Style{
+func CreateLegend(c *Chart, userDefaults ...Style) Renderable {
+	return func(r Renderer, cb Box, chartDefaults Style) {
+		legendDefaults := Style{
 			FillColor:   drawing.ColorWhite,
 			FontColor:   DefaultTextColor,
 			FontSize:    8.0,
 			StrokeColor: DefaultAxisColor,
 			StrokeWidth: DefaultAxisLineWidth,
-		}))
+		}
+
+		var legendStyle Style
+		if len(userDefaults) > 0 {
+			legendStyle = userDefaults[0].WithDefaultsFrom(chartDefaults.WithDefaultsFrom(legendDefaults))
+		} else {
+			legendStyle = chartDefaults.WithDefaultsFrom(legendDefaults)
+		}
 
 		// DEFAULTS
 		legendPadding := 5
@@ -240,11 +247,11 @@ func CreateLegend(c *Chart, style Style) Renderable {
 
 		var labels []string
 		var lines []Style
-		for _, s := range c.Series {
+		for index, s := range c.Series {
 			if s.GetStyle().IsZero() || s.GetStyle().Show {
 				if _, isAnnotationSeries := s.(AnnotationSeries); !isAnnotationSeries {
 					labels = append(labels, s.GetName())
-					lines = append(lines, s.GetStyle())
+					lines = append(lines, s.GetStyle().WithDefaultsFrom(c.styleDefaultsSeries(index)))
 				}
 			}
 		}
@@ -259,8 +266,9 @@ func CreateLegend(c *Chart, style Style) Renderable {
 			Left: legend.Left + legendPadding,
 		}
 
-		r.SetFontColor(workingStyle.GetFontColor())
-		r.SetFontSize(workingStyle.GetFontSize())
+		r.SetFont(legendStyle.GetFont())
+		r.SetFontColor(legendStyle.GetFontColor())
+		r.SetFontSize(legendStyle.GetFontSize())
 
 		// measure
 		for x := 0; x < len(labels); x++ {
@@ -273,7 +281,7 @@ func CreateLegend(c *Chart, style Style) Renderable {
 		}
 
 		legend = legend.Grow(legendContent)
-		DrawBox(r, legend, workingStyle)
+		DrawBox(r, legend, legendStyle)
 
 		legendContent.Right = legend.Right - legendPadding
 		legendContent.Bottom = legend.Bottom - legendPadding
@@ -283,6 +291,7 @@ func CreateLegend(c *Chart, style Style) Renderable {
 		for x := 0; x < len(labels); x++ {
 			if len(labels[x]) > 0 {
 				tb := r.MeasureText(labels[x])
+
 				ycursor += tb.Height()
 
 				r.Text(labels[x], tx, ycursor)
