@@ -137,6 +137,8 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 	var miny, maxy float64 = math.MaxFloat64, 0
 	var minya, maxya float64 = math.MaxFloat64, 0
 
+	hasSecondaryAxis := false
+
 	// note: a possible future optimization is to not scan the series values if
 	// all axis are represented by either custom ticks or custom ranges.
 	for _, s := range c.Series {
@@ -160,6 +162,7 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 						minya = math.Min(minya, vy2)
 						maxya = math.Max(maxya, vy1)
 						maxya = math.Max(maxya, vy2)
+						hasSecondaryAxis = true
 					}
 				}
 			} else if vp, isValueProvider := s.(ValueProvider); isValueProvider {
@@ -226,7 +229,7 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 	} else if !c.YAxisSecondary.Range.IsZero() {
 		yrangeAlt.Min = c.YAxisSecondary.Range.Min
 		yrangeAlt.Max = c.YAxisSecondary.Range.Max
-	} else {
+	} else if hasSecondaryAxis {
 		yrangeAlt.Min = minya
 		yrangeAlt.Max = maxya
 		yrangeAlt.Min, yrangeAlt.Max = yrangeAlt.GetRoundedRangeBounds()
