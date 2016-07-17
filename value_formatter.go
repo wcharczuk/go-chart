@@ -18,16 +18,21 @@ func TimeHourValueFormatter(v interface{}) string {
 	return TimeValueFormatterWithFormat(v, DefaultDateHourFormat)
 }
 
+// TimeMinuteValueFormatter is a ValueFormatter for timestamps.
+func TimeMinuteValueFormatter(v interface{}) string {
+	return TimeValueFormatterWithFormat(v, DefaultDateMinuteFormat)
+}
+
 // TimeValueFormatterWithFormat is a ValueFormatter for timestamps with a given format.
 func TimeValueFormatterWithFormat(v interface{}, dateFormat string) string {
 	if typed, isTyped := v.(time.Time); isTyped {
 		return typed.Format(dateFormat)
 	}
 	if typed, isTyped := v.(int64); isTyped {
-		return time.Unix(typed, 0).Format(dateFormat)
+		return time.Unix(0, typed).Format(dateFormat)
 	}
 	if typed, isTyped := v.(float64); isTyped {
-		return time.Unix(int64(typed), 0).Format(dateFormat)
+		return time.Unix(0, int64(typed)).Format(dateFormat)
 	}
 	return ""
 }

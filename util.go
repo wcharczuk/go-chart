@@ -17,7 +17,7 @@ func (f Float) String() string {
 
 // TimeToFloat64 returns a float64 representation of a time.
 func TimeToFloat64(t time.Time) float64 {
-	return float64(t.Unix())
+	return float64(t.UnixNano())
 }
 
 // MinAndMax returns both the min and max in one pass.
