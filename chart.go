@@ -178,6 +178,7 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 					} else if seriesAxis == YAxisSecondary {
 						minya = math.Min(minya, vy)
 						maxya = math.Max(maxya, vy)
+						hasSecondaryAxis = true
 					}
 				}
 			}
