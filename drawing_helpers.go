@@ -1,6 +1,10 @@
 package chart
 
-import "github.com/wcharczuk/go-chart/drawing"
+import (
+	"math"
+
+	"github.com/wcharczuk/go-chart/drawing"
+)
 
 // DrawLineSeries draws a line series with a renderer.
 func DrawLineSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, vs ValueProvider) {
@@ -100,6 +104,38 @@ func DrawBoundedSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style,
 	}
 	r.Close()
 	r.FillStroke()
+}
+
+// DrawHistogramSeries draws a value provider as boxes from 0.
+func DrawHistogramSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, vs ValueProvider, barWidths ...int) {
+	if vs.Len() == 0 {
+		return
+	}
+
+	//calculate bar width?
+	seriesLength := vs.Len()
+	barWidth := int(math.Floor(float64(xrange.Domain) / float64(seriesLength)))
+	if len(barWidths) > 0 {
+		barWidth = barWidths[0]
+	}
+
+	cb := canvasBox.Bottom
+	cl := canvasBox.Left
+
+	//foreach datapoint, draw a box.
+	for index := 0; index < seriesLength; index++ {
+		vx, vy := vs.GetValue(index)
+		y0 := yrange.Translate(0)
+		x := cl + xrange.Translate(vx)
+		y := yrange.Translate(vy)
+
+		DrawBox(r, Box{
+			Top:    cb - y0,
+			Left:   x - (barWidth >> 1),
+			Right:  x + (barWidth >> 1),
+			Bottom: cb - y,
+		}, s)
+	}
 }
 
 // MeasureAnnotation measures how big an annotation would be.
