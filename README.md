@@ -17,7 +17,7 @@ To install `chart` run the following:
 
 Most of the components are interchangeable so feel free to crib whatever you want. 
 
-# Ouptut Examples 
+# Output Examples 
 
 Spark Lines:
 
