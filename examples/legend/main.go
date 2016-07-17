@@ -15,6 +15,18 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 	*/
 
 	graph := chart.Chart{
+		XAxis: chart.XAxis{
+			Style: chart.Style{Show: true},
+		},
+		YAxis: chart.YAxis{
+			Style: chart.Style{Show: true},
+		},
+		Background: chart.Style{
+			Padding: chart.Box{
+				Top:  20,
+				Left: 20,
+			},
+		},
 		Series: []chart.Series{
 			chart.ContinuousSeries{
 				Name:    "A test series",

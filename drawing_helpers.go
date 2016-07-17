@@ -277,7 +277,12 @@ func CreateLegend(c *Chart, userDefaults ...Style) Renderable {
 		}
 
 		// DEFAULTS
-		legendPadding := 5
+		legendPadding := Box{
+			Top:    5,
+			Left:   5,
+			Right:  5,
+			Bottom: 5,
+		}
 		lineTextGap := 5
 		lineLengthMinimum := 25
 
@@ -293,13 +298,16 @@ func CreateLegend(c *Chart, userDefaults ...Style) Renderable {
 		}
 
 		legend := Box{
-			Top:  cb.Top, //padding
+			Top:  cb.Top,
 			Left: cb.Left,
+			// bottom and right will be sized by the legend content + relevant padding.
 		}
 
 		legendContent := Box{
-			Top:  legend.Top + legendPadding,
-			Left: legend.Left + legendPadding,
+			Top:    legend.Top + legendPadding.Top,
+			Left:   legend.Left + legendPadding.Left,
+			Right:  legend.Left + legendPadding.Left,
+			Bottom: legend.Top + legendPadding.Top,
 		}
 
 		r.SetFont(legendStyle.GetFont())
@@ -307,35 +315,46 @@ func CreateLegend(c *Chart, userDefaults ...Style) Renderable {
 		r.SetFontSize(legendStyle.GetFontSize())
 
 		// measure
+		labelCount := 0
 		for x := 0; x < len(labels); x++ {
 			if len(labels[x]) > 0 {
 				tb := r.MeasureText(labels[x])
-				legendContent.Bottom += (tb.Height() + DefaultMinimumTickVerticalSpacing)
-				rowRight := tb.Width() + legendContent.Left + lineLengthMinimum + lineTextGap
-				legendContent.Right = MaxInt(legendContent.Right, rowRight)
+				if labelCount > 0 {
+					legendContent.Bottom += DefaultMinimumTickVerticalSpacing
+				}
+				legendContent.Bottom += tb.Height()
+				right := legendContent.Left + tb.Width() + lineTextGap + lineLengthMinimum
+				legendContent.Right = MaxInt(legendContent.Right, right)
+				labelCount++
 			}
 		}
 
 		legend = legend.Grow(legendContent)
-		DrawBox(r, legend, legendStyle)
+		legend.Right = legendContent.Right + legendPadding.Right
+		legend.Bottom = legendContent.Bottom + legendPadding.Bottom
 
-		legendContent.Right = legend.Right - legendPadding
-		legendContent.Bottom = legend.Bottom - legendPadding
+		DrawBox(r, legend, legendStyle)
 
 		ycursor := legendContent.Top
 		tx := legendContent.Left
+		legendCount := 0
 		for x := 0; x < len(labels); x++ {
 			if len(labels[x]) > 0 {
+
+				if legendCount > 0 {
+					ycursor += DefaultMinimumTickVerticalSpacing
+				}
+
 				tb := r.MeasureText(labels[x])
 
-				ycursor += tb.Height()
+				ty := ycursor + tb.Height()
+				r.Text(labels[x], tx, ty)
 
-				r.Text(labels[x], tx, ycursor)
 				th2 := tb.Height() >> 1
 
 				lx := tx + tb.Width() + lineTextGap
-				ly := ycursor - th2
-				lx2 := legendContent.Right - legendPadding
+				ly := ty - th2
+				lx2 := legendContent.Right - legendPadding.Right
 
 				r.SetStrokeColor(lines[x].GetStrokeColor())
 				r.SetStrokeWidth(lines[x].GetStrokeWidth())
@@ -345,7 +364,8 @@ func CreateLegend(c *Chart, userDefaults ...Style) Renderable {
 				r.LineTo(lx2, ly)
 				r.Stroke()
 
-				ycursor += DefaultMinimumTickVerticalSpacing
+				ycursor += tb.Height()
+				legendCount++
 			}
 		}
 	}
