@@ -78,6 +78,7 @@ func (xa XAxis) GetGridLines(ticks []Tick) []GridLine {
 func (xa XAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, ticks []Tick) Box {
 	r.SetStrokeColor(xa.Style.GetStrokeColor(defaults.StrokeColor))
 	r.SetStrokeWidth(xa.Style.GetStrokeWidth(defaults.StrokeWidth))
+	r.SetStrokeDashArray(xa.Style.GetStrokeDashArray())
 	r.SetFont(xa.Style.GetFont(defaults.GetFont()))
 	r.SetFontColor(xa.Style.GetFontColor(DefaultAxisColor))
 	r.SetFontSize(xa.Style.GetFontSize(defaults.GetFontSize()))
@@ -111,6 +112,7 @@ func (xa XAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 func (xa XAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, ticks []Tick) {
 	r.SetStrokeColor(xa.Style.GetStrokeColor(defaults.StrokeColor))
 	r.SetStrokeWidth(xa.Style.GetStrokeWidth(defaults.StrokeWidth))
+	r.SetStrokeDashArray(xa.Style.GetStrokeDashArray())
 	r.SetFont(xa.Style.GetFont(defaults.GetFont()))
 	r.SetFontColor(xa.Style.GetFontColor(DefaultAxisColor))
 	r.SetFontSize(xa.Style.GetFontSize(defaults.GetFontSize()))

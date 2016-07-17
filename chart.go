@@ -104,7 +104,11 @@ func (c Chart) Render(rp RendererProvider, w io.Writer) error {
 		xt, yt, yta = c.getAxesTicks(r, xr, yr, yra, xf, yf, yfa)
 		canvasBox = c.getAxisAdjustedCanvasBox(r, canvasBox, xr, yr, yra, xt, yt, yta)
 		xr, yr, yra = c.setRangeDomains(canvasBox, xr, yr, yra)
+
+		// do a second pass in case things haven't settled yet.
 		xt, yt, yta = c.getAxesTicks(r, xr, yr, yra, xf, yf, yfa)
+		canvasBox = c.getAxisAdjustedCanvasBox(r, canvasBox, xr, yr, yra, xt, yt, yta)
+		xr, yr, yra = c.setRangeDomains(canvasBox, xr, yr, yra)
 	}
 
 	if c.hasAnnotationSeries() {
