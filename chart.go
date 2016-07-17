@@ -373,12 +373,20 @@ func (c Chart) getAnnotationAdjustedCanvasBox(r Renderer, canvasBox Box, xr, yr,
 	return canvasBox.OuterConstrain(c.Box(), annotationSeriesBox)
 }
 
+func (c Chart) getBackgroundStyle() Style {
+	return c.Background.WithDefaultsFrom(c.styleDefaultsBackground())
+}
+
 func (c Chart) drawBackground(r Renderer) {
-	DrawBox(r, c.Box(), c.Background.WithDefaultsFrom(c.styleDefaultsBackground()))
+	DrawBox(r, c.Box(), c.getBackgroundStyle())
+}
+
+func (c Chart) getCanvasStyle() Style {
+	return c.Canvas.WithDefaultsFrom(c.styleDefaultsCanvas())
 }
 
 func (c Chart) drawCanvas(r Renderer, canvasBox Box) {
-	DrawBox(r, canvasBox, c.Canvas.WithDefaultsFrom(c.styleDefaultsCanvas()))
+	DrawBox(r, canvasBox, c.getCanvasStyle())
 }
 
 func (c Chart) drawAxes(r Renderer, canvasBox Box, xrange, yrange, yrangeAlt Range, xticks, yticks, yticksAlt []Tick) {

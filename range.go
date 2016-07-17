@@ -14,7 +14,9 @@ type Range struct {
 
 // IsZero returns if the range has been set or not.
 func (r Range) IsZero() bool {
-	return r.Min == 0 && r.Max == 0 && r.Domain == 0
+	return (r.Min == 0 || math.IsNaN(r.Min)) &&
+		(r.Max == 0 || math.IsNaN(r.Max)) &&
+		r.Domain == 0
 }
 
 // Delta returns the difference between the min and max value.

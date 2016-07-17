@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/blendlabs/go-assert"
+	"github.com/wcharczuk/go-chart/drawing"
 )
 
 func TestChartGetDPI(t *testing.T) {
@@ -121,6 +122,96 @@ func TestChartGetRanges(t *testing.T) {
 
 	assert.Equal(9.7, yra2.Min)
 	assert.Equal(19.7, yra2.Max)
+}
+
+func TestChartGetRangesUseTicks(t *testing.T) {
+	assert := assert.New(t)
+
+	// this test asserts that ticks should supercede manual ranges when generating the overall ranges.
+
+	c := Chart{
+		YAxis: YAxis{
+			Ticks: []Tick{
+				{0.0, "Zero"},
+				{1.0, "1.0"},
+				{2.0, "2.0"},
+				{3.0, "3.0"},
+				{4.0, "4.0"},
+				{5.0, "Five"},
+			},
+			Range: Range{
+				Min: -5.0,
+				Max: 5.0,
+			},
+		},
+		Series: []Series{
+			ContinuousSeries{
+				XValues: []float64{-2.0, -1.0, 0, 1.0, 2.0},
+				YValues: []float64{1.0, 2.0, 3.0, 4.0, 4.5},
+			},
+		},
+	}
+
+	xr, yr, yar := c.getRanges()
+	assert.Equal(-2.0, xr.Min)
+	assert.Equal(2.0, xr.Max)
+	assert.Equal(0.0, yr.Min)
+	assert.Equal(5.0, yr.Max)
+	assert.True(yar.IsZero(), yar.String())
+}
+
+func TestChartGetRangesUseUserRanges(t *testing.T) {
+	assert := assert.New(t)
+
+	// this test asserts that ticks should supercede manual ranges when generating the overall ranges.
+
+	c := Chart{
+		YAxis: YAxis{
+			Range: Range{
+				Min: -5.0,
+				Max: 5.0,
+			},
+		},
+		Series: []Series{
+			ContinuousSeries{
+				XValues: []float64{-2.0, -1.0, 0, 1.0, 2.0},
+				YValues: []float64{1.0, 2.0, 3.0, 4.0, 4.5},
+			},
+		},
+	}
+
+	xr, yr, yar := c.getRanges()
+	assert.Equal(-2.0, xr.Min)
+	assert.Equal(2.0, xr.Max)
+	assert.Equal(-5.0, yr.Min)
+	assert.Equal(5.0, yr.Max)
+	assert.True(yar.IsZero(), yar.String())
+}
+
+func TestChartGetBackgroundStyle(t *testing.T) {
+	assert := assert.New(t)
+
+	c := Chart{
+		Background: Style{
+			FillColor: drawing.ColorBlack,
+		},
+	}
+
+	bs := c.getBackgroundStyle()
+	assert.Equal(bs.FillColor.String(), drawing.ColorBlack.String())
+}
+
+func TestChartGetCanvasStyle(t *testing.T) {
+	assert := assert.New(t)
+
+	c := Chart{
+		Canvas: Style{
+			FillColor: drawing.ColorBlack,
+		},
+	}
+
+	bs := c.getCanvasStyle()
+	assert.Equal(bs.FillColor.String(), drawing.ColorBlack.String())
 }
 
 func TestChartGetDefaultCanvasBox(t *testing.T) {
