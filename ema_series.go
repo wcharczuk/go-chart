@@ -11,8 +11,6 @@ type EMASeries struct {
 	Style Style
 	YAxis YAxisType
 
-	// Sigma is the 'smoothing factor' parameter.
-	Sigma       float64
 	Period      int
 	InnerSeries ValueProvider
 }
@@ -49,14 +47,8 @@ func (ema EMASeries) Len() int {
 }
 
 // GetSigma returns the smoothing factor for the serise.
-func (ema EMASeries) GetSigma(defaults ...float64) float64 {
-	if ema.Sigma == 0 {
-		if len(defaults) > 0 {
-			return defaults[0]
-		}
-		return DefaultEMASigma
-	}
-	return ema.Sigma
+func (ema EMASeries) GetSigma() float64 {
+	return 2.0 / (float64(ema.Period) + 1)
 }
 
 // GetValue gets a value at a given index.
@@ -84,11 +76,11 @@ func (ema EMASeries) GetLastValue() (x float64, y float64) {
 
 func (ema EMASeries) compute(period, index int) float64 {
 	_, v := ema.InnerSeries.GetValue(index)
-	if period == 1 || index == 0 {
+	if index == 0 {
 		return v
 	}
-	sig := ema.GetSigma()
-	return sig*v + ((1.0 - sig) * ema.compute(period-1, index-1))
+	previousEMA := ema.compute(period-1, index-1)
+	return ((v - previousEMA) * ema.GetSigma()) + previousEMA
 }
 
 // Render renders the series.
