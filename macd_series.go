@@ -76,13 +76,11 @@ func (macd MACDSeries) GetValue(index int) (x float64, y float64) {
 
 	x, _ = macd.InnerSeries.GetValue(index)
 
-	signal := EMASeries{
-		InnerSeries: MACDLineSeries{
-			InnerSeries:     macd.InnerSeries,
-			PrimaryPeriod:   w1,
-			SecondaryPeriod: w2,
-		},
-		Period: sig,
+	signal := MACDSignalSeries{
+		InnerSeries:     macd.InnerSeries,
+		PrimaryPeriod:   w1,
+		SecondaryPeriod: w2,
+		SignalPeriod:    sig,
 	}
 
 	macdl := MACDLineSeries{
