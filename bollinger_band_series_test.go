@@ -44,7 +44,7 @@ func TestBollingerBandLastValue(t *testing.T) {
 		InnerSeries: s1,
 	}
 
-	x, y1, y2 := bbs.GetLastBoundedValue()
+	x, y1, y2 := bbs.GetBoundedLastValue()
 	assert.Equal(100.0, x)
 	assert.Equal(101, math.Floor(y1))
 	assert.Equal(83, math.Floor(y2))
