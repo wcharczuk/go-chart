@@ -28,7 +28,7 @@ type FullValueProvider interface {
 	LastValueProvider
 }
 
-// FullBoundedValueProvider is an interface that combines `ValueProvider` and `LastValueProvider`
+// FullBoundedValueProvider is an interface that combines `BoundedValueProvider` and `BoundedLastValueProvider`
 type FullBoundedValueProvider interface {
 	BoundedValueProvider
 	BoundedLastValueProvider
