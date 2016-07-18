@@ -83,7 +83,6 @@ func TestMACDSeries(t *testing.T) {
 
 	assert.NotEmpty(yvalues)
 	for index, vy := range yvalues {
-		fmt.Printf("delta @ %d actual: %0.9f expected: %0.9f\n", index, vy, macdExpected[index])
 		assert.InDelta(vy, macdExpected[index], emaDelta, fmt.Sprintf("delta @ %d actual: %0.9f expected: %0.9f", index, vy, macdExpected[index]))
 	}
 }
