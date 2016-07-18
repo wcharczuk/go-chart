@@ -78,8 +78,8 @@ func (bbs *BollingerBandsSeries) GetBoundedValue(index int) (x, y1, y2 float64) 
 	return
 }
 
-// GetLastBoundedValue returns the last bounded value for the series.
-func (bbs *BollingerBandsSeries) GetLastBoundedValue() (x, y1, y2 float64) {
+// GetBoundedLastValue returns the last bounded value for the series.
+func (bbs *BollingerBandsSeries) GetBoundedLastValue() (x, y1, y2 float64) {
 	if bbs.InnerSeries == nil {
 		return
 	}
