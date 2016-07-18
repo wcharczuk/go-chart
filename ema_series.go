@@ -1,8 +1,8 @@
 package chart
 
 const (
-	// DefaultEMASigma is the default exponential smoothing factor.
-	DefaultEMASigma = 0.25
+	// DefaultEMAPeriod is the default EMA period used in the sigma calculation.
+	DefaultEMAPeriod = 12
 )
 
 // EMASeries is a computed series.
@@ -36,7 +36,7 @@ func (ema EMASeries) GetPeriod(defaults ...int) int {
 		if len(defaults) > 0 {
 			return defaults[0]
 		}
-		return ema.InnerSeries.Len()
+		return DefaultEMAPeriod
 	}
 	return ema.Period
 }
