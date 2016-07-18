@@ -27,7 +27,7 @@ func TestBollingerBandSeries(t *testing.T) {
 		xvalues[x], y1values[x], y2values[x] = bbs.GetBoundedValue(x)
 	}
 
-	for x := bbs.GetWindowSize(); x < 100; x++ {
+	for x := bbs.GetPeriod(); x < 100; x++ {
 		assert.True(y1values[x] > y2values[x])
 	}
 }
