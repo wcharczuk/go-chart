@@ -9,7 +9,7 @@ type BollingerBandsSeries struct {
 	Style Style
 	YAxis YAxisType
 
-	WindowSize  int
+	Period      int
 	K           float64
 	InnerSeries ValueProvider
 
@@ -31,15 +31,12 @@ func (bbs BollingerBandsSeries) GetYAxis() YAxisType {
 	return bbs.YAxis
 }
 
-// GetWindowSize returns the window size.
-func (bbs BollingerBandsSeries) GetWindowSize(defaults ...int) int {
-	if bbs.WindowSize == 0 {
-		if len(defaults) > 0 {
-			return defaults[0]
-		}
+// GetPeriod returns the window size.
+func (bbs BollingerBandsSeries) GetPeriod() int {
+	if bbs.Period == 0 {
 		return DefaultSimpleMovingAveragePeriod
 	}
-	return bbs.WindowSize
+	return bbs.Period
 }
 
 // GetK returns the K value.
@@ -64,9 +61,9 @@ func (bbs *BollingerBandsSeries) GetBoundedValue(index int) (x, y1, y2 float64) 
 		return
 	}
 	if bbs.valueBuffer == nil || index == 0 {
-		bbs.valueBuffer = NewRingBufferWithCapacity(bbs.GetWindowSize())
+		bbs.valueBuffer = NewRingBufferWithCapacity(bbs.GetPeriod())
 	}
-	if bbs.valueBuffer.Len() >= bbs.GetWindowSize() {
+	if bbs.valueBuffer.Len() >= bbs.GetPeriod() {
 		bbs.valueBuffer.Dequeue()
 	}
 	px, py := bbs.InnerSeries.GetValue(index)
@@ -86,14 +83,14 @@ func (bbs *BollingerBandsSeries) GetLastBoundedValue() (x, y1, y2 float64) {
 	if bbs.InnerSeries == nil {
 		return
 	}
-	windowSize := bbs.GetWindowSize()
+	period := bbs.GetPeriod()
 	seriesLength := bbs.InnerSeries.Len()
-	startAt := seriesLength - windowSize
+	startAt := seriesLength - period
 	if startAt < 0 {
 		startAt = 0
 	}
 
-	vb := NewRingBufferWithCapacity(windowSize)
+	vb := NewRingBufferWithCapacity(period)
 	for index := startAt; index < seriesLength; index++ {
 		xn, yn := bbs.InnerSeries.GetValue(index)
 		vb.Enqueue(yn)
@@ -117,7 +114,7 @@ func (bbs *BollingerBandsSeries) Render(r Renderer, canvasBox Box, xrange, yrang
 		FillColor:   DefaultAxisColor.WithAlpha(32),
 	}))
 
-	DrawBoundedSeries(r, canvasBox, xrange, yrange, s, bbs, bbs.GetWindowSize())
+	DrawBoundedSeries(r, canvasBox, xrange, yrange, s, bbs, bbs.GetPeriod())
 }
 
 func (bbs BollingerBandsSeries) getAverage(valueBuffer *RingBuffer) float64 {
