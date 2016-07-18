@@ -118,10 +118,11 @@ func (c Chart) Render(rp RendererProvider, w io.Writer) error {
 	}
 
 	c.drawCanvas(r, canvasBox)
+	c.drawAxes(r, canvasBox, xr, yr, yra, xt, yt, yta)
 	for index, series := range c.Series {
 		c.drawSeries(r, canvasBox, xr, yr, yra, series, index)
 	}
-	c.drawAxes(r, canvasBox, xr, yr, yra, xt, yt, yta)
+
 	c.drawTitle(r)
 
 	for _, a := range c.Elements {
