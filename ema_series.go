@@ -31,11 +31,8 @@ func (ema EMASeries) GetYAxis() YAxisType {
 }
 
 // GetPeriod returns the window size.
-func (ema EMASeries) GetPeriod(defaults ...int) int {
+func (ema EMASeries) GetPeriod() int {
 	if ema.Period == 0 {
-		if len(defaults) > 0 {
-			return defaults[0]
-		}
 		return DefaultEMAPeriod
 	}
 	return ema.Period
