@@ -172,20 +172,24 @@ func MeasureAnnotation(r Renderer, canvasBox Box, s Style, lx, ly int, label str
 }
 
 // DrawAnnotation draws an anotation with a renderer.
-func DrawAnnotation(r Renderer, canvasBox Box, s Style, lx, ly int, label string) {
-	r.SetFillColor(s.GetFillColor(DefaultAnnotationFillColor))
-	r.SetStrokeColor(s.GetStrokeColor())
-	r.SetStrokeWidth(s.GetStrokeWidth())
-	r.SetStrokeDashArray(s.GetStrokeDashArray())
+func DrawAnnotation(r Renderer, canvasBox Box, style Style, lx, ly int, label string) {
+	r.SetFillColor(style.GetFillColor(DefaultAnnotationFillColor))
+	r.SetStrokeColor(style.GetStrokeColor())
+	r.SetStrokeWidth(style.GetStrokeWidth())
+	r.SetStrokeDashArray(style.GetStrokeDashArray())
+
+	r.SetFont(style.GetFont())
+	r.SetFontColor(style.GetFontColor(DefaultTextColor))
+	r.SetFontSize(style.GetFontSize(DefaultAnnotationFontSize))
 
 	textBox := r.MeasureText(label)
 	textWidth := textBox.Width()
 	halfTextHeight := textBox.Height() >> 1
 
-	pt := s.Padding.GetTop(DefaultAnnotationPadding.Top)
-	pl := s.Padding.GetLeft(DefaultAnnotationPadding.Left)
-	pr := s.Padding.GetRight(DefaultAnnotationPadding.Right)
-	pb := s.Padding.GetBottom(DefaultAnnotationPadding.Bottom)
+	pt := style.Padding.GetTop(DefaultAnnotationPadding.Top)
+	pl := style.Padding.GetLeft(DefaultAnnotationPadding.Left)
+	pr := style.Padding.GetRight(DefaultAnnotationPadding.Right)
+	pb := style.Padding.GetBottom(DefaultAnnotationPadding.Bottom)
 
 	textX := lx + pl + DefaultAnnotationDeltaWidth
 	textY := ly + halfTextHeight
@@ -210,10 +214,6 @@ func DrawAnnotation(r Renderer, canvasBox Box, s Style, lx, ly int, label string
 	r.LineTo(lx, ly)
 	r.Close()
 	r.FillStroke()
-
-	r.SetFont(s.GetFont())
-	r.SetFontColor(s.GetFontColor(DefaultTextColor))
-	r.SetFontSize(s.GetFontSize(DefaultAnnotationFontSize))
 
 	r.Text(label, textX, textY)
 }

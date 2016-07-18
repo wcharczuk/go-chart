@@ -28,6 +28,74 @@ func (s Style) IsZero() bool {
 	return s.StrokeColor.IsZero() && s.FillColor.IsZero() && s.StrokeWidth == 0 && s.FontColor.IsZero() && s.FontSize == 0 && s.Font == nil
 }
 
+func (s Style) String() string {
+	if s.IsZero() {
+		return "{}"
+	}
+
+	var output []string
+	if s.Show {
+		output = []string{"\"show\": true"}
+	} else {
+		output = []string{"\"show\": false"}
+	}
+
+	if !s.Padding.IsZero() {
+		output = append(output, fmt.Sprintf("\"padding\": %s", s.Padding.String()))
+	} else {
+		output = append(output, "\"padding\": null")
+	}
+
+	if s.StrokeWidth >= 0 {
+		output = append(output, fmt.Sprintf("\"stroke_width\": %0.2f", s.StrokeWidth))
+	} else {
+		output = append(output, "\"stroke_width\": null")
+	}
+
+	if !s.StrokeColor.IsZero() {
+		output = append(output, fmt.Sprintf("\"stroke_color\": %s", s.StrokeColor.String()))
+	} else {
+		output = append(output, "\"stroke_color\": null")
+	}
+
+	if len(s.StrokeDashArray) > 0 {
+		var elements []string
+		for _, v := range s.StrokeDashArray {
+			elements = append(elements, fmt.Sprintf("%.2f", v))
+		}
+		dashArray := strings.Join(elements, ", ")
+		output = append(output, fmt.Sprintf("\"stroke_dash_array\": [%s]", dashArray))
+	} else {
+		output = append(output, "\"stroke_dash_array\": null")
+	}
+
+	if !s.FillColor.IsZero() {
+		output = append(output, fmt.Sprintf("\"fill_color\": %s", s.FillColor.String()))
+	} else {
+		output = append(output, "\"fill_color\": null")
+	}
+
+	if s.FontSize != 0 {
+		output = append(output, fmt.Sprintf("\"font_size\": \"%0.2fpt\"", s.FontSize))
+	} else {
+		output = append(output, "\"fill_color\": null")
+	}
+
+	if !s.FillColor.IsZero() {
+		output = append(output, fmt.Sprintf("\"font_color\": %s", s.FillColor.String()))
+	} else {
+		output = append(output, "\"font_color\": null")
+	}
+
+	if s.Font != nil {
+		output = append(output, fmt.Sprintf("\"font\": \"%s\"", s.Font.Name(truetype.NameIDFontFamily)))
+	} else {
+		output = append(output, "\"font_color\": null")
+	}
+
+	return "{" + strings.Join(output, ", ") + "}"
+}
+
 // GetStrokeColor returns the stroke color.
 func (s Style) GetStrokeColor(defaults ...drawing.Color) drawing.Color {
 	if s.StrokeColor.IsZero() {
