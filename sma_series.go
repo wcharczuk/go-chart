@@ -36,7 +36,7 @@ func (sma SMASeries) Len() int {
 }
 
 // GetValue gets a value at a given index.
-func (sma SMASeries) GetValue(index int) (x float64, y float64) {
+func (sma SMASeries) GetValue(index int) (x, y float64) {
 	if sma.InnerSeries == nil {
 		return
 	}
@@ -48,7 +48,7 @@ func (sma SMASeries) GetValue(index int) (x float64, y float64) {
 
 // GetLastValue computes the last moving average value but walking back window size samples,
 // and recomputing the last moving average chunk.
-func (sma SMASeries) GetLastValue() (x float64, y float64) {
+func (sma SMASeries) GetLastValue() (x, y float64) {
 	if sma.InnerSeries == nil {
 		return
 	}

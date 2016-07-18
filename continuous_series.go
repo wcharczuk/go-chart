@@ -31,6 +31,11 @@ func (cs ContinuousSeries) GetValue(index int) (float64, float64) {
 	return cs.XValues[index], cs.YValues[index]
 }
 
+// GetLastValue gets the last value.
+func (cs ContinuousSeries) GetLastValue() (float64, float64) {
+	return cs.XValues[len(cs.XValues)-1], cs.YValues[len(cs.YValues)-1]
+}
+
 // GetValueFormatters returns value formatter defaults for the series.
 func (cs ContinuousSeries) GetValueFormatters() (x, y ValueFormatter) {
 	x = FloatValueFormatter

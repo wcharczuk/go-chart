@@ -11,3 +11,13 @@ type BoundedValueProvider interface {
 	Len() int
 	GetBoundedValue(index int) (x, y1, y2 float64)
 }
+
+// LastValueProvider is a special type of value provider that can return it's (potentially computed) last value.
+type LastValueProvider interface {
+	GetLastValue() (x, y float64)
+}
+
+// BoundedLastValueProvider is a special type of value provider that can return it's (potentially computed) bounded last value.
+type BoundedLastValueProvider interface {
+	GetBoundedLastValue(index int) (x, y1, y2 float64)
+}
