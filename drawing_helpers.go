@@ -173,7 +173,7 @@ func MeasureAnnotation(r Renderer, canvasBox Box, s Style, lx, ly int, label str
 
 // DrawAnnotation draws an anotation with a renderer.
 func DrawAnnotation(r Renderer, canvasBox Box, style Style, lx, ly int, label string) {
-	r.SetFillColor(style.GetFillColor(DefaultAnnotationFillColor))
+	r.SetFillColor(style.GetFillColor())
 	r.SetStrokeColor(style.GetStrokeColor())
 	r.SetStrokeWidth(style.GetStrokeWidth())
 	r.SetStrokeDashArray(style.GetStrokeDashArray())
