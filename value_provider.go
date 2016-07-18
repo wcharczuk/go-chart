@@ -21,3 +21,15 @@ type LastValueProvider interface {
 type BoundedLastValueProvider interface {
 	GetBoundedLastValue(index int) (x, y1, y2 float64)
 }
+
+// FullValueProvider is an interface that combines `ValueProvider` and `LastValueProvider`
+type FullValueProvider interface {
+	ValueProvider
+	LastValueProvider
+}
+
+// FullBoundedValueProvider is an interface that combines `ValueProvider` and `LastValueProvider`
+type FullBoundedValueProvider interface {
+	ValueProvider
+	LastValueProvider
+}
