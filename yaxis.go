@@ -130,13 +130,15 @@ func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 
 	sort.Sort(Ticks(ticks))
 
+	sw := ya.Style.GetStrokeWidth(defaults.StrokeWidth)
+
 	var lx int
 	var tx int
 	if ya.AxisType == YAxisPrimary {
-		lx = canvasBox.Right
+		lx = canvasBox.Right + int(sw)
 		tx = lx + DefaultYAxisMargin
 	} else if ya.AxisType == YAxisSecondary {
-		lx = canvasBox.Left
+		lx = canvasBox.Left - int(sw)
 		tx = lx - DefaultYAxisMargin
 	}
 
