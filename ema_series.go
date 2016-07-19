@@ -45,7 +45,7 @@ func (ema EMASeries) Len() int {
 
 // GetSigma returns the smoothing factor for the serise.
 func (ema EMASeries) GetSigma() float64 {
-	return 2.0 / (float64(ema.Period) + 1)
+	return 2.0 / (float64(ema.GetPeriod()) + 1)
 }
 
 // GetValue gets a value at a given index.
