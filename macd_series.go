@@ -256,7 +256,7 @@ func (macdl MACDLineSeries) GetValue(index int) (x float64, y float64) {
 	_, emav1 := ema1.GetValue(index)
 	_, emav2 := ema2.GetValue(index)
 
-	y = emav1 - emav2
+	y = emav2 - emav1
 	return
 }
 
