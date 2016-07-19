@@ -20,6 +20,9 @@ type MACDSeries struct {
 	PrimaryPeriod   int
 	SecondaryPeriod int
 	SignalPeriod    int
+
+	signal *MACDSignalSeries
+	macdl  *MACDLineSeries
 }
 
 // GetPeriods returns the primary and secondary periods.
@@ -67,33 +70,39 @@ func (macd MACDSeries) Len() int {
 }
 
 // GetValue gets a value at a given index. For MACD it is the signal value.
-func (macd MACDSeries) GetValue(index int) (x float64, y float64) {
+func (macd *MACDSeries) GetValue(index int) (x float64, y float64) {
 	if macd.InnerSeries == nil {
 		return
 	}
 
-	w1, w2, sig := macd.GetPeriods()
+	if macd.signal == nil || macd.macdl == nil {
+		macd.ensureChildSeries()
+	}
+
+	_, lv := macd.macdl.GetValue(index)
+	_, sv := macd.signal.GetValue(index)
 
 	x, _ = macd.InnerSeries.GetValue(index)
+	y = lv - sv
 
-	signal := MACDSignalSeries{
+	return
+}
+
+func (macd *MACDSeries) ensureChildSeries() {
+	w1, w2, sig := macd.GetPeriods()
+
+	macd.signal = &MACDSignalSeries{
 		InnerSeries:     macd.InnerSeries,
 		PrimaryPeriod:   w1,
 		SecondaryPeriod: w2,
 		SignalPeriod:    sig,
 	}
 
-	macdl := MACDLineSeries{
+	macd.macdl = &MACDLineSeries{
 		InnerSeries:     macd.InnerSeries,
 		PrimaryPeriod:   w1,
 		SecondaryPeriod: w2,
 	}
-
-	_, lv := macdl.GetValue(index)
-	_, sv := signal.GetValue(index)
-	y = lv - sv
-
-	return
 }
 
 // MACDSignalSeries computes the EMA of the MACDLineSeries.
@@ -106,6 +115,8 @@ type MACDSignalSeries struct {
 	PrimaryPeriod   int
 	SecondaryPeriod int
 	SignalPeriod    int
+
+	signal *EMASeries
 }
 
 // GetPeriods returns the primary and secondary periods.
@@ -144,7 +155,7 @@ func (macds MACDSignalSeries) GetYAxis() YAxisType {
 }
 
 // Len returns the number of elements in the series.
-func (macds MACDSignalSeries) Len() int {
+func (macds *MACDSignalSeries) Len() int {
 	if macds.InnerSeries == nil {
 		return 0
 	}
@@ -153,30 +164,34 @@ func (macds MACDSignalSeries) Len() int {
 }
 
 // GetValue gets a value at a given index. For MACD it is the signal value.
-func (macds MACDSignalSeries) GetValue(index int) (x float64, y float64) {
+func (macds *MACDSignalSeries) GetValue(index int) (x float64, y float64) {
 	if macds.InnerSeries == nil {
 		return
 	}
 
+	if macds.signal == nil {
+		macds.ensureSignal()
+	}
+	x, _ = macds.InnerSeries.GetValue(index)
+	_, y = macds.signal.GetValue(index)
+	return
+}
+
+func (macds *MACDSignalSeries) ensureSignal() {
 	w1, w2, sig := macds.GetPeriods()
 
-	x, _ = macds.InnerSeries.GetValue(index)
-
-	signal := EMASeries{
-		InnerSeries: MACDLineSeries{
+	macds.signal = &EMASeries{
+		InnerSeries: &MACDLineSeries{
 			InnerSeries:     macds.InnerSeries,
 			PrimaryPeriod:   w1,
 			SecondaryPeriod: w2,
 		},
 		Period: sig,
 	}
-
-	_, y = signal.GetValue(index)
-	return
 }
 
 // Render renders the series.
-func (macds MACDSignalSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
+func (macds *MACDSignalSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
 	style := macds.Style.WithDefaultsFrom(defaults)
 	DrawLineSeries(r, canvasBox, xrange, yrange, style, macds)
 }
@@ -190,6 +205,9 @@ type MACDLineSeries struct {
 
 	PrimaryPeriod   int
 	SecondaryPeriod int
+
+	ema1 *EMASeries
+	ema2 *EMASeries
 
 	Sigma float64
 }
@@ -225,7 +243,7 @@ func (macdl MACDLineSeries) GetPeriods() (w1, w2 int) {
 }
 
 // Len returns the number of elements in the series.
-func (macdl MACDLineSeries) Len() int {
+func (macdl *MACDLineSeries) Len() int {
 	if macdl.InnerSeries == nil {
 		return 0
 	}
@@ -234,34 +252,38 @@ func (macdl MACDLineSeries) Len() int {
 }
 
 // GetValue gets a value at a given index. For MACD it is the signal value.
-func (macdl MACDLineSeries) GetValue(index int) (x float64, y float64) {
+func (macdl *MACDLineSeries) GetValue(index int) (x float64, y float64) {
 	if macdl.InnerSeries == nil {
 		return
 	}
-
-	w1, w2 := macdl.GetPeriods()
+	if macdl.ema1 == nil && macdl.ema2 == nil {
+		macdl.ensureEMASeries()
+	}
 
 	x, _ = macdl.InnerSeries.GetValue(index)
 
-	ema1 := EMASeries{
-		InnerSeries: macdl.InnerSeries,
-		Period:      w1,
-	}
-
-	ema2 := EMASeries{
-		InnerSeries: macdl.InnerSeries,
-		Period:      w2,
-	}
-
-	_, emav1 := ema1.GetValue(index)
-	_, emav2 := ema2.GetValue(index)
+	_, emav1 := macdl.ema1.GetValue(index)
+	_, emav2 := macdl.ema2.GetValue(index)
 
 	y = emav2 - emav1
 	return
 }
 
+func (macdl *MACDLineSeries) ensureEMASeries() {
+	w1, w2 := macdl.GetPeriods()
+
+	macdl.ema1 = &EMASeries{
+		InnerSeries: macdl.InnerSeries,
+		Period:      w1,
+	}
+	macdl.ema2 = &EMASeries{
+		InnerSeries: macdl.InnerSeries,
+		Period:      w2,
+	}
+}
+
 // Render renders the series.
-func (macdl MACDLineSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
+func (macdl *MACDLineSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
 	style := macdl.Style.WithDefaultsFrom(defaults)
 	DrawLineSeries(r, canvasBox, xrange, yrange, style, macdl)
 }

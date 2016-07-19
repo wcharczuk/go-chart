@@ -13,6 +13,8 @@ type EMASeries struct {
 
 	Period      int
 	InnerSeries ValueProvider
+
+	cache []float64
 }
 
 // GetName returns the name of the time series.
@@ -49,39 +51,51 @@ func (ema EMASeries) GetSigma() float64 {
 }
 
 // GetValue gets a value at a given index.
-func (ema EMASeries) GetValue(index int) (x, y float64) {
+func (ema *EMASeries) GetValue(index int) (x, y float64) {
 	if ema.InnerSeries == nil {
 		return
 	}
+	if len(ema.cache) == 0 {
+		ema.ensureCachedValues()
+	}
 	vx, _ := ema.InnerSeries.GetValue(index)
 	x = vx
-	y = ema.compute(ema.GetPeriod(), index)
+	y = ema.cache[index]
 	return
 }
 
 // GetLastValue computes the last moving average value but walking back window size samples,
 // and recomputing the last moving average chunk.
-func (ema EMASeries) GetLastValue() (x, y float64) {
+func (ema *EMASeries) GetLastValue() (x, y float64) {
 	if ema.InnerSeries == nil {
 		return
 	}
+	if len(ema.cache) == 0 {
+		ema.ensureCachedValues()
+	}
 	lastIndex := ema.InnerSeries.Len() - 1
 	x, _ = ema.InnerSeries.GetValue(lastIndex)
-	y = ema.compute(ema.GetPeriod(), lastIndex)
+	y = ema.cache[lastIndex]
 	return
 }
 
-func (ema EMASeries) compute(period, index int) float64 {
-	_, v := ema.InnerSeries.GetValue(index)
-	if index == 0 {
-		return v
+func (ema *EMASeries) ensureCachedValues() {
+	seriesLength := ema.InnerSeries.Len()
+	ema.cache = make([]float64, seriesLength)
+	sigma := ema.GetSigma()
+	for x := 0; x < seriesLength; x++ {
+		_, y := ema.InnerSeries.GetValue(x)
+		if x == 0 {
+			ema.cache[x] = y
+			continue
+		}
+		previousEMA := ema.cache[x-1]
+		ema.cache[x] = ((y - previousEMA) * sigma) + previousEMA
 	}
-	previousEMA := ema.compute(period-1, index-1)
-	return ((v - previousEMA) * ema.GetSigma()) + previousEMA
 }
 
 // Render renders the series.
-func (ema EMASeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
+func (ema *EMASeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
 	style := ema.Style.WithDefaultsFrom(defaults)
 	DrawLineSeries(r, canvasBox, xrange, yrange, style, ema)
 }
