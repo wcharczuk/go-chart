@@ -479,6 +479,7 @@ func (c Chart) styleDefaultsSeries(seriesIndex int) Style {
 func (c Chart) styleDefaultsAxis() Style {
 	return Style{
 		Font:        c.GetFont(),
+		FontColor:   DefaultAxisColor,
 		FontSize:    DefaultAxisFontSize,
 		StrokeColor: DefaultAxisColor,
 		StrokeWidth: DefaultAxisLineWidth,
