@@ -108,7 +108,7 @@ func (bbs *BollingerBandsSeries) GetBoundedLastValue() (x, y1, y2 float64) {
 
 // Render renders the series.
 func (bbs *BollingerBandsSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
-	s := bbs.Style.WithDefaultsFrom(defaults.WithDefaultsFrom(Style{
+	s := bbs.Style.InheritFrom(defaults.InheritFrom(Style{
 		StrokeWidth: 1.0,
 		StrokeColor: DefaultAxisColor.WithAlpha(64),
 		FillColor:   DefaultAxisColor.WithAlpha(32),

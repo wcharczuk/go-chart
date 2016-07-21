@@ -28,6 +28,7 @@ func (s Style) IsZero() bool {
 	return s.StrokeColor.IsZero() && s.FillColor.IsZero() && s.StrokeWidth == 0 && s.FontColor.IsZero() && s.FontSize == 0 && s.Font == nil
 }
 
+// String returns a text representation of the style.
 func (s Style) String() string {
 	if s.IsZero() {
 		return "{}"
@@ -184,8 +185,18 @@ func (s Style) GetPadding(defaults ...Box) Box {
 	return s.Padding
 }
 
-// WithDefaultsFrom coalesces two styles into a new style.
-func (s Style) WithDefaultsFrom(defaults Style) (final Style) {
+// PersistToRenderer passes the style onto a renderer.
+func (s Style) PersistToRenderer(r Renderer) {
+	r.SetStrokeColor(s.GetStrokeColor())
+	r.SetStrokeWidth(s.GetStrokeWidth())
+	r.SetStrokeDashArray(s.GetStrokeDashArray())
+	r.SetFont(s.GetFont())
+	r.SetFontColor(s.GetFontColor())
+	r.SetFontSize(s.GetFontSize())
+}
+
+// InheritFrom coalesces two styles into a new style.
+func (s Style) InheritFrom(defaults Style) (final Style) {
 	final.StrokeColor = s.GetStrokeColor(defaults.StrokeColor)
 	final.StrokeWidth = s.GetStrokeWidth(defaults.StrokeWidth)
 	final.StrokeDashArray = s.GetStrokeDashArray(defaults.StrokeDashArray)

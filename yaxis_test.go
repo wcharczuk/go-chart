@@ -16,7 +16,7 @@ func TestYAxisGetTickCount(t *testing.T) {
 	assert.Nil(err)
 
 	ya := YAxis{}
-	yr := Range{Min: 10, Max: 100, Domain: 1024}
+	yr := &ContinuousRange{Min: 10, Max: 100, Domain: 1024}
 	styleDefaults := Style{
 		Font:     f,
 		FontSize: 10.0,
@@ -36,14 +36,14 @@ func TestYAxisGetTickStep(t *testing.T) {
 	assert.Nil(err)
 
 	ya := YAxis{}
-	yr := Range{Min: 10, Max: 100, Domain: 1024}
+	yr := &ContinuousRange{Min: 10, Max: 100, Domain: 1024}
 	styleDefaults := Style{
 		Font:     f,
 		FontSize: 10.0,
 	}
 	vf := FloatValueFormatter
 	step := ya.getTickStep(r, yr, styleDefaults, vf)
-	assert.Equal(yr.Delta()/34.0, step)
+	assert.Equal(yr.GetDelta()/34.0, step)
 }
 
 func TestYAxisGetTicks(t *testing.T) {
@@ -56,7 +56,7 @@ func TestYAxisGetTicks(t *testing.T) {
 	assert.Nil(err)
 
 	ya := YAxis{}
-	yr := Range{Min: 10, Max: 100, Domain: 1024}
+	yr := &ContinuousRange{Min: 10, Max: 100, Domain: 1024}
 	styleDefaults := Style{
 		Font:     f,
 		FontSize: 10.0,
@@ -78,7 +78,7 @@ func TestYAxisGetTicksWithUserDefaults(t *testing.T) {
 	ya := YAxis{
 		Ticks: []Tick{{Value: 1.0, Label: "1.0"}},
 	}
-	yr := Range{Min: 10, Max: 100, Domain: 1024}
+	yr := &ContinuousRange{Min: 10, Max: 100, Domain: 1024}
 	styleDefaults := Style{
 		Font:     f,
 		FontSize: 10.0,

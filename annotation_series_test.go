@@ -29,12 +29,12 @@ func TestAnnotationSeriesMeasure(t *testing.T) {
 	f, err := GetDefaultFont()
 	assert.Nil(err)
 
-	xrange := Range{
+	xrange := &ContinuousRange{
 		Min:    1.0,
 		Max:    4.0,
 		Domain: 100,
 	}
-	yrange := Range{
+	yrange := &ContinuousRange{
 		Min:    1.0,
 		Max:    4.0,
 		Domain: 100,
@@ -82,12 +82,12 @@ func TestAnnotationSeriesRender(t *testing.T) {
 	f, err := GetDefaultFont()
 	assert.Nil(err)
 
-	xrange := Range{
+	xrange := &ContinuousRange{
 		Min:    1.0,
 		Max:    4.0,
 		Domain: 100,
 	}
-	yrange := Range{
+	yrange := &ContinuousRange{
 		Min:    1.0,
 		Max:    4.0,
 		Domain: 100,

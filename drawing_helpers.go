@@ -114,7 +114,7 @@ func DrawHistogramSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Styl
 
 	//calculate bar width?
 	seriesLength := vs.Len()
-	barWidth := int(math.Floor(float64(xrange.Domain) / float64(seriesLength)))
+	barWidth := int(math.Floor(float64(xrange.GetDomain()) / float64(seriesLength)))
 	if len(barWidths) > 0 {
 		barWidth = barWidths[0]
 	}
@@ -271,9 +271,9 @@ func CreateLegend(c *Chart, userDefaults ...Style) Renderable {
 
 		var legendStyle Style
 		if len(userDefaults) > 0 {
-			legendStyle = userDefaults[0].WithDefaultsFrom(chartDefaults.WithDefaultsFrom(legendDefaults))
+			legendStyle = userDefaults[0].InheritFrom(chartDefaults.InheritFrom(legendDefaults))
 		} else {
-			legendStyle = chartDefaults.WithDefaultsFrom(legendDefaults)
+			legendStyle = chartDefaults.InheritFrom(legendDefaults)
 		}
 
 		// DEFAULTS
@@ -292,7 +292,7 @@ func CreateLegend(c *Chart, userDefaults ...Style) Renderable {
 			if s.GetStyle().IsZero() || s.GetStyle().Show {
 				if _, isAnnotationSeries := s.(AnnotationSeries); !isAnnotationSeries {
 					labels = append(labels, s.GetName())
-					lines = append(lines, s.GetStyle().WithDefaultsFrom(c.styleDefaultsSeries(index)))
+					lines = append(lines, s.GetStyle().InheritFrom(c.styleDefaultsSeries(index)))
 				}
 			}
 		}

@@ -50,6 +50,6 @@ func (cs ContinuousSeries) GetYAxis() YAxisType {
 
 // Render renders the series.
 func (cs ContinuousSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
-	style := cs.Style.WithDefaultsFrom(defaults)
+	style := cs.Style.InheritFrom(defaults)
 	DrawLineSeries(r, canvasBox, xrange, yrange, style, cs)
 }

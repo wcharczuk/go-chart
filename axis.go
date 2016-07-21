@@ -14,7 +14,17 @@ const (
 type Axis interface {
 	GetName() string
 	GetStyle() Style
-	GetTicks(r Renderer, ra Range, vf ValueFormatter) []Tick
+
+	GetTicks() []Tick
+	GenerateTicks(r Renderer, ra Range, vf ValueFormatter) []Tick
+
+	// GetGridLines returns the gridlines for the axis.
 	GetGridLines(ticks []Tick) []GridLine
-	Render(c *Chart, r Renderer, canvasBox Box, ra Range, ticks []Tick)
+
+	// Measure should return an absolute box for the axis.
+	// This is used when auto-fitting the canvas to the background.
+	Measure(r Renderer, canvasBox Box, ra Range, style Style, ticks []Tick) Box
+
+	// Render renders the axis.
+	Render(r Renderer, canvasBox Box, ra Range, style Style, ticks []Tick)
 }

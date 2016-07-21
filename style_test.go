@@ -142,7 +142,7 @@ func TestStyleWithDefaultsFrom(t *testing.T) {
 		Padding:     DefaultBackgroundPadding,
 	}
 
-	coalesced := unset.WithDefaultsFrom(set)
+	coalesced := unset.InheritFrom(set)
 	assert.Equal(set, coalesced)
 }
 

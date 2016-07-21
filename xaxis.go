@@ -44,7 +44,7 @@ func (xa XAxis) generateTicks(r Renderer, ra Range, defaults Style, vf ValueForm
 
 func (xa XAxis) getTickStep(r Renderer, ra Range, defaults Style, vf ValueFormatter) float64 {
 	tickCount := xa.getTickCount(r, ra, defaults, vf)
-	step := ra.Delta() / float64(tickCount)
+	step := ra.GetDelta() / float64(tickCount)
 	return step
 }
 
@@ -53,8 +53,8 @@ func (xa XAxis) getTickCount(r Renderer, ra Range, defaults Style, vf ValueForma
 	r.SetFontSize(xa.Style.GetFontSize(defaults.GetFontSize(DefaultFontSize)))
 
 	// take a cut at determining the 'widest' value.
-	l0 := vf(ra.Min)
-	ln := vf(ra.Max)
+	l0 := vf(ra.GetMin())
+	ln := vf(ra.GetMax())
 	ll := l0
 	if len(ln) > len(l0) {
 		ll = ln
@@ -62,7 +62,7 @@ func (xa XAxis) getTickCount(r Renderer, ra Range, defaults Style, vf ValueForma
 	llb := r.MeasureText(ll)
 	textWidth := llb.Width()
 	width := textWidth + DefaultMinimumTickHorizontalSpacing
-	count := int(math.Ceil(float64(ra.Domain) / float64(width)))
+	count := int(math.Ceil(float64(ra.GetDomain()) / float64(width)))
 	return count
 }
 
@@ -76,13 +76,7 @@ func (xa XAxis) GetGridLines(ticks []Tick) []GridLine {
 
 // Measure returns the bounds of the axis.
 func (xa XAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, ticks []Tick) Box {
-	r.SetStrokeColor(xa.Style.GetStrokeColor(defaults.StrokeColor))
-	r.SetStrokeWidth(xa.Style.GetStrokeWidth(defaults.StrokeWidth))
-	r.SetStrokeDashArray(xa.Style.GetStrokeDashArray())
-	r.SetFont(xa.Style.GetFont(defaults.GetFont()))
-	r.SetFontColor(xa.Style.GetFontColor(DefaultAxisColor))
-	r.SetFontSize(xa.Style.GetFontSize(defaults.GetFontSize()))
-
+	xa.Style.InheritFrom(defaults).PersistToRenderer(r)
 	sort.Sort(Ticks(ticks))
 
 	var left, right, top, bottom = math.MaxInt32, 0, math.MaxInt32, 0
@@ -110,12 +104,7 @@ func (xa XAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 
 // Render renders the axis
 func (xa XAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, ticks []Tick) {
-	r.SetStrokeColor(xa.Style.GetStrokeColor(defaults.StrokeColor))
-	r.SetStrokeWidth(xa.Style.GetStrokeWidth(defaults.StrokeWidth))
-	r.SetStrokeDashArray(xa.Style.GetStrokeDashArray())
-	r.SetFont(xa.Style.GetFont(defaults.GetFont()))
-	r.SetFontColor(xa.Style.GetFontColor(DefaultAxisColor))
-	r.SetFontSize(xa.Style.GetFontSize(defaults.GetFontSize()))
+	xa.Style.InheritFrom(defaults).PersistToRenderer(r)
 
 	r.MoveTo(canvasBox.Left, canvasBox.Bottom)
 	r.LineTo(canvasBox.Right, canvasBox.Bottom)

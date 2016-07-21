@@ -77,24 +77,24 @@ func TestChartGetRanges(t *testing.T) {
 	}
 
 	xrange, yrange, yrangeAlt := c.getRanges()
-	assert.Equal(-2.0, xrange.Min)
-	assert.Equal(5.0, xrange.Max)
+	assert.Equal(-2.0, xrange.GetMin())
+	assert.Equal(5.0, xrange.GetMax())
 
-	assert.Equal(-2.1, yrange.Min)
-	assert.Equal(4.5, yrange.Max)
+	assert.Equal(-2.1, yrange.GetMin())
+	assert.Equal(4.5, yrange.GetMax())
 
-	assert.Equal(10.0, yrangeAlt.Min)
-	assert.Equal(14.0, yrangeAlt.Max)
+	assert.Equal(10.0, yrangeAlt.GetMin())
+	assert.Equal(14.0, yrangeAlt.GetMax())
 
 	cSet := Chart{
 		XAxis: XAxis{
-			Range: Range{Min: 9.8, Max: 19.8},
+			Range: &ContinuousRange{Min: 9.8, Max: 19.8},
 		},
 		YAxis: YAxis{
-			Range: Range{Min: 9.9, Max: 19.9},
+			Range: &ContinuousRange{Min: 9.9, Max: 19.9},
 		},
 		YAxisSecondary: YAxis{
-			Range: Range{Min: 9.7, Max: 19.7},
+			Range: &ContinuousRange{Min: 9.7, Max: 19.7},
 		},
 		Series: []Series{
 			ContinuousSeries{
@@ -114,14 +114,14 @@ func TestChartGetRanges(t *testing.T) {
 	}
 
 	xr2, yr2, yra2 := cSet.getRanges()
-	assert.Equal(9.8, xr2.Min)
-	assert.Equal(19.8, xr2.Max)
+	assert.Equal(9.8, xr2.GetMin())
+	assert.Equal(19.8, xr2.GetMax())
 
-	assert.Equal(9.9, yr2.Min)
-	assert.Equal(19.9, yr2.Max)
+	assert.Equal(9.9, yr2.GetMin())
+	assert.Equal(19.9, yr2.GetMax())
 
-	assert.Equal(9.7, yra2.Min)
-	assert.Equal(19.7, yra2.Max)
+	assert.Equal(9.7, yra2.GetMin())
+	assert.Equal(19.7, yra2.GetMax())
 }
 
 func TestChartGetRangesUseTicks(t *testing.T) {
@@ -139,7 +139,7 @@ func TestChartGetRangesUseTicks(t *testing.T) {
 				{4.0, "4.0"},
 				{5.0, "Five"},
 			},
-			Range: Range{
+			Range: &ContinuousRange{
 				Min: -5.0,
 				Max: 5.0,
 			},
@@ -153,10 +153,10 @@ func TestChartGetRangesUseTicks(t *testing.T) {
 	}
 
 	xr, yr, yar := c.getRanges()
-	assert.Equal(-2.0, xr.Min)
-	assert.Equal(2.0, xr.Max)
-	assert.Equal(0.0, yr.Min)
-	assert.Equal(5.0, yr.Max)
+	assert.Equal(-2.0, xr.GetMin())
+	assert.Equal(2.0, xr.GetMax())
+	assert.Equal(0.0, yr.GetMin())
+	assert.Equal(5.0, yr.GetMax())
 	assert.True(yar.IsZero(), yar.String())
 }
 
@@ -165,7 +165,7 @@ func TestChartGetRangesUseUserRanges(t *testing.T) {
 
 	c := Chart{
 		YAxis: YAxis{
-			Range: Range{
+			Range: &ContinuousRange{
 				Min: -5.0,
 				Max: 5.0,
 			},
@@ -179,10 +179,10 @@ func TestChartGetRangesUseUserRanges(t *testing.T) {
 	}
 
 	xr, yr, yar := c.getRanges()
-	assert.Equal(-2.0, xr.Min)
-	assert.Equal(2.0, xr.Max)
-	assert.Equal(-5.0, yr.Min)
-	assert.Equal(5.0, yr.Max)
+	assert.Equal(-2.0, xr.GetMin())
+	assert.Equal(2.0, xr.GetMax())
+	assert.Equal(-5.0, yr.GetMin())
+	assert.Equal(5.0, yr.GetMax())
 	assert.True(yar.IsZero(), yar.String())
 }
 
@@ -310,15 +310,15 @@ func TestChartGetAxesTicks(t *testing.T) {
 	c := Chart{
 		XAxis: XAxis{
 			Style: Style{Show: true},
-			Range: Range{Min: 9.8, Max: 19.8},
+			Range: &ContinuousRange{Min: 9.8, Max: 19.8},
 		},
 		YAxis: YAxis{
 			Style: Style{Show: true},
-			Range: Range{Min: 9.9, Max: 19.9},
+			Range: &ContinuousRange{Min: 9.9, Max: 19.9},
 		},
 		YAxisSecondary: YAxis{
 			Style: Style{Show: true},
-			Range: Range{Min: 9.7, Max: 19.7},
+			Range: &ContinuousRange{Min: 9.7, Max: 19.7},
 		},
 	}
 	xr, yr, yar := c.getRanges()
@@ -337,7 +337,7 @@ func TestChartSingleSeries(t *testing.T) {
 		Width:  1024,
 		Height: 400,
 		YAxis: YAxis{
-			Range: Range{
+			Range: &ContinuousRange{
 				Min: 0.0,
 				Max: 4.0,
 			},
@@ -377,7 +377,7 @@ func TestChartRegressionBadRangesByUser(t *testing.T) {
 
 	c := Chart{
 		YAxis: YAxis{
-			Range: Range{
+			Range: &ContinuousRange{
 				Min: math.Inf(-1),
 				Max: math.Inf(1), // this could really happen? eh.
 			},

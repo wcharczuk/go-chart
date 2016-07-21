@@ -17,7 +17,7 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 			Style: chart.Style{
 				Show: true,
 			},
-			Range: chart.Range{
+			Range: chart.ContinuousRange{
 				Min: 0.0,
 				Max: 10.0,
 			},

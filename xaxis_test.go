@@ -16,7 +16,7 @@ func TestXAxisGetTickCount(t *testing.T) {
 	assert.Nil(err)
 
 	xa := XAxis{}
-	xr := Range{Min: 10, Max: 100, Domain: 1024}
+	xr := &ContinuousRange{Min: 10, Max: 100, Domain: 1024}
 	styleDefaults := Style{
 		Font:     f,
 		FontSize: 10.0,
@@ -36,14 +36,14 @@ func TestXAxisGetTickStep(t *testing.T) {
 	assert.Nil(err)
 
 	xa := XAxis{}
-	xr := Range{Min: 10, Max: 100, Domain: 1024}
+	xr := &ContinuousRange{Min: 10, Max: 100, Domain: 1024}
 	styleDefaults := Style{
 		Font:     f,
 		FontSize: 10.0,
 	}
 	vf := FloatValueFormatter
 	step := xa.getTickStep(r, xr, styleDefaults, vf)
-	assert.Equal(xr.Delta()/16.0, step)
+	assert.Equal(xr.GetDelta()/16.0, step)
 }
 
 func TestXAxisGetTicks(t *testing.T) {
@@ -56,7 +56,7 @@ func TestXAxisGetTicks(t *testing.T) {
 	assert.Nil(err)
 
 	xa := XAxis{}
-	xr := Range{Min: 10, Max: 100, Domain: 1024}
+	xr := &ContinuousRange{Min: 10, Max: 100, Domain: 1024}
 	styleDefaults := Style{
 		Font:     f,
 		FontSize: 10.0,
@@ -78,7 +78,7 @@ func TestXAxisGetTicksWithUserDefaults(t *testing.T) {
 	xa := XAxis{
 		Ticks: []Tick{{Value: 1.0, Label: "1.0"}},
 	}
-	xr := Range{Min: 10, Max: 100, Domain: 1024}
+	xr := &ContinuousRange{Min: 10, Max: 100, Domain: 1024}
 	styleDefaults := Style{
 		Font:     f,
 		FontSize: 10.0,
