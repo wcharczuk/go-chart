@@ -20,6 +20,11 @@ func TimeToFloat64(t time.Time) float64 {
 	return float64(t.UnixNano())
 }
 
+// Float64ToTime returns a time from a float64.
+func Float64ToTime(tf float64) time.Time {
+	return time.Unix(0, int64(tf))
+}
+
 // MinAndMax returns both the min and max in one pass.
 func MinAndMax(values ...float64) (min float64, max float64) {
 	if len(values) == 0 {
