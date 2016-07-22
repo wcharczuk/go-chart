@@ -15,6 +15,11 @@ type NYSEMarketHoursRange struct {
 	Domain int
 }
 
+// IsZero returns if the range is setup or not.
+func (mhr NYSEMarketHoursRange) IsZero() bool {
+	return mhr.Min.IsZero() && mhr.Max.IsZero()
+}
+
 // GetMin returns the min value.
 func (mhr NYSEMarketHoursRange) GetMin() float64 {
 	return TimeToFloat64(mhr.Min)
