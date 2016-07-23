@@ -6,14 +6,7 @@ go:
 sudo: false
 
 script:
-  - go get -u github.com/golang/freetype/raster
-  - go get -u github.com/golang/freetype/truetype
-  - go get -u golang.org/x/image/draw
-  - go get -u golang.org/x/image/font
-  - go get -u golang.org/x/image/math/f64
-  - go get -u golang.org/x/image/math/f64
-  - go get -u golang.org/x/image/math/fixed
-  - go get -u github.com/blendlabs/go-assert
+  - go build -i ./...
   - go test ./drawing/
   - go test ./date/
   - go test
