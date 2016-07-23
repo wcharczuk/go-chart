@@ -292,18 +292,18 @@ func NextMarketClose(after, closeTime time.Time, isHoliday HolidayProvider) time
 
 // CalculateMarketSecondsBetween calculates the number of seconds the market was open between two dates.
 func CalculateMarketSecondsBetween(start, end, marketOpen, marketClose time.Time, isHoliday HolidayProvider) (seconds int64) {
-	se := start.In(Eastern())
-	ee := end.In(Eastern())
+	startEastern := start.In(Eastern())
+	endEastern := end.In(Eastern())
 
-	startMarketOpen := NextMarketOpen(se, marketOpen, isHoliday)
-	startMarketClose := NextMarketClose(se, marketClose, isHoliday)
+	startMarketOpen := NextMarketOpen(startEastern, marketOpen, isHoliday)
+	startMarketClose := NextMarketClose(startEastern, marketClose, isHoliday)
 
-	if (se.Equal(startMarketOpen) || se.After(startMarketOpen)) && se.Before(startMarketClose) {
-		seconds += int64(startMarketClose.Sub(se) / time.Second)
+	if (startEastern.Equal(startMarketOpen) || startEastern.After(startMarketOpen)) && startEastern.Before(startMarketClose) {
+		seconds += int64(startMarketClose.Sub(startEastern) / time.Second)
 	}
 
 	cursor := NextMarketOpen(startMarketClose, marketOpen, isHoliday)
-	for BeforeDate(cursor, ee) {
+	for BeforeDate(cursor, endEastern) {
 		if IsWeekDay(cursor.Weekday()) && !isHoliday(cursor) {
 			close := NextMarketClose(cursor, marketClose, isHoliday)
 			seconds += int64(close.Sub(cursor) / time.Second)
@@ -313,9 +313,9 @@ func CalculateMarketSecondsBetween(start, end, marketOpen, marketClose time.Time
 
 	finalMarketOpen := NextMarketOpen(cursor, marketOpen, isHoliday)
 	finalMarketClose := NextMarketClose(cursor, marketClose, isHoliday)
-	if end.After(finalMarketOpen) {
-		if end.Before(finalMarketClose) {
-			seconds += int64(end.Sub(finalMarketOpen) / time.Second)
+	if endEastern.After(finalMarketOpen) {
+		if endEastern.Before(finalMarketClose) {
+			seconds += int64(endEastern.Sub(finalMarketOpen) / time.Second)
 		} else {
 			seconds += int64(finalMarketClose.Sub(finalMarketOpen) / time.Second)
 		}
