@@ -73,6 +73,7 @@ var (
 // HolidayProvider is a function that returns if a given time falls on a holiday.
 type HolidayProvider func(time.Time) bool
 
+// DefaultHolidayProvider implements `HolidayProvider` and just returns false.
 func DefaultHolidayProvider(_ time.Time) bool { return false }
 
 // IsNYSEHoliday returns if a date was/is on a nyse holiday day.
@@ -212,6 +213,16 @@ func Eastern() *time.Location {
 	return _eastern
 }
 
+// ClockTime returns a new time.Time for the given clock components.
+func ClockTime(hour, min, sec, nsec int, loc *time.Location) time.Time {
+	return time.Date(0, 0, 0, hour, min, sec, nsec, loc)
+}
+
+// On returns the clock components of clock (hour,minute,second) on the date components of d.
+func On(clock, d time.Time) time.Time {
+	return time.Date(d.Year(), d.Month(), d.Day(), clock.Hour(), clock.Minute(), clock.Second(), clock.Nanosecond(), clock.Location())
+}
+
 // Optional returns a pointer reference to a given time.
 func Optional(t time.Time) *time.Time {
 	return &t
@@ -322,16 +333,6 @@ func CalculateMarketSecondsBetween(start, end, marketOpen, marketClose time.Time
 	}
 
 	return
-}
-
-// ClockTime returns a new time.Time for the given clock components.
-func ClockTime(hour, min, sec, nsec int, loc *time.Location) time.Time {
-	return time.Date(0, 0, 0, hour, min, sec, nsec, loc)
-}
-
-// On returns the clock components of clock (hour,minute,second) on the date components of d.
-func On(clock, d time.Time) time.Time {
-	return time.Date(d.Year(), d.Month(), d.Day(), clock.Hour(), clock.Minute(), clock.Second(), clock.Nanosecond(), clock.Location())
 }
 
 // Format returns a string representation of a date.

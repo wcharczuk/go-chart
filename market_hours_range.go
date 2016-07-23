@@ -63,6 +63,38 @@ func (mhr *MarketHoursRange) SetDomain(domain int) {
 	mhr.Domain = domain
 }
 
+// GetHolidayProvider coalesces a userprovided holiday provider and the date.DefaultHolidayProvider.
+func (mhr MarketHoursRange) GetHolidayProvider() date.HolidayProvider {
+	if mhr.HolidayProvider == nil {
+		return date.DefaultHolidayProvider
+	}
+	return mhr.HolidayProvider
+}
+
+// GetTicks returns the ticks for the range.
+// This is to override the default continous ticks that would be generated for the range.
+func (mhr *MarketHoursRange) GetTicks(vf ValueFormatter) []Tick {
+	// return one tick per day
+	// figure out how to advance one ticke per market day.
+	var ticks []Tick
+
+	cursor := date.On(mhr.MarketOpen, mhr.Min)
+	maxClose := date.On(mhr.MarketClose, mhr.Max)
+
+	for date.BeforeDate(cursor, maxClose) {
+		if date.IsWeekDay(cursor.Weekday()) && !mhr.GetHolidayProvider()(cursor) {
+			ticks = append(ticks, Tick{
+				Value: TimeToFloat64(cursor),
+				Label: vf(cursor),
+			})
+		}
+
+		cursor = cursor.AddDate(0, 0, 1)
+	}
+
+	return ticks
+}
+
 func (mhr MarketHoursRange) String() string {
 	return fmt.Sprintf("MarketHoursRange [%s, %s] => %d", mhr.Min.Format(DefaultDateFormat), mhr.Max.Format(DefaultDateFormat), mhr.Domain)
 }

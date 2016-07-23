@@ -6,46 +6,6 @@ import (
 	"github.com/blendlabs/go-assert"
 )
 
-func TestXAxisGetTickCount(t *testing.T) {
-	assert := assert.New(t)
-
-	r, err := PNG(1024, 1024)
-	assert.Nil(err)
-
-	f, err := GetDefaultFont()
-	assert.Nil(err)
-
-	xa := XAxis{}
-	xr := &ContinuousRange{Min: 10, Max: 100, Domain: 1024}
-	styleDefaults := Style{
-		Font:     f,
-		FontSize: 10.0,
-	}
-	vf := FloatValueFormatter
-	count := xa.getTickCount(r, xr, styleDefaults, vf)
-	assert.Equal(16, count)
-}
-
-func TestXAxisGetTickStep(t *testing.T) {
-	assert := assert.New(t)
-
-	r, err := PNG(1024, 1024)
-	assert.Nil(err)
-
-	f, err := GetDefaultFont()
-	assert.Nil(err)
-
-	xa := XAxis{}
-	xr := &ContinuousRange{Min: 10, Max: 100, Domain: 1024}
-	styleDefaults := Style{
-		Font:     f,
-		FontSize: 10.0,
-	}
-	vf := FloatValueFormatter
-	step := xa.getTickStep(r, xr, styleDefaults, vf)
-	assert.Equal(xr.GetDelta()/16.0, step)
-}
-
 func TestXAxisGetTicks(t *testing.T) {
 	assert := assert.New(t)
 

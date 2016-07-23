@@ -41,29 +41,11 @@ func (ya YAxis) GetTicks(r Renderer, ra Range, defaults Style, vf ValueFormatter
 	if len(ya.Ticks) > 0 {
 		return ya.Ticks
 	}
-	return ya.generateTicks(r, ra, defaults, vf)
-}
-
-func (ya YAxis) generateTicks(r Renderer, ra Range, defaults Style, vf ValueFormatter) []Tick {
-	step := ya.getTickStep(r, ra, defaults, vf)
-	ticks := GenerateTicksWithStep(ra, step, vf)
-	return ticks
-}
-
-func (ya YAxis) getTickStep(r Renderer, ra Range, defaults Style, vf ValueFormatter) float64 {
-	tickCount := ya.getTickCount(r, ra, defaults, vf)
-	step := ra.GetDelta() / float64(tickCount)
-	return step
-}
-
-func (ya YAxis) getTickCount(r Renderer, ra Range, defaults Style, vf ValueFormatter) int {
-	r.SetFont(ya.Style.GetFont(defaults.GetFont()))
-	r.SetFontSize(ya.Style.GetFontSize(defaults.GetFontSize(DefaultFontSize)))
-	//given the domain, figure out how many ticks we can draw ...
-	label := vf(ra.GetMin())
-	tb := r.MeasureText(label)
-	count := int(math.Ceil(float64(ra.GetDomain()) / float64(tb.Height()+DefaultMinimumTickVerticalSpacing)))
-	return count
+	if tp, isTickProvider := ra.(TicksProvider); isTickProvider {
+		return tp.GetTicks(vf)
+	}
+	step := CalculateContinuousTickStep(r, ra, true, ya.Style.InheritFrom(defaults), vf)
+	return GenerateContinuousTicksWithStep(ra, step, vf)
 }
 
 // GetGridLines returns the gridlines for the axis.

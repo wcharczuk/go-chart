@@ -34,36 +34,11 @@ func (xa XAxis) GetTicks(r Renderer, ra Range, defaults Style, vf ValueFormatter
 	if len(xa.Ticks) > 0 {
 		return xa.Ticks
 	}
-	return xa.generateTicks(r, ra, defaults, vf)
-}
-
-func (xa XAxis) generateTicks(r Renderer, ra Range, defaults Style, vf ValueFormatter) []Tick {
-	step := xa.getTickStep(r, ra, defaults, vf)
-	return GenerateTicksWithStep(ra, step, vf)
-}
-
-func (xa XAxis) getTickStep(r Renderer, ra Range, defaults Style, vf ValueFormatter) float64 {
-	tickCount := xa.getTickCount(r, ra, defaults, vf)
-	step := ra.GetDelta() / float64(tickCount)
-	return step
-}
-
-func (xa XAxis) getTickCount(r Renderer, ra Range, defaults Style, vf ValueFormatter) int {
-	r.SetFont(xa.Style.GetFont(defaults.GetFont()))
-	r.SetFontSize(xa.Style.GetFontSize(defaults.GetFontSize(DefaultFontSize)))
-
-	// take a cut at determining the 'widest' value.
-	l0 := vf(ra.GetMin())
-	ln := vf(ra.GetMax())
-	ll := l0
-	if len(ln) > len(l0) {
-		ll = ln
+	if tp, isTickProvider := ra.(TicksProvider); isTickProvider {
+		return tp.GetTicks(vf)
 	}
-	llb := r.MeasureText(ll)
-	textWidth := llb.Width()
-	width := textWidth + DefaultMinimumTickHorizontalSpacing
-	count := int(math.Ceil(float64(ra.GetDomain()) / float64(width)))
-	return count
+	step := CalculateContinuousTickStep(r, ra, false, xa.Style.InheritFrom(defaults), vf)
+	return GenerateContinuousTicksWithStep(ra, step, vf)
 }
 
 // GetGridLines returns the gridlines for the axis.
