@@ -6,8 +6,11 @@ go:
 sudo: false
 
 before_script:
-  - go build -i ./...
+  - go build -i
+  - go build -i ./drawing/
+  - go build -i ./date/
 
 script:
   - go test
   - go test ./drawing/
+  - go test ./date/
