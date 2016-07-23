@@ -5,12 +5,9 @@ go:
 
 sudo: false
 
-before_script:
-  - go build -i
-  - go build -i ./drawing/
-  - go build -i ./date/
-
 script:
-  - go test
-  - go test ./drawing/
-  - go test ./date/
+  - go test -i ./drawing/
+  - go test -i ./date/
+  - go test -i
+  
+  
