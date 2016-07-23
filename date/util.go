@@ -50,43 +50,28 @@ var (
 	_eastern     *time.Location
 )
 
-// Eastern returns the eastern timezone.
-func Eastern() *time.Location {
-	if _eastern == nil {
-		_easternLock.Lock()
-		defer _easternLock.Unlock()
-		if _eastern == nil {
-			_eastern, _ = time.LoadLocation("America/New_York")
-		}
-	}
-	return _eastern
-}
+var (
+	// NYSEOpen is when the NYSE opens.
+	NYSEOpen = ClockTime(9, 30, 0, 0, Eastern())
 
-// Optional returns a pointer reference to a given time.
-func Optional(t time.Time) *time.Time {
-	return &t
-}
+	// NYSEClose is when the NYSE closes.
+	NYSEClose = ClockTime(16, 0, 0, 0, Eastern())
 
-// IsWeekDay returns if the day is a monday->friday.
-func IsWeekDay(day time.Weekday) bool {
-	return !IsWeekendDay(day)
-}
+	// NASDAQOpen is when NASDAQ opens.
+	NASDAQOpen = ClockTime(9, 30, 0, 0, Eastern())
 
-// IsWeekendDay returns if the day is a monday->friday.
-func IsWeekendDay(day time.Weekday) bool {
-	return day == time.Saturday || day == time.Sunday
-}
+	// NASDAQClose is when NASDAQ closes.
+	NASDAQClose = ClockTime(16, 0, 0, 0, Eastern())
 
-// BeforeDate returns if a timestamp is strictly before another date (ignoring hours, minutes etc.)
-func BeforeDate(before, reference time.Time) bool {
-	if before.Year() < reference.Year() {
-		return true
-	}
-	if before.Month() < reference.Month() {
-		return true
-	}
-	return before.Year() == reference.Year() && before.Month() == reference.Month() && before.Day() < reference.Day()
-}
+	// NYSEArcaOpen is when NYSEARCA opens.
+	NYSEArcaOpen = ClockTime(4, 0, 0, 0, Eastern())
+
+	// NYSEArcaClose is when NYSEARCA closes.
+	NYSEArcaClose = ClockTime(20, 0, 0, 0, Eastern())
+)
+
+// HolidayChecker is a function that returns if a given time falls on a holiday.
+type HolidayChecker func(time.Time) bool
 
 // IsNYSEHoliday returns if a date was/is on a nyse holiday day.
 func IsNYSEHoliday(t time.Time) bool {
@@ -203,24 +188,62 @@ func IsNYSEHoliday(t time.Time) bool {
 	return false
 }
 
+// Eastern returns the eastern timezone.
+func Eastern() *time.Location {
+	if _eastern == nil {
+		_easternLock.Lock()
+		defer _easternLock.Unlock()
+		if _eastern == nil {
+			_eastern, _ = time.LoadLocation("America/New_York")
+		}
+	}
+	return _eastern
+}
+
+// Optional returns a pointer reference to a given time.
+func Optional(t time.Time) *time.Time {
+	return &t
+}
+
+// IsWeekDay returns if the day is a monday->friday.
+func IsWeekDay(day time.Weekday) bool {
+	return !IsWeekendDay(day)
+}
+
+// IsWeekendDay returns if the day is a monday->friday.
+func IsWeekendDay(day time.Weekday) bool {
+	return day == time.Saturday || day == time.Sunday
+}
+
+// BeforeDate returns if a timestamp is strictly before another date (ignoring hours, minutes etc.)
+func BeforeDate(before, reference time.Time) bool {
+	if before.Year() < reference.Year() {
+		return true
+	}
+	if before.Month() < reference.Month() {
+		return true
+	}
+	return before.Year() == reference.Year() && before.Month() == reference.Month() && before.Day() < reference.Day()
+}
+
 // MarketOpen returns 0930 on a given day.
-func MarketOpen(on time.Time) time.Time {
+func MarketOpen(on, openTime time.Time) time.Time {
 	onEastern := on.In(Eastern())
-	return time.Date(onEastern.Year(), onEastern.Month(), onEastern.Day(), 9, 30, 0, 0, Eastern())
+	return On(openTime, onEastern)
 }
 
 // MarketClose returns 1600 on a given day.
-func MarketClose(on time.Time) time.Time {
+func MarketClose(on, closeTime time.Time) time.Time {
 	onEastern := on.In(Eastern())
 	return time.Date(onEastern.Year(), onEastern.Month(), onEastern.Day(), 16, 0, 0, 0, Eastern())
 }
 
 // NextMarketOpen returns the next market open after a given time.
-func NextMarketOpen(after time.Time) time.Time {
+func NextMarketOpen(after, openTime time.Time, isHoliday HolidayChecker) time.Time {
 	afterEastern := after.In(Eastern())
-	todaysOpen := MarketOpen(afterEastern)
+	todaysOpen := MarketOpen(afterEastern, openTime)
 
-	if afterEastern.Before(todaysOpen) && IsWeekDay(todaysOpen.Weekday()) && !IsNYSEHoliday(todaysOpen) {
+	if afterEastern.Before(todaysOpen) && IsWeekDay(todaysOpen.Weekday()) && !isHoliday(todaysOpen) {
 		return todaysOpen
 	}
 
@@ -230,19 +253,19 @@ func NextMarketOpen(after time.Time) time.Time {
 
 	for cursorDay := 1; cursorDay < 6; cursorDay++ {
 		newDay := todaysOpen.AddDate(0, 0, cursorDay)
-		if IsWeekDay(newDay.Weekday()) && !IsNYSEHoliday(afterEastern) {
-			return time.Date(newDay.Year(), newDay.Month(), newDay.Day(), 9, 30, 0, 0, Eastern())
+		if IsWeekDay(newDay.Weekday()) && !isHoliday(afterEastern) {
+			return On(openTime, newDay)
 		}
 	}
 	return Epoch //we should never reach this.
 }
 
 // NextMarketClose returns the next market close after a given time.
-func NextMarketClose(after time.Time) time.Time {
+func NextMarketClose(after, closeTime time.Time, isHoliday HolidayChecker) time.Time {
 	afterEastern := after.In(Eastern())
 
-	todaysClose := MarketClose(afterEastern)
-	if afterEastern.Before(todaysClose) && IsWeekDay(todaysClose.Weekday()) && !IsNYSEHoliday(todaysClose) {
+	todaysClose := MarketClose(afterEastern, closeTime)
+	if afterEastern.Before(todaysClose) && IsWeekDay(todaysClose.Weekday()) && !isHoliday(todaysClose) {
 		return todaysClose
 	}
 
@@ -252,36 +275,36 @@ func NextMarketClose(after time.Time) time.Time {
 
 	for cursorDay := 1; cursorDay < 6; cursorDay++ {
 		newDay := todaysClose.AddDate(0, 0, cursorDay)
-		if IsWeekDay(newDay.Weekday()) && !IsNYSEHoliday(newDay) {
-			return time.Date(newDay.Year(), newDay.Month(), newDay.Day(), 16, 0, 0, 0, Eastern())
+		if IsWeekDay(newDay.Weekday()) && !isHoliday(newDay) {
+			return On(closeTime, newDay)
 		}
 	}
 	return Epoch //we should never reach this.
 }
 
 // CalculateMarketSecondsBetween calculates the number of seconds the market was open between two dates.
-func CalculateMarketSecondsBetween(start, end time.Time) (seconds int64) {
+func CalculateMarketSecondsBetween(start, end, marketOpen, marketClose time.Time, isHoliday HolidayChecker) (seconds int64) {
 	se := start.In(Eastern())
 	ee := end.In(Eastern())
 
-	startMarketOpen := NextMarketOpen(se)
-	startMarketClose := NextMarketClose(se)
+	startMarketOpen := NextMarketOpen(se, marketOpen, isHoliday)
+	startMarketClose := NextMarketClose(se, marketClose, isHoliday)
 
 	if (se.Equal(startMarketOpen) || se.After(startMarketOpen)) && se.Before(startMarketClose) {
 		seconds += int64(startMarketClose.Sub(se) / time.Second)
 	}
 
-	cursor := NextMarketOpen(startMarketClose)
+	cursor := NextMarketOpen(startMarketClose, marketClose, isHoliday)
 	for BeforeDate(cursor, ee) {
-		if IsWeekDay(cursor.Weekday()) && !IsNYSEHoliday(cursor) {
-			close := NextMarketClose(cursor)
+		if IsWeekDay(cursor.Weekday()) && !isHoliday(cursor) {
+			close := NextMarketClose(cursor, marketClose, isHoliday)
 			seconds += int64(close.Sub(cursor) / time.Second)
 		}
 		cursor = cursor.AddDate(0, 0, 1)
 	}
 
-	finalMarketOpen := NextMarketOpen(cursor)
-	finalMarketClose := NextMarketClose(cursor)
+	finalMarketOpen := NextMarketOpen(cursor, marketOpen, isHoliday)
+	finalMarketClose := NextMarketClose(cursor, marketClose, isHoliday)
 	if end.After(finalMarketOpen) {
 		if end.Before(finalMarketClose) {
 			seconds += int64(end.Sub(finalMarketOpen) / time.Second)
@@ -291,6 +314,16 @@ func CalculateMarketSecondsBetween(start, end time.Time) (seconds int64) {
 	}
 
 	return
+}
+
+// ClockTime returns a new time.Time for the given clock components.
+func ClockTime(hour, min, sec, nsec int, loc *time.Location) time.Time {
+	return time.Date(0, 0, 0, hour, min, sec, nsec, loc)
+}
+
+// On returns the clock components of clock (hour,minute,second) on the date components of d.
+func On(clock, d time.Time) time.Time {
+	return time.Date(d.Year(), d.Month(), d.Day(), clock.Hour(), clock.Minute(), clock.Second(), clock.Nanosecond(), clock.Location())
 }
 
 // Format returns a string representation of a date.

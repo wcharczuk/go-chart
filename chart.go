@@ -186,16 +186,22 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 		}
 	}
 
-	if xrange == nil {
+	if c.XAxis.Range == nil {
 		xrange = &ContinuousRange{}
+	} else {
+		xrange = c.XAxis.Range
 	}
 
-	if yrange == nil {
+	if c.YAxis.Range == nil {
 		yrange = &ContinuousRange{}
+	} else {
+		yrange = c.YAxis.Range
 	}
 
-	if yrangeAlt == nil {
+	if c.YAxisSecondary.Range == nil {
 		yrangeAlt = &ContinuousRange{}
+	} else {
+		yrangeAlt = c.YAxisSecondary.Range
 	}
 
 	if len(c.XAxis.Ticks) > 0 {
@@ -204,13 +210,9 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 			tickMin = math.Min(tickMin, t.Value)
 			tickMax = math.Max(tickMax, t.Value)
 		}
-
 		xrange.SetMin(tickMin)
 		xrange.SetMax(tickMax)
-	} else if c.XAxis.Range != nil && !c.XAxis.Range.IsZero() {
-		xrange.SetMin(c.XAxis.Range.GetMin())
-		xrange.SetMax(c.XAxis.Range.GetMax())
-	} else {
+	} else if xrange.IsZero() {
 		xrange.SetMin(minx)
 		xrange.SetMax(maxx)
 	}
@@ -223,10 +225,7 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 		}
 		yrange.SetMin(tickMin)
 		yrange.SetMax(tickMax)
-	} else if c.YAxis.Range != nil && !c.YAxis.Range.IsZero() {
-		yrange.SetMin(c.YAxis.Range.GetMin())
-		yrange.SetMax(c.YAxis.Range.GetMax())
-	} else {
+	} else if yrange.IsZero() {
 		yrange.SetMin(miny)
 		yrange.SetMax(maxy)
 
@@ -245,10 +244,7 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 		}
 		yrangeAlt.SetMin(tickMin)
 		yrangeAlt.SetMax(tickMax)
-	} else if c.YAxisSecondary.Range != nil && !c.YAxisSecondary.Range.IsZero() {
-		yrangeAlt.SetMin(c.YAxisSecondary.Range.GetMin())
-		yrangeAlt.SetMax(c.YAxisSecondary.Range.GetMax())
-	} else if seriesMappedToSecondaryAxis {
+	} else if seriesMappedToSecondaryAxis && yrangeAlt.IsZero() {
 		yrangeAlt.SetMin(minya)
 		yrangeAlt.SetMax(maxya)
 

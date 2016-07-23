@@ -43,7 +43,7 @@ func (mhr *NYSEMarketHoursRange) SetMax(max float64) {
 // GetDelta gets the delta.
 func (mhr NYSEMarketHoursRange) GetDelta() float64 {
 	min := TimeToFloat64(mhr.Min)
-	max := TimeToFloat64(mhr.Min)
+	max := TimeToFloat64(mhr.Max)
 	return max - min
 }
 
@@ -66,5 +66,8 @@ func (mhr NYSEMarketHoursRange) Translate(value float64) int {
 	valueTime := Float64ToTime(value)
 	deltaSeconds := date.CalculateMarketSecondsBetween(mhr.Min, mhr.Max)
 	valueDelta := date.CalculateMarketSecondsBetween(mhr.Min, valueTime)
-	return int(float64(valueDelta) / float64(deltaSeconds))
+
+	translated := int((float64(valueDelta) / float64(deltaSeconds)) * float64(mhr.Domain))
+	fmt.Printf("nyse translating: %s to %d ~= %d", valueTime.Format(time.RFC3339), deltaSeconds, valueDelta)
+	return translated
 }
