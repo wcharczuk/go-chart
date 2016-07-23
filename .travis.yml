@@ -5,7 +5,7 @@ go:
 
 sudo: false
 
-before:
+script:
   - go get -u github.com/golang/freetype/raster
   - go get -u github.com/golang/freetype/truetype
   - go get -u golang.org/x/image/draw
@@ -14,8 +14,6 @@ before:
   - go get -u golang.org/x/image/math/f64
   - go get -u golang.org/x/image/math/fixed
   - go get -u github.com/blendlabs/go-assert
-
-script:
   - go test ./drawing/
   - go test ./date/
   - go test
