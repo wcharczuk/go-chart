@@ -73,6 +73,8 @@ var (
 // HolidayProvider is a function that returns if a given time falls on a holiday.
 type HolidayProvider func(time.Time) bool
 
+func DefaultHolidayProvider(_ time.Time) bool { return false }
+
 // IsNYSEHoliday returns if a date was/is on a nyse holiday day.
 func IsNYSEHoliday(t time.Time) bool {
 	te := t.In(Eastern())
@@ -241,6 +243,10 @@ func NextMarketOpen(after, openTime time.Time, isHoliday HolidayProvider) time.T
 	afterEastern := after.In(Eastern())
 	todaysOpen := On(openTime, afterEastern)
 
+	if isHoliday == nil {
+		isHoliday = DefaultHolidayProvider
+	}
+
 	if afterEastern.Before(todaysOpen) && IsWeekDay(todaysOpen.Weekday()) && !isHoliday(todaysOpen) {
 		return todaysOpen
 	}
@@ -261,6 +267,10 @@ func NextMarketOpen(after, openTime time.Time, isHoliday HolidayProvider) time.T
 // NextMarketClose returns the next market close after a given time.
 func NextMarketClose(after, closeTime time.Time, isHoliday HolidayProvider) time.Time {
 	afterEastern := after.In(Eastern())
+
+	if isHoliday == nil {
+		isHoliday = DefaultHolidayProvider
+	}
 
 	todaysClose := On(closeTime, afterEastern)
 	if afterEastern.Before(todaysClose) && IsWeekDay(todaysClose.Weekday()) && !isHoliday(todaysClose) {
@@ -292,7 +302,7 @@ func CalculateMarketSecondsBetween(start, end, marketOpen, marketClose time.Time
 		seconds += int64(startMarketClose.Sub(se) / time.Second)
 	}
 
-	cursor := NextMarketOpen(startMarketClose, marketClose, isHoliday)
+	cursor := NextMarketOpen(startMarketClose, marketOpen, isHoliday)
 	for BeforeDate(cursor, ee) {
 		if IsWeekDay(cursor.Weekday()) && !isHoliday(cursor) {
 			close := NextMarketClose(cursor, marketClose, isHoliday)

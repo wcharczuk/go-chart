@@ -34,15 +34,15 @@ func TestNextMarketOpen(t *testing.T) {
 
 	weekend := time.Date(2016, 07, 23, 9, 31, 0, 0, Eastern())
 
-	assert.True(todayOpen.Equal(NextMarketOpen(beforeOpen)))
-	assert.True(tomorrowOpen.Equal(NextMarketOpen(afterOpen)))
-	assert.True(mondayOpen.Equal(NextMarketOpen(afterFriday)))
-	assert.True(mondayOpen.Equal(NextMarketOpen(weekend)))
+	assert.True(todayOpen.Equal(NextMarketOpen(beforeOpen, NYSEOpen, IsNYSEHoliday)))
+	assert.True(tomorrowOpen.Equal(NextMarketOpen(afterOpen, NYSEOpen, IsNYSEHoliday)))
+	assert.True(mondayOpen.Equal(NextMarketOpen(afterFriday, NYSEOpen, IsNYSEHoliday)))
+	assert.True(mondayOpen.Equal(NextMarketOpen(weekend, NYSEOpen, IsNYSEHoliday)))
 
 	testRegression := time.Date(2016, 07, 18, 16, 0, 0, 0, Eastern())
 	shouldbe := time.Date(2016, 07, 19, 9, 30, 0, 0, Eastern())
 
-	assert.True(shouldbe.Equal(NextMarketOpen(testRegression)))
+	assert.True(shouldbe.Equal(NextMarketOpen(testRegression, NYSEOpen, IsNYSEHoliday)))
 }
 
 func TestNextMarketClose(t *testing.T) {
@@ -59,10 +59,10 @@ func TestNextMarketClose(t *testing.T) {
 
 	weekend := time.Date(2016, 07, 23, 9, 31, 0, 0, Eastern())
 
-	assert.True(todayClose.Equal(NextMarketClose(beforeClose)))
-	assert.True(tomorrowClose.Equal(NextMarketClose(afterClose)))
-	assert.True(mondayClose.Equal(NextMarketClose(afterFriday)))
-	assert.True(mondayClose.Equal(NextMarketClose(weekend)))
+	assert.True(todayClose.Equal(NextMarketClose(beforeClose, NYSEClose, IsNYSEHoliday)))
+	assert.True(tomorrowClose.Equal(NextMarketClose(afterClose, NYSEClose, IsNYSEHoliday)))
+	assert.True(mondayClose.Equal(NextMarketClose(afterFriday, NYSEClose, IsNYSEHoliday)))
+	assert.True(mondayClose.Equal(NextMarketClose(weekend, NYSEClose, IsNYSEHoliday)))
 }
 
 func TestCalculateMarketSecondsBetween(t *testing.T) {
@@ -73,7 +73,7 @@ func TestCalculateMarketSecondsBetween(t *testing.T) {
 
 	shouldbe := 5 * 6.5 * 60 * 60
 
-	assert.Equal(shouldbe, CalculateMarketSecondsBetween(start, end))
+	assert.Equal(shouldbe, CalculateMarketSecondsBetween(start, end, NYSEOpen, NYSEClose, IsNYSEHoliday))
 }
 
 func TestCalculateMarketSecondsBetweenLTM(t *testing.T) {
@@ -83,5 +83,5 @@ func TestCalculateMarketSecondsBetweenLTM(t *testing.T) {
 	end := time.Date(2016, 07, 01, 9, 30, 0, 0, Eastern())
 
 	shouldbe := 253 * 6.5 * 60 * 60 //253 full market days since this date last year.
-	assert.Equal(shouldbe, CalculateMarketSecondsBetween(start, end))
+	assert.Equal(shouldbe, CalculateMarketSecondsBetween(start, end, NYSEOpen, NYSEClose, IsNYSEHoliday))
 }

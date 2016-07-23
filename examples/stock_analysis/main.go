@@ -47,7 +47,7 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 		},
 		YAxis: chart.YAxis{
 			Style: chart.Style{Show: true},
-			Range: chart.Range{
+			Range: &chart.ContinuousRange{
 				Max: 220.0,
 				Min: 180.0,
 			},
