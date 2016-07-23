@@ -5,6 +5,16 @@ go:
 
 sudo: false
 
+before:
+  - go get github.com/golang/freetype/raster
+  - go get github.com/golang/freetype/truetype
+  - go get golang.org/x/image/draw
+  - go get golang.org/x/image/font
+  - go get golang.org/x/image/math/f64
+  - go get golang.org/x/image/math/f64
+  - go get golang.org/x/image/math/fixed
+  - go get github.com/blendlabs/go-assert
+
 script:
   - go test -i ./drawing/
   - go test -i ./date/
