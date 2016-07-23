@@ -70,8 +70,8 @@ var (
 	NYSEArcaClose = ClockTime(20, 0, 0, 0, Eastern())
 )
 
-// HolidayChecker is a function that returns if a given time falls on a holiday.
-type HolidayChecker func(time.Time) bool
+// HolidayProvider is a function that returns if a given time falls on a holiday.
+type HolidayProvider func(time.Time) bool
 
 // IsNYSEHoliday returns if a date was/is on a nyse holiday day.
 func IsNYSEHoliday(t time.Time) bool {
@@ -188,6 +188,16 @@ func IsNYSEHoliday(t time.Time) bool {
 	return false
 }
 
+// IsNYSEArcaHoliday returns that returns if a given time falls on a holiday.
+func IsNYSEArcaHoliday(t time.Time) bool {
+	return IsNYSEHoliday(t)
+}
+
+// IsNASDAQHoliday returns if a date was a NASDAQ holiday day.
+func IsNASDAQHoliday(t time.Time) bool {
+	return IsNYSEHoliday(t)
+}
+
 // Eastern returns the eastern timezone.
 func Eastern() *time.Location {
 	if _eastern == nil {
@@ -226,22 +236,10 @@ func BeforeDate(before, reference time.Time) bool {
 	return before.Year() == reference.Year() && before.Month() == reference.Month() && before.Day() < reference.Day()
 }
 
-// MarketOpen returns 0930 on a given day.
-func MarketOpen(on, openTime time.Time) time.Time {
-	onEastern := on.In(Eastern())
-	return On(openTime, onEastern)
-}
-
-// MarketClose returns 1600 on a given day.
-func MarketClose(on, closeTime time.Time) time.Time {
-	onEastern := on.In(Eastern())
-	return time.Date(onEastern.Year(), onEastern.Month(), onEastern.Day(), 16, 0, 0, 0, Eastern())
-}
-
 // NextMarketOpen returns the next market open after a given time.
-func NextMarketOpen(after, openTime time.Time, isHoliday HolidayChecker) time.Time {
+func NextMarketOpen(after, openTime time.Time, isHoliday HolidayProvider) time.Time {
 	afterEastern := after.In(Eastern())
-	todaysOpen := MarketOpen(afterEastern, openTime)
+	todaysOpen := On(openTime, afterEastern)
 
 	if afterEastern.Before(todaysOpen) && IsWeekDay(todaysOpen.Weekday()) && !isHoliday(todaysOpen) {
 		return todaysOpen
@@ -261,10 +259,10 @@ func NextMarketOpen(after, openTime time.Time, isHoliday HolidayChecker) time.Ti
 }
 
 // NextMarketClose returns the next market close after a given time.
-func NextMarketClose(after, closeTime time.Time, isHoliday HolidayChecker) time.Time {
+func NextMarketClose(after, closeTime time.Time, isHoliday HolidayProvider) time.Time {
 	afterEastern := after.In(Eastern())
 
-	todaysClose := MarketClose(afterEastern, closeTime)
+	todaysClose := On(closeTime, afterEastern)
 	if afterEastern.Before(todaysClose) && IsWeekDay(todaysClose.Weekday()) && !isHoliday(todaysClose) {
 		return todaysClose
 	}
@@ -283,7 +281,7 @@ func NextMarketClose(after, closeTime time.Time, isHoliday HolidayChecker) time.
 }
 
 // CalculateMarketSecondsBetween calculates the number of seconds the market was open between two dates.
-func CalculateMarketSecondsBetween(start, end, marketOpen, marketClose time.Time, isHoliday HolidayChecker) (seconds int64) {
+func CalculateMarketSecondsBetween(start, end, marketOpen, marketClose time.Time, isHoliday HolidayProvider) (seconds int64) {
 	se := start.In(Eastern())
 	ee := end.In(Eastern())
 
