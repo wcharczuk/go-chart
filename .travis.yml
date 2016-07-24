@@ -5,8 +5,8 @@ go:
 
 sudo: false
 
+before:
+  - go get ./...
+
 script:
-  - go build -i ./...
-  - go test ./drawing/
-  - go test ./date/
-  - go test
+  - go test ./...
