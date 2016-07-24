@@ -106,6 +106,5 @@ func (mhr MarketHoursRange) Translate(value float64) int {
 	valueDelta := date.CalculateMarketSecondsBetween(mhr.Min, valueTime, mhr.MarketOpen, mhr.MarketClose, mhr.HolidayProvider)
 
 	translated := int((float64(valueDelta) / float64(deltaSeconds)) * float64(mhr.Domain))
-	fmt.Printf("nyse translating: %s to %d ~= %d", valueTime.Format(time.RFC3339), deltaSeconds, valueDelta)
 	return translated
 }
