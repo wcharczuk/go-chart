@@ -2,7 +2,7 @@ package chart
 
 // GridLineProvider is a type that provides grid lines.
 type GridLineProvider interface {
-	GetGridLines(ticks []Tick, isVertical bool) []GridLine
+	GetGridLines(ticks []Tick, isVertical bool, majorStyle, minorStyle Style) []GridLine
 }
 
 // GridLine is a line on a graph canvas.
@@ -62,7 +62,12 @@ func (gl GridLine) Render(r Renderer, canvasBox Box, ra Range, defaults Style) {
 func GenerateGridLines(ticks []Tick, majorStyle, minorStyle Style, isVertical bool) []GridLine {
 	var gl []GridLine
 	isMinor := false
-	for _, t := range ticks {
+
+	if len(ticks) < 3 {
+		return gl
+	}
+
+	for _, t := range ticks[1 : len(ticks)-1] {
 		s := majorStyle
 		if isMinor {
 			s = minorStyle

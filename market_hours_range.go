@@ -108,9 +108,9 @@ func (mhr MarketHoursRange) String() string {
 // Translate maps a given value into the ContinuousRange space.
 func (mhr MarketHoursRange) Translate(value float64) int {
 	valueTime := Float64ToTime(value)
+	valueTimeEastern := valueTime.In(date.Eastern())
 	deltaSeconds := date.CalculateMarketSecondsBetween(mhr.Min, mhr.Max, mhr.MarketOpen, mhr.MarketClose, mhr.HolidayProvider)
-	valueDelta := date.CalculateMarketSecondsBetween(mhr.Min, valueTime, mhr.MarketOpen, mhr.MarketClose, mhr.HolidayProvider)
-
+	valueDelta := date.CalculateMarketSecondsBetween(mhr.Min, valueTimeEastern, mhr.MarketOpen, mhr.MarketClose, mhr.HolidayProvider)
 	translated := int((float64(valueDelta) / float64(deltaSeconds)) * float64(mhr.Domain))
 	return translated
 }
