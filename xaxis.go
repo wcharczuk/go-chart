@@ -46,7 +46,7 @@ func (xa XAxis) GetGridLines(ticks []Tick) []GridLine {
 	if len(xa.GridLines) > 0 {
 		return xa.GridLines
 	}
-	return GenerateGridLines(ticks, true)
+	return GenerateGridLines(ticks, xa.GridMajorStyle, xa.GridMinorStyle, true)
 }
 
 // Measure returns the bounds of the axis.
@@ -102,9 +102,12 @@ func (xa XAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 
 	if xa.GridMajorStyle.Show || xa.GridMinorStyle.Show {
 		for _, gl := range xa.GetGridLines(ticks) {
-			if (gl.IsMinor && xa.GridMinorStyle.Show) ||
-				(!gl.IsMinor && xa.GridMajorStyle.Show) {
-				gl.Render(r, canvasBox, ra)
+			if (gl.IsMinor && xa.GridMinorStyle.Show) || (!gl.IsMinor && xa.GridMajorStyle.Show) {
+				defaults := xa.GridMajorStyle
+				if gl.IsMinor {
+					defaults = xa.GridMinorStyle
+				}
+				gl.Render(r, canvasBox, ra, defaults)
 			}
 		}
 	}

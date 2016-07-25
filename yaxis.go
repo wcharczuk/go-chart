@@ -53,7 +53,7 @@ func (ya YAxis) GetGridLines(ticks []Tick) []GridLine {
 	if len(ya.GridLines) > 0 {
 		return ya.GridLines
 	}
-	return GenerateGridLines(ticks, false)
+	return GenerateGridLines(ticks, ya.GridMajorStyle, ya.GridMinorStyle, false)
 }
 
 // Measure returns the bounds of the axis.
@@ -145,14 +145,17 @@ func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 	}
 
 	if ya.Zero.Style.Show {
-		ya.Zero.Render(r, canvasBox, ra)
+		ya.Zero.Render(r, canvasBox, ra, Style{})
 	}
 
 	if ya.GridMajorStyle.Show || ya.GridMinorStyle.Show {
 		for _, gl := range ya.GetGridLines(ticks) {
-			if (gl.IsMinor && ya.GridMinorStyle.Show) ||
-				(!gl.IsMinor && ya.GridMajorStyle.Show) {
-				gl.Render(r, canvasBox, ra)
+			if (gl.IsMinor && ya.GridMinorStyle.Show) || (!gl.IsMinor && ya.GridMajorStyle.Show) {
+				defaults := ya.GridMajorStyle
+				if gl.IsMinor {
+					defaults = ya.GridMinorStyle
+				}
+				gl.Render(r, canvasBox, ra, defaults)
 			}
 		}
 	}
