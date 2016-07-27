@@ -33,7 +33,16 @@ func (mhr MarketHoursRange) GetMin() float64 {
 
 // GetMax returns the max value.
 func (mhr MarketHoursRange) GetMax() float64 {
-	return TimeToFloat64(mhr.Max)
+	return TimeToFloat64(mhr.GetEffectiveMax())
+}
+
+// GetEffectiveMax gets either the close on the max, or the max itself.
+func (mhr MarketHoursRange) GetEffectiveMax() time.Time {
+	maxClose := date.On(mhr.MarketClose, mhr.Max)
+	if maxClose.After(mhr.Max) {
+		return maxClose
+	}
+	return mhr.Max
 }
 
 // SetMin sets the min value.
@@ -48,8 +57,8 @@ func (mhr *MarketHoursRange) SetMax(max float64) {
 
 // GetDelta gets the delta.
 func (mhr MarketHoursRange) GetDelta() float64 {
-	min := TimeToFloat64(mhr.Min)
-	max := TimeToFloat64(mhr.Max)
+	min := mhr.GetMin()
+	max := mhr.GetMax()
 	return max - min
 }
 
@@ -109,7 +118,7 @@ func (mhr MarketHoursRange) String() string {
 func (mhr MarketHoursRange) Translate(value float64) int {
 	valueTime := Float64ToTime(value)
 	valueTimeEastern := valueTime.In(date.Eastern())
-	deltaSeconds := date.CalculateMarketSecondsBetween(mhr.Min, mhr.Max, mhr.MarketOpen, mhr.MarketClose, mhr.HolidayProvider)
+	deltaSeconds := date.CalculateMarketSecondsBetween(mhr.Min, mhr.GetEffectiveMax(), mhr.MarketOpen, mhr.MarketClose, mhr.HolidayProvider)
 	valueDelta := date.CalculateMarketSecondsBetween(mhr.Min, valueTimeEastern, mhr.MarketOpen, mhr.MarketClose, mhr.HolidayProvider)
 	translated := int((float64(valueDelta) / float64(deltaSeconds)) * float64(mhr.Domain))
 	return translated
