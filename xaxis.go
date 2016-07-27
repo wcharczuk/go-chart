@@ -28,8 +28,11 @@ func (xa XAxis) GetStyle() Style {
 	return xa.Style
 }
 
-// GetTicks returns the ticks for a series. It coalesces between user provided ticks and
-// generated ticks.
+// GetTicks returns the ticks for a series.
+// The coalesce priority is:
+// 	- User Supplied Ticks (i.e. Ticks array on the axis itself).
+// 	- Range ticks (i.e. if the range provides ticks).
+//	- Generating continuous ticks based on minimum spacing and canvas width.
 func (xa XAxis) GetTicks(r Renderer, ra Range, defaults Style, vf ValueFormatter) []Tick {
 	if len(xa.Ticks) > 0 {
 		return xa.Ticks

@@ -35,6 +35,17 @@ func (sma SMASeries) Len() int {
 	return sma.InnerSeries.Len()
 }
 
+// GetPeriod returns the window size.
+func (sma SMASeries) GetPeriod(defaults ...int) int {
+	if sma.Period == 0 {
+		if len(defaults) > 0 {
+			return defaults[0]
+		}
+		return DefaultSimpleMovingAveragePeriod
+	}
+	return sma.Period
+}
+
 // GetValue gets a value at a given index.
 func (sma SMASeries) GetValue(index int) (x, y float64) {
 	if sma.InnerSeries == nil {
@@ -57,17 +68,6 @@ func (sma SMASeries) GetLastValue() (x, y float64) {
 	x = px
 	y = sma.getAverage(seriesLen - 1)
 	return
-}
-
-// GetPeriod returns the window size.
-func (sma SMASeries) GetPeriod(defaults ...int) int {
-	if sma.Period == 0 {
-		if len(defaults) > 0 {
-			return defaults[0]
-		}
-		return DefaultSimpleMovingAveragePeriod
-	}
-	return sma.Period
 }
 
 func (sma SMASeries) getAverage(index int) float64 {

@@ -2,6 +2,7 @@ package chart
 
 import (
 	"fmt"
+	"math"
 	"strings"
 )
 
@@ -198,6 +199,40 @@ func (rb *RingBuffer) String() string {
 		values = append(values, fmt.Sprintf("%v", elem))
 	}
 	return strings.Join(values, " <= ")
+}
+
+// Average returns the float average of the values in the buffer.
+func (rb *RingBuffer) Average() float64 {
+	var accum float64
+	rb.Each(func(v interface{}) {
+		if typed, isTyped := v.(float64); isTyped {
+			accum += typed
+		}
+	})
+	return accum / float64(rb.Len())
+}
+
+// Variance computes the variance of the buffer.
+func (rb *RingBuffer) Variance() float64 {
+	if rb.Len() == 0 {
+		return 0
+	}
+
+	var variance float64
+	m := rb.Average()
+
+	rb.Each(func(v interface{}) {
+		if n, isTyped := v.(float64); isTyped {
+			variance += (float64(n) - m) * (float64(n) - m)
+		}
+	})
+
+	return variance / float64(rb.Len())
+}
+
+// StdDev returns the standard deviation.
+func (rb *RingBuffer) StdDev() float64 {
+	return math.Pow(rb.Variance(), 0.5)
 }
 
 func arrayClear(source []interface{}, index, length int) {
