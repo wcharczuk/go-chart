@@ -65,6 +65,8 @@ func TestLinearRegressionSeriesWindowAndOffset(t *testing.T) {
 		Window:      10,
 	}
 
+	assert.Equal(10, linRegSeries.Len())
+
 	lrx0, lry0 := linRegSeries.GetValue(0)
 	assert.InDelta(90.0, lrx0, 0.0000001)
 	assert.InDelta(90.0, lry0, 0.0000001)

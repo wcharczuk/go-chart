@@ -34,22 +34,20 @@ func (lrs LinearRegressionSeries) GetYAxis() YAxisType {
 
 // Len returns the number of elements in the series.
 func (lrs LinearRegressionSeries) Len() int {
-	return lrs.InnerSeries.Len()
+	return MinInt(lrs.GetWindow(), lrs.InnerSeries.Len()-lrs.GetOffset())
 }
 
 // GetWindow returns the window size.
 func (lrs LinearRegressionSeries) GetWindow() int {
 	if lrs.Window == 0 {
-		return lrs.InnerSeries.Len() - lrs.GetOffset()
+		return lrs.InnerSeries.Len()
 	}
 	return lrs.Window
 }
 
-// GetEffectiveWindowEnd returns the effective window end.
-func (lrs LinearRegressionSeries) GetEffectiveWindowEnd() int {
-	offset := lrs.GetOffset()
-	windowEnd := offset + lrs.GetWindow()
-	return MinInt(windowEnd, lrs.Len()-1)
+// GetEndIndex returns the effective window end.
+func (lrs LinearRegressionSeries) GetEndIndex() int {
+	return MinInt(lrs.GetOffset()+(lrs.Len()), (lrs.InnerSeries.Len() - 1))
 }
 
 // GetOffset returns the data offset.
@@ -84,7 +82,7 @@ func (lrs *LinearRegressionSeries) GetLastValue() (x, y float64) {
 	if lrs.m == 0 && lrs.b == 0 {
 		lrs.computeCoefficients()
 	}
-	endIndex := lrs.GetEffectiveWindowEnd()
+	endIndex := lrs.GetEndIndex()
 	x, y = lrs.InnerSeries.GetValue(endIndex)
 	y = (lrs.m * lrs.normalize(x)) + lrs.b
 	return
@@ -96,16 +94,14 @@ func (lrs *LinearRegressionSeries) normalize(xvalue float64) float64 {
 
 // computeCoefficients computes the `m` and `b` terms in the linear formula given by `y = mx+b`.
 func (lrs *LinearRegressionSeries) computeCoefficients() {
-
 	startIndex := lrs.GetOffset()
-	endIndex := lrs.GetEffectiveWindowEnd()
-
-	valueCount := endIndex - startIndex
+	endIndex := lrs.GetEndIndex()
 
 	p := float64(endIndex - startIndex)
 
-	xvalues := NewRingBufferWithCapacity(valueCount)
+	xvalues := NewRingBufferWithCapacity(lrs.Len())
 	for index := startIndex; index < endIndex; index++ {
+
 		x, _ := lrs.InnerSeries.GetValue(index)
 		xvalues.Enqueue(x)
 	}
