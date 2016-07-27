@@ -40,7 +40,7 @@ func (lrs LinearRegressionSeries) Len() int {
 // GetWindow returns the window size.
 func (lrs LinearRegressionSeries) GetWindow() int {
 	if lrs.Window == 0 {
-		return lrs.InnerSeries.Len()
+		return lrs.InnerSeries.Len() - lrs.GetOffset()
 	}
 	return lrs.Window
 }
@@ -69,7 +69,8 @@ func (lrs *LinearRegressionSeries) GetValue(index int) (x, y float64) {
 		lrs.computeCoefficients()
 	}
 	offset := lrs.GetOffset()
-	x, y = lrs.InnerSeries.GetValue(index + offset)
+	effectiveIndex := MinInt(index+offset, lrs.InnerSeries.Len())
+	x, y = lrs.InnerSeries.GetValue(effectiveIndex)
 	y = (lrs.m * lrs.normalize(x)) + lrs.b
 	return
 }
