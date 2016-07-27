@@ -18,6 +18,8 @@ type MarketHoursRange struct {
 
 	HolidayProvider date.HolidayProvider
 
+	ValueFormatter ValueFormatter
+
 	Domain int
 }
 
@@ -102,7 +104,7 @@ func (mhr *MarketHoursRange) GetTicks(vf ValueFormatter) []Tick {
 }
 
 func (mhr MarketHoursRange) String() string {
-	return fmt.Sprintf("MarketHoursRange [%s, %s] => %d", mhr.Min.Format(DefaultDateFormat), mhr.Max.Format(DefaultDateFormat), mhr.Domain)
+	return fmt.Sprintf("MarketHoursRange [%s, %s] => %d", mhr.Min.Format(DefaultDateMinuteFormat), mhr.Max.Format(DefaultDateMinuteFormat), mhr.Domain)
 }
 
 // Translate maps a given value into the ContinuousRange space.
