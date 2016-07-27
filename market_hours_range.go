@@ -18,6 +18,8 @@ type MarketHoursRange struct {
 
 	HolidayProvider date.HolidayProvider
 
+	ValueFormatter ValueFormatter
+
 	Domain int
 }
 
@@ -83,12 +85,18 @@ func (mhr MarketHoursRange) GetHolidayProvider() date.HolidayProvider {
 // GetTicks returns the ticks for the range.
 // This is to override the default continous ticks that would be generated for the range.
 func (mhr *MarketHoursRange) GetTicks(vf ValueFormatter) []Tick {
-	// return one tick per day
-	// figure out how to advance one ticke per market day.
 	var ticks []Tick
 
 	cursor := date.On(mhr.MarketClose, mhr.Min)
 	maxClose := date.On(mhr.MarketClose, mhr.Max)
+
+	if mhr.Min.Before(cursor) {
+		ticks = append(ticks, Tick{
+			Value: TimeToFloat64(cursor),
+			Label: vf(cursor),
+		})
+	}
+
 	for date.BeforeDate(cursor, maxClose) {
 		if date.IsWeekDay(cursor.Weekday()) && !mhr.GetHolidayProvider()(cursor) {
 			ticks = append(ticks, Tick{
@@ -111,15 +119,15 @@ func (mhr *MarketHoursRange) GetTicks(vf ValueFormatter) []Tick {
 }
 
 func (mhr MarketHoursRange) String() string {
-	return fmt.Sprintf("MarketHoursRange [%s, %s] => %d", mhr.Min.Format(DefaultDateFormat), mhr.Max.Format(DefaultDateFormat), mhr.Domain)
+	return fmt.Sprintf("MarketHoursRange [%s, %s] => %d", mhr.Min.Format(DefaultDateMinuteFormat), mhr.Max.Format(DefaultDateMinuteFormat), mhr.Domain)
 }
 
 // Translate maps a given value into the ContinuousRange space.
 func (mhr MarketHoursRange) Translate(value float64) int {
 	valueTime := Float64ToTime(value)
 	valueTimeEastern := valueTime.In(date.Eastern())
-	deltaSeconds := date.CalculateMarketSecondsBetween(mhr.Min, mhr.GetEffectiveMax(), mhr.MarketOpen, mhr.MarketClose, mhr.HolidayProvider)
+	totalSeconds := date.CalculateMarketSecondsBetween(mhr.Min, mhr.GetEffectiveMax(), mhr.MarketOpen, mhr.MarketClose, mhr.HolidayProvider)
 	valueDelta := date.CalculateMarketSecondsBetween(mhr.Min, valueTimeEastern, mhr.MarketOpen, mhr.MarketClose, mhr.HolidayProvider)
-	translated := int((float64(valueDelta) / float64(deltaSeconds)) * float64(mhr.Domain))
+	translated := int((float64(valueDelta) / float64(totalSeconds)) * float64(mhr.Domain))
 	return translated
 }
