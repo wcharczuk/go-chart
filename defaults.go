@@ -2,7 +2,6 @@ package chart
 
 import (
 	"sync"
-	"time"
 
 	"github.com/golang/freetype/truetype"
 	"github.com/wcharczuk/go-chart/drawing"
@@ -59,7 +58,7 @@ const (
 	// DefaultDateHourFormat is the date format for hour timestamp formats.
 	DefaultDateHourFormat = "01-02 3PM"
 	// DefaultDateMinuteFormat is the date format for minute range timestamp formats.
-	DefaultDateMinuteFormat = time.Kitchen
+	DefaultDateMinuteFormat = "01-02 3:04PM"
 	// DefaultFloatFormat is the default float format.
 	DefaultFloatFormat = "%.2f"
 	// DefaultPercentValueFormat is the default percent format.

@@ -306,14 +306,16 @@ func CalculateMarketSecondsBetween(start, end, marketOpen, marketClose time.Time
 	startEastern := start.In(Eastern())
 	endEastern := end.In(Eastern())
 
-	startMarketOpen := NextMarketOpen(startEastern, marketOpen, isHoliday)
-	startMarketClose := NextMarketClose(startEastern, marketClose, isHoliday)
+	startMarketOpen := On(marketOpen, startEastern)
+	startMarketClose := On(marketClose, startEastern)
 
-	if (startEastern.Equal(startMarketOpen) || startEastern.After(startMarketOpen)) && startEastern.Before(startMarketClose) {
-		if endEastern.Before(startMarketClose) {
-			seconds += int64(endEastern.Sub(startEastern) / time.Second)
-		} else {
-			seconds += int64(startMarketClose.Sub(startEastern) / time.Second)
+	if !IsWeekendDay(startMarketOpen.Weekday()) && !isHoliday(startMarketOpen) {
+		if (startEastern.Equal(startMarketOpen) || startEastern.After(startMarketOpen)) && startEastern.Before(startMarketClose) {
+			if endEastern.Before(startMarketClose) {
+				seconds += int64(endEastern.Sub(startEastern) / time.Second)
+			} else {
+				seconds += int64(startMarketClose.Sub(startEastern) / time.Second)
+			}
 		}
 	}
 

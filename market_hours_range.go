@@ -111,8 +111,8 @@ func (mhr MarketHoursRange) String() string {
 func (mhr MarketHoursRange) Translate(value float64) int {
 	valueTime := Float64ToTime(value)
 	valueTimeEastern := valueTime.In(date.Eastern())
-	deltaSeconds := date.CalculateMarketSecondsBetween(mhr.Min, mhr.Max, mhr.MarketOpen, mhr.MarketClose, mhr.HolidayProvider)
+	totalSeconds := date.CalculateMarketSecondsBetween(mhr.Min, mhr.Max, mhr.MarketOpen, mhr.MarketClose, mhr.HolidayProvider)
 	valueDelta := date.CalculateMarketSecondsBetween(mhr.Min, valueTimeEastern, mhr.MarketOpen, mhr.MarketClose, mhr.HolidayProvider)
-	translated := int((float64(valueDelta) / float64(deltaSeconds)) * float64(mhr.Domain))
+	translated := int((float64(valueDelta) / float64(totalSeconds)) * float64(mhr.Domain))
 	return translated
 }

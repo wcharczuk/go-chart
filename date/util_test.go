@@ -76,6 +76,17 @@ func TestCalculateMarketSecondsBetween(t *testing.T) {
 	assert.Equal(shouldbe, CalculateMarketSecondsBetween(start, end, NYSEOpen, NYSEClose, IsNYSEHoliday))
 }
 
+func TestCalculateMarketSecondsBetween1D(t *testing.T) {
+	assert := assert.New(t)
+
+	start := time.Date(2016, 07, 22, 9, 45, 0, 0, Eastern())
+	end := time.Date(2016, 07, 22, 15, 45, 0, 0, Eastern())
+
+	shouldbe := 6 * 60 * 60
+
+	assert.Equal(shouldbe, CalculateMarketSecondsBetween(start, end, NYSEOpen, NYSEClose, IsNYSEHoliday))
+}
+
 func TestCalculateMarketSecondsBetweenLTM(t *testing.T) {
 	assert := assert.New(t)
 
