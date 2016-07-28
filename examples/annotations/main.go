@@ -26,12 +26,12 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 				YValues: []float64{1.0, 2.0, 3.0, 4.0, 5.0},
 			},
 			chart.AnnotationSeries{
-				Annotations: []chart.Annotation{
-					{X: 1.0, Y: 1.0, Label: "One"},
-					{X: 2.0, Y: 2.0, Label: "Two"},
-					{X: 3.0, Y: 3.0, Label: "Three"},
-					{X: 4.0, Y: 4.0, Label: "Four"},
-					{X: 5.0, Y: 5.0, Label: "Five"},
+				Annotations: []chart.Value2{
+					{XValue: 1.0, YValue: 1.0, Label: "One"},
+					{XValue: 2.0, YValue: 2.0, Label: "Two"},
+					{XValue: 3.0, YValue: 3.0, Label: "Three"},
+					{XValue: 4.0, YValue: 4.0, Label: "Four"},
+					{XValue: 5.0, YValue: 5.0, Label: "Five"},
 				},
 			},
 		},
