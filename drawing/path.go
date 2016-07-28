@@ -101,10 +101,10 @@ func (p *Path) CubicCurveTo(cx1, cy1, cx2, cy2, x, y float64) {
 }
 
 // ArcTo adds an arc to the path
-func (p *Path) ArcTo(cx, cy, rx, ry, startAngle, angle float64) {
-	endAngle := startAngle + angle
+func (p *Path) ArcTo(cx, cy, rx, ry, startAngle, delta float64) {
+	endAngle := startAngle + delta
 	clockWise := true
-	if angle < 0 {
+	if delta < 0 {
 		clockWise = false
 	}
 	// normalize
@@ -124,7 +124,7 @@ func (p *Path) ArcTo(cx, cy, rx, ry, startAngle, angle float64) {
 	} else {
 		p.MoveTo(startX, startY)
 	}
-	p.appendToPath(ArcToComponent, cx, cy, rx, ry, startAngle, angle)
+	p.appendToPath(ArcToComponent, cx, cy, rx, ry, startAngle, delta)
 	p.x = cx + math.Cos(endAngle)*rx
 	p.y = cy + math.Sin(endAngle)*ry
 }

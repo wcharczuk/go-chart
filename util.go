@@ -99,6 +99,21 @@ func RoundDown(value, roundTo float64) float64 {
 	return d1 * roundTo
 }
 
+// Normalize returns a set of numbers on the interval [0,1] for a given set of inputs.
+// An example: 4,3,2,1 => 0.4, 0.3, 0.2, 0.1
+// Caveat; the total may be < 1.0; there are going to be issues with irrational numbers etc.
+func Normalize(values ...float64) []float64 {
+	var total float64
+	for _, v := range values {
+		total += v
+	}
+	output := make([]float64, len(values))
+	for x, v := range values {
+		output[x] = RoundDown(v/total, 0.001)
+	}
+	return output
+}
+
 // MinInt returns the minimum of a set of integers.
 func MinInt(values ...int) int {
 	min := math.MaxInt32
@@ -174,4 +189,32 @@ func SeqDays(days int) []time.Time {
 // The formula is (v2-v1)/v1.
 func PercentDifference(v1, v2 float64) float64 {
 	return (v2 - v1) / v1
+}
+
+// DegreesToRadians returns degrees as radians.
+func DegreesToRadians(degrees float64) float64 {
+	return degrees * (math.Pi / 180.0)
+}
+
+const (
+	_2pi  = 2 * math.Pi
+	_3pi4 = (3 * math.Pi) / 4.0
+	_pi2  = math.Pi / 2.0
+	_pi4  = math.Pi / 4.0
+)
+
+// PercentToRadians converts a normalized value (0,1) to radians.
+func PercentToRadians(pct float64) float64 {
+	return DegreesToRadians(360.0 * pct)
+}
+
+// RadianAdd adds a delta to a base in radians.
+func RadianAdd(base, delta float64) float64 {
+	value := base + delta
+	if value > _2pi {
+		return math.Mod(value, _2pi)
+	} else if value < 0 {
+		return _2pi + value
+	}
+	return value
 }

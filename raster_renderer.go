@@ -71,6 +71,16 @@ func (rr *rasterRenderer) LineTo(x, y int) {
 	rr.gc.LineTo(float64(x), float64(y))
 }
 
+// QuadCurveTo implements the interface method.
+func (rr *rasterRenderer) QuadCurveTo(cx, cy, x, y int) {
+	rr.gc.QuadCurveTo(float64(cx), float64(cy), float64(x), float64(y))
+}
+
+// ArcTo implements the interface method.
+func (rr *rasterRenderer) ArcTo(cx, cy int, rx, ry, startAngle, delta float64) {
+	rr.gc.ArcTo(float64(cx), float64(cy), rx, ry, startAngle, delta)
+}
+
 // Close implements the interface method.
 func (rr *rasterRenderer) Close() {
 	rr.gc.Close()

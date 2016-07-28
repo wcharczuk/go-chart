@@ -79,11 +79,11 @@ func (s Style) String() string {
 	if s.FontSize != 0 {
 		output = append(output, fmt.Sprintf("\"font_size\": \"%0.2fpt\"", s.FontSize))
 	} else {
-		output = append(output, "\"fill_color\": null")
+		output = append(output, "\"font_size\": null")
 	}
 
-	if !s.FillColor.IsZero() {
-		output = append(output, fmt.Sprintf("\"font_color\": %s", s.FillColor.String()))
+	if !s.FontColor.IsZero() {
+		output = append(output, fmt.Sprintf("\"font_color\": %s", s.FontColor.String()))
 	} else {
 		output = append(output, "\"font_color\": null")
 	}
@@ -190,6 +190,7 @@ func (s Style) PersistToRenderer(r Renderer) {
 	r.SetStrokeColor(s.GetStrokeColor())
 	r.SetStrokeWidth(s.GetStrokeWidth())
 	r.SetStrokeDashArray(s.GetStrokeDashArray())
+	r.SetFillColor(s.GetFillColor())
 	r.SetFont(s.GetFont())
 	r.SetFontColor(s.GetFontColor())
 	r.SetFontSize(s.GetFontSize())

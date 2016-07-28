@@ -76,6 +76,15 @@ func (vr *vectorRenderer) LineTo(x, y int) {
 	vr.p = append(vr.p, fmt.Sprintf("L %d %d", x, y))
 }
 
+// QuadCurveTo draws a quad curve.
+func (vr *vectorRenderer) QuadCurveTo(cx, cy, x, y int) {
+	vr.p = append(vr.p, fmt.Sprintf("Q%d,%d %d,%d", cx, cy, x, y))
+}
+
+func (vr *vectorRenderer) ArcTo(cx, cy int, rx, ry, startAngle, delta float64) {
+	vr.p = append(vr.p, fmt.Sprintf("A %d %d %0.2f 1 1 %d %d", int(rx), int(ry), delta, cx, cy))
+}
+
 // Close closes a shape.
 func (vr *vectorRenderer) Close() {
 	vr.p = append(vr.p, fmt.Sprintf("Z"))
