@@ -19,6 +19,7 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 			{Value: 0.2, Label: "Gray"},
 			{Value: 0.1, Label: "Orange"},
 			{Value: 0.1, Label: "??"},
+			{Value: 0.1, Label: "!!"},
 		},
 	}
 
