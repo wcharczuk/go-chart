@@ -13,14 +13,14 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 		Canvas: chart.Style{
 			FillColor: chart.ColorLightGray,
 		},
-		Values: []chart.PieChartValue{
-			{Value: 0.2, Label: "Blue"},
-			{Value: 0.2, Label: "Green"},
-			{Value: 0.2, Label: "Gray"},
-			{Value: 0.1, Label: "Orange"},
-			{Value: 0.1, Label: "HEANG"},
-			{Value: 0.1, Label: "??"},
-			{Value: 0.1, Label: "!!"},
+		Values: []chart.Value{
+			{Value: 10, Label: "Blue"},
+			{Value: 9, Label: "Green"},
+			{Value: 8, Label: "Gray"},
+			{Value: 7, Label: "Orange"},
+			{Value: 6, Label: "HEANG"},
+			{Value: 5, Label: "??"},
+			{Value: 2, Label: "!!"},
 		},
 	}
 

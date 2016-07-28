@@ -7,13 +7,6 @@ import (
 	"github.com/golang/freetype/truetype"
 )
 
-// PieChartValue is a slice of a pie-chart.
-type PieChartValue struct {
-	Style Style
-	Label string
-	Value float64
-}
-
 // PieChart is a chart that draws sections of a circle based on percentages.
 type PieChart struct {
 	Title      string
@@ -29,7 +22,7 @@ type PieChart struct {
 	Font        *truetype.Font
 	defaultFont *truetype.Font
 
-	Values   []PieChartValue
+	Values   []Value
 	Elements []Renderable
 }
 
@@ -94,11 +87,8 @@ func (pc PieChart) Render(rp RendererProvider, w io.Writer) error {
 	pc.drawBackground(r)
 	pc.drawCanvas(r, canvasBox)
 
-	valuesWithPlaceholder, err := pc.finalizeValues(pc.Values)
-	if err != nil {
-		return err
-	}
-	pc.drawSlices(r, canvasBox, valuesWithPlaceholder)
+	finalValues := pc.finalizeValues(pc.Values)
+	pc.drawSlices(r, canvasBox, finalValues)
 	pc.drawTitle(r)
 	for _, a := range pc.Elements {
 		a(r, canvasBox, pc.styleDefaultsElements())
@@ -137,7 +127,7 @@ func (pc PieChart) drawTitle(r Renderer) {
 	}
 }
 
-func (pc PieChart) drawSlices(r Renderer, canvasBox Box, values []PieChartValue) {
+func (pc PieChart) drawSlices(r Renderer, canvasBox Box, values []Value) {
 	cx, cy := canvasBox.Center()
 	diameter := MinInt(canvasBox.Width(), canvasBox.Height())
 	radius := float64(diameter >> 1)
@@ -172,6 +162,7 @@ func (pc PieChart) drawSlices(r Renderer, canvasBox Box, values []PieChartValue)
 
 			tb := r.MeasureText(v.Label)
 			lx = lx - (tb.Width() >> 1)
+			ly = ly + (tb.Height() >> 1)
 
 			r.Text(v.Label, lx, ly)
 		}
@@ -179,22 +170,8 @@ func (pc PieChart) drawSlices(r Renderer, canvasBox Box, values []PieChartValue)
 	}
 }
 
-func (pc PieChart) finalizeValues(values []PieChartValue) ([]PieChartValue, error) {
-	var total float64
-	for _, v := range values {
-		total += v.Value
-		if total > 1.0 {
-			return nil, errors.New("Values total exceeded 1.0; please normalize pie chart values to [0,1.0)")
-		}
-	}
-	remainder := 1.0 - total
-	if RoundDown(remainder, 0.0001) > 0 {
-		return append(values, PieChartValue{
-			Style: pc.styleDefaultsPieChartValue(),
-			Value: remainder,
-		}), nil
-	}
-	return values, nil
+func (pc PieChart) finalizeValues(values []Value) []Value {
+	return Values(values).Normalize()
 }
 
 func (pc PieChart) getDefaultCanvasBox() Box {

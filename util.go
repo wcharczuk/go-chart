@@ -176,6 +176,24 @@ func SeqRand(samples int, scale float64) []float64 {
 	return values
 }
 
+// Sum sums a set of values.
+func Sum(values ...float64) float64 {
+	var total float64
+	for _, v := range values {
+		total += v
+	}
+	return total
+}
+
+// SumInt sums a set of values.
+func SumInt(values ...int) int {
+	var total int
+	for _, v := range values {
+		total += v
+	}
+	return total
+}
+
 // SeqDays generates a sequence of timestamps by day, from -days to today.
 func SeqDays(days int) []time.Time {
 	var values []time.Time
