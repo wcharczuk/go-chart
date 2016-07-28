@@ -84,6 +84,20 @@ func TestGetRoundToForDelta(t *testing.T) {
 	assert.Equal(1.0, GetRoundToForDelta(11.00))
 }
 
+func TestRoundUp(t *testing.T) {
+	assert := assert.New(t)
+	assert.Equal(0.5, RoundUp(0.49, 0.1))
+	assert.Equal(1.0, RoundUp(0.51, 1.0))
+	assert.Equal(0.4999, RoundUp(0.49988, 0.0001))
+}
+
+func TestRoundDown(t *testing.T) {
+	assert := assert.New(t)
+	assert.Equal(0.5, RoundDown(0.51, 0.1))
+	assert.Equal(1.0, RoundDown(1.01, 1.0))
+	assert.Equal(0.5001, RoundDown(0.50011, 0.0001))
+}
+
 func TestSeq(t *testing.T) {
 	assert := assert.New(t)
 
@@ -99,6 +113,16 @@ func TestPercentDifference(t *testing.T) {
 
 	assert.Equal(0.5, PercentDifference(1.0, 1.5))
 	assert.Equal(-0.5, PercentDifference(2.0, 1.0))
+}
+
+func TestNormalize(t *testing.T) {
+	assert := assert.New(t)
+
+	values := []float64{10, 9, 8, 7, 6}
+	normalized := Normalize(values...)
+	assert.Len(normalized, 5)
+	assert.Equal(0.25, normalized[0])
+	assert.Equal(0.15, normalized[4])
 }
 
 var (

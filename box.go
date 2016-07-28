@@ -185,25 +185,12 @@ func (b Box) Fit(other Box) Box {
 // more literally like the opposite of grow.
 func (b Box) Constrain(other Box) Box {
 	newBox := b.Clone()
-	if other.Top < b.Top {
-		delta := b.Top - other.Top
-		newBox.Top = other.Top + delta
-	}
 
-	if other.Left < b.Left {
-		delta := b.Left - other.Left
-		newBox.Left = other.Left + delta
-	}
+	newBox.Top = MaxInt(newBox.Top, other.Top)
+	newBox.Left = MaxInt(newBox.Left, other.Left)
+	newBox.Right = MinInt(newBox.Right, other.Right)
+	newBox.Bottom = MinInt(newBox.Bottom, other.Bottom)
 
-	if other.Right > b.Right {
-		delta := other.Right - b.Right
-		newBox.Right = other.Right - delta
-	}
-
-	if other.Bottom > b.Bottom {
-		delta := other.Bottom - b.Bottom
-		newBox.Bottom = other.Bottom - delta
-	}
 	return newBox
 }
 

@@ -86,6 +86,26 @@ func TestBoxFit(t *testing.T) {
 	assert.True(math.Abs(c.Aspect()-fac.Aspect()) < 0.02)
 }
 
+func TestBoxConstrain(t *testing.T) {
+	assert := assert.New(t)
+
+	a := Box{Top: 64, Left: 64, Right: 192, Bottom: 192}
+	b := Box{Top: 16, Left: 16, Right: 256, Bottom: 170}
+	c := Box{Top: 16, Left: 16, Right: 170, Bottom: 256}
+
+	cab := a.Constrain(b)
+	assert.Equal(64, cab.Top)
+	assert.Equal(64, cab.Left)
+	assert.Equal(192, cab.Right)
+	assert.Equal(170, cab.Bottom)
+
+	cac := a.Constrain(c)
+	assert.Equal(64, cac.Top)
+	assert.Equal(64, cac.Left)
+	assert.Equal(170, cac.Right)
+	assert.Equal(192, cac.Bottom)
+}
+
 func TestBoxOuterConstrain(t *testing.T) {
 	assert := assert.New(t)
 

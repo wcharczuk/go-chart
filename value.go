@@ -32,7 +32,7 @@ func (vs Values) Normalize() []Value {
 		output[index] = Value{
 			Style: v.Style,
 			Label: v.Label,
-			Value: (v.Value / total),
+			Value: RoundDown(v.Value/total, 0.001),
 		}
 	}
 	return output
