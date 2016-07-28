@@ -3,7 +3,6 @@ package chart
 import (
 	"errors"
 	"io"
-	"math"
 
 	"github.com/golang/freetype/truetype"
 )
@@ -142,14 +141,15 @@ func (pc PieChart) drawSlices(r Renderer, canvasBox Box, values []PieChartValue)
 	cx, cy := canvasBox.Center()
 	diameter := MinInt(canvasBox.Width(), canvasBox.Height())
 	radius := float64(diameter >> 1)
-	radius2 := (radius * 2.0) / 3.0
+	labelRadius := (radius * 2.0) / 3.0
 
+	// draw the pie slices
 	var rads, delta, delta2, total float64
 	var lx, ly int
 	for index, v := range values {
 		v.Style.InheritFrom(pc.stylePieChartValue(index)).PersistToRenderer(r)
-		r.MoveTo(cx, cy)
 
+		r.MoveTo(cx, cy)
 		rads = PercentToRadians(total)
 		delta = PercentToRadians(v.Value)
 
@@ -161,13 +161,14 @@ func (pc PieChart) drawSlices(r Renderer, canvasBox Box, values []PieChartValue)
 		total = total + v.Value
 	}
 
+	// draw the labels
 	total = 0
 	for index, v := range values {
 		v.Style.InheritFrom(pc.stylePieChartValue(index)).PersistToRenderer(r)
 		if len(v.Label) > 0 {
-			delta2 = RadianAdd(PercentToRadians(total+(v.Value/2.0)), _pi2)
-			lx = cx + int(radius2*math.Sin(delta2))
-			ly = cy - int(radius2*math.Cos(delta2))
+			delta2 = PercentToRadians(total + (v.Value / 2.0))
+			delta2 = RadianAdd(delta2, _pi2)
+			lx, ly = CirclePoint(cx, cy, labelRadius, delta2)
 
 			tb := r.MeasureText(v.Label)
 			lx = lx - (tb.Width() >> 1)

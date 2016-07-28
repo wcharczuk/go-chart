@@ -191,17 +191,29 @@ func PercentDifference(v1, v2 float64) float64 {
 	return (v2 - v1) / v1
 }
 
-// DegreesToRadians returns degrees as radians.
-func DegreesToRadians(degrees float64) float64 {
-	return degrees * (math.Pi / 180.0)
-}
-
 const (
+	_pi   = math.Pi
 	_2pi  = 2 * math.Pi
 	_3pi4 = (3 * math.Pi) / 4.0
+	_4pi3 = (4 * math.Pi) / 3.0
+	_3pi2 = (3 * math.Pi) / 2.0
+	_5pi4 = (5 * math.Pi) / 4.0
+	_7pi4 = (7 * math.Pi) / 4.0
 	_pi2  = math.Pi / 2.0
 	_pi4  = math.Pi / 4.0
+	_d2r  = (math.Pi / 180.0)
+	_r2d  = (180.0 / math.Pi)
 )
+
+// DegreesToRadians returns degrees as radians.
+func DegreesToRadians(degrees float64) float64 {
+	return degrees * _d2r
+}
+
+// RadiansToDegrees translates a radian value to a degree value.
+func RadiansToDegrees(value float64) float64 {
+	return math.Mod(value, _2pi) * _r2d
+}
 
 // PercentToRadians converts a normalized value (0,1) to radians.
 func PercentToRadians(pct float64) float64 {
@@ -214,7 +226,31 @@ func RadianAdd(base, delta float64) float64 {
 	if value > _2pi {
 		return math.Mod(value, _2pi)
 	} else if value < 0 {
-		return _2pi + value
+		return math.Mod(_2pi+value, _2pi)
 	}
 	return value
+}
+
+// DegreesAdd adds a delta to a base in radians.
+func DegreesAdd(baseDegrees, deltaDegrees float64) float64 {
+	value := baseDegrees + deltaDegrees
+	if value > _2pi {
+		return math.Mod(value, 360.0)
+	} else if value < 0 {
+		return math.Mod(360.0+value, 360.0)
+	}
+	return value
+}
+
+// DegreesToCompass returns the degree value in compass / clock orientation.
+func DegreesToCompass(deg float64) float64 {
+	return DegreesAdd(deg, -90.0)
+}
+
+// CirclePoint returns the absolute position of a circle diameter point given
+// by the radius and the angle.
+func CirclePoint(cx, cy int, radius, angleRadians float64) (x, y int) {
+	x = cx + int(radius*math.Sin(angleRadians))
+	y = cy - int(radius*math.Cos(angleRadians))
+	return
 }

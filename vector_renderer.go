@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"math"
 	"strings"
 
 	"golang.org/x/image/font"
@@ -82,7 +83,24 @@ func (vr *vectorRenderer) QuadCurveTo(cx, cy, x, y int) {
 }
 
 func (vr *vectorRenderer) ArcTo(cx, cy int, rx, ry, startAngle, delta float64) {
-	vr.p = append(vr.p, fmt.Sprintf("A %d %d %0.2f 1 1 %d %d", int(rx), int(ry), delta, cx, cy))
+	startAngle = RadianAdd(startAngle, _pi2)
+	endAngle := RadianAdd(startAngle, delta)
+
+	startx := cx + int(rx*math.Sin(startAngle))
+	starty := cy - int(ry*math.Cos(startAngle))
+
+	if len(vr.p) > 0 {
+		vr.p = append(vr.p, fmt.Sprintf("L %d %d", startx, starty))
+	} else {
+		vr.p = append(vr.p, fmt.Sprintf("M %d %d", startx, starty))
+	}
+
+	endx := cx + int(rx*math.Sin(endAngle))
+	endy := cy - int(ry*math.Cos(endAngle))
+
+	dd := RadiansToDegrees(delta)
+
+	vr.p = append(vr.p, fmt.Sprintf("A %d %d %0.2f 0 1 %d %d", int(rx), int(ry), dd, endx, endy))
 }
 
 // Close closes a shape.

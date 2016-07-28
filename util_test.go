@@ -100,3 +100,60 @@ func TestPercentDifference(t *testing.T) {
 	assert.Equal(0.5, PercentDifference(1.0, 1.5))
 	assert.Equal(-0.5, PercentDifference(2.0, 1.0))
 }
+
+var (
+	_degreesToRadians = map[float64]float64{
+		0:   0, // !_2pi b/c no irrational nums in floats.
+		45:  _pi4,
+		90:  _pi2,
+		135: _3pi4,
+		180: _pi,
+		225: _5pi4,
+		270: _3pi2,
+		315: _7pi4,
+	}
+
+	_compassToRadians = map[float64]float64{
+		0:   _pi2,
+		45:  _pi4,
+		90:  0, // !_2pi b/c no irrational nums in floats.
+		135: _7pi4,
+		180: _3pi2,
+		225: _5pi4,
+		270: _pi,
+		315: _3pi4,
+	}
+)
+
+func TestDegreesToRadians(t *testing.T) {
+	assert := assert.New(t)
+
+	for d, r := range _degreesToRadians {
+		assert.Equal(r, DegreesToRadians(d))
+	}
+}
+
+func TestPercentToRadians(t *testing.T) {
+	assert := assert.New(t)
+
+	for d, r := range _degreesToRadians {
+		assert.Equal(r, PercentToRadians(d/360.0))
+	}
+}
+
+func TestRadiansToDegrees(t *testing.T) {
+	assert := assert.New(t)
+
+	for d, r := range _degreesToRadians {
+		assert.Equal(d, RadiansToDegrees(r))
+	}
+}
+
+func TestRadianAdd(t *testing.T) {
+	assert := assert.New(t)
+
+	assert.Equal(_pi, RadianAdd(_pi2, _pi2))
+	assert.Equal(_3pi2, RadianAdd(_pi2, _pi))
+	assert.Equal(_pi, RadianAdd(_pi, _2pi))
+	assert.Equal(_pi, RadianAdd(_pi, -_2pi))
+}
