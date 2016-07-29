@@ -14,13 +14,13 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 			FillColor: chart.ColorLightGray,
 		},
 		Values: []chart.Value{
-			{Value: 10, Label: "Blue"},
-			{Value: 9, Label: "Green"},
-			{Value: 8, Label: "Gray"},
-			{Value: 7, Label: "Orange"},
-			{Value: 6, Label: "HEANG"},
-			{Value: 5, Label: "??"},
-			{Value: 2, Label: "!!"},
+			{Value: 5, Label: "Blue"},
+			{Value: 5, Label: "Green"},
+			{Value: 4, Label: "Gray"},
+			{Value: 4, Label: "Orange"},
+			{Value: 3, Label: "Test"},
+			{Value: 3, Label: "??"},
+			{Value: 1, Label: "!!"},
 		},
 	}
 

@@ -463,7 +463,7 @@ func (c Chart) styleDefaultsCanvas() Style {
 }
 
 func (c Chart) styleDefaultsSeries(seriesIndex int) Style {
-	strokeColor := GetDefaultSeriesStrokeColor(seriesIndex)
+	strokeColor := GetDefaultColor(seriesIndex)
 	return Style{
 		StrokeColor: strokeColor,
 		StrokeWidth: DefaultStrokeWidth,

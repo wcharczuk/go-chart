@@ -217,7 +217,7 @@ func (pc PieChart) stylePieChartValue(index int) Style {
 	return Style{
 		StrokeColor: ColorWhite,
 		StrokeWidth: 5.0,
-		FillColor:   GetDefaultPieChartValueColor(index),
+		FillColor:   GetAlternateColor(index),
 		FontSize:    24.0,
 		FontColor:   ColorWhite,
 		Font:        pc.GetFont(),
@@ -229,16 +229,6 @@ func (pc PieChart) styleDefaultsBackground() Style {
 		FillColor:   DefaultBackgroundColor,
 		StrokeColor: DefaultBackgroundStrokeColor,
 		StrokeWidth: DefaultStrokeWidth,
-	}
-}
-
-func (pc PieChart) styleDefaultsSeries(seriesIndex int) Style {
-	strokeColor := GetDefaultSeriesStrokeColor(seriesIndex)
-	return Style{
-		StrokeColor: strokeColor,
-		StrokeWidth: DefaultStrokeWidth,
-		Font:        pc.GetFont(),
-		FontSize:    DefaultFontSize,
 	}
 }
 

@@ -159,16 +159,16 @@ var (
 	DashArrayDashesLarge = []int{10, 10}
 )
 
-// GetDefaultSeriesStrokeColor returns a color from the default list by index.
+// GetDefaultColor returns a color from the default list by index.
 // NOTE: the index will wrap around (using a modulo).
-func GetDefaultSeriesStrokeColor(index int) drawing.Color {
+func GetDefaultColor(index int) drawing.Color {
 	finalIndex := index % len(DefaultColors)
 	return DefaultColors[finalIndex]
 }
 
-// GetDefaultPieChartValueColor returns a color from the default list by index.
+// GetAlternateColor returns a color from the default list by index.
 // NOTE: the index will wrap around (using a modulo).
-func GetDefaultPieChartValueColor(index int) drawing.Color {
+func GetAlternateColor(index int) drawing.Color {
 	finalIndex := index % len(DefaultAlternateColors)
 	return DefaultAlternateColors[finalIndex]
 }
