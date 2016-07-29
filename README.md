@@ -37,6 +37,8 @@ Pie Chart:
 
 ![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/pie_chart.png)
 
+The code for this chart can be found in `examples/pie_chart/main.go`.
+
 # Code Examples
 
 Actual chart configurations and examples can be found in the `./examples/` directory. They are web servers, so start them with `go run main.go` then access `http://localhost:8080` to see the output.
