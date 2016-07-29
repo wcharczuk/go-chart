@@ -109,7 +109,7 @@ func Normalize(values ...float64) []float64 {
 	}
 	output := make([]float64, len(values))
 	for x, v := range values {
-		output[x] = RoundDown(v/total, 0.00001)
+		output[x] = RoundDown(v/total, 0.0001)
 	}
 	return output
 }

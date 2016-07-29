@@ -45,8 +45,8 @@ func TestValuesValuesNormalized(t *testing.T) {
 
 	values := Values(vs).ValuesNormalized()
 	assert.Len(values, 7)
-	assert.Equal(0.212, values[0])
-	assert.Equal(0.042, values[6])
+	assert.Equal(0.2127, values[0])
+	assert.Equal(0.0425, values[6])
 }
 
 func TestValuesNormalize(t *testing.T) {
@@ -64,6 +64,6 @@ func TestValuesNormalize(t *testing.T) {
 
 	values := Values(vs).Normalize()
 	assert.Len(values, 7)
-	assert.Equal(0.212, values[0].Value)
-	assert.Equal(0.042, values[6].Value)
+	assert.Equal(0.2127, values[0].Value)
+	assert.Equal(0.0425, values[6].Value)
 }

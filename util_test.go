@@ -122,7 +122,7 @@ func TestNormalize(t *testing.T) {
 	normalized := Normalize(values...)
 	assert.Len(normalized, 5)
 	assert.Equal(0.25, normalized[0])
-	assert.Equal(0.15, normalized[4])
+	assert.Equal(0.1499, normalized[4])
 }
 
 var (
