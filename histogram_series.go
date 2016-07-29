@@ -53,5 +53,5 @@ func (hs HistogramSeries) GetBoundedValue(index int) (x, y1, y2 float64) {
 // Render implements Series.Render.
 func (hs HistogramSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
 	style := hs.Style.InheritFrom(defaults)
-	DrawHistogramSeries(r, canvasBox, xrange, yrange, style, hs)
+	Draw.HistogramSeries(r, canvasBox, xrange, yrange, style, hs)
 }

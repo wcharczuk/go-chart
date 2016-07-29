@@ -114,7 +114,7 @@ func (bbs *BollingerBandsSeries) Render(r Renderer, canvasBox Box, xrange, yrang
 		FillColor:   DefaultAxisColor.WithAlpha(32),
 	}))
 
-	DrawBoundedSeries(r, canvasBox, xrange, yrange, s, bbs, bbs.GetPeriod())
+	Draw.BoundedSeries(r, canvasBox, xrange, yrange, s, bbs, bbs.GetPeriod())
 }
 
 func (bbs BollingerBandsSeries) getAverage(valueBuffer *RingBuffer) float64 {

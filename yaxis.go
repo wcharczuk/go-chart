@@ -61,7 +61,7 @@ func (ya YAxis) GetGridLines(ticks []Tick) []GridLine {
 
 // Measure returns the bounds of the axis.
 func (ya YAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, ticks []Tick) Box {
-	ya.Style.InheritFrom(defaults).PersistToRenderer(r)
+	ya.Style.InheritFrom(defaults).WriteToRenderer(r)
 
 	sort.Sort(Ticks(ticks))
 
@@ -104,7 +104,7 @@ func (ya YAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 
 // Render renders the axis.
 func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, ticks []Tick) {
-	ya.Style.InheritFrom(defaults).PersistToRenderer(r)
+	ya.Style.InheritFrom(defaults).WriteToRenderer(r)
 
 	sort.Sort(Ticks(ticks))
 

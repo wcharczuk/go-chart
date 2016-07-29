@@ -1,13 +1,16 @@
 package chart
 
-import (
-	"math"
+import "math"
 
-	"github.com/wcharczuk/go-chart/drawing"
+var (
+	// Draw contains helpers for drawing common objects.
+	Draw = &draw{}
 )
 
-// DrawLineSeries draws a line series with a renderer.
-func DrawLineSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, vs ValueProvider) {
+type draw struct{}
+
+// LineSeries draws a line series with a renderer.
+func (d draw) LineSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, vs ValueProvider) {
 	if vs.Len() == 0 {
 		return
 	}
@@ -52,8 +55,8 @@ func DrawLineSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, vs
 	r.Stroke()
 }
 
-// DrawBoundedSeries draws a series that implements BoundedValueProvider.
-func DrawBoundedSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, bbs BoundedValueProvider, drawOffsetIndexes ...int) {
+// BoundedSeries draws a series that implements BoundedValueProvider.
+func (d draw) BoundedSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, bbs BoundedValueProvider, drawOffsetIndexes ...int) {
 	drawOffsetIndex := 0
 	if len(drawOffsetIndexes) > 0 {
 		drawOffsetIndex = drawOffsetIndexes[0]
@@ -106,8 +109,8 @@ func DrawBoundedSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style,
 	r.FillStroke()
 }
 
-// DrawHistogramSeries draws a value provider as boxes from 0.
-func DrawHistogramSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, vs ValueProvider, barWidths ...int) {
+// HistogramSeries draws a value provider as boxes from 0.
+func (d draw) HistogramSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, vs ValueProvider, barWidths ...int) {
 	if vs.Len() == 0 {
 		return
 	}
@@ -129,7 +132,7 @@ func DrawHistogramSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Styl
 		x := cl + xrange.Translate(vx)
 		y := yrange.Translate(vy)
 
-		DrawBox(r, Box{
+		d.Box(r, Box{
 			Top:    cb - y0,
 			Left:   x - (barWidth >> 1),
 			Right:  x + (barWidth >> 1),
@@ -139,7 +142,7 @@ func DrawHistogramSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Styl
 }
 
 // MeasureAnnotation measures how big an annotation would be.
-func MeasureAnnotation(r Renderer, canvasBox Box, s Style, lx, ly int, label string) Box {
+func (d draw) MeasureAnnotation(r Renderer, canvasBox Box, s Style, lx, ly int, label string) Box {
 	r.SetFillColor(s.GetFillColor(DefaultAnnotationFillColor))
 	r.SetStrokeColor(s.GetStrokeColor())
 	r.SetStrokeWidth(s.GetStrokeWidth())
@@ -171,8 +174,8 @@ func MeasureAnnotation(r Renderer, canvasBox Box, s Style, lx, ly int, label str
 	}
 }
 
-// DrawAnnotation draws an anotation with a renderer.
-func DrawAnnotation(r Renderer, canvasBox Box, style Style, lx, ly int, label string) {
+// Annotation draws an anotation with a renderer.
+func (d draw) Annotation(r Renderer, canvasBox Box, style Style, lx, ly int, label string) {
 	r.SetFillColor(style.GetFillColor())
 	r.SetStrokeColor(style.GetStrokeColor())
 	r.SetStrokeWidth(style.GetStrokeWidth())
@@ -218,8 +221,8 @@ func DrawAnnotation(r Renderer, canvasBox Box, style Style, lx, ly int, label st
 	r.Text(label, textX, textY)
 }
 
-// DrawBox draws a box with a given style.
-func DrawBox(r Renderer, b Box, s Style) {
+// Box draws a box with a given style.
+func (d draw) Box(r Renderer, b Box, s Style) {
 	r.SetFillColor(s.GetFillColor())
 	r.SetStrokeColor(s.GetStrokeColor())
 	r.SetStrokeWidth(s.GetStrokeWidth(DefaultStrokeWidth))
@@ -234,7 +237,7 @@ func DrawBox(r Renderer, b Box, s Style) {
 }
 
 // DrawText draws text with a given style.
-func DrawText(r Renderer, text string, x, y int, s Style) {
+func (d draw) Text(r Renderer, text string, x, y int, s Style) {
 	r.SetFontColor(s.GetFontColor(DefaultTextColor))
 	r.SetStrokeColor(s.GetStrokeColor())
 	r.SetStrokeWidth(s.GetStrokeWidth())
@@ -244,129 +247,7 @@ func DrawText(r Renderer, text string, x, y int, s Style) {
 	r.Text(text, x, y)
 }
 
-// DrawTextCentered draws text with a given style centered.
-func DrawTextCentered(r Renderer, text string, x, y int, s Style) {
-	r.SetFontColor(s.GetFontColor(DefaultTextColor))
-	r.SetStrokeColor(s.GetStrokeColor())
-	r.SetStrokeWidth(s.GetStrokeWidth())
-	r.SetFont(s.GetFont())
-	r.SetFontSize(s.GetFontSize())
+// TextWithin draws the text within a given box.
+func (d draw) TextWithin(r Renderer, text string, box Box, s Style) {
 
-	tb := r.MeasureText(text)
-	tx := x - (tb.Width() >> 1)
-	ty := y - (tb.Height() >> 1)
-	r.Text(text, tx, ty)
-}
-
-// CreateLegend returns a legend renderable function.
-func CreateLegend(c *Chart, userDefaults ...Style) Renderable {
-	return func(r Renderer, cb Box, chartDefaults Style) {
-		legendDefaults := Style{
-			FillColor:   drawing.ColorWhite,
-			FontColor:   DefaultTextColor,
-			FontSize:    8.0,
-			StrokeColor: DefaultAxisColor,
-			StrokeWidth: DefaultAxisLineWidth,
-		}
-
-		var legendStyle Style
-		if len(userDefaults) > 0 {
-			legendStyle = userDefaults[0].InheritFrom(chartDefaults.InheritFrom(legendDefaults))
-		} else {
-			legendStyle = chartDefaults.InheritFrom(legendDefaults)
-		}
-
-		// DEFAULTS
-		legendPadding := Box{
-			Top:    5,
-			Left:   5,
-			Right:  5,
-			Bottom: 5,
-		}
-		lineTextGap := 5
-		lineLengthMinimum := 25
-
-		var labels []string
-		var lines []Style
-		for index, s := range c.Series {
-			if s.GetStyle().IsZero() || s.GetStyle().Show {
-				if _, isAnnotationSeries := s.(AnnotationSeries); !isAnnotationSeries {
-					labels = append(labels, s.GetName())
-					lines = append(lines, s.GetStyle().InheritFrom(c.styleDefaultsSeries(index)))
-				}
-			}
-		}
-
-		legend := Box{
-			Top:  cb.Top,
-			Left: cb.Left,
-			// bottom and right will be sized by the legend content + relevant padding.
-		}
-
-		legendContent := Box{
-			Top:    legend.Top + legendPadding.Top,
-			Left:   legend.Left + legendPadding.Left,
-			Right:  legend.Left + legendPadding.Left,
-			Bottom: legend.Top + legendPadding.Top,
-		}
-
-		r.SetFont(legendStyle.GetFont())
-		r.SetFontColor(legendStyle.GetFontColor())
-		r.SetFontSize(legendStyle.GetFontSize())
-
-		// measure
-		labelCount := 0
-		for x := 0; x < len(labels); x++ {
-			if len(labels[x]) > 0 {
-				tb := r.MeasureText(labels[x])
-				if labelCount > 0 {
-					legendContent.Bottom += DefaultMinimumTickVerticalSpacing
-				}
-				legendContent.Bottom += tb.Height()
-				right := legendContent.Left + tb.Width() + lineTextGap + lineLengthMinimum
-				legendContent.Right = MaxInt(legendContent.Right, right)
-				labelCount++
-			}
-		}
-
-		legend = legend.Grow(legendContent)
-		legend.Right = legendContent.Right + legendPadding.Right
-		legend.Bottom = legendContent.Bottom + legendPadding.Bottom
-
-		DrawBox(r, legend, legendStyle)
-
-		ycursor := legendContent.Top
-		tx := legendContent.Left
-		legendCount := 0
-		for x := 0; x < len(labels); x++ {
-			if len(labels[x]) > 0 {
-
-				if legendCount > 0 {
-					ycursor += DefaultMinimumTickVerticalSpacing
-				}
-
-				tb := r.MeasureText(labels[x])
-
-				ty := ycursor + tb.Height()
-				r.Text(labels[x], tx, ty)
-
-				th2 := tb.Height() >> 1
-
-				lx := tx + tb.Width() + lineTextGap
-				ly := ty - th2
-				lx2 := legendContent.Right - legendPadding.Right
-
-				r.SetStrokeColor(lines[x].GetStrokeColor())
-				r.SetStrokeWidth(lines[x].GetStrokeWidth())
-				r.SetStrokeDashArray(lines[x].GetStrokeDashArray())
-
-				r.MoveTo(lx, ly)
-				r.LineTo(lx2, ly)
-				r.Stroke()
-
-				ycursor += tb.Height()
-				legendCount++
-			}
-		}
-	}
 }

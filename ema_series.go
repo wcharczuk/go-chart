@@ -97,5 +97,5 @@ func (ema *EMASeries) ensureCachedValues() {
 // Render renders the series.
 func (ema *EMASeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
 	style := ema.Style.InheritFrom(defaults)
-	DrawLineSeries(r, canvasBox, xrange, yrange, style, ema)
+	Draw.LineSeries(r, canvasBox, xrange, yrange, style, ema)
 }

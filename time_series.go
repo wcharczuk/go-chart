@@ -57,5 +57,5 @@ func (ts TimeSeries) GetYAxis() YAxisType {
 // Render renders the series.
 func (ts TimeSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
 	style := ts.Style.InheritFrom(defaults)
-	DrawLineSeries(r, canvasBox, xrange, yrange, style, ts)
+	Draw.LineSeries(r, canvasBox, xrange, yrange, style, ts)
 }

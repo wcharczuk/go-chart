@@ -128,5 +128,5 @@ func (lrs *LinearRegressionSeries) computeCoefficients() {
 // Render renders the series.
 func (lrs *LinearRegressionSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
 	style := lrs.Style.InheritFrom(defaults)
-	DrawLineSeries(r, canvasBox, xrange, yrange, style, lrs)
+	Draw.LineSeries(r, canvasBox, xrange, yrange, style, lrs)
 }

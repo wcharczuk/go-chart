@@ -110,30 +110,28 @@ func (vr *vectorRenderer) Close() {
 
 // Stroke draws the path with no fill.
 func (vr *vectorRenderer) Stroke() {
-	vr.drawPath(vr.s.SVGStroke())
+	vr.drawPath(vr.s.GetStrokeOptions())
 }
 
 // Fill draws the path with no stroke.
 func (vr *vectorRenderer) Fill() {
-	vr.drawPath(vr.s.SVGFill())
+	vr.drawPath(vr.s.GetFillOptions())
 }
 
 // FillStroke draws the path with both fill and stroke.
 func (vr *vectorRenderer) FillStroke() {
-	s := vr.s.SVGFillAndStroke()
-	vr.drawPath(s)
+	vr.drawPath(vr.s.GetFillAndStrokeOptions())
 }
 
 // drawPath draws a path.
 func (vr *vectorRenderer) drawPath(s Style) {
-	vr.c.Path(strings.Join(vr.p, "\n"), &s)
+	vr.c.Path(strings.Join(vr.p, "\n"), vr.s.GetFillAndStrokeOptions())
 	vr.p = []string{} // clear the path
 }
 
 // Circle implements the interface method.
 func (vr *vectorRenderer) Circle(radius float64, x, y int) {
-	style := vr.s.SVGFillAndStroke()
-	vr.c.Circle(x, y, int(radius), &style)
+	vr.c.Circle(x, y, int(radius), vr.s.GetFillAndStrokeOptions())
 }
 
 // SetFont implements the interface method.
@@ -153,8 +151,7 @@ func (vr *vectorRenderer) SetFontSize(size float64) {
 
 // Text draws a text blob.
 func (vr *vectorRenderer) Text(body string, x, y int) {
-	style := vr.s.SVGText()
-	vr.c.Text(x, y, body, &style)
+	vr.c.Text(x, y, body, vr.s.GetTextOptions())
 }
 
 // MeasureText uses the truetype font drawer to measure the width of text.
@@ -200,22 +197,82 @@ func (c *canvas) Start(width, height int) {
 	c.w.Write([]byte(fmt.Sprintf(`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="%d" height="%d">\n`, c.width, c.height)))
 }
 
-func (c *canvas) Path(d string, style *Style) {
+func (c *canvas) Path(d string, style Style) {
 	var strokeDashArrayProperty string
 	if len(style.StrokeDashArray) > 0 {
-		strokeDashArrayProperty = style.SVGStrokeDashArray()
+		strokeDashArrayProperty = c.getStrokeDashArray(style)
 	}
-	c.w.Write([]byte(fmt.Sprintf(`<path %s d="%s" style="%s"/>\n`, strokeDashArrayProperty, d, style.SVG(c.dpi))))
+	c.w.Write([]byte(fmt.Sprintf(`<path %s d="%s" style="%s"/>\n`, strokeDashArrayProperty, d, c.styleAsSVG(style))))
 }
 
-func (c *canvas) Text(x, y int, body string, style *Style) {
-	c.w.Write([]byte(fmt.Sprintf(`<text x="%d" y="%d" style="%s">%s</text>`, x, y, style.SVG(c.dpi), body)))
+func (c *canvas) Text(x, y int, body string, style Style) {
+	c.w.Write([]byte(fmt.Sprintf(`<text x="%d" y="%d" style="%s">%s</text>`, x, y, c.styleAsSVG(style), body)))
 }
 
-func (c *canvas) Circle(x, y, r int, style *Style) {
-	c.w.Write([]byte(fmt.Sprintf(`<circle cx="%d" cy="%d" r="%d" style="%s">`, x, y, r, style.SVG(c.dpi))))
+func (c *canvas) Circle(x, y, r int, style Style) {
+	c.w.Write([]byte(fmt.Sprintf(`<circle cx="%d" cy="%d" r="%d" style="%s">`, x, y, r, c.styleAsSVG(style))))
 }
 
 func (c *canvas) End() {
 	c.w.Write([]byte("</svg>"))
+}
+
+// getStrokeDashArray returns the stroke-dasharray property of a style.
+func (c *canvas) getStrokeDashArray(s Style) string {
+	if len(s.StrokeDashArray) > 0 {
+		var values []string
+		for _, v := range s.StrokeDashArray {
+			values = append(values, fmt.Sprintf("%0.1f", v))
+		}
+		return "stroke-dasharray=\"" + strings.Join(values, ", ") + "\""
+	}
+	return ""
+}
+
+// GetFontFace returns the font face for the style.
+func (c *canvas) getFontFace(s Style) string {
+	family := "sans-serif"
+	if s.GetFont() != nil {
+		name := s.GetFont().Name(truetype.NameIDFontFamily)
+		if len(name) != 0 {
+			family = fmt.Sprintf(`'%s',%s`, name, family)
+		}
+	}
+	return fmt.Sprintf("font-family:%s", family)
+}
+
+// styleAsSVG returns the style as a svg style string.
+func (c *canvas) styleAsSVG(s Style) string {
+	sw := s.StrokeWidth
+	sc := s.StrokeColor
+	fc := s.FillColor
+	fs := s.FontSize
+	fnc := s.FontColor
+
+	strokeWidthText := "stroke-width:0"
+	if sw != 0 {
+		strokeWidthText = "stroke-width:" + fmt.Sprintf("%d", int(sw))
+	}
+
+	strokeText := "stroke:none"
+	if !sc.IsZero() {
+		strokeText = "stroke:" + sc.String()
+	}
+
+	fillText := "fill:none"
+	if !fc.IsZero() {
+		fillText = "fill:" + fc.String()
+	}
+
+	fontSizeText := ""
+	if fs != 0 {
+		fontSizeText = "font-size:" + fmt.Sprintf("%.1fpx", drawing.PointsToPixels(c.dpi, fs))
+	}
+
+	if !fnc.IsZero() {
+		fillText = "fill:" + fnc.String()
+	}
+
+	fontText := c.getFontFace(s)
+	return strings.Join([]string{strokeWidthText, strokeText, fillText, fontSizeText, fontText}, ";")
 }

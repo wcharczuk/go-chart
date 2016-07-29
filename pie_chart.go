@@ -99,14 +99,14 @@ func (pc PieChart) Render(rp RendererProvider, w io.Writer) error {
 }
 
 func (pc PieChart) drawBackground(r Renderer) {
-	DrawBox(r, Box{
+	Draw.Box(r, Box{
 		Right:  pc.GetWidth(),
 		Bottom: pc.GetHeight(),
 	}, pc.getBackgroundStyle())
 }
 
 func (pc PieChart) drawCanvas(r Renderer, canvasBox Box) {
-	DrawBox(r, canvasBox, pc.getCanvasStyle())
+	Draw.Box(r, canvasBox, pc.getCanvasStyle())
 }
 
 func (pc PieChart) drawTitle(r Renderer) {
@@ -138,7 +138,7 @@ func (pc PieChart) drawSlices(r Renderer, canvasBox Box, values []Value) {
 	var rads, delta, delta2, total float64
 	var lx, ly int
 	for index, v := range values {
-		v.Style.InheritFrom(pc.stylePieChartValue(index)).PersistToRenderer(r)
+		v.Style.InheritFrom(pc.stylePieChartValue(index)).WriteToRenderer(r)
 
 		r.MoveTo(cx, cy)
 		rads = PercentToRadians(total)
@@ -155,7 +155,7 @@ func (pc PieChart) drawSlices(r Renderer, canvasBox Box, values []Value) {
 	// draw the labels
 	total = 0
 	for index, v := range values {
-		v.Style.InheritFrom(pc.stylePieChartValue(index)).PersistToRenderer(r)
+		v.Style.InheritFrom(pc.stylePieChartValue(index)).WriteToRenderer(r)
 		if len(v.Label) > 0 {
 			delta2 = PercentToRadians(total + (v.Value / 2.0))
 			delta2 = RadianAdd(delta2, _pi2)

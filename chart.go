@@ -391,7 +391,7 @@ func (c Chart) getBackgroundStyle() Style {
 }
 
 func (c Chart) drawBackground(r Renderer) {
-	DrawBox(r, Box{
+	Draw.Box(r, Box{
 		Right:  c.GetWidth(),
 		Bottom: c.GetHeight(),
 	}, c.getBackgroundStyle())
@@ -402,7 +402,7 @@ func (c Chart) getCanvasStyle() Style {
 }
 
 func (c Chart) drawCanvas(r Renderer, canvasBox Box) {
-	DrawBox(r, canvasBox, c.getCanvasStyle())
+	Draw.Box(r, canvasBox, c.getCanvasStyle())
 }
 
 func (c Chart) drawAxes(r Renderer, canvasBox Box, xrange, yrange, yrangeAlt Range, xticks, yticks, yticksAlt []Tick) {

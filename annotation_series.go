@@ -50,7 +50,7 @@ func (as AnnotationSeries) Measure(r Renderer, canvasBox Box, xrange, yrange Ran
 			style := a.Style.InheritFrom(seriesStyle)
 			lx := canvasBox.Left + xrange.Translate(a.XValue)
 			ly := canvasBox.Bottom - yrange.Translate(a.YValue)
-			ab := MeasureAnnotation(r, canvasBox, style, lx, ly, a.Label)
+			ab := Draw.MeasureAnnotation(r, canvasBox, style, lx, ly, a.Label)
 			box.Top = MinInt(box.Top, ab.Top)
 			box.Left = MinInt(box.Left, ab.Left)
 			box.Right = MaxInt(box.Right, ab.Right)
@@ -68,7 +68,7 @@ func (as AnnotationSeries) Render(r Renderer, canvasBox Box, xrange, yrange Rang
 			style := a.Style.InheritFrom(seriesStyle)
 			lx := canvasBox.Left + xrange.Translate(a.XValue)
 			ly := canvasBox.Bottom - yrange.Translate(a.YValue)
-			DrawAnnotation(r, canvasBox, style, lx, ly, a.Label)
+			Draw.Annotation(r, canvasBox, style, lx, ly, a.Label)
 		}
 	}
 }

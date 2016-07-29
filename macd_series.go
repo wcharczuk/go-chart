@@ -193,7 +193,7 @@ func (macds *MACDSignalSeries) ensureSignal() {
 // Render renders the series.
 func (macds *MACDSignalSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
 	style := macds.Style.InheritFrom(defaults)
-	DrawLineSeries(r, canvasBox, xrange, yrange, style, macds)
+	Draw.LineSeries(r, canvasBox, xrange, yrange, style, macds)
 }
 
 // MACDLineSeries is a series that computes the inner ema1-ema2 value as a series.
@@ -285,5 +285,5 @@ func (macdl *MACDLineSeries) ensureEMASeries() {
 // Render renders the series.
 func (macdl *MACDLineSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
 	style := macdl.Style.InheritFrom(defaults)
-	DrawLineSeries(r, canvasBox, xrange, yrange, style, macdl)
+	Draw.LineSeries(r, canvasBox, xrange, yrange, style, macdl)
 }

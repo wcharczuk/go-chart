@@ -54,7 +54,7 @@ func (xa XAxis) GetGridLines(ticks []Tick) []GridLine {
 
 // Measure returns the bounds of the axis.
 func (xa XAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, ticks []Tick) Box {
-	xa.Style.InheritFrom(defaults).PersistToRenderer(r)
+	xa.Style.InheritFrom(defaults).WriteToRenderer(r)
 	sort.Sort(Ticks(ticks))
 
 	var left, right, top, bottom = math.MaxInt32, 0, math.MaxInt32, 0
@@ -82,7 +82,7 @@ func (xa XAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 
 // Render renders the axis
 func (xa XAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, ticks []Tick) {
-	xa.Style.InheritFrom(defaults).PersistToRenderer(r)
+	xa.Style.InheritFrom(defaults).WriteToRenderer(r)
 
 	r.MoveTo(canvasBox.Left, canvasBox.Bottom)
 	r.LineTo(canvasBox.Right, canvasBox.Bottom)

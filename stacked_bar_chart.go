@@ -134,7 +134,7 @@ func (sbc StackedBarChart) drawBar(r Renderer, canvasBox Box, xoffset int, bar S
 	for index, bv := range normalizedBarComponents {
 		barHeight := int(bv.Value * float64(canvasBox.Height()))
 		barBox := Box{Top: yoffset, Left: bxl, Right: bxr, Bottom: yoffset + barHeight}
-		DrawBox(r, barBox, bv.Style.InheritFrom(sbc.styleDefaultsStackedBarValue(index)))
+		Draw.Box(r, barBox, bv.Style.InheritFrom(sbc.styleDefaultsStackedBarValue(index)))
 		yoffset += barHeight
 	}
 

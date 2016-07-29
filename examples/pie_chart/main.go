@@ -10,11 +10,13 @@ import (
 
 func drawChart(res http.ResponseWriter, req *http.Request) {
 	pie := chart.PieChart{
+		Title: "test\nchart",
+		TitleStyle: chart.Style{
+			Show:     true,
+			FontSize: 32,
+		},
 		Width:  512,
 		Height: 512,
-		Canvas: chart.Style{
-			FillColor: chart.ColorLightGray,
-		},
 		Values: []chart.Value{
 			{Value: 5, Label: "Blue"},
 			{Value: 5, Label: "Green"},

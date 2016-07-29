@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/blendlabs/go-assert"
+	"github.com/wcharczuk/go-chart/drawing"
 )
 
 func TestVectorRendererPath(t *testing.T) {
@@ -49,4 +50,28 @@ func TestVectorRendererMeasureText(t *testing.T) {
 	tb := vr.MeasureText("Ljp")
 	assert.Equal(21, tb.Width())
 	assert.Equal(15, tb.Height())
+}
+
+func TestCanvasStyleSVG(t *testing.T) {
+	assert := assert.New(t)
+
+	f, err := GetDefaultFont()
+	assert.Nil(err)
+
+	set := Style{
+		StrokeColor: drawing.ColorWhite,
+		StrokeWidth: 5.0,
+		FillColor:   drawing.ColorWhite,
+		FontColor:   drawing.ColorWhite,
+		Font:        f,
+		Padding:     DefaultBackgroundPadding,
+	}
+
+	canvas := &canvas{dpi: DefaultDPI}
+
+	svgString := canvas.styleAsSVG(set)
+	assert.NotEmpty(svgString)
+	assert.True(strings.Contains(svgString, "stroke:rgba(255,255,255,1.0)"))
+	assert.True(strings.Contains(svgString, "stroke-width:5"))
+	assert.True(strings.Contains(svgString, "fill:rgba(255,255,255,1.0)"))
 }
