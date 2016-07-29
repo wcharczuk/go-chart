@@ -18,6 +18,7 @@ type PieChart struct {
 
 	Background Style
 	Canvas     Style
+	SliceStyle Style
 
 	Font        *truetype.Font
 	defaultFont *truetype.Font
@@ -214,14 +215,28 @@ func (pc PieChart) styleDefaultsPieChartValue() Style {
 }
 
 func (pc PieChart) stylePieChartValue(index int) Style {
-	return Style{
+	return pc.SliceStyle.InheritFrom(Style{
 		StrokeColor: ColorWhite,
 		StrokeWidth: 5.0,
 		FillColor:   GetAlternateColor(index),
-		FontSize:    24.0,
+		FontSize:    pc.getScaledFontSize(),
 		FontColor:   ColorWhite,
 		Font:        pc.GetFont(),
+	})
+}
+
+func (pc PieChart) getScaledFontSize() float64 {
+	effectiveDimension := MinInt(pc.GetWidth(), pc.GetHeight())
+	if effectiveDimension >= 2048 {
+		return 48.0
+	} else if effectiveDimension >= 1024 {
+		return 24.0
+	} else if effectiveDimension > 512 {
+		return 18.0
+	} else if effectiveDimension > 256 {
+		return 12.0
 	}
+	return 10.0
 }
 
 func (pc PieChart) styleDefaultsBackground() Style {

@@ -10,6 +10,8 @@ import (
 
 func drawChart(res http.ResponseWriter, req *http.Request) {
 	pie := chart.PieChart{
+		Width:  512,
+		Height: 512,
 		Canvas: chart.Style{
 			FillColor: chart.ColorLightGray,
 		},

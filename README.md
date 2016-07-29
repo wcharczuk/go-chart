@@ -31,13 +31,11 @@ Two axis:
 
 ![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/two_axis.png)
 
-Simple Moving Average:
+# Other Chart Types
 
-![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/ma_goog_ltm.png)
+Pie Chart:
 
-Bollinger Bounds:
-
-![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/spy_ltm_bbs.png)
+![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/pie_chart.png)
 
 # Code Examples
 
