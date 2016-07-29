@@ -24,8 +24,8 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 		},
 	}
 
-	res.Header().Set("Content-Type", "image/svg+xml")
-	err := pie.Render(chart.SVG, res)
+	res.Header().Set("Content-Type", "image/png")
+	err := pie.Render(chart.PNG, res)
 	if err != nil {
 		fmt.Printf("Error rendering pie chart: %v\n", err)
 	}

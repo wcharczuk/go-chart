@@ -15,7 +15,7 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 		Name: "SPY",
 		Style: chart.Style{
 			Show:        true,
-			StrokeColor: chart.GetDefaultSeriesStrokeColor(0),
+			StrokeColor: chart.GetDefaultColor(0),
 		},
 		XValues: xv,
 		YValues: yv,
