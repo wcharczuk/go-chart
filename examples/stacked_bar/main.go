@@ -21,7 +21,7 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 		},
 		Bars: []chart.StackedBar{
 			{
-				Name: "Funnel",
+				Name: "Katrina like animals that are very fat and furry.",
 				Values: []chart.Value{
 					{Value: 5, Label: "Blue"},
 					{Value: 5, Label: "Green"},

@@ -147,7 +147,11 @@ var (
 		ColorAlternateGreen,
 		ColorAlternateGray,
 		ColorAlternateYellow,
-		ColorAlternateLightGray,
+		ColorBlue,
+		ColorGreen,
+		ColorRed,
+		ColorCyan,
+		ColorOrange,
 	}
 )
 
