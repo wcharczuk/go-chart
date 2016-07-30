@@ -1,9 +1,6 @@
 package chart
 
-import (
-	"fmt"
-	"strings"
-)
+import "strings"
 
 // TextHorizontalAlign is an enum for the horizontal alignment options.
 type textHorizontalAlign int
@@ -74,7 +71,6 @@ func (t text) WrapFit(r Renderer, value string, width int, style Style) []string
 	case TextWrapWord:
 		return t.WrapFitWord(r, value, width, style)
 	}
-	fmt.Printf("text wrap: %#v\n", style.TextWrap)
 	return []string{value}
 }
 

@@ -13,8 +13,15 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 		Background: chart.Style{
 			Padding: chart.Box{Top: 50, Left: 50, Right: 50, Bottom: 50},
 		},
+		XAxis: chart.Style{
+			Show: true,
+		},
+		YAxis: chart.Style{
+			Show: true,
+		},
 		Bars: []chart.StackedBar{
 			{
+				Name: "Funnel",
 				Values: []chart.Value{
 					{Value: 5, Label: "Blue"},
 					{Value: 5, Label: "Green"},
@@ -26,6 +33,7 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 				},
 			},
 			{
+				Name: "Test",
 				Values: []chart.Value{
 					{Value: 10, Label: "Blue"},
 					{Value: 5, Label: "Green"},

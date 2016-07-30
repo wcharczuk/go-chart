@@ -2,6 +2,7 @@ package chart
 
 import (
 	"errors"
+	"fmt"
 	"io"
 
 	"github.com/golang/freetype/truetype"
@@ -17,7 +18,7 @@ type StackedBar struct {
 // GetWidth returns the width of the bar.
 func (sb StackedBar) GetWidth() int {
 	if sb.Width == 0 {
-		return 20
+		return 50
 	}
 	return sb.Width
 }
@@ -33,6 +34,9 @@ type StackedBarChart struct {
 
 	Background Style
 	Canvas     Style
+
+	XAxis Style
+	YAxis Style
 
 	BarSpacing int
 
@@ -108,6 +112,8 @@ func (sbc StackedBarChart) Render(rp RendererProvider, w io.Writer) error {
 
 	canvasBox := sbc.getAdjustedCanvasBox(sbc.getDefaultCanvasBox())
 	sbc.drawBars(r, canvasBox)
+	sbc.drawXAxis(r, canvasBox)
+	sbc.drawYAxis(r, canvasBox)
 
 	sbc.drawTitle(r)
 	for _, a := range sbc.Elements {
@@ -126,8 +132,8 @@ func (sbc StackedBarChart) drawBars(r Renderer, canvasBox Box) {
 }
 
 func (sbc StackedBarChart) drawBar(r Renderer, canvasBox Box, xoffset int, bar StackedBar) int {
-	bxl := xoffset
-	bxr := xoffset + bar.GetWidth()
+	bxl := xoffset + Math.AbsInt(bar.GetWidth()>>1-sbc.GetBarSpacing()>>1)
+	bxr := bxl + bar.GetWidth()
 
 	normalizedBarComponents := Values(bar.Values).Normalize()
 	yoffset := canvasBox.Top
@@ -141,22 +147,71 @@ func (sbc StackedBarChart) drawBar(r Renderer, canvasBox Box, xoffset int, bar S
 	return bxr
 }
 
+func (sbc StackedBarChart) drawXAxis(r Renderer, canvasBox Box) {
+	if sbc.XAxis.Show {
+		axisStyle := sbc.XAxis.InheritFrom(sbc.styleDefaultsAxes())
+		axisStyle.WriteToRenderer(r)
+
+		r.MoveTo(canvasBox.Left, canvasBox.Bottom)
+		r.LineTo(canvasBox.Right, canvasBox.Bottom)
+		r.Stroke()
+
+		r.MoveTo(canvasBox.Left, canvasBox.Bottom)
+		r.LineTo(canvasBox.Left, canvasBox.Bottom+DefaultVerticalTickHeight)
+		r.Stroke()
+
+		cursor := canvasBox.Left
+		for _, bar := range sbc.Bars {
+
+			spacing := (sbc.GetBarSpacing() >> 1)
+
+			barLabelBox := Box{
+				Top:    canvasBox.Bottom + DefaultXAxisMargin,
+				Left:   cursor,
+				Right:  cursor + bar.GetWidth() + spacing,
+				Bottom: sbc.GetHeight(),
+			}
+			if len(bar.Name) > 0 {
+				Draw.TextWithin(r, bar.Name, barLabelBox, axisStyle)
+			}
+			axisStyle.WriteToRenderer(r)
+			r.MoveTo(barLabelBox.Right, canvasBox.Bottom)
+			r.LineTo(barLabelBox.Right, canvasBox.Bottom+DefaultVerticalTickHeight)
+			r.Stroke()
+			cursor += bar.GetWidth() + spacing
+		}
+	}
+}
+
+func (sbc StackedBarChart) drawYAxis(r Renderer, canvasBox Box) {
+	if sbc.YAxis.Show {
+		axisStyle := sbc.YAxis.InheritFrom(sbc.styleDefaultsAxes())
+		axisStyle.WriteToRenderer(r)
+		r.MoveTo(canvasBox.Right, canvasBox.Top)
+		r.LineTo(canvasBox.Right, canvasBox.Bottom)
+		r.Stroke()
+
+		r.MoveTo(canvasBox.Right, canvasBox.Bottom)
+		r.LineTo(canvasBox.Right+DefaultHorizontalTickWidth, canvasBox.Bottom)
+		r.Stroke()
+
+		ticks := Sequence.Float64(1.0, 0.0, 0.2)
+		for _, t := range ticks {
+			ty := canvasBox.Bottom - int(t*float64(canvasBox.Height()))
+			r.MoveTo(canvasBox.Right, ty)
+			r.LineTo(canvasBox.Right+DefaultHorizontalTickWidth, ty)
+			r.Stroke()
+
+			text := fmt.Sprintf("%0.0f%%", t*100)
+			Draw.Text(r, text, canvasBox.Right+DefaultYAxisMargin, ty, axisStyle)
+		}
+
+	}
+}
+
 func (sbc StackedBarChart) drawTitle(r Renderer) {
 	if len(sbc.Title) > 0 && sbc.TitleStyle.Show {
-		r.SetFont(sbc.TitleStyle.GetFont(sbc.GetFont()))
-		r.SetFontColor(sbc.TitleStyle.GetFontColor(DefaultTextColor))
-		titleFontSize := sbc.TitleStyle.GetFontSize(DefaultTitleFontSize)
-		r.SetFontSize(titleFontSize)
-
-		textBox := r.MeasureText(sbc.Title)
-
-		textWidth := textBox.Width()
-		textHeight := textBox.Height()
-
-		titleX := (sbc.GetWidth() >> 1) - (textWidth >> 1)
-		titleY := sbc.TitleStyle.Padding.GetTop(DefaultTitleTop) + textHeight
-
-		r.Text(sbc.Title, titleX, titleY)
+		Draw.TextWithin(r, sbc.Title, sbc.Box(), sbc.styleDefaultsTitle())
 	}
 }
 
@@ -173,22 +228,22 @@ func (sbc StackedBarChart) getAdjustedCanvasBox(canvasBox Box) Box {
 		}
 	}
 
-	return canvasBox.OuterConstrain(sbc.Box(), Box{
+	return Box{
 		Top:    canvasBox.Top,
 		Left:   canvasBox.Left,
 		Right:  canvasBox.Left + totalWidth,
 		Bottom: canvasBox.Bottom,
-	})
+	}
 }
 
 // Box returns the chart bounds as a box.
 func (sbc StackedBarChart) Box() Box {
-	dpr := sbc.Background.Padding.GetRight(DefaultBackgroundPadding.Right)
-	dpb := sbc.Background.Padding.GetBottom(DefaultBackgroundPadding.Bottom)
+	dpr := sbc.Background.Padding.GetRight(10)
+	dpb := sbc.Background.Padding.GetBottom(50)
 
 	return Box{
-		Top:    sbc.Background.Padding.GetTop(DefaultBackgroundPadding.Top),
-		Left:   sbc.Background.Padding.GetLeft(DefaultBackgroundPadding.Left),
+		Top:    20,
+		Left:   20,
 		Right:  sbc.GetWidth() - dpr,
 		Bottom: sbc.GetHeight() - dpb,
 	}
@@ -202,6 +257,42 @@ func (sbc StackedBarChart) styleDefaultsStackedBarValue(index int) Style {
 	}
 }
 
+func (sbc StackedBarChart) styleDefaultsTitle() Style {
+	return sbc.TitleStyle.InheritFrom(Style{
+		FontColor:           DefaultTextColor,
+		Font:                sbc.GetFont(),
+		FontSize:            sbc.getTitleFontSize(),
+		TextHorizontalAlign: TextHorizontalAlignCenter,
+		TextVerticalAlign:   TextVerticalAlignTop,
+		TextWrap:            TextWrapWord,
+	})
+}
+
+func (sbc StackedBarChart) getTitleFontSize() float64 {
+	effectiveDimension := Math.MinInt(sbc.GetWidth(), sbc.GetHeight())
+	if effectiveDimension >= 2048 {
+		return 48
+	} else if effectiveDimension >= 1024 {
+		return 24
+	} else if effectiveDimension >= 512 {
+		return 18
+	} else if effectiveDimension >= 256 {
+		return 12
+	}
+	return 10
+}
+
+func (sbc StackedBarChart) styleDefaultsAxes() Style {
+	return Style{
+		StrokeColor:         DefaultAxisColor,
+		Font:                sbc.GetFont(),
+		FontSize:            DefaultAxisFontSize,
+		FontColor:           DefaultAxisColor,
+		TextHorizontalAlign: TextHorizontalAlignCenter,
+		TextVerticalAlign:   TextVerticalAlignTop,
+		TextWrap:            TextWrapWord,
+	}
+}
 func (sbc StackedBarChart) styleDefaultsElements() Style {
 	return Style{
 		Font: sbc.GetFont(),
