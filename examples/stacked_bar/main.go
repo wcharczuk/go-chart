@@ -10,6 +10,7 @@ import (
 
 func drawChart(res http.ResponseWriter, req *http.Request) {
 	sbc := chart.StackedBarChart{
+		Height: 512,
 		XAxis: chart.Style{
 			Show: true,
 		},
@@ -48,8 +49,8 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 		},
 	}
 
-	res.Header().Set("Content-Type", "image/svg+xml")
-	err := sbc.Render(chart.SVG, res)
+	res.Header().Set("Content-Type", "image/png")
+	err := sbc.Render(chart.PNG, res)
 	if err != nil {
 		fmt.Printf("Error rendering chart: %v\n", err)
 	}
