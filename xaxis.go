@@ -110,20 +110,22 @@ func (xa XAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 	for index, t := range ticks {
 		v := t.Value
 		lx := ra.Translate(v)
-		tb := r.MeasureText(t.Label)
 
 		tx = canvasBox.Left + lx
-		ty = canvasBox.Bottom + DefaultXAxisMargin + tb.Height()
 
 		tickStyle.GetStrokeOptions().WriteToRenderer(r)
 		r.MoveTo(tx, canvasBox.Bottom)
 		r.LineTo(tx, canvasBox.Bottom+DefaultVerticalTickHeight)
 		r.Stroke()
 
+		tickStyle.GetTextOptions().WriteToRenderer(r)
+		tb := r.MeasureText(t.Label)
+
 		switch tp {
-		case TickPositionUnderTick:
-			tickStyle.GetTextOptions().WriteToRenderer(r)
+		case TickPositionUnderTick, TickPositionUnset:
+			ty = canvasBox.Bottom + DefaultXAxisMargin + tb.Height()
 			r.Text(t.Label, tx-tb.Width()>>1, ty)
+			break
 		case TickPositionBetweenTicks:
 			if index > 0 {
 				llx := ra.Translate(ticks[index-1].Value)
@@ -135,6 +137,7 @@ func (xa XAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 					Bottom: canvasBox.Bottom + DefaultXAxisMargin + tb.Height(),
 				}, tickStyle.InheritFrom(Style{TextHorizontalAlign: TextHorizontalAlignCenter}))
 			}
+			break
 		}
 
 	}
