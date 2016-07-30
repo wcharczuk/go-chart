@@ -44,8 +44,8 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 				Name: "Test 2",
 				Values: []chart.Value{
 					{Value: 10, Label: "Blue"},
-					{Value: 5, Label: "Green"},
-					{Value: 1, Label: "Gray"},
+					{Value: 6, Label: "Green"},
+					{Value: 4, Label: "Gray"},
 				},
 			},
 		},
