@@ -64,15 +64,12 @@ type TextStyle struct {
 
 type text struct{}
 
-func (t text) WrapFit(r Renderer, value string, width int, style Style, wrapOption textWrap) []string {
-	valueBox := r.MeasureText(value)
-	if valueBox.Width() > width {
-		switch wrapOption {
-		case TextWrapRune:
-			return t.WrapFitRune(r, value, width, style)
-		case TextWrapWord:
-			return t.WrapFitWord(r, value, width, style)
-		}
+func (t text) WrapFit(r Renderer, value string, width int, style Style) []string {
+	switch style.TextWrap {
+	case TextWrapRune:
+		return t.WrapFitRune(r, value, width, style)
+	case TextWrapWord:
+		return t.WrapFitWord(r, value, width, style)
 	}
 	return []string{value}
 }
@@ -141,6 +138,20 @@ func (t text) WrapFitRune(r Renderer, value string, width int, style Style) []st
 
 func (t text) Trim(value string) string {
 	return strings.Trim(value, " \t\n\r")
+}
+
+func (t text) MeasureLines(r Renderer, lines []string, style Style) Box {
+	style.WriteTextOptionsToRenderer(r)
+	var output Box
+	for index, line := range lines {
+		lineBox := r.MeasureText(line)
+		output.Right = Math.MaxInt(lineBox.Right, output.Right)
+		output.Bottom += lineBox.Height()
+		if index < len(lines)-1 {
+			output.Bottom += +style.GetTextLineSpacing()
+		}
+	}
+	return output
 }
 
 func (t text) appendLast(lines []string, text string) []string {

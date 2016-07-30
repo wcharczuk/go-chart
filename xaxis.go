@@ -66,10 +66,10 @@ func (xa XAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 		tx := canvasBox.Left + lx
 		ty := canvasBox.Bottom + DefaultXAxisMargin + tb.Height()
 
-		top = MinInt(top, canvasBox.Bottom)
-		left = MinInt(left, tx-(tb.Width()>>1))
-		right = MaxInt(right, tx+(tb.Width()>>1))
-		bottom = MaxInt(bottom, ty)
+		top = Math.MinInt(top, canvasBox.Bottom)
+		left = Math.MinInt(left, tx-(tb.Width()>>1))
+		right = Math.MaxInt(right, tx+(tb.Width()>>1))
+		bottom = Math.MaxInt(bottom, ty)
 	}
 
 	return Box{

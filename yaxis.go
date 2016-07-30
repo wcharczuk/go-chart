@@ -85,13 +85,13 @@ func (ya YAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 
 		if ya.AxisType == YAxisPrimary {
 			minx = canvasBox.Right
-			maxx = MaxInt(maxx, tx+tb.Width())
+			maxx = Math.MaxInt(maxx, tx+tb.Width())
 		} else if ya.AxisType == YAxisSecondary {
-			minx = MinInt(minx, finalTextX)
-			maxx = MaxInt(maxx, tx)
+			minx = Math.MinInt(minx, finalTextX)
+			maxx = Math.MaxInt(maxx, tx)
 		}
-		miny = MinInt(miny, ly-tb.Height()>>1)
-		maxy = MaxInt(maxy, ly+tb.Height()>>1)
+		miny = Math.MinInt(miny, ly-tb.Height()>>1)
+		maxy = Math.MaxInt(maxy, ly+tb.Height()>>1)
 	}
 
 	return Box{

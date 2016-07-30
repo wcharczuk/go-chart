@@ -11,8 +11,8 @@ func TestContinuousSeries(t *testing.T) {
 
 	cs := ContinuousSeries{
 		Name:    "Test Series",
-		XValues: Seq(1.0, 10.0),
-		YValues: Seq(1.0, 10.0),
+		XValues: Sequence.Float64(1.0, 10.0),
+		YValues: Sequence.Float64(1.0, 10.0),
 	}
 
 	assert.Equal("Test Series", cs.GetName())

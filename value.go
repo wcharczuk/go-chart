@@ -21,18 +21,18 @@ func (vs Values) Values() []float64 {
 
 // ValuesNormalized returns normalized values.
 func (vs Values) ValuesNormalized() []float64 {
-	return Normalize(vs.Values()...)
+	return Math.Normalize(vs.Values()...)
 }
 
 // Normalize returns the values normalized.
 func (vs Values) Normalize() []Value {
 	output := make([]Value, len(vs))
-	total := Sum(vs.Values()...)
+	total := Math.Sum(vs.Values()...)
 	for index, v := range vs {
 		output[index] = Value{
 			Style: v.Style,
 			Label: v.Label,
-			Value: RoundDown(v.Value/total, 0.0001),
+			Value: Math.RoundDown(v.Value/total, 0.0001),
 		}
 	}
 	return output

@@ -230,8 +230,8 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 		yrange.SetMax(maxy)
 
 		delta := yrange.GetDelta()
-		roundTo := GetRoundToForDelta(delta)
-		rmin, rmax := RoundDown(yrange.GetMin(), roundTo), RoundUp(yrange.GetMax(), roundTo)
+		roundTo := Math.GetRoundToForDelta(delta)
+		rmin, rmax := Math.RoundDown(yrange.GetMin(), roundTo), Math.RoundUp(yrange.GetMax(), roundTo)
 		yrange.SetMin(rmin)
 		yrange.SetMax(rmax)
 	}
@@ -249,8 +249,8 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 		yrangeAlt.SetMax(maxya)
 
 		delta := yrangeAlt.GetDelta()
-		roundTo := GetRoundToForDelta(delta)
-		rmin, rmax := RoundDown(yrangeAlt.GetMin(), roundTo), RoundUp(yrangeAlt.GetMax(), roundTo)
+		roundTo := Math.GetRoundToForDelta(delta)
+		rmin, rmax := Math.RoundDown(yrangeAlt.GetMin(), roundTo), Math.RoundUp(yrangeAlt.GetMax(), roundTo)
 		yrangeAlt.SetMin(rmin)
 		yrangeAlt.SetMax(rmax)
 	}

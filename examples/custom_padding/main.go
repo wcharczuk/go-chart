@@ -30,8 +30,8 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 		},
 		Series: []chart.Series{
 			chart.ContinuousSeries{
-				XValues: chart.Seq(1.0, 100.0),
-				YValues: chart.SeqRand(100.0, 256.0),
+				XValues: chart.Sequence.Float64(1.0, 100.0),
+				YValues: chart.Sequence.Random(100.0, 256.0),
 			},
 		},
 	}
@@ -57,8 +57,8 @@ func drawChartDefault(res http.ResponseWriter, req *http.Request) {
 		},
 		Series: []chart.Series{
 			chart.ContinuousSeries{
-				XValues: chart.Seq(1.0, 100.0),
-				YValues: chart.SeqRand(100.0, 256.0),
+				XValues: chart.Sequence.Float64(1.0, 100.0),
+				YValues: chart.Sequence.Random(100.0, 256.0),
 			},
 		},
 	}

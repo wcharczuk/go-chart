@@ -38,7 +38,7 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 
 	//note we have to do this as a separate step because we need a reference to graph
 	graph.Elements = []chart.Renderable{
-		chart.CreateLegend(&graph),
+		chart.Legend(&graph),
 	}
 
 	res.Header().Set("Content-Type", "image/png")

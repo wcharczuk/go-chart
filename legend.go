@@ -68,7 +68,7 @@ func Legend(c *Chart, userDefaults ...Style) Renderable {
 				}
 				legendContent.Bottom += tb.Height()
 				right := legendContent.Left + tb.Width() + lineTextGap + lineLengthMinimum
-				legendContent.Right = MaxInt(legendContent.Right, right)
+				legendContent.Right = Math.MaxInt(legendContent.Right, right)
 				labelCount++
 			}
 		}

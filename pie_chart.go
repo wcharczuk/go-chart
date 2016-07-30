@@ -111,26 +111,13 @@ func (pc PieChart) drawCanvas(r Renderer, canvasBox Box) {
 
 func (pc PieChart) drawTitle(r Renderer) {
 	if len(pc.Title) > 0 && pc.TitleStyle.Show {
-		r.SetFont(pc.TitleStyle.GetFont(pc.GetFont()))
-		r.SetFontColor(pc.TitleStyle.GetFontColor(DefaultTextColor))
-		titleFontSize := pc.TitleStyle.GetFontSize(DefaultTitleFontSize)
-		r.SetFontSize(titleFontSize)
-
-		textBox := r.MeasureText(pc.Title)
-
-		textWidth := textBox.Width()
-		textHeight := textBox.Height()
-
-		titleX := (pc.GetWidth() >> 1) - (textWidth >> 1)
-		titleY := pc.TitleStyle.Padding.GetTop(DefaultTitleTop) + textHeight
-
-		r.Text(pc.Title, titleX, titleY)
+		Draw.TextWithin(r, pc.Title, pc.Box(), pc.styleDefaultsTitle())
 	}
 }
 
 func (pc PieChart) drawSlices(r Renderer, canvasBox Box, values []Value) {
 	cx, cy := canvasBox.Center()
-	diameter := MinInt(canvasBox.Width(), canvasBox.Height())
+	diameter := Math.MinInt(canvasBox.Width(), canvasBox.Height())
 	radius := float64(diameter >> 1)
 	labelRadius := (radius * 2.0) / 3.0
 
@@ -141,8 +128,8 @@ func (pc PieChart) drawSlices(r Renderer, canvasBox Box, values []Value) {
 		v.Style.InheritFrom(pc.stylePieChartValue(index)).WriteToRenderer(r)
 
 		r.MoveTo(cx, cy)
-		rads = PercentToRadians(total)
-		delta = PercentToRadians(v.Value)
+		rads = Math.PercentToRadians(total)
+		delta = Math.PercentToRadians(v.Value)
 
 		r.ArcTo(cx, cy, radius, radius, rads, delta)
 
@@ -157,9 +144,9 @@ func (pc PieChart) drawSlices(r Renderer, canvasBox Box, values []Value) {
 	for index, v := range values {
 		v.Style.InheritFrom(pc.stylePieChartValue(index)).WriteToRenderer(r)
 		if len(v.Label) > 0 {
-			delta2 = PercentToRadians(total + (v.Value / 2.0))
-			delta2 = RadianAdd(delta2, _pi2)
-			lx, ly = CirclePoint(cx, cy, labelRadius, delta2)
+			delta2 = Math.PercentToRadians(total + (v.Value / 2.0))
+			delta2 = Math.RadianAdd(delta2, _pi2)
+			lx, ly = Math.CirclePoint(cx, cy, labelRadius, delta2)
 
 			tb := r.MeasureText(v.Label)
 			lx = lx - (tb.Width() >> 1)
@@ -180,7 +167,7 @@ func (pc PieChart) getDefaultCanvasBox() Box {
 }
 
 func (pc PieChart) getCircleAdjustedCanvasBox(canvasBox Box) Box {
-	circleDiameter := MinInt(canvasBox.Width(), canvasBox.Height())
+	circleDiameter := Math.MinInt(canvasBox.Width(), canvasBox.Height())
 
 	square := Box{
 		Right:  circleDiameter,
@@ -226,7 +213,7 @@ func (pc PieChart) stylePieChartValue(index int) Style {
 }
 
 func (pc PieChart) getScaledFontSize() float64 {
-	effectiveDimension := MinInt(pc.GetWidth(), pc.GetHeight())
+	effectiveDimension := Math.MinInt(pc.GetWidth(), pc.GetHeight())
 	if effectiveDimension >= 2048 {
 		return 48.0
 	} else if effectiveDimension >= 1024 {
@@ -251,6 +238,17 @@ func (pc PieChart) styleDefaultsElements() Style {
 	return Style{
 		Font: pc.GetFont(),
 	}
+}
+
+func (pc PieChart) styleDefaultsTitle() Style {
+	return pc.TitleStyle.InheritFrom(Style{
+		FontColor:           DefaultTextColor,
+		Font:                pc.GetFont(),
+		FontSize:            24.0,
+		TextHorizontalAlign: TextHorizontalAlignCenter,
+		TextVerticalAlign:   TextVerticalAlignTop,
+		TextWrap:            TextWrapNone,
+	})
 }
 
 // Box returns the chart bounds as a box.

@@ -11,8 +11,8 @@ func TestLinearRegressionSeries(t *testing.T) {
 
 	mainSeries := ContinuousSeries{
 		Name:    "A test series",
-		XValues: Seq(1.0, 100.0),
-		YValues: Seq(1.0, 100.0),
+		XValues: Sequence.Float64(1.0, 100.0),
+		YValues: Sequence.Float64(1.0, 100.0),
 	}
 
 	linRegSeries := &LinearRegressionSeries{
@@ -33,8 +33,8 @@ func TestLinearRegressionSeriesDesc(t *testing.T) {
 
 	mainSeries := ContinuousSeries{
 		Name:    "A test series",
-		XValues: Seq(100.0, 1.0),
-		YValues: Seq(100.0, 1.0),
+		XValues: Sequence.Float64(100.0, 1.0),
+		YValues: Sequence.Float64(100.0, 1.0),
 	}
 
 	linRegSeries := &LinearRegressionSeries{
@@ -55,8 +55,8 @@ func TestLinearRegressionSeriesWindowAndOffset(t *testing.T) {
 
 	mainSeries := ContinuousSeries{
 		Name:    "A test series",
-		XValues: Seq(100.0, 1.0),
-		YValues: Seq(100.0, 1.0),
+		XValues: Sequence.Float64(100.0, 1.0),
+		YValues: Sequence.Float64(100.0, 1.0),
 	}
 
 	linRegSeries := &LinearRegressionSeries{

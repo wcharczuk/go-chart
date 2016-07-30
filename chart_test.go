@@ -384,8 +384,8 @@ func TestChartRegressionBadRangesByUser(t *testing.T) {
 		},
 		Series: []Series{
 			ContinuousSeries{
-				XValues: Seq(1.0, 10.0),
-				YValues: Seq(1.0, 10.0),
+				XValues: Sequence.Float64(1.0, 10.0),
+				YValues: Sequence.Float64(1.0, 10.0),
 			},
 		},
 	}

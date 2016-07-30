@@ -11,8 +11,8 @@ func TestHistogramSeries(t *testing.T) {
 
 	cs := ContinuousSeries{
 		Name:    "Test Series",
-		XValues: Seq(1.0, 20.0),
-		YValues: Seq(10.0, -10.0),
+		XValues: Sequence.Float64(1.0, 20.0),
+		YValues: Sequence.Float64(10.0, -10.0),
 	}
 
 	hs := HistogramSeries{

@@ -66,12 +66,12 @@ func (b Box) GetBottom(defaults ...int) int {
 
 // Width returns the width
 func (b Box) Width() int {
-	return AbsInt(b.Right - b.Left)
+	return Math.AbsInt(b.Right - b.Left)
 }
 
 // Height returns the height
 func (b Box) Height() int {
-	return AbsInt(b.Bottom - b.Top)
+	return Math.AbsInt(b.Bottom - b.Top)
 }
 
 // Center returns the center of the box
@@ -122,10 +122,10 @@ func (b Box) Equals(other Box) bool {
 // Grow grows a box based on another box.
 func (b Box) Grow(other Box) Box {
 	return Box{
-		Top:    MinInt(b.Top, other.Top),
-		Left:   MinInt(b.Left, other.Left),
-		Right:  MaxInt(b.Right, other.Right),
-		Bottom: MaxInt(b.Bottom, other.Bottom),
+		Top:    Math.MinInt(b.Top, other.Top),
+		Left:   Math.MinInt(b.Left, other.Left),
+		Right:  Math.MaxInt(b.Right, other.Right),
+		Bottom: Math.MaxInt(b.Bottom, other.Bottom),
 	}
 }
 
@@ -186,10 +186,10 @@ func (b Box) Fit(other Box) Box {
 func (b Box) Constrain(other Box) Box {
 	newBox := b.Clone()
 
-	newBox.Top = MaxInt(newBox.Top, other.Top)
-	newBox.Left = MaxInt(newBox.Left, other.Left)
-	newBox.Right = MinInt(newBox.Right, other.Right)
-	newBox.Bottom = MinInt(newBox.Bottom, other.Bottom)
+	newBox.Top = Math.MaxInt(newBox.Top, other.Top)
+	newBox.Left = Math.MaxInt(newBox.Left, other.Left)
+	newBox.Right = Math.MinInt(newBox.Right, other.Right)
+	newBox.Bottom = Math.MinInt(newBox.Bottom, other.Bottom)
 
 	return newBox
 }

@@ -10,7 +10,7 @@ import (
 func TestMinAndMax(t *testing.T) {
 	assert := assert.New(t)
 	values := []float64{1.0, 2.0, 3.0, 4.0}
-	min, max := MinAndMax(values...)
+	min, max := Math.MinAndMax(values...)
 	assert.Equal(1.0, min)
 	assert.Equal(4.0, max)
 }
@@ -18,7 +18,7 @@ func TestMinAndMax(t *testing.T) {
 func TestMinAndMaxReversed(t *testing.T) {
 	assert := assert.New(t)
 	values := []float64{4.0, 2.0, 3.0, 1.0}
-	min, max := MinAndMax(values...)
+	min, max := Math.MinAndMax(values...)
 	assert.Equal(1.0, min)
 	assert.Equal(4.0, max)
 }
@@ -26,7 +26,7 @@ func TestMinAndMaxReversed(t *testing.T) {
 func TestMinAndMaxEmpty(t *testing.T) {
 	assert := assert.New(t)
 	values := []float64{}
-	min, max := MinAndMax(values...)
+	min, max := Math.MinAndMax(values...)
 	assert.Equal(0.0, min)
 	assert.Equal(0.0, max)
 }
@@ -39,7 +39,7 @@ func TestMinAndMaxOfTime(t *testing.T) {
 		time.Now().AddDate(0, 0, -3),
 		time.Now().AddDate(0, 0, -4),
 	}
-	min, max := MinAndMaxOfTime(values...)
+	min, max := Math.MinAndMaxOfTime(values...)
 	assert.Equal(values[3], min)
 	assert.Equal(values[0], max)
 }
@@ -52,7 +52,7 @@ func TestMinAndMaxOfTimeReversed(t *testing.T) {
 		time.Now().AddDate(0, 0, -3),
 		time.Now().AddDate(0, 0, -1),
 	}
-	min, max := MinAndMaxOfTime(values...)
+	min, max := Math.MinAndMaxOfTime(values...)
 	assert.Equal(values[0], min)
 	assert.Equal(values[3], max)
 }
@@ -60,66 +60,45 @@ func TestMinAndMaxOfTimeReversed(t *testing.T) {
 func TestMinAndMaxOfTimeEmpty(t *testing.T) {
 	assert := assert.New(t)
 	values := []time.Time{}
-	min, max := MinAndMaxOfTime(values...)
+	min, max := Math.MinAndMaxOfTime(values...)
 	assert.Equal(time.Time{}, min)
 	assert.Equal(time.Time{}, max)
-}
-
-func TestSlices(t *testing.T) {
-	assert := assert.New(t)
-
-	s := Slices(10, 100)
-	assert.Len(s, 10)
-	assert.Equal(0, s[0])
-	assert.Equal(10, s[1])
-	assert.Equal(20, s[2])
-	assert.Equal(90, s[9])
 }
 
 func TestGetRoundToForDelta(t *testing.T) {
 	assert := assert.New(t)
 
-	assert.Equal(100.0, GetRoundToForDelta(1001.00))
-	assert.Equal(10.0, GetRoundToForDelta(101.00))
-	assert.Equal(1.0, GetRoundToForDelta(11.00))
+	assert.Equal(100.0, Math.GetRoundToForDelta(1001.00))
+	assert.Equal(10.0, Math.GetRoundToForDelta(101.00))
+	assert.Equal(1.0, Math.GetRoundToForDelta(11.00))
 }
 
 func TestRoundUp(t *testing.T) {
 	assert := assert.New(t)
-	assert.Equal(0.5, RoundUp(0.49, 0.1))
-	assert.Equal(1.0, RoundUp(0.51, 1.0))
-	assert.Equal(0.4999, RoundUp(0.49988, 0.0001))
+	assert.Equal(0.5, Math.RoundUp(0.49, 0.1))
+	assert.Equal(1.0, Math.RoundUp(0.51, 1.0))
+	assert.Equal(0.4999, Math.RoundUp(0.49988, 0.0001))
 }
 
 func TestRoundDown(t *testing.T) {
 	assert := assert.New(t)
-	assert.Equal(0.5, RoundDown(0.51, 0.1))
-	assert.Equal(1.0, RoundDown(1.01, 1.0))
-	assert.Equal(0.5001, RoundDown(0.50011, 0.0001))
-}
-
-func TestSeq(t *testing.T) {
-	assert := assert.New(t)
-
-	asc := Seq(1.0, 10.0)
-	assert.Len(asc, 10)
-
-	desc := Seq(10.0, 1.0)
-	assert.Len(desc, 10)
+	assert.Equal(0.5, Math.RoundDown(0.51, 0.1))
+	assert.Equal(1.0, Math.RoundDown(1.01, 1.0))
+	assert.Equal(0.5001, Math.RoundDown(0.50011, 0.0001))
 }
 
 func TestPercentDifference(t *testing.T) {
 	assert := assert.New(t)
 
-	assert.Equal(0.5, PercentDifference(1.0, 1.5))
-	assert.Equal(-0.5, PercentDifference(2.0, 1.0))
+	assert.Equal(0.5, Math.PercentDifference(1.0, 1.5))
+	assert.Equal(-0.5, Math.PercentDifference(2.0, 1.0))
 }
 
 func TestNormalize(t *testing.T) {
 	assert := assert.New(t)
 
 	values := []float64{10, 9, 8, 7, 6}
-	normalized := Normalize(values...)
+	normalized := Math.Normalize(values...)
 	assert.Len(normalized, 5)
 	assert.Equal(0.25, normalized[0])
 	assert.Equal(0.1499, normalized[4])
@@ -153,7 +132,7 @@ func TestDegreesToRadians(t *testing.T) {
 	assert := assert.New(t)
 
 	for d, r := range _degreesToRadians {
-		assert.Equal(r, DegreesToRadians(d))
+		assert.Equal(r, Math.DegreesToRadians(d))
 	}
 }
 
@@ -161,7 +140,7 @@ func TestPercentToRadians(t *testing.T) {
 	assert := assert.New(t)
 
 	for d, r := range _degreesToRadians {
-		assert.Equal(r, PercentToRadians(d/360.0))
+		assert.Equal(r, Math.PercentToRadians(d/360.0))
 	}
 }
 
@@ -169,15 +148,15 @@ func TestRadiansToDegrees(t *testing.T) {
 	assert := assert.New(t)
 
 	for d, r := range _degreesToRadians {
-		assert.Equal(d, RadiansToDegrees(r))
+		assert.Equal(d, Math.RadiansToDegrees(r))
 	}
 }
 
 func TestRadianAdd(t *testing.T) {
 	assert := assert.New(t)
 
-	assert.Equal(_pi, RadianAdd(_pi2, _pi2))
-	assert.Equal(_3pi2, RadianAdd(_pi2, _pi))
-	assert.Equal(_pi, RadianAdd(_pi, _2pi))
-	assert.Equal(_pi, RadianAdd(_pi, -_2pi))
+	assert.Equal(_pi, Math.RadianAdd(_pi2, _pi2))
+	assert.Equal(_3pi2, Math.RadianAdd(_pi2, _pi))
+	assert.Equal(_pi, Math.RadianAdd(_pi, _2pi))
+	assert.Equal(_pi, Math.RadianAdd(_pi, -_2pi))
 }

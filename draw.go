@@ -10,7 +10,7 @@ var (
 type draw struct{}
 
 // LineSeries draws a line series with a renderer.
-func (d draw) LineSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, vs ValueProvider) {
+func (d draw) LineSeries(r Renderer, canvasBox Box, xrange, yrange Range, style Style, vs ValueProvider) {
 	if vs.Len() == 0 {
 		return
 	}
@@ -25,7 +25,7 @@ func (d draw) LineSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Styl
 	var vx, vy float64
 	var x, y int
 
-	fill := s.GetFillColor()
+	fill := style.GetFillColor()
 	if !fill.IsZero() {
 		r.SetFillColor(fill)
 		r.MoveTo(x0, y0)
@@ -41,9 +41,9 @@ func (d draw) LineSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Styl
 		r.Fill()
 	}
 
-	r.SetStrokeColor(s.GetStrokeColor())
-	r.SetStrokeDashArray(s.GetStrokeDashArray())
-	r.SetStrokeWidth(s.GetStrokeWidth(DefaultStrokeWidth))
+	r.SetStrokeColor(style.GetStrokeColor())
+	r.SetStrokeDashArray(style.GetStrokeDashArray())
+	r.SetStrokeWidth(style.GetStrokeWidth())
 
 	r.MoveTo(x0, y0)
 	for i := 1; i < vs.Len(); i++ {
@@ -56,16 +56,13 @@ func (d draw) LineSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Styl
 }
 
 // BoundedSeries draws a series that implements BoundedValueProvider.
-func (d draw) BoundedSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, bbs BoundedValueProvider, drawOffsetIndexes ...int) {
+func (d draw) BoundedSeries(r Renderer, canvasBox Box, xrange, yrange Range, style Style, bbs BoundedValueProvider, drawOffsetIndexes ...int) {
 	drawOffsetIndex := 0
 	if len(drawOffsetIndexes) > 0 {
 		drawOffsetIndex = drawOffsetIndexes[0]
 	}
 
-	r.SetStrokeColor(s.GetStrokeColor())
-	r.SetStrokeDashArray(s.GetStrokeDashArray())
-	r.SetStrokeWidth(s.GetStrokeWidth())
-	r.SetFillColor(s.GetFillColor())
+	style.WriteToRenderer(r)
 
 	cb := canvasBox.Bottom
 	cl := canvasBox.Left
@@ -110,7 +107,7 @@ func (d draw) BoundedSeries(r Renderer, canvasBox Box, xrange, yrange Range, s S
 }
 
 // HistogramSeries draws a value provider as boxes from 0.
-func (d draw) HistogramSeries(r Renderer, canvasBox Box, xrange, yrange Range, s Style, vs ValueProvider, barWidths ...int) {
+func (d draw) HistogramSeries(r Renderer, canvasBox Box, xrange, yrange Range, style Style, vs ValueProvider, barWidths ...int) {
 	if vs.Len() == 0 {
 		return
 	}
@@ -137,30 +134,25 @@ func (d draw) HistogramSeries(r Renderer, canvasBox Box, xrange, yrange Range, s
 			Left:   x - (barWidth >> 1),
 			Right:  x + (barWidth >> 1),
 			Bottom: cb - y,
-		}, s)
+		}, style)
 	}
 }
 
 // MeasureAnnotation measures how big an annotation would be.
-func (d draw) MeasureAnnotation(r Renderer, canvasBox Box, s Style, lx, ly int, label string) Box {
-	r.SetFillColor(s.GetFillColor(DefaultAnnotationFillColor))
-	r.SetStrokeColor(s.GetStrokeColor())
-	r.SetStrokeWidth(s.GetStrokeWidth())
-	r.SetFont(s.GetFont())
-	r.SetFontColor(s.GetFontColor(DefaultTextColor))
-	r.SetFontSize(s.GetFontSize(DefaultAnnotationFontSize))
+func (d draw) MeasureAnnotation(r Renderer, canvasBox Box, style Style, lx, ly int, label string) Box {
+	style.WriteToRenderer(r)
 
 	textBox := r.MeasureText(label)
 	textWidth := textBox.Width()
 	textHeight := textBox.Height()
 	halfTextHeight := textHeight >> 1
 
-	pt := s.Padding.GetTop(DefaultAnnotationPadding.Top)
-	pl := s.Padding.GetLeft(DefaultAnnotationPadding.Left)
-	pr := s.Padding.GetRight(DefaultAnnotationPadding.Right)
-	pb := s.Padding.GetBottom(DefaultAnnotationPadding.Bottom)
+	pt := style.Padding.GetTop(DefaultAnnotationPadding.Top)
+	pl := style.Padding.GetLeft(DefaultAnnotationPadding.Left)
+	pr := style.Padding.GetRight(DefaultAnnotationPadding.Right)
+	pb := style.Padding.GetBottom(DefaultAnnotationPadding.Bottom)
 
-	strokeWidth := s.GetStrokeWidth()
+	strokeWidth := style.GetStrokeWidth()
 
 	top := ly - (pt + halfTextHeight)
 	right := lx + pl + pr + textWidth + DefaultAnnotationDeltaWidth + int(strokeWidth)
@@ -176,14 +168,7 @@ func (d draw) MeasureAnnotation(r Renderer, canvasBox Box, s Style, lx, ly int, 
 
 // Annotation draws an anotation with a renderer.
 func (d draw) Annotation(r Renderer, canvasBox Box, style Style, lx, ly int, label string) {
-	r.SetFillColor(style.GetFillColor())
-	r.SetStrokeColor(style.GetStrokeColor())
-	r.SetStrokeWidth(style.GetStrokeWidth())
-	r.SetStrokeDashArray(style.GetStrokeDashArray())
-
-	r.SetFont(style.GetFont())
-	r.SetFontColor(style.GetFontColor(DefaultTextColor))
-	r.SetFontSize(style.GetFontSize(DefaultAnnotationFontSize))
+	style.WriteToRenderer(r)
 
 	textBox := r.MeasureText(label)
 	textWidth := textBox.Width()
@@ -223,10 +208,7 @@ func (d draw) Annotation(r Renderer, canvasBox Box, style Style, lx, ly int, lab
 
 // Box draws a box with a given style.
 func (d draw) Box(r Renderer, b Box, s Style) {
-	r.SetFillColor(s.GetFillColor())
-	r.SetStrokeColor(s.GetStrokeColor())
-	r.SetStrokeWidth(s.GetStrokeWidth(DefaultStrokeWidth))
-	r.SetStrokeDashArray(s.GetStrokeDashArray())
+	s.WriteToRenderer(r)
 
 	r.MoveTo(b.Left, b.Top)
 	r.LineTo(b.Right, b.Top)
@@ -237,17 +219,41 @@ func (d draw) Box(r Renderer, b Box, s Style) {
 }
 
 // DrawText draws text with a given style.
-func (d draw) Text(r Renderer, text string, x, y int, s Style) {
-	r.SetFontColor(s.GetFontColor(DefaultTextColor))
-	r.SetStrokeColor(s.GetStrokeColor())
-	r.SetStrokeWidth(s.GetStrokeWidth())
-	r.SetFont(s.GetFont())
-	r.SetFontSize(s.GetFontSize())
-
+func (d draw) Text(r Renderer, text string, x, y int, style Style) {
+	style.GetTextOptions().WriteToRenderer(r)
 	r.Text(text, x, y)
 }
 
 // TextWithin draws the text within a given box.
-func (d draw) TextWithin(r Renderer, text string, box Box, s Style) {
+func (d draw) TextWithin(r Renderer, text string, box Box, style Style) {
+	lines := Text.WrapFit(r, text, box.Width(), style)
+	linesBox := Text.MeasureLines(r, lines, style)
 
+	style.GetTextOptions().WriteToRenderer(r)
+
+	y := box.Top
+
+	switch style.GetTextVerticalAlign() {
+	case TextVerticalAlignBottom, TextVerticalAlignBaseline: // i have to build better baseline handling into measure text
+		y = y - linesBox.Height()
+	case TextVerticalAlignMiddle, TextVerticalAlignMiddleBaseline:
+		y = (y - linesBox.Height()) >> 1
+	}
+
+	var tx, ty int
+	for _, line := range lines {
+		lineBox := r.MeasureText(line)
+		switch style.GetTextHorizontalAlign() {
+		case TextHorizontalAlignCenter:
+			tx = box.Left + ((lineBox.Width() - box.Left) >> 1)
+		case TextHorizontalAlignRight:
+			tx = box.Right - lineBox.Width()
+		default:
+			tx = box.Left
+		}
+		ty = y + lineBox.Height()
+
+		d.Text(r, line, tx, ty, style)
+		y += lineBox.Height() + style.GetTextLineSpacing()
+	}
 }

@@ -25,6 +25,7 @@ type Style struct {
 	TextHorizontalAlign textHorizontalAlign
 	TextVerticalAlign   textVerticalAlign
 	TextWrap            textWrap
+	TextLineSpacing     int
 }
 
 // IsZero returns if the object is set or not.
@@ -222,6 +223,17 @@ func (s Style) GetTextWrap(defaults ...textWrap) textWrap {
 	return s.TextWrap
 }
 
+// GetTextLineSpacing returns the spacing in pixels between lines of text (vertically).
+func (s Style) GetTextLineSpacing(defaults ...int) int {
+	if s.TextLineSpacing == 0 {
+		if len(defaults) > 0 {
+			return defaults[0]
+		}
+		return DefaultLineSpacing
+	}
+	return s.TextLineSpacing
+}
+
 // WriteToRenderer passes the style's options to a renderer.
 func (s Style) WriteToRenderer(r Renderer) {
 	r.SetStrokeColor(s.GetStrokeColor())
@@ -261,6 +273,7 @@ func (s Style) InheritFrom(defaults Style) (final Style) {
 	final.TextHorizontalAlign = s.GetTextHorizontalAlign(defaults.TextHorizontalAlign)
 	final.TextVerticalAlign = s.GetTextVerticalAlign(defaults.TextVerticalAlign)
 	final.TextWrap = s.GetTextWrap(defaults.TextWrap)
+	final.TextLineSpacing = s.GetTextLineSpacing(defaults.TextLineSpacing)
 	return
 }
 
@@ -299,5 +312,6 @@ func (s Style) GetTextOptions() Style {
 		TextHorizontalAlign: s.TextHorizontalAlign,
 		TextVerticalAlign:   s.TextVerticalAlign,
 		TextWrap:            s.TextWrap,
+		TextLineSpacing:     s.TextLineSpacing,
 	}
 }

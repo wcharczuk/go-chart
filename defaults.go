@@ -33,6 +33,9 @@ const (
 	// DefaultTitleTop is the default distance from the top of the chart to put the title.
 	DefaultTitleTop = 10
 
+	// DefaultLineSpacing is the default vertical distance between lines of text.
+	DefaultLineSpacing = 5
+
 	// DefaultYAxisMargin is the default distance from the right of the canvas to the y axis labels.
 	DefaultYAxisMargin = 10
 	// DefaultXAxisMargin is the default distance from bottom of the canvas to the x axis labels.
