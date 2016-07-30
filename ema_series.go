@@ -9,7 +9,7 @@ const (
 type EMASeries struct {
 	Name  string
 	Style Style
-	YAxis YAxisType
+	YAxis yAxisType
 
 	Period      int
 	InnerSeries ValueProvider
@@ -28,7 +28,7 @@ func (ema EMASeries) GetStyle() Style {
 }
 
 // GetYAxis returns which YAxis the series draws on.
-func (ema EMASeries) GetYAxis() YAxisType {
+func (ema EMASeries) GetYAxis() yAxisType {
 	return ema.YAxis
 }
 

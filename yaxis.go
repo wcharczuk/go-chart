@@ -13,7 +13,7 @@ type YAxis struct {
 
 	Zero GridLine
 
-	AxisType YAxisType
+	AxisType yAxisType
 
 	ValueFormatter ValueFormatter
 	Range          Range

@@ -13,6 +13,8 @@ type XAxis struct {
 	Range          Range
 	Ticks          []Tick
 
+	TickPosition tickPosition
+
 	GridLines      []GridLine
 	GridMajorStyle Style
 	GridMinorStyle Style
@@ -26,6 +28,17 @@ func (xa XAxis) GetName() string {
 // GetStyle returns the style.
 func (xa XAxis) GetStyle() Style {
 	return xa.Style
+}
+
+// GetTickPosition returns the tick position option for the axis.
+func (xa XAxis) GetTickPosition(defaults ...tickPosition) tickPosition {
+	if xa.TickPosition == TickPositionUnset {
+		if len(defaults) > 0 {
+			return defaults[0]
+		}
+		return TickPositionUnderTick
+	}
+	return xa.TickPosition
 }
 
 // GetTicks returns the ticks for a series.
@@ -82,25 +95,48 @@ func (xa XAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 
 // Render renders the axis
 func (xa XAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, ticks []Tick) {
-	xa.Style.InheritFrom(defaults).WriteToRenderer(r)
+	tickStyle := xa.Style.InheritFrom(defaults)
 
+	tickStyle.GetStrokeOptions().WriteToRenderer(r)
 	r.MoveTo(canvasBox.Left, canvasBox.Bottom)
 	r.LineTo(canvasBox.Right, canvasBox.Bottom)
 	r.Stroke()
 
 	sort.Sort(Ticks(ticks))
 
-	for _, t := range ticks {
+	tp := xa.GetTickPosition()
+
+	var tx, ty int
+	for index, t := range ticks {
 		v := t.Value
 		lx := ra.Translate(v)
 		tb := r.MeasureText(t.Label)
-		tx := canvasBox.Left + lx
-		ty := canvasBox.Bottom + DefaultXAxisMargin + tb.Height()
-		r.Text(t.Label, tx-tb.Width()>>1, ty)
 
+		tx = canvasBox.Left + lx
+		ty = canvasBox.Bottom + DefaultXAxisMargin + tb.Height()
+
+		tickStyle.GetStrokeOptions().WriteToRenderer(r)
 		r.MoveTo(tx, canvasBox.Bottom)
 		r.LineTo(tx, canvasBox.Bottom+DefaultVerticalTickHeight)
 		r.Stroke()
+
+		switch tp {
+		case TickPositionUnderTick:
+			tickStyle.GetTextOptions().WriteToRenderer(r)
+			r.Text(t.Label, tx-tb.Width()>>1, ty)
+		case TickPositionBetweenTicks:
+			if index > 0 {
+				llx := ra.Translate(ticks[index-1].Value)
+				ltx := canvasBox.Left + llx
+				Draw.TextWithin(r, t.Label, Box{
+					Left:   ltx,
+					Right:  tx,
+					Top:    canvasBox.Bottom + DefaultXAxisMargin,
+					Bottom: canvasBox.Bottom + DefaultXAxisMargin + tb.Height(),
+				}, tickStyle.InheritFrom(Style{TextHorizontalAlign: TextHorizontalAlignCenter}))
+			}
+		}
+
 	}
 
 	if xa.GridMajorStyle.Show || xa.GridMinorStyle.Show {

@@ -62,8 +62,6 @@ func (d draw) BoundedSeries(r Renderer, canvasBox Box, xrange, yrange Range, sty
 		drawOffsetIndex = drawOffsetIndexes[0]
 	}
 
-	style.WriteToRenderer(r)
-
 	cb := canvasBox.Bottom
 	cl := canvasBox.Left
 
@@ -79,6 +77,7 @@ func (d draw) BoundedSeries(r Renderer, canvasBox Box, xrange, yrange Range, sty
 	y2values := make([]float64, bbs.Len())
 	y2values[0] = v0y2
 
+	style.GetFillAndStrokeOptions().WriteToRenderer(r)
 	r.MoveTo(x0, y0)
 	for i := 1; i < bbs.Len(); i++ {
 		vx, vy1, vy2 = bbs.GetBoundedValue(i)

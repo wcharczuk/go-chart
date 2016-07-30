@@ -43,7 +43,8 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 
 	graph := chart.Chart{
 		XAxis: chart.XAxis{
-			Style: chart.Style{Show: true},
+			Style:        chart.Style{Show: true},
+			TickPosition: chart.TickPositionBetweenTicks,
 		},
 		YAxis: chart.YAxis{
 			Style: chart.Style{Show: true},

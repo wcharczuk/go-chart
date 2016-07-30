@@ -7,7 +7,7 @@ import "math"
 type BollingerBandsSeries struct {
 	Name  string
 	Style Style
-	YAxis YAxisType
+	YAxis yAxisType
 
 	Period      int
 	K           float64
@@ -27,7 +27,7 @@ func (bbs BollingerBandsSeries) GetStyle() Style {
 }
 
 // GetYAxis returns which YAxis the series draws on.
-func (bbs BollingerBandsSeries) GetYAxis() YAxisType {
+func (bbs BollingerBandsSeries) GetYAxis() yAxisType {
 	return bbs.YAxis
 }
 

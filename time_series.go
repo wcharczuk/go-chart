@@ -7,7 +7,7 @@ type TimeSeries struct {
 	Name  string
 	Style Style
 
-	YAxis YAxisType
+	YAxis yAxisType
 
 	XValues []time.Time
 	YValues []float64
@@ -50,7 +50,7 @@ func (ts TimeSeries) GetValueFormatters() (x, y ValueFormatter) {
 }
 
 // GetYAxis returns which YAxis the series draws on.
-func (ts TimeSeries) GetYAxis() YAxisType {
+func (ts TimeSeries) GetYAxis() yAxisType {
 	return ts.YAxis
 }
 
