@@ -196,7 +196,7 @@ func (s Style) GetTextHorizontalAlign(defaults ...textHorizontalAlign) textHoriz
 		if len(defaults) > 0 {
 			return defaults[0]
 		}
-		return TextHorizontalAlignLeft
+		return TextHorizontalAlignUnset
 	}
 	return s.TextHorizontalAlign
 }
@@ -207,7 +207,7 @@ func (s Style) GetTextVerticalAlign(defaults ...textVerticalAlign) textVerticalA
 		if len(defaults) > 0 {
 			return defaults[0]
 		}
-		return TextVerticalAlignBaseline
+		return TextVerticalAlignUnset
 	}
 	return s.TextVerticalAlign
 }
@@ -218,7 +218,7 @@ func (s Style) GetTextWrap(defaults ...textWrap) textWrap {
 		if len(defaults) > 0 {
 			return defaults[0]
 		}
-		return TextWrapWord
+		return TextWrapUnset
 	}
 	return s.TextWrap
 }

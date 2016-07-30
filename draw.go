@@ -245,7 +245,7 @@ func (d draw) TextWithin(r Renderer, text string, box Box, style Style) {
 		lineBox := r.MeasureText(line)
 		switch style.GetTextHorizontalAlign() {
 		case TextHorizontalAlignCenter:
-			tx = box.Left + ((lineBox.Width() - box.Left) >> 1)
+			tx = box.Left + ((box.Width() - lineBox.Width()) >> 1)
 		case TextHorizontalAlignRight:
 			tx = box.Right - lineBox.Width()
 		default:

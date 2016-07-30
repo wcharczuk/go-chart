@@ -242,13 +242,27 @@ func (pc PieChart) styleDefaultsElements() Style {
 
 func (pc PieChart) styleDefaultsTitle() Style {
 	return pc.TitleStyle.InheritFrom(Style{
-		FontColor:           DefaultTextColor,
+		FontColor:           ColorWhite,
 		Font:                pc.GetFont(),
-		FontSize:            24.0,
+		FontSize:            pc.getTitleFontSize(),
 		TextHorizontalAlign: TextHorizontalAlignCenter,
 		TextVerticalAlign:   TextVerticalAlignTop,
-		TextWrap:            TextWrapNone,
+		TextWrap:            TextWrapWord,
 	})
+}
+
+func (pc PieChart) getTitleFontSize() float64 {
+	effectiveDimension := Math.MinInt(pc.GetWidth(), pc.GetHeight())
+	if effectiveDimension >= 2048 {
+		return 48
+	} else if effectiveDimension >= 1024 {
+		return 24
+	} else if effectiveDimension >= 512 {
+		return 18
+	} else if effectiveDimension >= 256 {
+		return 12
+	}
+	return 10
 }
 
 // Box returns the chart bounds as a box.

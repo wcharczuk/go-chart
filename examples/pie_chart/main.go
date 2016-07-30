@@ -12,8 +12,7 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 	pie := chart.PieChart{
 		Title: "test\nchart",
 		TitleStyle: chart.Style{
-			Show:     true,
-			FontSize: 32,
+			Show: true,
 		},
 		Width:  512,
 		Height: 512,
