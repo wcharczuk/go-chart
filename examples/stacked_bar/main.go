@@ -10,9 +10,6 @@ import (
 
 func drawChart(res http.ResponseWriter, req *http.Request) {
 	sbc := chart.StackedBarChart{
-		Background: chart.Style{
-			Padding: chart.Box{Top: 50, Left: 50, Right: 50, Bottom: 50},
-		},
 		XAxis: chart.Style{
 			Show: true,
 		},
@@ -21,7 +18,7 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 		},
 		Bars: []chart.StackedBar{
 			{
-				Name: "Katrina like animals that are very fat and furry.",
+				Name: "This is a very long string to test word break wrapping.",
 				Values: []chart.Value{
 					{Value: 5, Label: "Blue"},
 					{Value: 5, Label: "Green"},

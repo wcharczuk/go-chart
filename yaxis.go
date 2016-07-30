@@ -48,7 +48,7 @@ func (ya YAxis) GetTicks(r Renderer, ra Range, defaults Style, vf ValueFormatter
 		return tp.GetTicks(vf)
 	}
 	step := CalculateContinuousTickStep(r, ra, true, ya.Style.InheritFrom(defaults), vf)
-	return GenerateContinuousTicksWithStep(ra, step, vf)
+	return GenerateContinuousTicksWithStep(ra, step, vf, true)
 }
 
 // GetGridLines returns the gridlines for the axis.

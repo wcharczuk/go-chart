@@ -32,7 +32,7 @@ func (t Ticks) Less(i, j int) bool {
 }
 
 // GenerateContinuousTicksWithStep generates a set of ticks.
-func GenerateContinuousTicksWithStep(ra Range, step float64, vf ValueFormatter) []Tick {
+func GenerateContinuousTicksWithStep(ra Range, step float64, vf ValueFormatter, includeMax bool) []Tick {
 	var ticks []Tick
 	min, max := ra.GetMin(), ra.GetMax()
 	for cursor := min; cursor <= max; cursor += step {
@@ -45,6 +45,12 @@ func GenerateContinuousTicksWithStep(ra Range, step float64, vf ValueFormatter) 
 		if len(ticks) > DefaultTickCountSanityCheck {
 			return ticks
 		}
+	}
+	if includeMax {
+		ticks = append(ticks, Tick{
+			Value: ra.GetMax(),
+			Label: vf(ra.GetMax()),
+		})
 	}
 	return ticks
 }

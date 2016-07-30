@@ -41,9 +41,7 @@ func (d draw) LineSeries(r Renderer, canvasBox Box, xrange, yrange Range, style 
 		r.Fill()
 	}
 
-	r.SetStrokeColor(style.GetStrokeColor())
-	r.SetStrokeDashArray(style.GetStrokeDashArray())
-	r.SetStrokeWidth(style.GetStrokeWidth())
+	style.GetStrokeOptions().WriteToRenderer(r)
 
 	r.MoveTo(x0, y0)
 	for i := 1; i < vs.Len(); i++ {

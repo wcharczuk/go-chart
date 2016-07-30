@@ -54,7 +54,7 @@ func (xa XAxis) GetTicks(r Renderer, ra Range, defaults Style, vf ValueFormatter
 		return tp.GetTicks(vf)
 	}
 	step := CalculateContinuousTickStep(r, ra, false, xa.Style.InheritFrom(defaults), vf)
-	return GenerateContinuousTicksWithStep(ra, step, vf)
+	return GenerateContinuousTicksWithStep(ra, step, vf, xa.TickPosition == TickPositionBetweenTicks)
 }
 
 // GetGridLines returns the gridlines for the axis.
