@@ -197,13 +197,17 @@ func (sbc StackedBarChart) drawYAxis(r Renderer, canvasBox Box) {
 
 		ticks := Sequence.Float64(1.0, 0.0, 0.2)
 		for _, t := range ticks {
+			axisStyle.GetStrokeOptions().WriteToRenderer(r)
 			ty := canvasBox.Bottom - int(t*float64(canvasBox.Height()))
 			r.MoveTo(canvasBox.Right, ty)
 			r.LineTo(canvasBox.Right+DefaultHorizontalTickWidth, ty)
 			r.Stroke()
 
+			axisStyle.GetTextOptions().WriteToRenderer(r)
 			text := fmt.Sprintf("%0.0f%%", t*100)
-			Draw.Text(r, text, canvasBox.Right+DefaultYAxisMargin, ty, axisStyle)
+
+			tb := r.MeasureText(text)
+			Draw.Text(r, text, canvasBox.Right+DefaultYAxisMargin+5, ty+(tb.Height()>>1), axisStyle)
 		}
 
 	}
