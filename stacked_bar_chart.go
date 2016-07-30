@@ -128,19 +128,25 @@ func (sbc StackedBarChart) drawBars(r Renderer, canvasBox Box) {
 	xoffset := canvasBox.Left
 	for _, bar := range sbc.Bars {
 		sbc.drawBar(r, canvasBox, xoffset, bar)
-		xoffset += sbc.GetBarSpacing()
+		xoffset += (sbc.GetBarSpacing() + bar.GetWidth())
 	}
 }
 
 func (sbc StackedBarChart) drawBar(r Renderer, canvasBox Box, xoffset int, bar StackedBar) int {
-	bxl := xoffset + Math.AbsInt(bar.GetWidth()>>1-sbc.GetBarSpacing()>>1)
+	barSpacing2 := sbc.GetBarSpacing() >> 1
+	bxl := xoffset + barSpacing2
 	bxr := bxl + bar.GetWidth()
 
 	normalizedBarComponents := Values(bar.Values).Normalize()
 	yoffset := canvasBox.Top
 	for index, bv := range normalizedBarComponents {
 		barHeight := int(math.Ceil(bv.Value * float64(canvasBox.Height())))
-		barBox := Box{Top: yoffset, Left: bxl, Right: bxr, Bottom: Math.MinInt(yoffset+barHeight, canvasBox.Bottom-DefaultStrokeWidth)}
+		barBox := Box{
+			Top:    yoffset,
+			Left:   bxl,
+			Right:  bxr,
+			Bottom: Math.MinInt(yoffset+barHeight, canvasBox.Bottom-DefaultStrokeWidth),
+		}
 		Draw.Box(r, barBox, bv.Style.InheritFrom(sbc.styleDefaultsStackedBarValue(index)))
 		yoffset += barHeight
 	}
@@ -164,12 +170,10 @@ func (sbc StackedBarChart) drawXAxis(r Renderer, canvasBox Box) {
 		cursor := canvasBox.Left
 		for _, bar := range sbc.Bars {
 
-			spacing := (sbc.GetBarSpacing() >> 1)
-
 			barLabelBox := Box{
 				Top:    canvasBox.Bottom + DefaultXAxisMargin,
 				Left:   cursor,
-				Right:  cursor + bar.GetWidth() + spacing,
+				Right:  cursor + bar.GetWidth() + sbc.GetBarSpacing(),
 				Bottom: sbc.GetHeight(),
 			}
 			if len(bar.Name) > 0 {
@@ -179,7 +183,7 @@ func (sbc StackedBarChart) drawXAxis(r Renderer, canvasBox Box) {
 			r.MoveTo(barLabelBox.Right, canvasBox.Bottom)
 			r.LineTo(barLabelBox.Right, canvasBox.Bottom+DefaultVerticalTickHeight)
 			r.Stroke()
-			cursor += bar.GetWidth() + spacing
+			cursor += bar.GetWidth() + sbc.GetBarSpacing()
 		}
 	}
 }
@@ -226,11 +230,8 @@ func (sbc StackedBarChart) getDefaultCanvasBox() Box {
 
 func (sbc StackedBarChart) getAdjustedCanvasBox(canvasBox Box) Box {
 	var totalWidth int
-	for index, bar := range sbc.Bars {
-		totalWidth += bar.GetWidth()
-		if index < len(sbc.Bars)-1 {
-			totalWidth += sbc.GetBarSpacing()
-		}
+	for _, bar := range sbc.Bars {
+		totalWidth += bar.GetWidth() + sbc.GetBarSpacing()
 	}
 
 	return Box{
