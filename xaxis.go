@@ -53,8 +53,8 @@ func (xa XAxis) GetTicks(r Renderer, ra Range, defaults Style, vf ValueFormatter
 	if tp, isTickProvider := ra.(TicksProvider); isTickProvider {
 		return tp.GetTicks(vf)
 	}
-	step := CalculateContinuousTickStep(r, ra, false, xa.Style.InheritFrom(defaults), vf)
-	return GenerateContinuousTicksWithStep(ra, step, vf, xa.TickPosition == TickPositionBetweenTicks)
+	tickStyle := xa.Style.InheritFrom(defaults)
+	return GenerateContinuousTicks(r, ra, false, tickStyle, vf)
 }
 
 // GetGridLines returns the gridlines for the axis.

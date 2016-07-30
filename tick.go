@@ -31,51 +31,47 @@ func (t Ticks) Less(i, j int) bool {
 	return t[i].Value < t[j].Value
 }
 
-// GenerateContinuousTicksWithStep generates a set of ticks.
-func GenerateContinuousTicksWithStep(ra Range, step float64, vf ValueFormatter, includeMax bool) []Tick {
+// GenerateContinuousTicks generates a set of ticks.
+func GenerateContinuousTicks(r Renderer, ra Range, isVertical bool, style Style, vf ValueFormatter) []Tick {
 	var ticks []Tick
 	min, max := ra.GetMin(), ra.GetMax()
-	for cursor := min; cursor <= max; cursor += step {
-		ticks = append(ticks, Tick{
-			Value: cursor,
-			Label: vf(cursor),
-		})
 
-		// this guard is in place in case step is super, super small.
-		if len(ticks) > DefaultTickCountSanityCheck {
-			return ticks
-		}
-	}
-	if includeMax {
-		ticks = append(ticks, Tick{
-			Value: ra.GetMax(),
-			Label: vf(ra.GetMax()),
-		})
-	}
-	return ticks
-}
+	ticks = append(ticks, Tick{
+		Value: min,
+		Label: vf(min),
+	})
 
-// CalculateContinuousTickStep calculates the continous range interval between ticks.
-func CalculateContinuousTickStep(r Renderer, ra Range, isVertical bool, style Style, vf ValueFormatter) float64 {
-	r.SetFont(style.GetFont())
-	r.SetFontSize(style.GetFontSize())
+	minLabel := vf(min)
+	style.GetTextOptions().WriteToRenderer(r)
+	labelBox := r.MeasureText(minLabel)
+
+	var tickSize int
 	if isVertical {
-		label := vf(ra.GetMin())
-		tb := r.MeasureText(label)
-		count := int(math.Ceil(float64(ra.GetDomain()) / float64(tb.Height()+DefaultMinimumTickVerticalSpacing)))
-		return ra.GetDelta() / float64(count)
+		tickSize = labelBox.Height() + DefaultMinimumTickVerticalSpacing
+	} else {
+		tickSize = labelBox.Width() + DefaultMinimumTickHorizontalSpacing
 	}
 
-	// take a cut at determining the 'widest' value.
-	l0 := vf(ra.GetMin())
-	ln := vf(ra.GetMax())
-	ll := l0
-	if len(ln) > len(l0) {
-		ll = ln
+	domainRemainder := (ra.GetDomain()) - (tickSize * 2)
+	intermediateTickCount := int(math.Floor(float64(domainRemainder) / float64(tickSize)))
+
+	rangeDelta := math.Floor(max - min)
+	tickStep := rangeDelta / float64(intermediateTickCount)
+
+	roundTo := Math.GetRoundToForDelta(rangeDelta) / 10
+
+	for x := 1; x < intermediateTickCount; x++ {
+		tickValue := min + Math.RoundDown(tickStep*float64(x), roundTo)
+		ticks = append(ticks, Tick{
+			Value: tickValue,
+			Label: vf(tickValue),
+		})
 	}
-	llb := r.MeasureText(ll)
-	textWidth := llb.Width()
-	width := textWidth + DefaultMinimumTickHorizontalSpacing
-	count := int(math.Ceil(float64(ra.GetDomain()) / float64(width)))
-	return ra.GetDelta() / float64(count)
+
+	ticks = append(ticks, Tick{
+		Value: max,
+		Label: vf(max),
+	})
+
+	return ticks
 }
