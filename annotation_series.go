@@ -27,6 +27,7 @@ func (as AnnotationSeries) GetYAxis() yAxisType {
 
 func (as AnnotationSeries) annotationStyleDefaults(defaults Style) Style {
 	return Style{
+		FontColor:   DefaultTextColor,
 		Font:        defaults.Font,
 		FillColor:   DefaultAnnotationFillColor,
 		FontSize:    DefaultAnnotationFontSize,

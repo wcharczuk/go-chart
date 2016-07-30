@@ -165,11 +165,12 @@ func (d draw) MeasureAnnotation(r Renderer, canvasBox Box, style Style, lx, ly i
 
 // Annotation draws an anotation with a renderer.
 func (d draw) Annotation(r Renderer, canvasBox Box, style Style, lx, ly int, label string) {
-	style.WriteToRenderer(r)
-
+	style.GetTextOptions().WriteToRenderer(r)
 	textBox := r.MeasureText(label)
 	textWidth := textBox.Width()
 	halfTextHeight := textBox.Height() >> 1
+
+	style.GetFillAndStrokeOptions().WriteToRenderer(r)
 
 	pt := style.Padding.GetTop(DefaultAnnotationPadding.Top)
 	pl := style.Padding.GetLeft(DefaultAnnotationPadding.Left)
@@ -200,6 +201,7 @@ func (d draw) Annotation(r Renderer, canvasBox Box, style Style, lx, ly int, lab
 	r.Close()
 	r.FillStroke()
 
+	style.GetTextOptions().WriteToRenderer(r)
 	r.Text(label, textX, textY)
 }
 
