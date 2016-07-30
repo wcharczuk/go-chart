@@ -13,13 +13,14 @@ type YAxis struct {
 
 	Zero GridLine
 
-	AxisType YAxisType
+	AxisType yAxisType
 
 	ValueFormatter ValueFormatter
 	Range          Range
-	Ticks          []Tick
 
-	GridLines      []GridLine
+	Ticks     []Tick
+	GridLines []GridLine
+
 	GridMajorStyle Style
 	GridMinorStyle Style
 }
@@ -34,35 +35,20 @@ func (ya YAxis) GetStyle() Style {
 	return ya.Style
 }
 
-// GetTicks returns the ticks for a series. It coalesces between user provided ticks and
-// generated ticks.
+// GetTicks returns the ticks for a series.
+// The coalesce priority is:
+// 	- User Supplied Ticks (i.e. Ticks array on the axis itself).
+// 	- Range ticks (i.e. if the range provides ticks).
+//	- Generating continuous ticks based on minimum spacing and canvas width.
 func (ya YAxis) GetTicks(r Renderer, ra Range, defaults Style, vf ValueFormatter) []Tick {
 	if len(ya.Ticks) > 0 {
 		return ya.Ticks
 	}
-	return ya.generateTicks(r, ra, defaults, vf)
-}
-
-func (ya YAxis) generateTicks(r Renderer, ra Range, defaults Style, vf ValueFormatter) []Tick {
-	step := ya.getTickStep(r, ra, defaults, vf)
-	ticks := GenerateTicksWithStep(ra, step, vf)
-	return ticks
-}
-
-func (ya YAxis) getTickStep(r Renderer, ra Range, defaults Style, vf ValueFormatter) float64 {
-	tickCount := ya.getTickCount(r, ra, defaults, vf)
-	step := ra.Delta() / float64(tickCount)
-	return step
-}
-
-func (ya YAxis) getTickCount(r Renderer, ra Range, defaults Style, vf ValueFormatter) int {
-	r.SetFont(ya.Style.GetFont(defaults.GetFont()))
-	r.SetFontSize(ya.Style.GetFontSize(defaults.GetFontSize(DefaultFontSize)))
-	//given the domain, figure out how many ticks we can draw ...
-	label := vf(ra.Min)
-	tb := r.MeasureText(label)
-	count := int(math.Ceil(float64(ra.Domain) / float64(tb.Height()+DefaultMinimumTickVerticalSpacing)))
-	return count
+	if tp, isTickProvider := ra.(TicksProvider); isTickProvider {
+		return tp.GetTicks(vf)
+	}
+	step := CalculateContinuousTickStep(r, ra, true, ya.Style.InheritFrom(defaults), vf)
+	return GenerateContinuousTicksWithStep(ra, step, vf, true)
 }
 
 // GetGridLines returns the gridlines for the axis.
@@ -70,16 +56,12 @@ func (ya YAxis) GetGridLines(ticks []Tick) []GridLine {
 	if len(ya.GridLines) > 0 {
 		return ya.GridLines
 	}
-	return GenerateGridLines(ticks, false)
+	return GenerateGridLines(ticks, ya.GridMajorStyle, ya.GridMinorStyle, false)
 }
 
 // Measure returns the bounds of the axis.
 func (ya YAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, ticks []Tick) Box {
-	r.SetStrokeColor(ya.Style.GetStrokeColor(defaults.StrokeColor))
-	r.SetStrokeWidth(ya.Style.GetStrokeWidth(defaults.StrokeWidth))
-	r.SetFont(ya.Style.GetFont(defaults.GetFont()))
-	r.SetFontColor(ya.Style.GetFontColor(DefaultAxisColor))
-	r.SetFontSize(ya.Style.GetFontSize(defaults.GetFontSize()))
+	ya.Style.InheritFrom(defaults).WriteToRenderer(r)
 
 	sort.Sort(Ticks(ticks))
 
@@ -103,13 +85,13 @@ func (ya YAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 
 		if ya.AxisType == YAxisPrimary {
 			minx = canvasBox.Right
-			maxx = MaxInt(maxx, tx+tb.Width())
+			maxx = Math.MaxInt(maxx, tx+tb.Width())
 		} else if ya.AxisType == YAxisSecondary {
-			minx = MinInt(minx, finalTextX)
-			maxx = MaxInt(maxx, tx)
+			minx = Math.MinInt(minx, finalTextX)
+			maxx = Math.MaxInt(maxx, tx)
 		}
-		miny = MinInt(miny, ly-tb.Height()>>1)
-		maxy = MaxInt(maxy, ly+tb.Height()>>1)
+		miny = Math.MinInt(miny, ly-tb.Height()>>1)
+		maxy = Math.MaxInt(maxy, ly+tb.Height()>>1)
 	}
 
 	return Box{
@@ -122,11 +104,7 @@ func (ya YAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 
 // Render renders the axis.
 func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, ticks []Tick) {
-	r.SetStrokeColor(ya.Style.GetStrokeColor(defaults.StrokeColor))
-	r.SetStrokeWidth(ya.Style.GetStrokeWidth(defaults.StrokeWidth))
-	r.SetFont(ya.Style.GetFont(defaults.GetFont()))
-	r.SetFontColor(ya.Style.GetFontColor(DefaultAxisColor))
-	r.SetFontSize(ya.Style.GetFontSize(defaults.GetFontSize(DefaultFontSize)))
+	ya.Style.InheritFrom(defaults).WriteToRenderer(r)
 
 	sort.Sort(Ticks(ticks))
 
@@ -170,14 +148,17 @@ func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 	}
 
 	if ya.Zero.Style.Show {
-		ya.Zero.Render(r, canvasBox, ra)
+		ya.Zero.Render(r, canvasBox, ra, Style{})
 	}
 
 	if ya.GridMajorStyle.Show || ya.GridMinorStyle.Show {
 		for _, gl := range ya.GetGridLines(ticks) {
-			if (gl.IsMinor && ya.GridMinorStyle.Show) ||
-				(!gl.IsMinor && ya.GridMajorStyle.Show) {
-				gl.Render(r, canvasBox, ra)
+			if (gl.IsMinor && ya.GridMinorStyle.Show) || (!gl.IsMinor && ya.GridMajorStyle.Show) {
+				defaults := ya.GridMajorStyle
+				if gl.IsMinor {
+					defaults = ya.GridMinorStyle
+				}
+				gl.Render(r, canvasBox, ra, defaults)
 			}
 		}
 	}

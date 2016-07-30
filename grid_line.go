@@ -1,31 +1,8 @@
 package chart
 
-// GenerateGridLines generates grid lines.
-func GenerateGridLines(ticks []Tick, isVertical bool) []GridLine {
-	var gl []GridLine
-	isMinor := false
-	minorStyle := Style{
-		StrokeColor: DefaultGridLineColor.WithAlpha(100),
-		StrokeWidth: 1.0,
-	}
-	majorStyle := Style{
-		StrokeColor: DefaultGridLineColor,
-		StrokeWidth: 1.0,
-	}
-	for _, t := range ticks {
-		s := majorStyle
-		if isMinor {
-			s = minorStyle
-		}
-		gl = append(gl, GridLine{
-			Style:      s,
-			IsMinor:    isMinor,
-			IsVertical: isVertical,
-			Value:      t.Value,
-		})
-		isMinor = !isMinor
-	}
-	return gl
+// GridLineProvider is a type that provides grid lines.
+type GridLineProvider interface {
+	GetGridLines(ticks []Tick, isVertical bool, majorStyle, minorStyle Style) []GridLine
 }
 
 // GridLine is a line on a graph canvas.
@@ -57,14 +34,15 @@ func (gl GridLine) Horizontal() bool {
 }
 
 // Render renders the gridline
-func (gl GridLine) Render(r Renderer, canvasBox Box, ra Range) {
+func (gl GridLine) Render(r Renderer, canvasBox Box, ra Range, defaults Style) {
+	r.SetStrokeColor(gl.Style.GetStrokeColor(defaults.GetStrokeColor()))
+	r.SetStrokeWidth(gl.Style.GetStrokeWidth(defaults.GetStrokeWidth()))
+	r.SetStrokeDashArray(gl.Style.GetStrokeDashArray(defaults.GetStrokeDashArray()))
+
 	if gl.IsVertical {
 		lineLeft := canvasBox.Left + ra.Translate(gl.Value)
 		lineBottom := canvasBox.Bottom
 		lineTop := canvasBox.Top
-
-		r.SetStrokeColor(gl.Style.GetStrokeColor(DefaultAxisColor))
-		r.SetStrokeWidth(gl.Style.GetStrokeWidth(DefaultAxisLineWidth))
 
 		r.MoveTo(lineLeft, lineBottom)
 		r.LineTo(lineLeft, lineTop)
@@ -74,11 +52,33 @@ func (gl GridLine) Render(r Renderer, canvasBox Box, ra Range) {
 		lineRight := canvasBox.Right
 		lineHeight := canvasBox.Bottom - ra.Translate(gl.Value)
 
-		r.SetStrokeColor(gl.Style.GetStrokeColor(DefaultAxisColor))
-		r.SetStrokeWidth(gl.Style.GetStrokeWidth(DefaultAxisLineWidth))
-
 		r.MoveTo(lineLeft, lineHeight)
 		r.LineTo(lineRight, lineHeight)
 		r.Stroke()
 	}
+}
+
+// GenerateGridLines generates grid lines.
+func GenerateGridLines(ticks []Tick, majorStyle, minorStyle Style, isVertical bool) []GridLine {
+	var gl []GridLine
+	isMinor := false
+
+	if len(ticks) < 3 {
+		return gl
+	}
+
+	for _, t := range ticks[1 : len(ticks)-1] {
+		s := majorStyle
+		if isMinor {
+			s = minorStyle
+		}
+		gl = append(gl, GridLine{
+			Style:      s,
+			IsMinor:    isMinor,
+			IsVertical: isVertical,
+			Value:      t.Value,
+		})
+		isMinor = !isMinor
+	}
+	return gl
 }

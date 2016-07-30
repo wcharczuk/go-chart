@@ -1,7 +1,6 @@
 package chart
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/blendlabs/go-assert"
@@ -142,33 +141,11 @@ func TestStyleWithDefaultsFrom(t *testing.T) {
 		Padding:     DefaultBackgroundPadding,
 	}
 
-	coalesced := unset.WithDefaultsFrom(set)
+	coalesced := unset.InheritFrom(set)
 	assert.Equal(set, coalesced)
 }
 
-func TestStyleSVG(t *testing.T) {
-	assert := assert.New(t)
-
-	f, err := GetDefaultFont()
-	assert.Nil(err)
-
-	set := Style{
-		StrokeColor: drawing.ColorWhite,
-		StrokeWidth: 5.0,
-		FillColor:   drawing.ColorWhite,
-		FontColor:   drawing.ColorWhite,
-		Font:        f,
-		Padding:     DefaultBackgroundPadding,
-	}
-
-	svgString := set.SVG(DefaultDPI)
-	assert.NotEmpty(svgString)
-	assert.True(strings.Contains(svgString, "stroke:rgba(255,255,255,1.0)"))
-	assert.True(strings.Contains(svgString, "stroke-width:5"))
-	assert.True(strings.Contains(svgString, "fill:rgba(255,255,255,1.0)"))
-}
-
-func TestStyleSVGStroke(t *testing.T) {
+func TestStyleGetStrokeOptions(t *testing.T) {
 	assert := assert.New(t)
 
 	set := Style{
@@ -178,14 +155,14 @@ func TestStyleSVGStroke(t *testing.T) {
 		FontColor:   drawing.ColorWhite,
 		Padding:     DefaultBackgroundPadding,
 	}
-	svgStroke := set.SVGStroke()
+	svgStroke := set.GetStrokeOptions()
 	assert.False(svgStroke.StrokeColor.IsZero())
 	assert.NotZero(svgStroke.StrokeWidth)
 	assert.True(svgStroke.FillColor.IsZero())
 	assert.True(svgStroke.FontColor.IsZero())
 }
 
-func TestStyleSVGFill(t *testing.T) {
+func TestStyleGetFillOptions(t *testing.T) {
 	assert := assert.New(t)
 
 	set := Style{
@@ -195,14 +172,14 @@ func TestStyleSVGFill(t *testing.T) {
 		FontColor:   drawing.ColorWhite,
 		Padding:     DefaultBackgroundPadding,
 	}
-	svgFill := set.SVGFill()
+	svgFill := set.GetFillOptions()
 	assert.False(svgFill.FillColor.IsZero())
 	assert.Zero(svgFill.StrokeWidth)
 	assert.True(svgFill.StrokeColor.IsZero())
 	assert.True(svgFill.FontColor.IsZero())
 }
 
-func TestStyleSVGFillAndStroke(t *testing.T) {
+func TestStyleGetFillAndStrokeOptions(t *testing.T) {
 	assert := assert.New(t)
 
 	set := Style{
@@ -212,14 +189,14 @@ func TestStyleSVGFillAndStroke(t *testing.T) {
 		FontColor:   drawing.ColorWhite,
 		Padding:     DefaultBackgroundPadding,
 	}
-	svgFillAndStroke := set.SVGFillAndStroke()
+	svgFillAndStroke := set.GetFillAndStrokeOptions()
 	assert.False(svgFillAndStroke.FillColor.IsZero())
 	assert.NotZero(svgFillAndStroke.StrokeWidth)
 	assert.False(svgFillAndStroke.StrokeColor.IsZero())
 	assert.True(svgFillAndStroke.FontColor.IsZero())
 }
 
-func TestStyleSVGText(t *testing.T) {
+func TestStyleGetTextOptions(t *testing.T) {
 	assert := assert.New(t)
 
 	set := Style{
@@ -229,7 +206,7 @@ func TestStyleSVGText(t *testing.T) {
 		FontColor:   drawing.ColorWhite,
 		Padding:     DefaultBackgroundPadding,
 	}
-	svgStroke := set.SVGText()
+	svgStroke := set.GetTextOptions()
 	assert.True(svgStroke.StrokeColor.IsZero())
 	assert.Zero(svgStroke.StrokeWidth)
 	assert.True(svgStroke.FillColor.IsZero())

@@ -12,14 +12,14 @@ type mockValueProvider struct {
 }
 
 func (m mockValueProvider) Len() int {
-	return MinInt(len(m.X), len(m.Y))
+	return Math.MinInt(len(m.X), len(m.Y))
 }
 
 func (m mockValueProvider) GetValue(index int) (x, y float64) {
 	if index < 0 {
 		panic("negative index at GetValue()")
 	}
-	if index > MinInt(len(m.X), len(m.Y)) {
+	if index > Math.MinInt(len(m.X), len(m.Y)) {
 		panic("index is outside the length of m.X or m.Y")
 	}
 	x = m.X[index]
@@ -31,8 +31,8 @@ func TestSMASeriesGetValue(t *testing.T) {
 	assert := assert.New(t)
 
 	mockSeries := mockValueProvider{
-		Seq(1.0, 10.0),
-		Seq(10, 1.0),
+		Sequence.Float64(1.0, 10.0),
+		Sequence.Float64(10, 1.0),
 	}
 	assert.Equal(10, mockSeries.Len())
 
@@ -62,8 +62,8 @@ func TestSMASeriesGetLastValueWindowOverlap(t *testing.T) {
 	assert := assert.New(t)
 
 	mockSeries := mockValueProvider{
-		Seq(1.0, 10.0),
-		Seq(10, 1.0),
+		Sequence.Float64(1.0, 10.0),
+		Sequence.Float64(10, 1.0),
 	}
 	assert.Equal(10, mockSeries.Len())
 
@@ -88,8 +88,8 @@ func TestSMASeriesGetLastValue(t *testing.T) {
 	assert := assert.New(t)
 
 	mockSeries := mockValueProvider{
-		Seq(1.0, 100.0),
-		Seq(100, 1.0),
+		Sequence.Float64(1.0, 100.0),
+		Sequence.Float64(100, 1.0),
 	}
 	assert.Equal(100, mockSeries.Len())
 

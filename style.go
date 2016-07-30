@@ -21,6 +21,11 @@ type Style struct {
 	FontSize  float64
 	FontColor drawing.Color
 	Font      *truetype.Font
+
+	TextHorizontalAlign textHorizontalAlign
+	TextVerticalAlign   textVerticalAlign
+	TextWrap            textWrap
+	TextLineSpacing     int
 }
 
 // IsZero returns if the object is set or not.
@@ -28,6 +33,7 @@ func (s Style) IsZero() bool {
 	return s.StrokeColor.IsZero() && s.FillColor.IsZero() && s.StrokeWidth == 0 && s.FontColor.IsZero() && s.FontSize == 0 && s.Font == nil
 }
 
+// String returns a text representation of the style.
 func (s Style) String() string {
 	if s.IsZero() {
 		return "{}"
@@ -78,11 +84,11 @@ func (s Style) String() string {
 	if s.FontSize != 0 {
 		output = append(output, fmt.Sprintf("\"font_size\": \"%0.2fpt\"", s.FontSize))
 	} else {
-		output = append(output, "\"fill_color\": null")
+		output = append(output, "\"font_size\": null")
 	}
 
-	if !s.FillColor.IsZero() {
-		output = append(output, fmt.Sprintf("\"font_color\": %s", s.FillColor.String()))
+	if !s.FontColor.IsZero() {
+		output = append(output, fmt.Sprintf("\"font_color\": %s", s.FontColor.String()))
 	} else {
 		output = append(output, "\"font_color\": null")
 	}
@@ -184,8 +190,78 @@ func (s Style) GetPadding(defaults ...Box) Box {
 	return s.Padding
 }
 
-// WithDefaultsFrom coalesces two styles into a new style.
-func (s Style) WithDefaultsFrom(defaults Style) (final Style) {
+// GetTextHorizontalAlign returns the horizontal alignment.
+func (s Style) GetTextHorizontalAlign(defaults ...textHorizontalAlign) textHorizontalAlign {
+	if s.TextHorizontalAlign == TextHorizontalAlignUnset {
+		if len(defaults) > 0 {
+			return defaults[0]
+		}
+		return TextHorizontalAlignUnset
+	}
+	return s.TextHorizontalAlign
+}
+
+// GetTextVerticalAlign returns the vertical alignment.
+func (s Style) GetTextVerticalAlign(defaults ...textVerticalAlign) textVerticalAlign {
+	if s.TextVerticalAlign == TextVerticalAlignUnset {
+		if len(defaults) > 0 {
+			return defaults[0]
+		}
+		return TextVerticalAlignUnset
+	}
+	return s.TextVerticalAlign
+}
+
+// GetTextWrap returns the word wrap.
+func (s Style) GetTextWrap(defaults ...textWrap) textWrap {
+	if s.TextWrap == TextWrapUnset {
+		if len(defaults) > 0 {
+			return defaults[0]
+		}
+		return TextWrapUnset
+	}
+	return s.TextWrap
+}
+
+// GetTextLineSpacing returns the spacing in pixels between lines of text (vertically).
+func (s Style) GetTextLineSpacing(defaults ...int) int {
+	if s.TextLineSpacing == 0 {
+		if len(defaults) > 0 {
+			return defaults[0]
+		}
+		return DefaultLineSpacing
+	}
+	return s.TextLineSpacing
+}
+
+// WriteToRenderer passes the style's options to a renderer.
+func (s Style) WriteToRenderer(r Renderer) {
+	r.SetStrokeColor(s.GetStrokeColor())
+	r.SetStrokeWidth(s.GetStrokeWidth())
+	r.SetStrokeDashArray(s.GetStrokeDashArray())
+	r.SetFillColor(s.GetFillColor())
+	r.SetFont(s.GetFont())
+	r.SetFontColor(s.GetFontColor())
+	r.SetFontSize(s.GetFontSize())
+}
+
+// WriteDrawingOptionsToRenderer passes just the drawing style options to a renderer.
+func (s Style) WriteDrawingOptionsToRenderer(r Renderer) {
+	r.SetStrokeColor(s.GetStrokeColor())
+	r.SetStrokeWidth(s.GetStrokeWidth())
+	r.SetStrokeDashArray(s.GetStrokeDashArray())
+	r.SetFillColor(s.GetFillColor())
+}
+
+// WriteTextOptionsToRenderer passes just the text style options to a renderer.
+func (s Style) WriteTextOptionsToRenderer(r Renderer) {
+	r.SetFont(s.GetFont())
+	r.SetFontColor(s.GetFontColor())
+	r.SetFontSize(s.GetFontSize())
+}
+
+// InheritFrom coalesces two styles into a new style.
+func (s Style) InheritFrom(defaults Style) (final Style) {
 	final.StrokeColor = s.GetStrokeColor(defaults.StrokeColor)
 	final.StrokeWidth = s.GetStrokeWidth(defaults.StrokeWidth)
 	final.StrokeDashArray = s.GetStrokeDashArray(defaults.StrokeDashArray)
@@ -194,47 +270,15 @@ func (s Style) WithDefaultsFrom(defaults Style) (final Style) {
 	final.FontSize = s.GetFontSize(defaults.FontSize)
 	final.Font = s.GetFont(defaults.Font)
 	final.Padding = s.GetPadding(defaults.Padding)
+	final.TextHorizontalAlign = s.GetTextHorizontalAlign(defaults.TextHorizontalAlign)
+	final.TextVerticalAlign = s.GetTextVerticalAlign(defaults.TextVerticalAlign)
+	final.TextWrap = s.GetTextWrap(defaults.TextWrap)
+	final.TextLineSpacing = s.GetTextLineSpacing(defaults.TextLineSpacing)
 	return
 }
 
-// SVG returns the style as a svg style string.
-func (s Style) SVG(dpi float64) string {
-	sw := s.StrokeWidth
-	sc := s.StrokeColor
-	fc := s.FillColor
-	fs := s.FontSize
-	fnc := s.FontColor
-
-	strokeWidthText := "stroke-width:0"
-	if sw != 0 {
-		strokeWidthText = "stroke-width:" + fmt.Sprintf("%d", int(sw))
-	}
-
-	strokeText := "stroke:none"
-	if !sc.IsZero() {
-		strokeText = "stroke:" + sc.String()
-	}
-
-	fillText := "fill:none"
-	if !fc.IsZero() {
-		fillText = "fill:" + fc.String()
-	}
-
-	fontSizeText := ""
-	if fs != 0 {
-		fontSizeText = "font-size:" + fmt.Sprintf("%.1fpx", drawing.PointsToPixels(dpi, fs))
-	}
-
-	if !fnc.IsZero() {
-		fillText = "fill:" + fnc.String()
-	}
-
-	fontText := s.SVGFontFace()
-	return strings.Join([]string{strokeWidthText, strokeText, fillText, fontSizeText, fontText}, ";")
-}
-
-// SVGStroke returns the stroke components.
-func (s Style) SVGStroke() Style {
+// GetStrokeOptions returns the stroke components.
+func (s Style) GetStrokeOptions() Style {
 	return Style{
 		StrokeDashArray: s.StrokeDashArray,
 		StrokeColor:     s.StrokeColor,
@@ -242,15 +286,15 @@ func (s Style) SVGStroke() Style {
 	}
 }
 
-// SVGFill returns the fill components.
-func (s Style) SVGFill() Style {
+// GetFillOptions returns the fill components.
+func (s Style) GetFillOptions() Style {
 	return Style{
 		FillColor: s.FillColor,
 	}
 }
 
-// SVGFillAndStroke returns the fill and stroke components.
-func (s Style) SVGFillAndStroke() Style {
+// GetFillAndStrokeOptions returns the fill and stroke components.
+func (s Style) GetFillAndStrokeOptions() Style {
 	return Style{
 		StrokeDashArray: s.StrokeDashArray,
 		FillColor:       s.FillColor,
@@ -259,34 +303,15 @@ func (s Style) SVGFillAndStroke() Style {
 	}
 }
 
-// SVGText returns just the text components of the style.
-func (s Style) SVGText() Style {
+// GetTextOptions returns just the text components of the style.
+func (s Style) GetTextOptions() Style {
 	return Style{
-		FontColor: s.FontColor,
-		FontSize:  s.FontSize,
+		FontColor:           s.FontColor,
+		FontSize:            s.FontSize,
+		Font:                s.Font,
+		TextHorizontalAlign: s.TextHorizontalAlign,
+		TextVerticalAlign:   s.TextVerticalAlign,
+		TextWrap:            s.TextWrap,
+		TextLineSpacing:     s.TextLineSpacing,
 	}
-}
-
-// SVGFontFace returns the font face for the style.
-func (s Style) SVGFontFace() string {
-	family := "sans-serif"
-	if s.GetFont() != nil {
-		name := s.GetFont().Name(truetype.NameIDFontFamily)
-		if len(name) != 0 {
-			family = fmt.Sprintf(`'%s',%s`, name, family)
-		}
-	}
-	return fmt.Sprintf("font-family:%s", family)
-}
-
-// SVGStrokeDashArray returns the stroke-dasharray property of a style.
-func (s Style) SVGStrokeDashArray() string {
-	if len(s.StrokeDashArray) > 0 {
-		var values []string
-		for _, v := range s.StrokeDashArray {
-			values = append(values, fmt.Sprintf("%0.1f", v))
-		}
-		return "stroke-dasharray=\"" + strings.Join(values, ", ") + "\""
-	}
-	return ""
 }

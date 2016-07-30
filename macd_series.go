@@ -14,7 +14,7 @@ const (
 type MACDSeries struct {
 	Name        string
 	Style       Style
-	YAxis       YAxisType
+	YAxis       yAxisType
 	InnerSeries ValueProvider
 
 	PrimaryPeriod   int
@@ -56,7 +56,7 @@ func (macd MACDSeries) GetStyle() Style {
 }
 
 // GetYAxis returns which YAxis the series draws on.
-func (macd MACDSeries) GetYAxis() YAxisType {
+func (macd MACDSeries) GetYAxis() yAxisType {
 	return macd.YAxis
 }
 
@@ -109,7 +109,7 @@ func (macd *MACDSeries) ensureChildSeries() {
 type MACDSignalSeries struct {
 	Name        string
 	Style       Style
-	YAxis       YAxisType
+	YAxis       yAxisType
 	InnerSeries ValueProvider
 
 	PrimaryPeriod   int
@@ -150,7 +150,7 @@ func (macds MACDSignalSeries) GetStyle() Style {
 }
 
 // GetYAxis returns which YAxis the series draws on.
-func (macds MACDSignalSeries) GetYAxis() YAxisType {
+func (macds MACDSignalSeries) GetYAxis() yAxisType {
 	return macds.YAxis
 }
 
@@ -192,15 +192,15 @@ func (macds *MACDSignalSeries) ensureSignal() {
 
 // Render renders the series.
 func (macds *MACDSignalSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
-	style := macds.Style.WithDefaultsFrom(defaults)
-	DrawLineSeries(r, canvasBox, xrange, yrange, style, macds)
+	style := macds.Style.InheritFrom(defaults)
+	Draw.LineSeries(r, canvasBox, xrange, yrange, style, macds)
 }
 
 // MACDLineSeries is a series that computes the inner ema1-ema2 value as a series.
 type MACDLineSeries struct {
 	Name        string
 	Style       Style
-	YAxis       YAxisType
+	YAxis       yAxisType
 	InnerSeries ValueProvider
 
 	PrimaryPeriod   int
@@ -223,7 +223,7 @@ func (macdl MACDLineSeries) GetStyle() Style {
 }
 
 // GetYAxis returns which YAxis the series draws on.
-func (macdl MACDLineSeries) GetYAxis() YAxisType {
+func (macdl MACDLineSeries) GetYAxis() yAxisType {
 	return macdl.YAxis
 }
 
@@ -284,6 +284,6 @@ func (macdl *MACDLineSeries) ensureEMASeries() {
 
 // Render renders the series.
 func (macdl *MACDLineSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
-	style := macdl.Style.WithDefaultsFrom(defaults)
-	DrawLineSeries(r, canvasBox, xrange, yrange, style, macdl)
+	style := macdl.Style.InheritFrom(defaults)
+	Draw.LineSeries(r, canvasBox, xrange, yrange, style, macdl)
 }

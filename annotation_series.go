@@ -2,18 +2,12 @@ package chart
 
 import "math"
 
-// Annotation is a label on the chart.
-type Annotation struct {
-	X, Y  float64
-	Label string
-}
-
 // AnnotationSeries is a series of labels on the chart.
 type AnnotationSeries struct {
 	Name        string
 	Style       Style
-	YAxis       YAxisType
-	Annotations []Annotation
+	YAxis       yAxisType
+	Annotations []Value2
 }
 
 // GetName returns the name of the time series.
@@ -27,8 +21,19 @@ func (as AnnotationSeries) GetStyle() Style {
 }
 
 // GetYAxis returns which YAxis the series draws on.
-func (as AnnotationSeries) GetYAxis() YAxisType {
+func (as AnnotationSeries) GetYAxis() yAxisType {
 	return as.YAxis
+}
+
+func (as AnnotationSeries) annotationStyleDefaults(defaults Style) Style {
+	return Style{
+		Font:        defaults.Font,
+		FillColor:   DefaultAnnotationFillColor,
+		FontSize:    DefaultAnnotationFontSize,
+		StrokeColor: defaults.StrokeColor,
+		StrokeWidth: defaults.StrokeWidth,
+		Padding:     DefaultAnnotationPadding,
+	}
 }
 
 // Measure returns a bounds box of the series.
@@ -40,22 +45,16 @@ func (as AnnotationSeries) Measure(r Renderer, canvasBox Box, xrange, yrange Ran
 		Bottom: 0,
 	}
 	if as.Style.IsZero() || as.Style.Show {
-		style := as.Style.WithDefaultsFrom(Style{
-			Font:        defaults.Font,
-			FillColor:   DefaultAnnotationFillColor,
-			FontSize:    DefaultAnnotationFontSize,
-			StrokeColor: defaults.StrokeColor,
-			StrokeWidth: defaults.StrokeWidth,
-			Padding:     DefaultAnnotationPadding,
-		})
+		seriesStyle := as.Style.InheritFrom(as.annotationStyleDefaults(defaults))
 		for _, a := range as.Annotations {
-			lx := canvasBox.Left + xrange.Translate(a.X)
-			ly := canvasBox.Bottom - yrange.Translate(a.Y)
-			ab := MeasureAnnotation(r, canvasBox, style, lx, ly, a.Label)
-			box.Top = MinInt(box.Top, ab.Top)
-			box.Left = MinInt(box.Left, ab.Left)
-			box.Right = MaxInt(box.Right, ab.Right)
-			box.Bottom = MaxInt(box.Bottom, ab.Bottom)
+			style := a.Style.InheritFrom(seriesStyle)
+			lx := canvasBox.Left + xrange.Translate(a.XValue)
+			ly := canvasBox.Bottom - yrange.Translate(a.YValue)
+			ab := Draw.MeasureAnnotation(r, canvasBox, style, lx, ly, a.Label)
+			box.Top = Math.MinInt(box.Top, ab.Top)
+			box.Left = Math.MinInt(box.Left, ab.Left)
+			box.Right = Math.MaxInt(box.Right, ab.Right)
+			box.Bottom = Math.MaxInt(box.Bottom, ab.Bottom)
 		}
 	}
 	return box
@@ -64,19 +63,12 @@ func (as AnnotationSeries) Measure(r Renderer, canvasBox Box, xrange, yrange Ran
 // Render draws the series.
 func (as AnnotationSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
 	if as.Style.IsZero() || as.Style.Show {
-		style := as.Style.WithDefaultsFrom(Style{
-			Font:        defaults.Font,
-			FontColor:   DefaultTextColor,
-			FillColor:   DefaultAnnotationFillColor,
-			FontSize:    DefaultAnnotationFontSize,
-			StrokeColor: defaults.StrokeColor,
-			StrokeWidth: defaults.StrokeWidth,
-			Padding:     DefaultAnnotationPadding,
-		})
+		seriesStyle := as.Style.InheritFrom(as.annotationStyleDefaults(defaults))
 		for _, a := range as.Annotations {
-			lx := canvasBox.Left + xrange.Translate(a.X)
-			ly := canvasBox.Bottom - yrange.Translate(a.Y)
-			DrawAnnotation(r, canvasBox, style, lx, ly, a.Label)
+			style := a.Style.InheritFrom(seriesStyle)
+			lx := canvasBox.Left + xrange.Translate(a.XValue)
+			ly := canvasBox.Bottom - yrange.Translate(a.YValue)
+			Draw.Annotation(r, canvasBox, style, lx, ly, a.Label)
 		}
 	}
 }

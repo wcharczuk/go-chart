@@ -6,7 +6,7 @@ package chart
 type HistogramSeries struct {
 	Name        string
 	Style       Style
-	YAxis       YAxisType
+	YAxis       yAxisType
 	InnerSeries ValueProvider
 }
 
@@ -21,7 +21,7 @@ func (hs HistogramSeries) GetStyle() Style {
 }
 
 // GetYAxis returns which yaxis the series is mapped to.
-func (hs HistogramSeries) GetYAxis() YAxisType {
+func (hs HistogramSeries) GetYAxis() yAxisType {
 	return hs.YAxis
 }
 
@@ -52,6 +52,6 @@ func (hs HistogramSeries) GetBoundedValue(index int) (x, y1, y2 float64) {
 
 // Render implements Series.Render.
 func (hs HistogramSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
-	style := hs.Style.WithDefaultsFrom(defaults)
-	DrawHistogramSeries(r, canvasBox, xrange, yrange, style, hs)
+	style := hs.Style.InheritFrom(defaults)
+	Draw.HistogramSeries(r, canvasBox, xrange, yrange, style, hs)
 }

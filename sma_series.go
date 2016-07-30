@@ -9,7 +9,7 @@ const (
 type SMASeries struct {
 	Name  string
 	Style Style
-	YAxis YAxisType
+	YAxis yAxisType
 
 	Period      int
 	InnerSeries ValueProvider
@@ -26,13 +26,24 @@ func (sma SMASeries) GetStyle() Style {
 }
 
 // GetYAxis returns which YAxis the series draws on.
-func (sma SMASeries) GetYAxis() YAxisType {
+func (sma SMASeries) GetYAxis() yAxisType {
 	return sma.YAxis
 }
 
 // Len returns the number of elements in the series.
 func (sma SMASeries) Len() int {
 	return sma.InnerSeries.Len()
+}
+
+// GetPeriod returns the window size.
+func (sma SMASeries) GetPeriod(defaults ...int) int {
+	if sma.Period == 0 {
+		if len(defaults) > 0 {
+			return defaults[0]
+		}
+		return DefaultSimpleMovingAveragePeriod
+	}
+	return sma.Period
 }
 
 // GetValue gets a value at a given index.
@@ -59,20 +70,9 @@ func (sma SMASeries) GetLastValue() (x, y float64) {
 	return
 }
 
-// GetPeriod returns the window size.
-func (sma SMASeries) GetPeriod(defaults ...int) int {
-	if sma.Period == 0 {
-		if len(defaults) > 0 {
-			return defaults[0]
-		}
-		return DefaultSimpleMovingAveragePeriod
-	}
-	return sma.Period
-}
-
 func (sma SMASeries) getAverage(index int) float64 {
 	period := sma.GetPeriod()
-	floor := MaxInt(0, index-period)
+	floor := Math.MaxInt(0, index-period)
 	var accum float64
 	var count float64
 	for x := index; x >= floor; x-- {
@@ -85,6 +85,6 @@ func (sma SMASeries) getAverage(index int) float64 {
 
 // Render renders the series.
 func (sma SMASeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
-	style := sma.Style.WithDefaultsFrom(defaults)
-	DrawLineSeries(r, canvasBox, xrange, yrange, style, sma)
+	style := sma.Style.InheritFrom(defaults)
+	Draw.LineSeries(r, canvasBox, xrange, yrange, style, sma)
 }

@@ -7,7 +7,7 @@ type TimeSeries struct {
 	Name  string
 	Style Style
 
-	YAxis YAxisType
+	YAxis yAxisType
 
 	XValues []time.Time
 	YValues []float64
@@ -50,12 +50,12 @@ func (ts TimeSeries) GetValueFormatters() (x, y ValueFormatter) {
 }
 
 // GetYAxis returns which YAxis the series draws on.
-func (ts TimeSeries) GetYAxis() YAxisType {
+func (ts TimeSeries) GetYAxis() yAxisType {
 	return ts.YAxis
 }
 
 // Render renders the series.
 func (ts TimeSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
-	style := ts.Style.WithDefaultsFrom(defaults)
-	DrawLineSeries(r, canvasBox, xrange, yrange, style, ts)
+	style := ts.Style.InheritFrom(defaults)
+	Draw.LineSeries(r, canvasBox, xrange, yrange, style, ts)
 }

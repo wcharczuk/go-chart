@@ -15,11 +15,11 @@ func TestAnnotationSeriesMeasure(t *testing.T) {
 		Style: Style{
 			Show: true,
 		},
-		Annotations: []Annotation{
-			{X: 1.0, Y: 1.0, Label: "1.0"},
-			{X: 2.0, Y: 2.0, Label: "2.0"},
-			{X: 3.0, Y: 3.0, Label: "3.0"},
-			{X: 4.0, Y: 4.0, Label: "4.0"},
+		Annotations: []Value2{
+			{XValue: 1.0, YValue: 1.0, Label: "1.0"},
+			{XValue: 2.0, YValue: 2.0, Label: "2.0"},
+			{XValue: 3.0, YValue: 3.0, Label: "3.0"},
+			{XValue: 4.0, YValue: 4.0, Label: "4.0"},
 		},
 	}
 
@@ -29,12 +29,12 @@ func TestAnnotationSeriesMeasure(t *testing.T) {
 	f, err := GetDefaultFont()
 	assert.Nil(err)
 
-	xrange := Range{
+	xrange := &ContinuousRange{
 		Min:    1.0,
 		Max:    4.0,
 		Domain: 100,
 	}
-	yrange := Range{
+	yrange := &ContinuousRange{
 		Min:    1.0,
 		Max:    4.0,
 		Domain: 100,
@@ -68,11 +68,11 @@ func TestAnnotationSeriesRender(t *testing.T) {
 			FillColor:   drawing.ColorWhite,
 			StrokeColor: drawing.ColorBlack,
 		},
-		Annotations: []Annotation{
-			{X: 1.0, Y: 1.0, Label: "1.0"},
-			{X: 2.0, Y: 2.0, Label: "2.0"},
-			{X: 3.0, Y: 3.0, Label: "3.0"},
-			{X: 4.0, Y: 4.0, Label: "4.0"},
+		Annotations: []Value2{
+			{XValue: 1.0, YValue: 1.0, Label: "1.0"},
+			{XValue: 2.0, YValue: 2.0, Label: "2.0"},
+			{XValue: 3.0, YValue: 3.0, Label: "3.0"},
+			{XValue: 4.0, YValue: 4.0, Label: "4.0"},
 		},
 	}
 
@@ -82,12 +82,12 @@ func TestAnnotationSeriesRender(t *testing.T) {
 	f, err := GetDefaultFont()
 	assert.Nil(err)
 
-	xrange := Range{
+	xrange := &ContinuousRange{
 		Min:    1.0,
 		Max:    4.0,
 		Domain: 100,
 	}
-	yrange := Range{
+	yrange := &ContinuousRange{
 		Min:    1.0,
 		Max:    4.0,
 		Domain: 100,

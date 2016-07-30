@@ -9,7 +9,7 @@ const (
 type EMASeries struct {
 	Name  string
 	Style Style
-	YAxis YAxisType
+	YAxis yAxisType
 
 	Period      int
 	InnerSeries ValueProvider
@@ -28,7 +28,7 @@ func (ema EMASeries) GetStyle() Style {
 }
 
 // GetYAxis returns which YAxis the series draws on.
-func (ema EMASeries) GetYAxis() YAxisType {
+func (ema EMASeries) GetYAxis() yAxisType {
 	return ema.YAxis
 }
 
@@ -96,6 +96,6 @@ func (ema *EMASeries) ensureCachedValues() {
 
 // Render renders the series.
 func (ema *EMASeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
-	style := ema.Style.WithDefaultsFrom(defaults)
-	DrawLineSeries(r, canvasBox, xrange, yrange, style, ema)
+	style := ema.Style.InheritFrom(defaults)
+	Draw.LineSeries(r, canvasBox, xrange, yrange, style, ema)
 }

@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	emaXValues = Seq(1.0, 50.0)
+	emaXValues = Sequence.Float64(1.0, 50.0)
 	emaYValues = []float64{
 		1, 2, 3, 4, 5, 4, 3, 2,
 		1, 2, 3, 4, 5, 4, 3, 2,

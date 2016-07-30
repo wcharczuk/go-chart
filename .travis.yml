@@ -6,8 +6,8 @@ go:
 sudo: false
 
 before_script:
-  - go build -i ./...
+  - go get -u github.com/blendlabs/go-assert
+  - go get ./...
 
 script:
-  - go test
-  - go test ./drawing/
+  - go test ./...

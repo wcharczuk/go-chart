@@ -15,7 +15,7 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 		Name: "SPY",
 		Style: chart.Style{
 			Show:        true,
-			StrokeColor: chart.GetDefaultSeriesStrokeColor(0),
+			StrokeColor: chart.GetDefaultColor(0),
 		},
 		XValues: xv,
 		YValues: yv,
@@ -43,11 +43,12 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 
 	graph := chart.Chart{
 		XAxis: chart.XAxis{
-			Style: chart.Style{Show: true},
+			Style:        chart.Style{Show: true},
+			TickPosition: chart.TickPositionBetweenTicks,
 		},
 		YAxis: chart.YAxis{
 			Style: chart.Style{Show: true},
-			Range: chart.Range{
+			Range: &chart.ContinuousRange{
 				Max: 220.0,
 				Min: 180.0,
 			},

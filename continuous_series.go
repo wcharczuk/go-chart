@@ -5,7 +5,7 @@ type ContinuousSeries struct {
 	Name  string
 	Style Style
 
-	YAxis YAxisType
+	YAxis yAxisType
 
 	XValues []float64
 	YValues []float64
@@ -44,12 +44,12 @@ func (cs ContinuousSeries) GetValueFormatters() (x, y ValueFormatter) {
 }
 
 // GetYAxis returns which YAxis the series draws on.
-func (cs ContinuousSeries) GetYAxis() YAxisType {
+func (cs ContinuousSeries) GetYAxis() yAxisType {
 	return cs.YAxis
 }
 
 // Render renders the series.
 func (cs ContinuousSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
-	style := cs.Style.WithDefaultsFrom(defaults)
-	DrawLineSeries(r, canvasBox, xrange, yrange, style, cs)
+	style := cs.Style.InheritFrom(defaults)
+	Draw.LineSeries(r, canvasBox, xrange, yrange, style, cs)
 }

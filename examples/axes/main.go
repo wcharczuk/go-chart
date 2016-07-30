@@ -28,8 +28,8 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 			chart.ContinuousSeries{
 				Style: chart.Style{
 					Show:        true,
-					StrokeColor: chart.GetDefaultSeriesStrokeColor(0).WithAlpha(64),
-					FillColor:   chart.GetDefaultSeriesStrokeColor(0).WithAlpha(64),
+					StrokeColor: chart.GetDefaultColor(0).WithAlpha(64),
+					FillColor:   chart.GetDefaultColor(0).WithAlpha(64),
 				},
 				XValues: []float64{1.0, 2.0, 3.0, 4.0, 5.0},
 				YValues: []float64{1.0, 2.0, 3.0, 4.0, 5.0},

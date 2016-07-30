@@ -7,7 +7,7 @@ import "math"
 type BollingerBandsSeries struct {
 	Name  string
 	Style Style
-	YAxis YAxisType
+	YAxis yAxisType
 
 	Period      int
 	K           float64
@@ -27,7 +27,7 @@ func (bbs BollingerBandsSeries) GetStyle() Style {
 }
 
 // GetYAxis returns which YAxis the series draws on.
-func (bbs BollingerBandsSeries) GetYAxis() YAxisType {
+func (bbs BollingerBandsSeries) GetYAxis() yAxisType {
 	return bbs.YAxis
 }
 
@@ -108,13 +108,13 @@ func (bbs *BollingerBandsSeries) GetBoundedLastValue() (x, y1, y2 float64) {
 
 // Render renders the series.
 func (bbs *BollingerBandsSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
-	s := bbs.Style.WithDefaultsFrom(defaults.WithDefaultsFrom(Style{
+	s := bbs.Style.InheritFrom(defaults.InheritFrom(Style{
 		StrokeWidth: 1.0,
 		StrokeColor: DefaultAxisColor.WithAlpha(64),
 		FillColor:   DefaultAxisColor.WithAlpha(32),
 	}))
 
-	DrawBoundedSeries(r, canvasBox, xrange, yrange, s, bbs, bbs.GetPeriod())
+	Draw.BoundedSeries(r, canvasBox, xrange, yrange, s, bbs, bbs.GetPeriod())
 }
 
 func (bbs BollingerBandsSeries) getAverage(valueBuffer *RingBuffer) float64 {
