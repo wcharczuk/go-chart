@@ -23,7 +23,7 @@ func TestXAxisGetTicks(t *testing.T) {
 	}
 	vf := FloatValueFormatter
 	ticks := xa.GetTicks(r, xr, styleDefaults, vf)
-	assert.Len(ticks, 17)
+	assert.Len(ticks, 16)
 }
 
 func TestXAxisGetTicksWithUserDefaults(t *testing.T) {
