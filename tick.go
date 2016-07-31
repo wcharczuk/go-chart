@@ -55,13 +55,14 @@ func GenerateContinuousTicks(r Renderer, ra Range, isVertical bool, style Style,
 	domainRemainder := (ra.GetDomain()) - (tickSize * 2)
 	intermediateTickCount := int(math.Floor(float64(domainRemainder) / float64(tickSize)))
 
-	rangeDelta := math.Floor(max - min)
+	rangeDelta := max - min
 	tickStep := rangeDelta / float64(intermediateTickCount)
 
 	roundTo := Math.GetRoundToForDelta(rangeDelta) / 10
+	intermediateTickCount = Math.MinInt(intermediateTickCount, 1<<10)
 
 	for x := 1; x < intermediateTickCount; x++ {
-		tickValue := min + Math.RoundDown(tickStep*float64(x), roundTo)
+		tickValue := min + Math.RoundUp(tickStep*float64(x), roundTo)
 		ticks = append(ticks, Tick{
 			Value: tickValue,
 			Label: vf(tickValue),
