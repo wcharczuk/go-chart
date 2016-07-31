@@ -9,7 +9,7 @@ const (
 type SMASeries struct {
 	Name  string
 	Style Style
-	YAxis yAxisType
+	YAxis YAxisType
 
 	Period      int
 	InnerSeries ValueProvider
@@ -26,7 +26,7 @@ func (sma SMASeries) GetStyle() Style {
 }
 
 // GetYAxis returns which YAxis the series draws on.
-func (sma SMASeries) GetYAxis() yAxisType {
+func (sma SMASeries) GetYAxis() YAxisType {
 	return sma.YAxis
 }
 

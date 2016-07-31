@@ -1,24 +1,25 @@
 package chart
 
-type tickPosition int
+// TickPosition is an enumeration of possible tick drawing positions.
+type TickPosition int
 
 const (
 	// TickPositionUnset means to use the default tick position.
-	TickPositionUnset tickPosition = 0
+	TickPositionUnset TickPosition = 0
 	// TickPositionBetweenTicks draws the labels for a tick between the previous and current tick.
-	TickPositionBetweenTicks tickPosition = 1
+	TickPositionBetweenTicks TickPosition = 1
 	// TickPositionUnderTick draws the tick below the tick.
-	TickPositionUnderTick tickPosition = 2
+	TickPositionUnderTick TickPosition = 2
 )
 
 // YAxisType is a type of y-axis; it can either be primary or secondary.
-type yAxisType int
+type YAxisType int
 
 const (
 	// YAxisPrimary is the primary axis.
-	YAxisPrimary yAxisType = 0
+	YAxisPrimary YAxisType = 0
 	// YAxisSecondary is the secondary axis.
-	YAxisSecondary yAxisType = 1
+	YAxisSecondary YAxisType = 1
 )
 
 // Axis is a chart feature detailing what values happen where.

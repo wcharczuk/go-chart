@@ -5,7 +5,7 @@ type ContinuousSeries struct {
 	Name  string
 	Style Style
 
-	YAxis yAxisType
+	YAxis YAxisType
 
 	XValues []float64
 	YValues []float64
@@ -44,7 +44,7 @@ func (cs ContinuousSeries) GetValueFormatters() (x, y ValueFormatter) {
 }
 
 // GetYAxis returns which YAxis the series draws on.
-func (cs ContinuousSeries) GetYAxis() yAxisType {
+func (cs ContinuousSeries) GetYAxis() YAxisType {
 	return cs.YAxis
 }
 

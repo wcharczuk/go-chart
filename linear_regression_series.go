@@ -5,7 +5,7 @@ package chart
 type LinearRegressionSeries struct {
 	Name  string
 	Style Style
-	YAxis yAxisType
+	YAxis YAxisType
 
 	Window      int
 	Offset      int
@@ -28,7 +28,7 @@ func (lrs LinearRegressionSeries) GetStyle() Style {
 }
 
 // GetYAxis returns which YAxis the series draws on.
-func (lrs LinearRegressionSeries) GetYAxis() yAxisType {
+func (lrs LinearRegressionSeries) GetYAxis() YAxisType {
 	return lrs.YAxis
 }
 

@@ -13,7 +13,7 @@ type XAxis struct {
 	Range          Range
 	Ticks          []Tick
 
-	TickPosition tickPosition
+	TickPosition TickPosition
 
 	GridLines      []GridLine
 	GridMajorStyle Style
@@ -31,7 +31,7 @@ func (xa XAxis) GetStyle() Style {
 }
 
 // GetTickPosition returns the tick position option for the axis.
-func (xa XAxis) GetTickPosition(defaults ...tickPosition) tickPosition {
+func (xa XAxis) GetTickPosition(defaults ...TickPosition) TickPosition {
 	if xa.TickPosition == TickPositionUnset {
 		if len(defaults) > 0 {
 			return defaults[0]
@@ -51,7 +51,7 @@ func (xa XAxis) GetTicks(r Renderer, ra Range, defaults Style, vf ValueFormatter
 		return xa.Ticks
 	}
 	if tp, isTickProvider := ra.(TicksProvider); isTickProvider {
-		return tp.GetTicks(vf)
+		return tp.GetTicks(r, defaults, vf)
 	}
 	tickStyle := xa.Style.InheritFrom(defaults)
 	return GenerateContinuousTicks(r, ra, false, tickStyle, vf)
