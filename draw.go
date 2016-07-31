@@ -22,12 +22,14 @@ func (d draw) LineSeries(r Renderer, canvasBox Box, xrange, yrange Range, style 
 	x0 := cl + xrange.Translate(v0x)
 	y0 := cb - yrange.Translate(v0y)
 
+	yv0 := yrange.Translate(0)
+
 	var vx, vy float64
 	var x, y int
 
 	fill := style.GetFillColor()
 	if !fill.IsZero() {
-		r.SetFillColor(fill)
+		style.GetFillOptions().WriteToRenderer(r)
 		r.MoveTo(x0, y0)
 		for i := 1; i < vs.Len(); i++ {
 			vx, vy = vs.GetValue(i)
@@ -35,9 +37,9 @@ func (d draw) LineSeries(r Renderer, canvasBox Box, xrange, yrange Range, style 
 			y = cb - yrange.Translate(vy)
 			r.LineTo(x, y)
 		}
-		r.LineTo(x, cb)
-		r.LineTo(x0, cb)
-		r.Close()
+		r.LineTo(x, Math.MinInt(cb, cb-yv0))
+		r.LineTo(x0, Math.MinInt(cb, cb-yv0))
+		r.LineTo(x0, y0)
 		r.Fill()
 	}
 
