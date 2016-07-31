@@ -67,21 +67,36 @@ func (xa XAxis) GetGridLines(ticks []Tick) []GridLine {
 
 // Measure returns the bounds of the axis.
 func (xa XAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, ticks []Tick) Box {
-	xa.Style.InheritFrom(defaults).WriteToRenderer(r)
+	tickStyle := xa.Style.InheritFrom(defaults)
 	sort.Sort(Ticks(ticks))
 
+	tp := xa.GetTickPosition()
+
 	var left, right, top, bottom = math.MaxInt32, 0, math.MaxInt32, 0
-	for _, t := range ticks {
+	for index, t := range ticks {
 		v := t.Value
-		lx := ra.Translate(v)
+		tickStyle.GetTextOptions().WriteToRenderer(r)
 		tb := r.MeasureText(t.Label)
 
-		tx := canvasBox.Left + lx
+		var ltx, rtx int
+		tx := ra.Translate(v)
 		ty := canvasBox.Bottom + DefaultXAxisMargin + tb.Height()
+		switch tp {
+		case TickPositionUnderTick, TickPositionUnset:
+			ltx = tx - tb.Width()>>1
+			rtx = tx + tb.Width()>>1
+			break
+		case TickPositionBetweenTicks:
+			if index > 0 {
+				ltx = ra.Translate(ticks[index-1].Value)
+				rtx = tx
+			}
+			break
+		}
 
 		top = Math.MinInt(top, canvasBox.Bottom)
-		left = Math.MinInt(left, tx-(tb.Width()>>1))
-		right = Math.MaxInt(right, tx+(tb.Width()>>1))
+		left = Math.MinInt(left, ltx)
+		right = Math.MaxInt(right, rtx)
 		bottom = Math.MaxInt(bottom, ty)
 	}
 
@@ -139,7 +154,6 @@ func (xa XAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 			}
 			break
 		}
-
 	}
 
 	if xa.GridMajorStyle.Show || xa.GridMinorStyle.Show {

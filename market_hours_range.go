@@ -90,13 +90,6 @@ func (mhr *MarketHoursRange) GetTicks(vf ValueFormatter) []Tick {
 	cursor := date.On(mhr.MarketClose, mhr.Min)
 	maxClose := date.On(mhr.MarketClose, mhr.Max)
 
-	if mhr.Min.Before(cursor) {
-		ticks = append(ticks, Tick{
-			Value: TimeToFloat64(cursor),
-			Label: vf(cursor),
-		})
-	}
-
 	for date.BeforeDate(cursor, maxClose) {
 		if date.IsWeekDay(cursor.Weekday()) && !mhr.GetHolidayProvider()(cursor) {
 			ticks = append(ticks, Tick{
@@ -115,6 +108,7 @@ func (mhr *MarketHoursRange) GetTicks(vf ValueFormatter) []Tick {
 			Label: vf(endMarketClose),
 		})
 	}
+
 	return ticks
 }
 
