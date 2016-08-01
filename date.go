@@ -52,22 +52,22 @@ var (
 
 var (
 	// NYSEOpen is when the NYSE opens.
-	NYSEOpen = Date.ClockTime(9, 30, 0, 0, Date.Eastern())
+	NYSEOpen = Date.Time(9, 30, 0, 0, Date.Eastern())
 
 	// NYSEClose is when the NYSE closes.
-	NYSEClose = Date.ClockTime(16, 0, 0, 0, Date.Eastern())
+	NYSEClose = Date.Time(16, 0, 0, 0, Date.Eastern())
 
 	// NASDAQOpen is when NASDAQ opens.
-	NASDAQOpen = Date.ClockTime(9, 30, 0, 0, Date.Eastern())
+	NASDAQOpen = Date.Time(9, 30, 0, 0, Date.Eastern())
 
 	// NASDAQClose is when NASDAQ closes.
-	NASDAQClose = Date.ClockTime(16, 0, 0, 0, Date.Eastern())
+	NASDAQClose = Date.Time(16, 0, 0, 0, Date.Eastern())
 
 	// NYSEArcaOpen is when NYSEARCA opens.
-	NYSEArcaOpen = Date.ClockTime(4, 0, 0, 0, Date.Eastern())
+	NYSEArcaOpen = Date.Time(4, 0, 0, 0, Date.Eastern())
 
 	// NYSEArcaClose is when NYSEARCA closes.
-	NYSEArcaClose = Date.ClockTime(20, 0, 0, 0, Date.Eastern())
+	NYSEArcaClose = Date.Time(20, 0, 0, 0, Date.Eastern())
 )
 
 // HolidayProvider is a function that returns if a given time falls on a holiday.
@@ -220,17 +220,22 @@ func (d date) Eastern() *time.Location {
 	return _eastern
 }
 
-// ClockTime returns a new time.Time for the given clock components.
-func (d date) ClockTime(hour, min, sec, nsec int, loc *time.Location) time.Time {
+// Time returns a new time.Time for the given clock components.
+func (d date) Time(hour, min, sec, nsec int, loc *time.Location) time.Time {
 	return time.Date(0, 0, 0, hour, min, sec, nsec, loc)
+}
+
+func (d date) Date(year, month, day int, loc *time.Location) time.Time {
+	return time.Date(year, time.Month(month), day, 12, 0, 0, 0, loc)
 }
 
 // On returns the clock components of clock (hour,minute,second) on the date components of d.
 func (d date) On(clock, cd time.Time) time.Time {
-	return time.Date(cd.Year(), cd.Month(), cd.Day(), clock.Hour(), clock.Minute(), clock.Second(), clock.Nanosecond(), clock.Location())
+	tzAdjusted := cd.In(clock.Location())
+	return time.Date(tzAdjusted.Year(), tzAdjusted.Month(), tzAdjusted.Day(), clock.Hour(), clock.Minute(), clock.Second(), clock.Nanosecond(), clock.Location())
 }
 
-// NoonOn is a shortcut for On(ClockTime(12,0,0), cd) a.k.a. noon on a given date.
+// NoonOn is a shortcut for On(Time(12,0,0), cd) a.k.a. noon on a given date.
 func (d date) NoonOn(cd time.Time) time.Time {
 	return time.Date(cd.Year(), cd.Month(), cd.Day(), 12, 0, 0, 0, cd.Location())
 }
@@ -252,19 +257,20 @@ func (d date) IsWeekendDay(day time.Weekday) bool {
 
 // Before returns if a timestamp is strictly before another date (ignoring hours, minutes etc.)
 func (d date) Before(before, reference time.Time) bool {
-	if before.Year() < reference.Year() {
+	tzAdjustedBefore := before.In(reference.Location())
+	if tzAdjustedBefore.Year() < reference.Year() {
 		return true
 	}
-	if before.Month() < reference.Month() {
+	if tzAdjustedBefore.Month() < reference.Month() {
 		return true
 	}
-	return before.Year() == reference.Year() && before.Month() == reference.Month() && before.Day() < reference.Day()
+	return tzAdjustedBefore.Year() == reference.Year() && tzAdjustedBefore.Month() == reference.Month() && tzAdjustedBefore.Day() < reference.Day()
 }
 
 // NextMarketOpen returns the next market open after a given time.
 func (d date) NextMarketOpen(after, openTime time.Time, isHoliday HolidayProvider) time.Time {
-	afterEastern := after.In(d.Eastern())
-	todaysOpen := d.On(openTime, afterEastern)
+	afterLocalized := after.In(openTime.Location())
+	todaysOpen := d.On(openTime, afterLocalized)
 
 	if isHoliday == nil {
 		isHoliday = defaultHolidayProvider
@@ -272,7 +278,7 @@ func (d date) NextMarketOpen(after, openTime time.Time, isHoliday HolidayProvide
 
 	todayIsValidTradingDay := d.IsWeekDay(todaysOpen.Weekday()) && !isHoliday(todaysOpen)
 
-	if (afterEastern.Equal(todaysOpen) || afterEastern.Before(todaysOpen)) && todayIsValidTradingDay {
+	if (afterLocalized.Equal(todaysOpen) || afterLocalized.Before(todaysOpen)) && todayIsValidTradingDay {
 		return todaysOpen
 	}
 
@@ -288,18 +294,18 @@ func (d date) NextMarketOpen(after, openTime time.Time, isHoliday HolidayProvide
 
 // NextMarketClose returns the next market close after a given time.
 func (d date) NextMarketClose(after, closeTime time.Time, isHoliday HolidayProvider) time.Time {
-	afterEastern := after.In(d.Eastern())
+	afterLocalized := after.In(closeTime.Location())
 
 	if isHoliday == nil {
 		isHoliday = defaultHolidayProvider
 	}
 
-	todaysClose := d.On(closeTime, afterEastern)
-	if afterEastern.Before(todaysClose) && d.IsWeekDay(todaysClose.Weekday()) && !isHoliday(todaysClose) {
+	todaysClose := d.On(closeTime, afterLocalized)
+	if afterLocalized.Before(todaysClose) && d.IsWeekDay(todaysClose.Weekday()) && !isHoliday(todaysClose) {
 		return todaysClose
 	}
 
-	if afterEastern.Equal(todaysClose) { //rare but it might happen.
+	if afterLocalized.Equal(todaysClose) { //rare but it might happen.
 		return todaysClose
 	}
 
@@ -375,4 +381,22 @@ func (d date) NextHour(ts time.Time) time.Time {
 	minutes := time.Duration(advanced.Minute()) * time.Minute
 	final := advanced.Add(-minutes)
 	return time.Date(final.Year(), final.Month(), final.Day(), final.Hour(), 0, 0, 0, final.Location())
+}
+
+// NextDayOfWeek returns the next instance of a given weekday after a given timestamp.
+func (d date) NextDayOfWeek(after time.Time, dayOfWeek time.Weekday) time.Time {
+	afterWeekday := after.Weekday()
+	if afterWeekday == dayOfWeek {
+		return after.AddDate(0, 0, 7)
+	}
+
+	// 1 vs 5 ~ add 4 days
+	if afterWeekday < dayOfWeek {
+		dayDelta := int(dayOfWeek - afterWeekday)
+		return after.AddDate(0, 0, dayDelta)
+	}
+
+	// 5 vs 1, add 7-(5-1) ~ 3 days
+	dayDelta := 7 - int(afterWeekday-dayOfWeek)
+	return after.AddDate(0, 0, dayDelta)
 }

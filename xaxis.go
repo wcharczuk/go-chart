@@ -72,7 +72,7 @@ func (xa XAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 
 	tp := xa.GetTickPosition()
 
-	var left, right, top, bottom = math.MaxInt32, 0, math.MaxInt32, 0
+	var left, right, bottom = math.MaxInt32, 0, 0
 	for index, t := range ticks {
 		v := t.Value
 		tickStyle.GetTextOptions().WriteToRenderer(r)
@@ -94,14 +94,13 @@ func (xa XAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 			break
 		}
 
-		top = Math.MinInt(top, canvasBox.Bottom)
 		left = Math.MinInt(left, ltx)
 		right = Math.MaxInt(right, rtx)
 		bottom = Math.MaxInt(bottom, ty)
 	}
 
 	return Box{
-		Top:    top,
+		Top:    canvasBox.Bottom,
 		Left:   left,
 		Right:  right,
 		Bottom: bottom,

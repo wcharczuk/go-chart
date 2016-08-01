@@ -12,6 +12,54 @@ func parse(v string) time.Time {
 	return ts
 }
 
+func TestDateTime(t *testing.T) {
+	assert := assert.New(t)
+
+	ts := Date.Time(5, 6, 7, 8, time.UTC)
+	assert.Equal(05, ts.Hour())
+	assert.Equal(06, ts.Minute())
+	assert.Equal(07, ts.Second())
+	assert.Equal(8, ts.Nanosecond())
+	assert.Equal(time.UTC, ts.Location())
+}
+
+func TestDateDate(t *testing.T) {
+	assert := assert.New(t)
+
+	ts := Date.Date(2015, 5, 6, time.UTC)
+	assert.Equal(2015, ts.Year())
+	assert.Equal(5, ts.Month())
+	assert.Equal(6, ts.Day())
+	assert.Equal(time.UTC, ts.Location())
+}
+
+func TestDateOn(t *testing.T) {
+	assert := assert.New(t)
+
+	ts := Date.On(Date.Time(5, 4, 3, 2, time.UTC), Date.Date(2016, 6, 7, Date.Eastern()))
+	assert.Equal(2016, ts.Year())
+	assert.Equal(6, ts.Month())
+	assert.Equal(7, ts.Day())
+	assert.Equal(5, ts.Hour())
+	assert.Equal(4, ts.Minute())
+	assert.Equal(3, ts.Second())
+	assert.Equal(2, ts.Nanosecond())
+	assert.Equal(time.UTC, ts.Location())
+
+}
+
+func TestDateNoonOn(t *testing.T) {
+	assert := assert.New(t)
+	noon := Date.NoonOn(time.Date(2016, 04, 03, 02, 01, 0, 0, time.UTC))
+
+	assert.Equal(2016, noon.Year())
+	assert.Equal(4, noon.Month())
+	assert.Equal(3, noon.Day())
+	assert.Equal(12, noon.Hour())
+	assert.Equal(0, noon.Minute())
+	assert.Equal(time.UTC, noon.Location())
+}
+
 func TestDateBefore(t *testing.T) {
 	assert := assert.New(t)
 
@@ -23,6 +71,17 @@ func TestDateBefore(t *testing.T) {
 	assert.False(Date.Before(parse("2016-07-03"), parse("2016-07-01")))
 	assert.False(Date.Before(parse("2016-08-03"), parse("2016-07-01")))
 	assert.False(Date.Before(parse("2017-08-03"), parse("2016-07-01")))
+}
+
+func TestDateBeforeHandlesTimezones(t *testing.T) {
+	assert := assert.New(t)
+
+	tuesdayUTC := time.Date(2016, 8, 02, 22, 00, 0, 0, time.UTC)
+	mondayUTC := time.Date(2016, 8, 01, 1, 00, 0, 0, time.UTC)
+	sundayEST := time.Date(2016, 7, 31, 22, 00, 0, 0, Date.Eastern())
+
+	assert.True(Date.Before(sundayEST, tuesdayUTC))
+	assert.False(Date.Before(sundayEST, mondayUTC))
 }
 
 func TestNextMarketOpen(t *testing.T) {
@@ -43,6 +102,10 @@ func TestNextMarketOpen(t *testing.T) {
 	assert.True(tomorrowOpen.Equal(Date.NextMarketOpen(afterOpen, NYSEOpen, Date.IsNYSEHoliday)))
 	assert.True(mondayOpen.Equal(Date.NextMarketOpen(afterFriday, NYSEOpen, Date.IsNYSEHoliday)))
 	assert.True(mondayOpen.Equal(Date.NextMarketOpen(weekend, NYSEOpen, Date.IsNYSEHoliday)))
+
+	assert.Equal(Date.Eastern(), todayOpen.Location())
+	assert.Equal(Date.Eastern(), tomorrowOpen.Location())
+	assert.Equal(Date.Eastern(), mondayOpen.Location())
 
 	testRegression := time.Date(2016, 07, 18, 16, 0, 0, 0, Date.Eastern())
 	shouldbe := time.Date(2016, 07, 19, 9, 30, 0, 0, Date.Eastern())
@@ -68,6 +131,10 @@ func TestNextMarketClose(t *testing.T) {
 	assert.True(tomorrowClose.Equal(Date.NextMarketClose(afterClose, NYSEClose, Date.IsNYSEHoliday)))
 	assert.True(mondayClose.Equal(Date.NextMarketClose(afterFriday, NYSEClose, Date.IsNYSEHoliday)))
 	assert.True(mondayClose.Equal(Date.NextMarketClose(weekend, NYSEClose, Date.IsNYSEHoliday)))
+
+	assert.Equal(Date.Eastern(), todayClose.Location())
+	assert.Equal(Date.Eastern(), tomorrowClose.Location())
+	assert.Equal(Date.Eastern(), mondayClose.Location())
 }
 
 func TestCalculateMarketSecondsBetween(t *testing.T) {
@@ -119,4 +186,39 @@ func TestDateNextHour(t *testing.T) {
 	next = Date.NextHour(next)
 	assert.Equal(12, next.Hour())
 
+}
+
+func TestDateNextDayOfWeek(t *testing.T) {
+	assert := assert.New(t)
+
+	weds := Date.Date(2016, 8, 10, time.UTC)
+	fri := Date.Date(2016, 8, 12, time.UTC)
+	sun := Date.Date(2016, 8, 14, time.UTC)
+	mon := Date.Date(2016, 8, 15, time.UTC)
+	weds2 := Date.Date(2016, 8, 17, time.UTC)
+
+	nextFri := Date.NextDayOfWeek(weds, time.Friday)
+	nextSunday := Date.NextDayOfWeek(weds, time.Sunday)
+	nextMonday := Date.NextDayOfWeek(weds, time.Monday)
+	nextWeds := Date.NextDayOfWeek(weds, time.Wednesday)
+
+	assert.Equal(fri.Year(), nextFri.Year())
+	assert.Equal(fri.Month(), nextFri.Month())
+	assert.Equal(fri.Day(), nextFri.Day())
+
+	assert.Equal(sun.Year(), nextSunday.Year())
+	assert.Equal(sun.Month(), nextSunday.Month())
+	assert.Equal(sun.Day(), nextSunday.Day())
+
+	assert.Equal(mon.Year(), nextMonday.Year())
+	assert.Equal(mon.Month(), nextMonday.Month())
+	assert.Equal(mon.Day(), nextMonday.Day())
+
+	assert.Equal(weds2.Year(), nextWeds.Year())
+	assert.Equal(weds2.Month(), nextWeds.Month())
+	assert.Equal(weds2.Day(), nextWeds.Day())
+
+	assert.Equal(time.UTC, nextFri.Location())
+	assert.Equal(time.UTC, nextSunday.Location())
+	assert.Equal(time.UTC, nextMonday.Location())
 }

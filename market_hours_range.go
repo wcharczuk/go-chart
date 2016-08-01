@@ -21,6 +21,11 @@ type MarketHoursRange struct {
 	Domain int
 }
 
+// GetTimezone returns the timezone for the market hours range.
+func (mhr MarketHoursRange) GetTimezone() *time.Location {
+	return mhr.GetMarketOpen().Location()
+}
+
 // IsZero returns if the range is setup or not.
 func (mhr MarketHoursRange) IsZero() bool {
 	return mhr.Min.IsZero() && mhr.Max.IsZero()
@@ -48,11 +53,13 @@ func (mhr MarketHoursRange) GetEffectiveMax() time.Time {
 // SetMin sets the min value.
 func (mhr *MarketHoursRange) SetMin(min float64) {
 	mhr.Min = Float64ToTime(min)
+	mhr.Min = mhr.Min.In(mhr.GetTimezone())
 }
 
 // SetMax sets the max value.
 func (mhr *MarketHoursRange) SetMax(max float64) {
 	mhr.Max = Float64ToTime(max)
+	mhr.Max = mhr.Max.In(mhr.GetTimezone())
 }
 
 // GetDelta gets the delta.
@@ -99,18 +106,38 @@ func (mhr MarketHoursRange) GetMarketClose() time.Time {
 // GetTicks returns the ticks for the range.
 // This is to override the default continous ticks that would be generated for the range.
 func (mhr *MarketHoursRange) GetTicks(r Renderer, defaults Style, vf ValueFormatter) []Tick {
-	println("GetTicks() domain:", mhr.Domain)
 	times := Sequence.MarketHours(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
 	timesWidth := mhr.measureTimes(r, defaults, vf, times)
 	if timesWidth <= mhr.Domain {
 		return mhr.makeTicks(vf, times)
 	}
+
 	times = Sequence.MarketHourQuarters(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
 	timesWidth = mhr.measureTimes(r, defaults, vf, times)
 	if timesWidth <= mhr.Domain {
 		return mhr.makeTicks(vf, times)
 	}
-	return mhr.makeTicks(vf, Sequence.MarketDayCloses(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider()))
+
+	times = Sequence.MarketDayCloses(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
+	timesWidth = mhr.measureTimes(r, defaults, vf, times)
+	if timesWidth <= mhr.Domain {
+		return mhr.makeTicks(vf, times)
+	}
+
+	times = Sequence.MarketDayAlternateCloses(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
+	timesWidth = mhr.measureTimes(r, defaults, vf, times)
+	if timesWidth <= mhr.Domain {
+		return mhr.makeTicks(vf, times)
+	}
+
+	times = Sequence.MarketDayMondayCloses(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
+	timesWidth = mhr.measureTimes(r, defaults, vf, times)
+	if timesWidth <= mhr.Domain {
+		return mhr.makeTicks(vf, times)
+	}
+
+	return GenerateContinuousTicks(r, mhr, false, defaults, vf)
+
 }
 
 func (mhr *MarketHoursRange) measureTimes(r Renderer, defaults Style, vf ValueFormatter, times []time.Time) int {
@@ -135,13 +162,12 @@ func (mhr *MarketHoursRange) makeTicks(vf ValueFormatter, times []time.Time) []T
 			Value: TimeToFloat64(t),
 			Label: vf(t),
 		}
-		println("make tick =>", vf(t))
 	}
 	return ticks
 }
 
 func (mhr MarketHoursRange) String() string {
-	return fmt.Sprintf("MarketHoursRange [%s, %s] => %d", mhr.Min.Format(DefaultDateMinuteFormat), mhr.Max.Format(DefaultDateMinuteFormat), mhr.Domain)
+	return fmt.Sprintf("MarketHoursRange [%s, %s] => %d", mhr.Min.Format(time.RFC3339), mhr.Max.Format(time.RFC3339), mhr.Domain)
 }
 
 // Translate maps a given value into the ContinuousRange space.

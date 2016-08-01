@@ -99,7 +99,7 @@ func (s sequence) MarketHourQuarters(from, to time.Time, marketOpen, marketClose
 		if isValidTradingDay {
 			todayOpen := Date.On(marketOpen, cursor)
 			todayNoon := Date.NoonOn(cursor)
-			today2pm := Date.On(Date.ClockTime(2, 0, 0, 0, cursor.Location()), cursor)
+			today2pm := Date.On(Date.Time(14, 0, 0, 0, cursor.Location()), cursor)
 			todayClose := Date.On(marketClose, cursor)
 			times = append(times, todayOpen, todayNoon, today2pm, todayClose)
 		}
@@ -121,6 +121,39 @@ func (s sequence) MarketDayCloses(from, to time.Time, marketOpen, marketClose ti
 		}
 
 		cursor = Date.NextDay(cursor)
+	}
+	return times
+}
+
+func (s sequence) MarketDayAlternateCloses(from, to time.Time, marketOpen, marketClose time.Time, isHoliday HolidayProvider) []time.Time {
+	var times []time.Time
+	cursor := Date.On(marketOpen, from)
+	toClose := Date.On(marketClose, to)
+	for cursor.Before(toClose) || cursor.Equal(toClose) {
+		isValidTradingDay := !isHoliday(cursor) && Date.IsWeekDay(cursor.Weekday())
+		if isValidTradingDay {
+			todayClose := Date.On(marketClose, cursor)
+			times = append(times, todayClose)
+		}
+
+		cursor = cursor.AddDate(0, 0, 2)
+	}
+	return times
+}
+
+func (s sequence) MarketDayMondayCloses(from, to time.Time, marketOpen, marketClose time.Time, isHoliday HolidayProvider) []time.Time {
+	var times []time.Time
+	cursor := Date.On(marketClose, from)
+	toClose := Date.On(marketClose, to)
+
+	for cursor.Equal(toClose) || cursor.Before(toClose) {
+		isValidTradingDay := !isHoliday(cursor) && Date.IsWeekDay(cursor.Weekday())
+		if isValidTradingDay {
+			times = append(times, cursor)
+		}
+		println("advance to next monday", cursor.Format(DefaultDateFormat))
+		cursor = Date.NextDayOfWeek(cursor, time.Monday)
+		println(cursor.Format(DefaultDateFormat))
 	}
 	return times
 }
