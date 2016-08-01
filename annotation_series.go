@@ -6,7 +6,7 @@ import "math"
 type AnnotationSeries struct {
 	Name        string
 	Style       Style
-	YAxis       yAxisType
+	YAxis       YAxisType
 	Annotations []Value2
 }
 
@@ -21,7 +21,7 @@ func (as AnnotationSeries) GetStyle() Style {
 }
 
 // GetYAxis returns which YAxis the series draws on.
-func (as AnnotationSeries) GetYAxis() yAxisType {
+func (as AnnotationSeries) GetYAxis() YAxisType {
 	return as.YAxis
 }
 

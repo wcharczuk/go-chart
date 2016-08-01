@@ -3,8 +3,6 @@ package chart
 import (
 	"fmt"
 	"time"
-
-	"github.com/wcharczuk/go-chart/date"
 )
 
 // MarketHoursRange is a special type of range that compresses a time range into just the
@@ -16,11 +14,16 @@ type MarketHoursRange struct {
 	MarketOpen  time.Time
 	MarketClose time.Time
 
-	HolidayProvider date.HolidayProvider
+	HolidayProvider HolidayProvider
 
 	ValueFormatter ValueFormatter
 
 	Domain int
+}
+
+// GetTimezone returns the timezone for the market hours range.
+func (mhr MarketHoursRange) GetTimezone() *time.Location {
+	return mhr.GetMarketOpen().Location()
 }
 
 // IsZero returns if the range is setup or not.
@@ -40,7 +43,7 @@ func (mhr MarketHoursRange) GetMax() float64 {
 
 // GetEffectiveMax gets either the close on the max, or the max itself.
 func (mhr MarketHoursRange) GetEffectiveMax() time.Time {
-	maxClose := date.On(mhr.MarketClose, mhr.Max)
+	maxClose := Date.On(mhr.MarketClose, mhr.Max)
 	if maxClose.After(mhr.Max) {
 		return maxClose
 	}
@@ -50,11 +53,13 @@ func (mhr MarketHoursRange) GetEffectiveMax() time.Time {
 // SetMin sets the min value.
 func (mhr *MarketHoursRange) SetMin(min float64) {
 	mhr.Min = Float64ToTime(min)
+	mhr.Min = mhr.Min.In(mhr.GetTimezone())
 }
 
 // SetMax sets the max value.
 func (mhr *MarketHoursRange) SetMax(max float64) {
 	mhr.Max = Float64ToTime(max)
+	mhr.Max = mhr.Max.In(mhr.GetTimezone())
 }
 
 // GetDelta gets the delta.
@@ -75,53 +80,102 @@ func (mhr *MarketHoursRange) SetDomain(domain int) {
 }
 
 // GetHolidayProvider coalesces a userprovided holiday provider and the date.DefaultHolidayProvider.
-func (mhr MarketHoursRange) GetHolidayProvider() date.HolidayProvider {
+func (mhr MarketHoursRange) GetHolidayProvider() HolidayProvider {
 	if mhr.HolidayProvider == nil {
-		return date.DefaultHolidayProvider
+		return defaultHolidayProvider
 	}
 	return mhr.HolidayProvider
 }
 
+// GetMarketOpen returns the market open time.
+func (mhr MarketHoursRange) GetMarketOpen() time.Time {
+	if mhr.MarketOpen.IsZero() {
+		return NYSEOpen
+	}
+	return mhr.MarketOpen
+}
+
+// GetMarketClose returns the market close time.
+func (mhr MarketHoursRange) GetMarketClose() time.Time {
+	if mhr.MarketClose.IsZero() {
+		return NYSEClose
+	}
+	return mhr.MarketClose
+}
+
 // GetTicks returns the ticks for the range.
 // This is to override the default continous ticks that would be generated for the range.
-func (mhr *MarketHoursRange) GetTicks(vf ValueFormatter) []Tick {
-	var ticks []Tick
+func (mhr *MarketHoursRange) GetTicks(r Renderer, defaults Style, vf ValueFormatter) []Tick {
+	times := Sequence.MarketHours(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
+	timesWidth := mhr.measureTimes(r, defaults, vf, times)
+	if timesWidth <= mhr.Domain {
+		return mhr.makeTicks(vf, times)
+	}
 
-	cursor := date.On(mhr.MarketClose, mhr.Min)
-	maxClose := date.On(mhr.MarketClose, mhr.Max)
+	times = Sequence.MarketHourQuarters(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
+	timesWidth = mhr.measureTimes(r, defaults, vf, times)
+	if timesWidth <= mhr.Domain {
+		return mhr.makeTicks(vf, times)
+	}
 
-	for date.BeforeDate(cursor, maxClose) {
-		if date.IsWeekDay(cursor.Weekday()) && !mhr.GetHolidayProvider()(cursor) {
-			ticks = append(ticks, Tick{
-				Value: TimeToFloat64(cursor),
-				Label: vf(cursor),
-			})
+	times = Sequence.MarketDayCloses(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
+	timesWidth = mhr.measureTimes(r, defaults, vf, times)
+	if timesWidth <= mhr.Domain {
+		return mhr.makeTicks(vf, times)
+	}
+
+	times = Sequence.MarketDayAlternateCloses(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
+	timesWidth = mhr.measureTimes(r, defaults, vf, times)
+	if timesWidth <= mhr.Domain {
+		return mhr.makeTicks(vf, times)
+	}
+
+	times = Sequence.MarketDayMondayCloses(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
+	timesWidth = mhr.measureTimes(r, defaults, vf, times)
+	if timesWidth <= mhr.Domain {
+		return mhr.makeTicks(vf, times)
+	}
+
+	return GenerateContinuousTicks(r, mhr, false, defaults, vf)
+
+}
+
+func (mhr *MarketHoursRange) measureTimes(r Renderer, defaults Style, vf ValueFormatter, times []time.Time) int {
+	defaults.GetTextOptions().WriteToRenderer(r)
+	var total int
+	for index, t := range times {
+		timeLabel := vf(t)
+
+		labelBox := r.MeasureText(timeLabel)
+		total += labelBox.Width()
+		if index > 0 {
+			total += DefaultMinimumTickHorizontalSpacing
 		}
-
-		cursor = cursor.AddDate(0, 0, 1)
 	}
+	return total
+}
 
-	endMarketClose := date.On(mhr.MarketClose, cursor)
-	if date.IsWeekDay(endMarketClose.Weekday()) && !mhr.GetHolidayProvider()(endMarketClose) {
-		ticks = append(ticks, Tick{
-			Value: TimeToFloat64(endMarketClose),
-			Label: vf(endMarketClose),
-		})
+func (mhr *MarketHoursRange) makeTicks(vf ValueFormatter, times []time.Time) []Tick {
+	ticks := make([]Tick, len(times))
+	for index, t := range times {
+		ticks[index] = Tick{
+			Value: TimeToFloat64(t),
+			Label: vf(t),
+		}
 	}
-
 	return ticks
 }
 
 func (mhr MarketHoursRange) String() string {
-	return fmt.Sprintf("MarketHoursRange [%s, %s] => %d", mhr.Min.Format(DefaultDateMinuteFormat), mhr.Max.Format(DefaultDateMinuteFormat), mhr.Domain)
+	return fmt.Sprintf("MarketHoursRange [%s, %s] => %d", mhr.Min.Format(time.RFC3339), mhr.Max.Format(time.RFC3339), mhr.Domain)
 }
 
 // Translate maps a given value into the ContinuousRange space.
 func (mhr MarketHoursRange) Translate(value float64) int {
 	valueTime := Float64ToTime(value)
-	valueTimeEastern := valueTime.In(date.Eastern())
-	totalSeconds := date.CalculateMarketSecondsBetween(mhr.Min, mhr.GetEffectiveMax(), mhr.MarketOpen, mhr.MarketClose, mhr.HolidayProvider)
-	valueDelta := date.CalculateMarketSecondsBetween(mhr.Min, valueTimeEastern, mhr.MarketOpen, mhr.MarketClose, mhr.HolidayProvider)
+	valueTimeEastern := valueTime.In(Date.Eastern())
+	totalSeconds := Date.CalculateMarketSecondsBetween(mhr.Min, mhr.GetEffectiveMax(), mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.HolidayProvider)
+	valueDelta := Date.CalculateMarketSecondsBetween(mhr.Min, valueTimeEastern, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.HolidayProvider)
 	translated := int((float64(valueDelta) / float64(totalSeconds)) * float64(mhr.Domain))
 	return translated
 }

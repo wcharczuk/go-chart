@@ -8,6 +8,13 @@ import (
 	"github.com/wcharczuk/go-chart/drawing"
 )
 
+// StyleShow is a prebuilt style with the `Show` property set to true.
+func StyleShow() Style {
+	return Style{
+		Show: true,
+	}
+}
+
 // Style is a simple style set.
 type Style struct {
 	Show    bool
@@ -22,9 +29,9 @@ type Style struct {
 	FontColor drawing.Color
 	Font      *truetype.Font
 
-	TextHorizontalAlign textHorizontalAlign
-	TextVerticalAlign   textVerticalAlign
-	TextWrap            textWrap
+	TextHorizontalAlign TextHorizontalAlign
+	TextVerticalAlign   TextVerticalAlign
+	TextWrap            TextWrap
 	TextLineSpacing     int
 }
 
@@ -191,7 +198,7 @@ func (s Style) GetPadding(defaults ...Box) Box {
 }
 
 // GetTextHorizontalAlign returns the horizontal alignment.
-func (s Style) GetTextHorizontalAlign(defaults ...textHorizontalAlign) textHorizontalAlign {
+func (s Style) GetTextHorizontalAlign(defaults ...TextHorizontalAlign) TextHorizontalAlign {
 	if s.TextHorizontalAlign == TextHorizontalAlignUnset {
 		if len(defaults) > 0 {
 			return defaults[0]
@@ -202,7 +209,7 @@ func (s Style) GetTextHorizontalAlign(defaults ...textHorizontalAlign) textHoriz
 }
 
 // GetTextVerticalAlign returns the vertical alignment.
-func (s Style) GetTextVerticalAlign(defaults ...textVerticalAlign) textVerticalAlign {
+func (s Style) GetTextVerticalAlign(defaults ...TextVerticalAlign) TextVerticalAlign {
 	if s.TextVerticalAlign == TextVerticalAlignUnset {
 		if len(defaults) > 0 {
 			return defaults[0]
@@ -213,7 +220,7 @@ func (s Style) GetTextVerticalAlign(defaults ...textVerticalAlign) textVerticalA
 }
 
 // GetTextWrap returns the word wrap.
-func (s Style) GetTextWrap(defaults ...textWrap) textWrap {
+func (s Style) GetTextWrap(defaults ...TextWrap) TextWrap {
 	if s.TextWrap == TextWrapUnset {
 		if len(defaults) > 0 {
 			return defaults[0]

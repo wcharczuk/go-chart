@@ -6,7 +6,7 @@ package chart
 type HistogramSeries struct {
 	Name        string
 	Style       Style
-	YAxis       yAxisType
+	YAxis       YAxisType
 	InnerSeries ValueProvider
 }
 
@@ -21,7 +21,7 @@ func (hs HistogramSeries) GetStyle() Style {
 }
 
 // GetYAxis returns which yaxis the series is mapped to.
-func (hs HistogramSeries) GetYAxis() yAxisType {
+func (hs HistogramSeries) GetYAxis() YAxisType {
 	return hs.YAxis
 }
 

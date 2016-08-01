@@ -4,7 +4,7 @@ import "math"
 
 // TicksProvider is a type that provides ticks.
 type TicksProvider interface {
-	GetTicks(vf ValueFormatter) []Tick
+	GetTicks(r Renderer, defaults Style, vf ValueFormatter) []Tick
 }
 
 // Tick represents a label on an axis.

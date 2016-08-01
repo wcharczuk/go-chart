@@ -14,7 +14,7 @@ const (
 type MACDSeries struct {
 	Name        string
 	Style       Style
-	YAxis       yAxisType
+	YAxis       YAxisType
 	InnerSeries ValueProvider
 
 	PrimaryPeriod   int
@@ -56,7 +56,7 @@ func (macd MACDSeries) GetStyle() Style {
 }
 
 // GetYAxis returns which YAxis the series draws on.
-func (macd MACDSeries) GetYAxis() yAxisType {
+func (macd MACDSeries) GetYAxis() YAxisType {
 	return macd.YAxis
 }
 
@@ -109,7 +109,7 @@ func (macd *MACDSeries) ensureChildSeries() {
 type MACDSignalSeries struct {
 	Name        string
 	Style       Style
-	YAxis       yAxisType
+	YAxis       YAxisType
 	InnerSeries ValueProvider
 
 	PrimaryPeriod   int
@@ -150,7 +150,7 @@ func (macds MACDSignalSeries) GetStyle() Style {
 }
 
 // GetYAxis returns which YAxis the series draws on.
-func (macds MACDSignalSeries) GetYAxis() yAxisType {
+func (macds MACDSignalSeries) GetYAxis() YAxisType {
 	return macds.YAxis
 }
 
@@ -200,7 +200,7 @@ func (macds *MACDSignalSeries) Render(r Renderer, canvasBox Box, xrange, yrange 
 type MACDLineSeries struct {
 	Name        string
 	Style       Style
-	YAxis       yAxisType
+	YAxis       YAxisType
 	InnerSeries ValueProvider
 
 	PrimaryPeriod   int
@@ -223,7 +223,7 @@ func (macdl MACDLineSeries) GetStyle() Style {
 }
 
 // GetYAxis returns which YAxis the series draws on.
-func (macdl MACDLineSeries) GetYAxis() yAxisType {
+func (macdl MACDLineSeries) GetYAxis() YAxisType {
 	return macdl.YAxis
 }
 

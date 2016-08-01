@@ -3,51 +3,51 @@ package chart
 import "strings"
 
 // TextHorizontalAlign is an enum for the horizontal alignment options.
-type textHorizontalAlign int
+type TextHorizontalAlign int
 
 const (
 	// TextHorizontalAlignUnset is the unset state for text horizontal alignment.
-	TextHorizontalAlignUnset textHorizontalAlign = 0
+	TextHorizontalAlignUnset TextHorizontalAlign = 0
 	// TextHorizontalAlignLeft aligns a string horizontally so that it's left ligature starts at horizontal pixel 0.
-	TextHorizontalAlignLeft textHorizontalAlign = 1
+	TextHorizontalAlignLeft TextHorizontalAlign = 1
 	// TextHorizontalAlignCenter left aligns a string horizontally so that there are equal pixels
 	// to the left and to the right of a string within a box.
-	TextHorizontalAlignCenter textHorizontalAlign = 2
+	TextHorizontalAlignCenter TextHorizontalAlign = 2
 	// TextHorizontalAlignRight right aligns a string horizontally so that the right ligature ends at the right-most pixel
 	// of a box.
-	TextHorizontalAlignRight textHorizontalAlign = 3
+	TextHorizontalAlignRight TextHorizontalAlign = 3
 )
 
 // TextWrap is an enum for the word wrap options.
-type textWrap int
+type TextWrap int
 
 const (
 	// TextWrapUnset is the unset state for text wrap options.
-	TextWrapUnset textWrap = 0
+	TextWrapUnset TextWrap = 0
 	// TextWrapNone will spill text past horizontal boundaries.
-	TextWrapNone textWrap = 1
+	TextWrapNone TextWrap = 1
 	// TextWrapWord will split a string on words (i.e. spaces) to fit within a horizontal boundary.
-	TextWrapWord textWrap = 2
+	TextWrapWord TextWrap = 2
 	// TextWrapRune will split a string on a rune (i.e. utf-8 codepage) to fit within a horizontal boundary.
-	TextWrapRune textWrap = 3
+	TextWrapRune TextWrap = 3
 )
 
 // TextVerticalAlign is an enum for the vertical alignment options.
-type textVerticalAlign int
+type TextVerticalAlign int
 
 const (
 	// TextVerticalAlignUnset is the unset state for vertical alignment options.
-	TextVerticalAlignUnset textVerticalAlign = 0
+	TextVerticalAlignUnset TextVerticalAlign = 0
 	// TextVerticalAlignBaseline aligns text according to the "baseline" of the string, or where a normal ascender begins.
-	TextVerticalAlignBaseline textVerticalAlign = 1
+	TextVerticalAlignBaseline TextVerticalAlign = 1
 	// TextVerticalAlignBottom aligns the text according to the lowers pixel of any of the ligatures (ex. g or q both extend below the baseline).
-	TextVerticalAlignBottom textVerticalAlign = 2
+	TextVerticalAlignBottom TextVerticalAlign = 2
 	// TextVerticalAlignMiddle aligns the text so that there is an equal amount of space above and below the top and bottom of the ligatures.
-	TextVerticalAlignMiddle textVerticalAlign = 3
+	TextVerticalAlignMiddle TextVerticalAlign = 3
 	// TextVerticalAlignMiddleBaseline aligns the text veritcally so that there is an equal number of pixels above and below the baseline of the string.
-	TextVerticalAlignMiddleBaseline textVerticalAlign = 4
+	TextVerticalAlignMiddleBaseline TextVerticalAlign = 4
 	// TextVerticalAlignTop alignts the text so that the top of the ligatures are at y-pixel 0 in the container.
-	TextVerticalAlignTop textVerticalAlign = 5
+	TextVerticalAlignTop TextVerticalAlign = 5
 )
 
 var (
@@ -57,9 +57,9 @@ var (
 
 // TextStyle encapsulates text style options.
 type TextStyle struct {
-	HorizontalAlign textHorizontalAlign
-	VerticalAlign   textVerticalAlign
-	Wrap            textWrap
+	HorizontalAlign TextHorizontalAlign
+	VerticalAlign   TextVerticalAlign
+	Wrap            TextWrap
 }
 
 type text struct{}

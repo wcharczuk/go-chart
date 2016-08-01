@@ -13,7 +13,7 @@ type XAxis struct {
 	Range          Range
 	Ticks          []Tick
 
-	TickPosition tickPosition
+	TickPosition TickPosition
 
 	GridLines      []GridLine
 	GridMajorStyle Style
@@ -31,7 +31,7 @@ func (xa XAxis) GetStyle() Style {
 }
 
 // GetTickPosition returns the tick position option for the axis.
-func (xa XAxis) GetTickPosition(defaults ...tickPosition) tickPosition {
+func (xa XAxis) GetTickPosition(defaults ...TickPosition) TickPosition {
 	if xa.TickPosition == TickPositionUnset {
 		if len(defaults) > 0 {
 			return defaults[0]
@@ -51,7 +51,7 @@ func (xa XAxis) GetTicks(r Renderer, ra Range, defaults Style, vf ValueFormatter
 		return xa.Ticks
 	}
 	if tp, isTickProvider := ra.(TicksProvider); isTickProvider {
-		return tp.GetTicks(vf)
+		return tp.GetTicks(r, defaults, vf)
 	}
 	tickStyle := xa.Style.InheritFrom(defaults)
 	return GenerateContinuousTicks(r, ra, false, tickStyle, vf)
@@ -72,7 +72,7 @@ func (xa XAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 
 	tp := xa.GetTickPosition()
 
-	var left, right, top, bottom = math.MaxInt32, 0, math.MaxInt32, 0
+	var left, right, bottom = math.MaxInt32, 0, 0
 	for index, t := range ticks {
 		v := t.Value
 		tickStyle.GetTextOptions().WriteToRenderer(r)
@@ -94,14 +94,13 @@ func (xa XAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 			break
 		}
 
-		top = Math.MinInt(top, canvasBox.Bottom)
 		left = Math.MinInt(left, ltx)
 		right = Math.MaxInt(right, rtx)
 		bottom = Math.MaxInt(bottom, ty)
 	}
 
 	return Box{
-		Top:    top,
+		Top:    canvasBox.Bottom,
 		Left:   left,
 		Right:  right,
 		Bottom: bottom,
