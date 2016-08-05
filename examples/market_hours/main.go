@@ -7,7 +7,7 @@ import (
 )
 
 func drawChart(res http.ResponseWriter, req *http.Request) {
-	start := chart.Date.Date(2016, 6, 20, chart.Date.Eastern())
+	start := chart.Date.Date(2016, 7, 01, chart.Date.Eastern())
 	end := chart.Date.Date(2016, 07, 21, chart.Date.Eastern())
 	xv := chart.Sequence.MarketHours(start, end, chart.NYSEOpen, chart.NYSEClose, chart.Date.IsNYSEHoliday)
 	yv := chart.Sequence.RandomWithAverage(len(xv), 200, 10)

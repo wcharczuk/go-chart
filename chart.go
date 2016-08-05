@@ -133,9 +133,9 @@ func (c Chart) Render(rp RendererProvider, w io.Writer) error {
 }
 
 func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
-	var minx, maxx float64 = math.MaxFloat64, 0
-	var miny, maxy float64 = math.MaxFloat64, 0
-	var minya, maxya float64 = math.MaxFloat64, 0
+	var minx, maxx float64 = math.MaxFloat64, -math.MaxFloat64
+	var miny, maxy float64 = math.MaxFloat64, -math.MaxFloat64
+	var minya, maxya float64 = math.MaxFloat64, -math.MaxFloat64
 
 	seriesMappedToSecondaryAxis := false
 
@@ -205,7 +205,7 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 	}
 
 	if len(c.XAxis.Ticks) > 0 {
-		tickMin, tickMax := math.MaxFloat64, 0.0
+		tickMin, tickMax := math.MaxFloat64, -math.MaxFloat64
 		for _, t := range c.XAxis.Ticks {
 			tickMin = math.Min(tickMin, t.Value)
 			tickMax = math.Max(tickMax, t.Value)
@@ -218,7 +218,7 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 	}
 
 	if len(c.YAxis.Ticks) > 0 {
-		tickMin, tickMax := math.MaxFloat64, 0.0
+		tickMin, tickMax := math.MaxFloat64, -math.MaxFloat64
 		for _, t := range c.YAxis.Ticks {
 			tickMin = math.Min(tickMin, t.Value)
 			tickMax = math.Max(tickMax, t.Value)
@@ -237,7 +237,7 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 	}
 
 	if len(c.YAxisSecondary.Ticks) > 0 {
-		tickMin, tickMax := math.MaxFloat64, 0.0
+		tickMin, tickMax := math.MaxFloat64, -math.MaxFloat64
 		for _, t := range c.YAxis.Ticks {
 			tickMin = math.Min(tickMin, t.Value)
 			tickMax = math.Max(tickMax, t.Value)
@@ -309,13 +309,13 @@ func (c Chart) hasAxes() bool {
 
 func (c Chart) getAxesTicks(r Renderer, xr, yr, yar Range, xf, yf, yfa ValueFormatter) (xticks, yticks, yticksAlt []Tick) {
 	if c.XAxis.Style.Show {
-		xticks = c.XAxis.GetTicks(r, xr, c.styleDefaultsAxis(), xf)
+		xticks = c.XAxis.GetTicks(r, xr, c.styleDefaultsAxes(), xf)
 	}
 	if c.YAxis.Style.Show {
-		yticks = c.YAxis.GetTicks(r, yr, c.styleDefaultsAxis(), yf)
+		yticks = c.YAxis.GetTicks(r, yr, c.styleDefaultsAxes(), yf)
 	}
 	if c.YAxisSecondary.Style.Show {
-		yticksAlt = c.YAxisSecondary.GetTicks(r, yar, c.styleDefaultsAxis(), yfa)
+		yticksAlt = c.YAxisSecondary.GetTicks(r, yar, c.styleDefaultsAxes(), yfa)
 	}
 	return
 }
@@ -323,15 +323,15 @@ func (c Chart) getAxesTicks(r Renderer, xr, yr, yar Range, xf, yf, yfa ValueForm
 func (c Chart) getAxisAdjustedCanvasBox(r Renderer, canvasBox Box, xr, yr, yra Range, xticks, yticks, yticksAlt []Tick) Box {
 	axesOuterBox := canvasBox.Clone()
 	if c.XAxis.Style.Show {
-		axesBounds := c.XAxis.Measure(r, canvasBox, xr, c.styleDefaultsAxis(), xticks)
+		axesBounds := c.XAxis.Measure(r, canvasBox, xr, c.styleDefaultsAxes(), xticks)
 		axesOuterBox = axesOuterBox.Grow(axesBounds)
 	}
 	if c.YAxis.Style.Show {
-		axesBounds := c.YAxis.Measure(r, canvasBox, yr, c.styleDefaultsAxis(), yticks)
+		axesBounds := c.YAxis.Measure(r, canvasBox, yr, c.styleDefaultsAxes(), yticks)
 		axesOuterBox = axesOuterBox.Grow(axesBounds)
 	}
 	if c.YAxisSecondary.Style.Show {
-		axesBounds := c.YAxisSecondary.Measure(r, canvasBox, yra, c.styleDefaultsAxis(), yticksAlt)
+		axesBounds := c.YAxisSecondary.Measure(r, canvasBox, yra, c.styleDefaultsAxes(), yticksAlt)
 		axesOuterBox = axesOuterBox.Grow(axesBounds)
 	}
 
@@ -407,13 +407,13 @@ func (c Chart) drawCanvas(r Renderer, canvasBox Box) {
 
 func (c Chart) drawAxes(r Renderer, canvasBox Box, xrange, yrange, yrangeAlt Range, xticks, yticks, yticksAlt []Tick) {
 	if c.XAxis.Style.Show {
-		c.XAxis.Render(r, canvasBox, xrange, c.styleDefaultsAxis(), xticks)
+		c.XAxis.Render(r, canvasBox, xrange, c.styleDefaultsAxes(), xticks)
 	}
 	if c.YAxis.Style.Show {
-		c.YAxis.Render(r, canvasBox, yrange, c.styleDefaultsAxis(), yticks)
+		c.YAxis.Render(r, canvasBox, yrange, c.styleDefaultsAxes(), yticks)
 	}
 	if c.YAxisSecondary.Style.Show {
-		c.YAxisSecondary.Render(r, canvasBox, yrangeAlt, c.styleDefaultsAxis(), yticksAlt)
+		c.YAxisSecondary.Render(r, canvasBox, yrangeAlt, c.styleDefaultsAxes(), yticksAlt)
 	}
 }
 
@@ -472,7 +472,7 @@ func (c Chart) styleDefaultsSeries(seriesIndex int) Style {
 	}
 }
 
-func (c Chart) styleDefaultsAxis() Style {
+func (c Chart) styleDefaultsAxes() Style {
 	return Style{
 		Font:        c.GetFont(),
 		FontColor:   DefaultAxisColor,

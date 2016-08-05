@@ -151,9 +151,7 @@ func (s sequence) MarketDayMondayCloses(from, to time.Time, marketOpen, marketCl
 		if isValidTradingDay {
 			times = append(times, cursor)
 		}
-		println("advance to next monday", cursor.Format(DefaultDateFormat))
 		cursor = Date.NextDayOfWeek(cursor, time.Monday)
-		println(cursor.Format(DefaultDateFormat))
 	}
 	return times
 }
