@@ -14,20 +14,20 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 		Height:   512,
 		BarWidth: 60,
 		XAxis: chart.Style{
-			Show: true,
+			Show: false,
 		},
 		YAxis: chart.YAxis{
 			Style: chart.Style{
-				Show: true,
+				Show: false,
 			},
 		},
 		Bars: []chart.Value{
-			{Value: 5, Label: "Blue"},
-			{Value: 5, Label: "Green"},
-			{Value: 4, Label: "Gray"},
-			{Value: 3, Label: "Orange"},
+			{Value: 5.25, Label: "Blue"},
+			{Value: 4.88, Label: "Green"},
+			{Value: 4.74, Label: "Gray"},
+			{Value: 3.22, Label: "Orange"},
 			{Value: 3, Label: "Test"},
-			{Value: 2, Label: "??"},
+			{Value: 2.27, Label: "??"},
 			{Value: 1, Label: "!!"},
 		},
 	}

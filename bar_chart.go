@@ -35,11 +35,8 @@ type BarChart struct {
 }
 
 // GetDPI returns the dpi for the chart.
-func (bc BarChart) GetDPI(defaults ...float64) float64 {
+func (bc BarChart) GetDPI() float64 {
 	if bc.DPI == 0 {
-		if len(defaults) > 0 {
-			return defaults[0]
-		}
 		return DefaultDPI
 	}
 	return bc.DPI
@@ -64,7 +61,7 @@ func (bc BarChart) GetWidth() int {
 // GetHeight returns the chart height or the default value.
 func (bc BarChart) GetHeight() int {
 	if bc.Height == 0 {
-		return DefaultChartWidth
+		return DefaultChartHeight
 	}
 	return bc.Height
 }
@@ -72,7 +69,7 @@ func (bc BarChart) GetHeight() int {
 // GetBarSpacing returns the spacing between bars.
 func (bc BarChart) GetBarSpacing() int {
 	if bc.BarSpacing == 0 {
-		return 100
+		return DefaultBarSpacing
 	}
 	return bc.BarSpacing
 }
@@ -80,7 +77,7 @@ func (bc BarChart) GetBarSpacing() int {
 // GetBarWidth returns the default bar width.
 func (bc BarChart) GetBarWidth() int {
 	if bc.BarWidth == 0 {
-		return 40
+		return DefaultBarWidth
 	}
 	return bc.BarWidth
 }
@@ -103,7 +100,7 @@ func (bc BarChart) Render(rp RendererProvider, w io.Writer) error {
 		}
 		bc.defaultFont = defaultFont
 	}
-	r.SetDPI(bc.GetDPI(DefaultDPI))
+	r.SetDPI(bc.GetDPI())
 
 	bc.drawBackground(r)
 

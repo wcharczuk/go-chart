@@ -66,6 +66,11 @@ const (
 	DefaultFloatFormat = "%.2f"
 	// DefaultPercentValueFormat is the default percent format.
 	DefaultPercentValueFormat = "%0.2f%%"
+
+	// DefaultBarSpacing is the default pixel spacing between bars.
+	DefaultBarSpacing = 100
+	// DefaultBarWidth is the default pixel width of bars in a bar chart.
+	DefaultBarWidth = 50
 )
 
 var (
