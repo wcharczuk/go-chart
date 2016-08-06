@@ -333,14 +333,19 @@ func TestChartSingleSeries(t *testing.T) {
 	assert := assert.New(t)
 	now := time.Now()
 	c := Chart{
-		Title:  "Hello!",
-		Width:  1024,
-		Height: 400,
+		Title:      "Hello!",
+		TitleStyle: StyleShow(),
+		Width:      1024,
+		Height:     400,
 		YAxis: YAxis{
+			Style: StyleShow(),
 			Range: &ContinuousRange{
 				Min: 0.0,
 				Max: 4.0,
 			},
+		},
+		XAxis: XAxis{
+			Style: StyleShow(),
 		},
 		Series: []Series{
 			TimeSeries{

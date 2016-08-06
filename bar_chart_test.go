@@ -8,6 +8,32 @@ import (
 	assert "github.com/blendlabs/go-assert"
 )
 
+func TestBarChartRender(t *testing.T) {
+	assert := assert.New(t)
+
+	bc := BarChart{
+		Width:      1024,
+		Title:      "Test Title",
+		TitleStyle: StyleShow(),
+		XAxis:      StyleShow(),
+		YAxis: YAxis{
+			Style: StyleShow(),
+		},
+		Bars: []Value{
+			{Value: 1.0, Label: "One"},
+			{Value: 2.0, Label: "Two"},
+			{Value: 3.0, Label: "Three"},
+			{Value: 4.0, Label: "Four"},
+			{Value: 5.0, Label: "Five"},
+		},
+	}
+
+	buf := bytes.NewBuffer([]byte{})
+	err := bc.Render(PNG, buf)
+	assert.Nil(err)
+	assert.NotZero(buf.Len())
+}
+
 func TestBarChartProps(t *testing.T) {
 	assert := assert.New(t)
 
@@ -255,5 +281,18 @@ func TestBarChartCalculateEffectiveBarWidth(t *testing.T) {
 	assert.Equal(spacing, bs)
 	assert.Equal(barWidth, bw)
 	assert.Equal(cb.Width()+1, total)
+}
 
+func TestBarChatGetTitleFontSize(t *testing.T) {
+	assert := assert.New(t)
+	size := BarChart{Width: 2049, Height: 2049}.getTitleFontSize()
+	assert.Equal(48, size)
+	size = BarChart{Width: 1025, Height: 1025}.getTitleFontSize()
+	assert.Equal(24, size)
+	size = BarChart{Width: 513, Height: 513}.getTitleFontSize()
+	assert.Equal(18, size)
+	size = BarChart{Width: 257, Height: 257}.getTitleFontSize()
+	assert.Equal(12, size)
+	size = BarChart{Width: 128, Height: 128}.getTitleFontSize()
+	assert.Equal(10, size)
 }

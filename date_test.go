@@ -45,7 +45,6 @@ func TestDateOn(t *testing.T) {
 	assert.Equal(3, ts.Second())
 	assert.Equal(2, ts.Nanosecond())
 	assert.Equal(time.UTC, ts.Location())
-
 }
 
 func TestDateNoonOn(t *testing.T) {
@@ -221,4 +220,19 @@ func TestDateNextDayOfWeek(t *testing.T) {
 	assert.Equal(time.UTC, nextFri.Location())
 	assert.Equal(time.UTC, nextSunday.Location())
 	assert.Equal(time.UTC, nextMonday.Location())
+}
+
+func TestDateIsNYSEHoliday(t *testing.T) {
+	assert := assert.New(t)
+
+	cursor := time.Date(2013, 01, 01, 0, 0, 0, 0, time.UTC)
+	end := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+	var holidays int
+	for Date.Before(cursor, end) {
+		if Date.IsNYSEHoliday(cursor) {
+			holidays++
+		}
+		cursor = cursor.AddDate(0, 0, 1)
+	}
+	assert.Equal(holidays, 55)
 }
