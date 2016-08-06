@@ -14,11 +14,11 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 		Height:   512,
 		BarWidth: 60,
 		XAxis: chart.Style{
-			Show: false,
+			Show: true,
 		},
 		YAxis: chart.YAxis{
 			Style: chart.Style{
-				Show: false,
+				Show: true,
 			},
 		},
 		Bars: []chart.Value{

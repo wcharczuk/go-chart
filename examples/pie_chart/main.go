@@ -10,10 +10,6 @@ import (
 
 func drawChart(res http.ResponseWriter, req *http.Request) {
 	pie := chart.PieChart{
-		Title: "test\nchart",
-		TitleStyle: chart.Style{
-			Show: true,
-		},
 		Width:  512,
 		Height: 512,
 		Values: []chart.Value{
@@ -21,7 +17,7 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 			{Value: 5, Label: "Green"},
 			{Value: 4, Label: "Gray"},
 			{Value: 4, Label: "Orange"},
-			{Value: 3, Label: "Test"},
+			{Value: 3, Label: "Deep Blue"},
 			{Value: 3, Label: "??"},
 			{Value: 1, Label: "!!"},
 		},
