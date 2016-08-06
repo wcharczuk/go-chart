@@ -172,3 +172,79 @@ func TestBarChartGetValueFormatters(t *testing.T) {
 	bc.YAxis.ValueFormatter = func(_ interface{}) string { return "test" }
 	assert.Equal("test", bc.getValueFormatters()(1234))
 }
+
+func TestBarChartGetAxesTicks(t *testing.T) {
+	assert := assert.New(t)
+
+	bc := BarChart{
+		Bars: []Value{
+			{Value: 1.0},
+			{Value: 2.0},
+			{Value: 3.0},
+		},
+	}
+
+	r, err := PNG(128, 128)
+	assert.Nil(err)
+	yr := bc.getRanges()
+	yf := bc.getValueFormatters()
+
+	ticks := bc.getAxesTicks(r, yr, yf)
+	assert.Empty(ticks)
+
+	bc.YAxis.Style.Show = true
+	ticks = bc.getAxesTicks(r, yr, yf)
+	assert.Len(ticks, 2)
+}
+
+func TestBarChartCalculateEffectiveBarSpacing(t *testing.T) {
+	assert := assert.New(t)
+
+	bc := BarChart{
+		Width:    1024,
+		BarWidth: 10,
+		Bars: []Value{
+			{Value: 1.0, Label: "One"},
+			{Value: 2.0, Label: "Two"},
+			{Value: 3.0, Label: "Three"},
+			{Value: 4.0, Label: "Four"},
+			{Value: 5.0, Label: "Five"},
+		},
+	}
+
+	spacing := bc.calculateEffectiveBarSpacing(bc.box())
+	assert.NotZero(spacing)
+
+	bc.BarWidth = 250
+	spacing = bc.calculateEffectiveBarSpacing(bc.box())
+	assert.Zero(spacing)
+}
+
+func TestBarChartCalculateEffectiveBarWidth(t *testing.T) {
+	assert := assert.New(t)
+
+	bc := BarChart{
+		Width:    1024,
+		BarWidth: 10,
+		Bars: []Value{
+			{Value: 1.0, Label: "One"},
+			{Value: 2.0, Label: "Two"},
+			{Value: 3.0, Label: "Three"},
+			{Value: 4.0, Label: "Four"},
+			{Value: 5.0, Label: "Five"},
+		},
+	}
+
+	spacing := bc.calculateEffectiveBarSpacing(bc.box())
+	assert.NotZero(spacing)
+
+	barWidth := bc.calculateEffectiveBarWidth(bc.box(), spacing)
+	assert.Equal(10, barWidth)
+
+	bc.BarWidth = 250
+	spacing = bc.calculateEffectiveBarSpacing(bc.box())
+	barWidth = bc.calculateEffectiveBarWidth(bc.box(), spacing)
+	assert.Equal(199, barWidth)
+
+	assert.Equal(1024, bc.calculateTotalBarWidth(barWidth, spacing))
+}

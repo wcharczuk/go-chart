@@ -309,7 +309,7 @@ func (bc BarChart) calculateEffectiveBarSpacing(canvasBox Box) int {
 	if totalWithBaseSpacing > canvasBox.Width() {
 		lessBarWidths := canvasBox.Width() - (len(bc.Bars) * bc.GetBarWidth())
 		if lessBarWidths > 0 {
-			return int(math.Floor(float64(lessBarWidths) / float64(len(bc.Bars))))
+			return int(math.Ceil(float64(lessBarWidths) / float64(len(bc.Bars))))
 		}
 		return 0
 	}
@@ -321,7 +321,7 @@ func (bc BarChart) calculateEffectiveBarWidth(canvasBox Box, spacing int) int {
 	if totalWithBaseWidth > canvasBox.Width() {
 		totalLessBarSpacings := canvasBox.Width() - (len(bc.Bars) * spacing)
 		if totalLessBarSpacings > 0 {
-			return int(math.Floor(float64(totalLessBarSpacings) / float64(len(bc.Bars))))
+			return int(math.Ceil(float64(totalLessBarSpacings) / float64(len(bc.Bars))))
 		}
 		return 0
 	}
@@ -329,7 +329,7 @@ func (bc BarChart) calculateEffectiveBarWidth(canvasBox Box, spacing int) int {
 }
 
 func (bc BarChart) calculateTotalBarWidth(barWidth, spacing int) int {
-	return len(bc.Bars) * (bc.GetBarWidth() + spacing)
+	return len(bc.Bars) * (barWidth + spacing)
 }
 
 func (bc BarChart) calculateScaledTotalWidth(canvasBox Box) (width, spacing, total int) {
