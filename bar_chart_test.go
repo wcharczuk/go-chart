@@ -142,3 +142,33 @@ func TestBarChartHasAxes(t *testing.T) {
 
 	assert.True(bc.hasAxes())
 }
+
+func TestBarChartGetDefaultCanvasBox(t *testing.T) {
+	assert := assert.New(t)
+
+	bc := BarChart{}
+	b := bc.getDefaultCanvasBox()
+	assert.False(b.IsZero())
+}
+
+func TestBarChartSetRangeDomains(t *testing.T) {
+	assert := assert.New(t)
+
+	bc := BarChart{}
+	cb := bc.box()
+	yr := bc.getRanges()
+	yr2 := bc.setRangeDomains(cb, yr)
+	assert.NotZero(yr2.GetDomain())
+}
+
+func TestBarChartGetValueFormatters(t *testing.T) {
+	assert := assert.New(t)
+
+	bc := BarChart{}
+	vf := bc.getValueFormatters()
+	assert.NotNil(vf)
+	assert.Equal("1234.00", vf(1234.0))
+
+	bc.YAxis.ValueFormatter = func(_ interface{}) string { return "test" }
+	assert.Equal("test", bc.getValueFormatters()(1234))
+}

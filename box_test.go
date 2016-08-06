@@ -126,3 +126,20 @@ func TestBoxOuterConstrain(t *testing.T) {
 	assert.Equal(85, d.Right, d.String())
 	assert.Equal(95, d.Bottom, d.String())
 }
+
+func TestBoxShift(t *testing.T) {
+	assert := assert.New(t)
+
+	b := Box{
+		Top:    5,
+		Left:   5,
+		Right:  10,
+		Bottom: 10,
+	}
+
+	shifted := b.Shift(1, 2)
+	assert.Equal(7, shifted.Top)
+	assert.Equal(6, shifted.Left)
+	assert.Equal(11, shifted.Right)
+	assert.Equal(12, shifted.Bottom)
+}

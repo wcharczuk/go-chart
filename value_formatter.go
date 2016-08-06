@@ -56,5 +56,14 @@ func FloatValueFormatterWithFormat(v interface{}, floatFormat string) string {
 	if typed, isTyped := v.(float64); isTyped {
 		return fmt.Sprintf(floatFormat, typed)
 	}
+	if typed, isTyped := v.(float32); isTyped {
+		return fmt.Sprintf(floatFormat, typed)
+	}
+	if typed, isTyped := v.(int); isTyped {
+		return fmt.Sprintf(floatFormat, float64(typed))
+	}
+	if typed, isTyped := v.(int64); isTyped {
+		return fmt.Sprintf(floatFormat, float64(typed))
+	}
 	return ""
 }
