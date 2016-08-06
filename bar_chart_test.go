@@ -235,6 +235,8 @@ func TestBarChartCalculateEffectiveBarWidth(t *testing.T) {
 		},
 	}
 
+	cb := bc.box()
+
 	spacing := bc.calculateEffectiveBarSpacing(bc.box())
 	assert.NotZero(spacing)
 
@@ -243,8 +245,15 @@ func TestBarChartCalculateEffectiveBarWidth(t *testing.T) {
 
 	bc.BarWidth = 250
 	spacing = bc.calculateEffectiveBarSpacing(bc.box())
+	assert.Zero(spacing)
 	barWidth = bc.calculateEffectiveBarWidth(bc.box(), spacing)
 	assert.Equal(199, barWidth)
 
-	assert.Equal(1024, bc.calculateTotalBarWidth(barWidth, spacing))
+	assert.Equal(cb.Width()+1, bc.calculateTotalBarWidth(barWidth, spacing))
+
+	bw, bs, total := bc.calculateScaledTotalWidth(cb)
+	assert.Equal(spacing, bs)
+	assert.Equal(barWidth, bw)
+	assert.Equal(cb.Width()+1, total)
+
 }
