@@ -189,6 +189,10 @@ func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 		r.ClearTextRotation()
 	}
 
+	if ya.Zero.Style.Show {
+		ya.Zero.Render(r, canvasBox, ra, Style{})
+	}
+
 	if ya.GridMajorStyle.Show || ya.GridMinorStyle.Show {
 		for _, gl := range ya.GetGridLines(ticks) {
 			if (gl.IsMinor && ya.GridMinorStyle.Show) || (!gl.IsMinor && ya.GridMajorStyle.Show) {
