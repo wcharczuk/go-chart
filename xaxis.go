@@ -80,7 +80,7 @@ func (xa XAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 		tb := r.MeasureText(t.Label)
 
 		var ltx, rtx int
-		tx := ra.Translate(v)
+		tx := canvasBox.Left + ra.Translate(v)
 		ty := canvasBox.Bottom + DefaultXAxisMargin + tb.Height()
 		switch tp {
 		case TickPositionUnderTick, TickPositionUnset:
