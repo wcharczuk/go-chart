@@ -21,33 +21,33 @@ Most of the components are interchangeable so feel free to crib whatever you wan
 
 Spark Lines:
 
-![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/tvix_ltm.png)
+![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/_images/tvix_ltm.png)
 
 Single axis:
 
-![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/goog_ltm.png)
+![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/_images/goog_ltm.png)
 
 Two axis:
 
-![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/two_axis.png)
+![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/_images/two_axis.png)
 
 # Other Chart Types
 
 Pie Chart:
 
-![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/pie_chart.png)
+![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/_images/pie_chart.png)
 
-The code for this chart can be found in `examples/pie_chart/main.go`.
+The code for this chart can be found in `_examples/pie_chart/main.go`.
 
 Stacked Bar:
 
-![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/images/stacked_bar.png)
+![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/_images/stacked_bar.png)
 
-The code for this chart can be found in `examples/stacked_bar/main.go`.
+The code for this chart can be found in `_examples/stacked_bar/main.go`.
 
 # Code Examples
 
-Actual chart configurations and examples can be found in the `./examples/` directory. They are web servers, so start them with `go run main.go` then access `http://localhost:8080` to see the output.
+Actual chart configurations and examples can be found in the `./_examples/` directory. They are web servers, so start them with `go run main.go` then access `http://localhost:8080` to see the output.
 
 # Usage
 
@@ -84,7 +84,7 @@ Here, we have a single series with x range values as float64s, rendered to a PNG
 Everything on the `chart.Chart` object has defaults that can be overriden. Whenever a developer sets a property on the chart object, it is to be assumed that value will be used instead of the default. One complication here
 is any object's root `chart.Style` object (i.e named `Style`) and the `Show` property specifically, if any other property is set and the `Show` property is unset, it is assumed to be it's default value of `False`.
 
-The best way to see the api in action is to look at the examples in the `./examples/` directory.
+The best way to see the api in action is to look at the examples in the `./_examples/` directory.
 
 # Design Philosophy
 
