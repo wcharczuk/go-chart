@@ -175,7 +175,14 @@ func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 		r.SetTextRotation(Math.DegreesToRadians(90))
 
 		tb := r.MeasureText(ya.Name)
-		tx := canvasBox.Right + int(sw) + DefaultYAxisMargin + maxTextWidth + DefaultYAxisMargin
+
+		var tx int
+		if ya.AxisType == YAxisPrimary {
+			tx = canvasBox.Right + int(sw) + DefaultYAxisMargin + maxTextWidth + DefaultYAxisMargin
+		} else if ya.AxisType == YAxisSecondary {
+			tx = canvasBox.Left - (DefaultYAxisMargin + int(sw) + maxTextWidth + DefaultYAxisMargin)
+		}
+
 		ty := canvasBox.Bottom - (canvasBox.Height()>>1 + tb.Width()>>1)
 
 		r.Text(ya.Name, tx, ty)

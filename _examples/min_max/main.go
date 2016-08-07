@@ -44,7 +44,9 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 			},
 		},
 		XAxis: chart.XAxis{
-			Style: chart.StyleShow(),
+			Name:      "Random Other Values",
+			NameStyle: chart.StyleShow(),
+			Style:     chart.StyleShow(),
 		},
 		Series: []chart.Series{
 			mainSeries,
@@ -57,8 +59,8 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 
 	graph.Elements = []chart.Renderable{chart.Legend(&graph)}
 
-	res.Header().Set("Content-Type", "image/svg+xml")
-	graph.Render(chart.SVG, res)
+	res.Header().Set("Content-Type", "image/png")
+	graph.Render(chart.PNG, res)
 }
 
 func main() {

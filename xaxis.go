@@ -8,6 +8,7 @@ import (
 // XAxis represents the horizontal axis.
 type XAxis struct {
 	Name           string
+	NameStyle      Style
 	Style          Style
 	ValueFormatter ValueFormatter
 	Range          Range
@@ -99,6 +100,11 @@ func (xa XAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 		bottom = Math.MaxInt(bottom, ty)
 	}
 
+	if xa.NameStyle.Show && len(xa.Name) > 0 {
+		tb := r.MeasureText(xa.Name)
+		bottom += DefaultXAxisMargin + tb.Height()
+	}
+
 	return Box{
 		Top:    canvasBox.Bottom,
 		Left:   left,
@@ -121,6 +127,7 @@ func (xa XAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 	tp := xa.GetTickPosition()
 
 	var tx, ty int
+	var maxTextHeight int
 	for index, t := range ticks {
 		v := t.Value
 		lx := ra.Translate(v)
@@ -139,20 +146,34 @@ func (xa XAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 		case TickPositionUnderTick, TickPositionUnset:
 			ty = canvasBox.Bottom + DefaultXAxisMargin + tb.Height()
 			r.Text(t.Label, tx-tb.Width()>>1, ty)
+			maxTextHeight = Math.MaxInt(maxTextHeight, tb.Height())
 			break
 		case TickPositionBetweenTicks:
 			if index > 0 {
 				llx := ra.Translate(ticks[index-1].Value)
 				ltx := canvasBox.Left + llx
+				finalTickStyle := tickStyle.InheritFrom(Style{TextHorizontalAlign: TextHorizontalAlignCenter})
 				Draw.TextWithin(r, t.Label, Box{
 					Left:   ltx,
 					Right:  tx,
 					Top:    canvasBox.Bottom + DefaultXAxisMargin,
 					Bottom: canvasBox.Bottom + DefaultXAxisMargin + tb.Height(),
-				}, tickStyle.InheritFrom(Style{TextHorizontalAlign: TextHorizontalAlignCenter}))
+				}, finalTickStyle)
+
+				ftb := Text.MeasureLines(r, Text.WrapFit(r, t.Label, tx-ltx, finalTickStyle), finalTickStyle)
+				maxTextHeight = Math.MaxInt(maxTextHeight, ftb.Height())
 			}
 			break
 		}
+	}
+
+	nameStyle := xa.NameStyle.InheritFrom(defaults)
+	if xa.NameStyle.Show && len(xa.Name) > 0 {
+		nameStyle.GetTextOptions().WriteToRenderer(r)
+		tb := r.MeasureText(xa.Name)
+		tx := canvasBox.Right - (canvasBox.Width()>>1 + tb.Width()>>1)
+		ty := canvasBox.Bottom + DefaultXAxisMargin + maxTextHeight + DefaultXAxisMargin + tb.Height()
+		r.Text(xa.Name, tx, ty)
 	}
 
 	if xa.GridMajorStyle.Show || xa.GridMinorStyle.Show {
