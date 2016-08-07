@@ -7,6 +7,8 @@ line charts.
 
 The v1.0 release has been tagged so things should be more or less stable, if something changes please log an issue.
 
+Master should now be on the v2.x codebase, which brings a couple new features and better handling of basics like axes labeling etc. Per usual, see `_examples` for more information.
+
 # Installation
 
 To install `chart` run the following:
