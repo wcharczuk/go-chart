@@ -72,6 +72,12 @@ type Renderer interface {
 	// MeasureText measures text.
 	MeasureText(body string) Box
 
+	// SetTextRotatation sets a rotation for drawing elements.
+	SetTextRotation(radians float64)
+
+	// ClearTextRotation clears rotation.
+	ClearTextRotation()
+
 	// Save writes the image to the given writer.
 	Save(w io.Writer) error
 }

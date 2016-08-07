@@ -161,10 +161,10 @@ func (tr *Matrix) Translate(tx, ty float64) {
 	tr[5] = ty*tr[3] + tx*tr[1] + tr[5]
 }
 
-// Rotate adds a rotation to the matrix. angle is in radian
-func (tr *Matrix) Rotate(angle float64) {
-	c := math.Cos(angle)
-	s := math.Sin(angle)
+// Rotate adds a rotation to the matrix.
+func (tr *Matrix) Rotate(radians float64) {
+	c := math.Cos(radians)
+	s := math.Sin(radians)
 	t0 := c*tr[0] + s*tr[2]
 	t1 := s*tr[3] + c*tr[1]
 	t2 := c*tr[2] - s*tr[0]

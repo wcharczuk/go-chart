@@ -32,8 +32,12 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 	}
 
 	graph := chart.Chart{
+		Width:  1920,
+		Height: 1080,
 		YAxis: chart.YAxis{
-			Style: chart.StyleShow(),
+			Name:      "Random Values",
+			NameStyle: chart.StyleShow(),
+			Style:     chart.StyleShow(),
 			Range: &chart.ContinuousRange{
 				Min: 25,
 				Max: 175,
@@ -51,8 +55,10 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 		},
 	}
 
-	res.Header().Set("Content-Type", "image/png")
-	graph.Render(chart.PNG, res)
+	graph.Elements = []chart.Renderable{chart.Legend(&graph)}
+
+	res.Header().Set("Content-Type", "image/svg+xml")
+	graph.Render(chart.SVG, res)
 }
 
 func main() {

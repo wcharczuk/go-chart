@@ -32,6 +32,7 @@ type vectorRenderer struct {
 	b   *bytes.Buffer
 	c   *canvas
 	s   *Style
+	r   float64
 	p   []string
 	fc  *font.Drawer
 }
@@ -171,6 +172,16 @@ func (vr *vectorRenderer) MeasureText(body string) (box Box) {
 	return
 }
 
+// SetTextRotation sets the text rotation.
+func (vr *vectorRenderer) SetTextRotation(radians float64) {
+	vr.c.r = radians
+}
+
+// ClearTextRotation clears the text rotation.
+func (vr *vectorRenderer) ClearTextRotation() {
+	vr.c.r = 0
+}
+
 // Save saves the renderer's contents to a writer.
 func (vr *vectorRenderer) Save(w io.Writer) error {
 	vr.c.End()
@@ -187,6 +198,7 @@ func newCanvas(w io.Writer) *canvas {
 type canvas struct {
 	w      io.Writer
 	dpi    float64
+	r      float64
 	width  int
 	height int
 }
@@ -206,7 +218,12 @@ func (c *canvas) Path(d string, style Style) {
 }
 
 func (c *canvas) Text(x, y int, body string, style Style) {
-	c.w.Write([]byte(fmt.Sprintf(`<text x="%d" y="%d" style="%s">%s</text>`, x, y, c.styleAsSVG(style), body)))
+	if c.r == 0 {
+		c.w.Write([]byte(fmt.Sprintf(`<text x="%d" y="%d" style="%s">%s</text>`, x, y, c.styleAsSVG(style), body)))
+	} else {
+		transform := fmt.Sprintf(` transform="rotate(%0.2f,%d,%d)"`, Math.RadiansToDegrees(c.r), x, y)
+		c.w.Write([]byte(fmt.Sprintf(`<text x="%d" y="%d" style="%s"%s>%s</text>`, x, y, c.styleAsSVG(style), transform, body)))
+	}
 }
 
 func (c *canvas) Circle(x, y, r int, style Style) {
