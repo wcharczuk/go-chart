@@ -200,7 +200,7 @@ func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 				if gl.IsMinor {
 					defaults = ya.GridMinorStyle
 				}
-				gl.Render(r, canvasBox, ra, defaults)
+				gl.Render(r, canvasBox, ra, gl.Style.InheritFrom(defaults))
 			}
 		}
 	}
