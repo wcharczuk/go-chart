@@ -183,7 +183,7 @@ func (xa XAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 				if gl.IsMinor {
 					defaults = xa.GridMinorStyle
 				}
-				gl.Render(r, canvasBox, ra, defaults)
+				gl.Render(r, canvasBox, ra, gl.Style.InheritFrom(defaults))
 			}
 		}
 	}

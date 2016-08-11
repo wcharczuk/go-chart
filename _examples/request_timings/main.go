@@ -25,6 +25,22 @@ func readData() ([]time.Time, []float64) {
 	return xvalues, yvalues
 }
 
+func releases() []chart.GridLine {
+	lineStyle := chart.Style{
+		Show:        true,
+		StrokeColor: chart.ColorAlternateGray,
+		StrokeWidth: 1.0,
+	}
+	return []chart.GridLine{
+		{Value: chart.TimeToFloat64(time.Date(2016, 8, 1, 9, 30, 0, 0, time.UTC)), IsVertical: true, Style: lineStyle},
+		{Value: chart.TimeToFloat64(time.Date(2016, 8, 2, 9, 30, 0, 0, time.UTC)), IsVertical: true, Style: lineStyle},
+		{Value: chart.TimeToFloat64(time.Date(2016, 8, 3, 9, 30, 0, 0, time.UTC)), IsVertical: true, Style: lineStyle},
+		{Value: chart.TimeToFloat64(time.Date(2016, 8, 4, 9, 30, 0, 0, time.UTC)), IsVertical: true, Style: lineStyle},
+		{Value: chart.TimeToFloat64(time.Date(2016, 8, 5, 9, 30, 0, 0, time.UTC)), IsVertical: true, Style: lineStyle},
+		{Value: chart.TimeToFloat64(time.Date(2016, 8, 6, 9, 30, 0, 0, time.UTC)), IsVertical: true, Style: lineStyle},
+	}
+}
+
 func drawChart(res http.ResponseWriter, req *http.Request) {
 	xvalues, yvalues := readData()
 	mainSeries := chart.TimeSeries{
@@ -87,6 +103,8 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 		XAxis: chart.XAxis{
 			Style:          chart.StyleShow(),
 			ValueFormatter: chart.TimeHourValueFormatter,
+			GridMajorStyle: chart.StyleShow(),
+			GridLines:      releases(),
 		},
 		Series: []chart.Series{
 			mainSeries,
