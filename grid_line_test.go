@@ -16,11 +16,9 @@ func TestGenerateGridLines(t *testing.T) {
 		{Value: 4.0, Label: "4.0"},
 	}
 
-	gl := GenerateGridLines(ticks, Style{}, Style{}, true)
+	gl := GenerateGridLines(ticks, Style{}, Style{})
 	assert.Len(gl, 2)
 
 	assert.Equal(2.0, gl[0].Value)
 	assert.Equal(3.0, gl[1].Value)
-
-	assert.True(gl[0].IsVertical)
 }
