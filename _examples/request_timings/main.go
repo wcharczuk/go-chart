@@ -49,24 +49,6 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 		YValues: yvalues,
 	}
 
-	minSeries := &chart.MinSeries{
-		Style: chart.Style{
-			Show:            true,
-			StrokeColor:     chart.ColorAlternateGray,
-			StrokeDashArray: []float64{5.0, 5.0},
-		},
-		InnerSeries: mainSeries,
-	}
-
-	maxSeries := &chart.MaxSeries{
-		Style: chart.Style{
-			Show:            true,
-			StrokeColor:     chart.ColorAlternateGray,
-			StrokeDashArray: []float64{5.0, 5.0},
-		},
-		InnerSeries: mainSeries,
-	}
-
 	linreg := &chart.LinearRegressionSeries{
 		Name: "Linear Regression",
 		Style: chart.Style{
@@ -107,8 +89,6 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 		},
 		Series: []chart.Series{
 			mainSeries,
-			minSeries,
-			maxSeries,
 			linreg,
 			chart.LastValueAnnotation(linreg),
 			sma,
