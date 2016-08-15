@@ -2,6 +2,7 @@ package chart
 
 import (
 	"errors"
+	"image"
 	"io"
 	"math"
 
@@ -130,6 +131,56 @@ func (bc BarChart) Render(rp RendererProvider, w io.Writer) error {
 	}
 
 	return r.Save(w)
+}
+
+// ToImage renders the chart with the given renderer to an image.
+func (bc BarChart) ToImage(r Renderer) (image.Image, error) {
+	imager, ok := r.(Imager)
+	if !ok {
+		return nil, errors.New("Renderer does not support ToImage")
+	}
+
+	if len(bc.Bars) == 0 {
+		return nil, errors.New("Please provide at least one bar.")
+	}
+
+	if bc.Font == nil {
+		defaultFont, err := GetDefaultFont()
+		if err != nil {
+			return nil, err
+		}
+		bc.defaultFont = defaultFont
+	}
+	r.SetDPI(bc.GetDPI())
+
+	bc.drawBackground(r)
+
+	var canvasBox Box
+	var yt []Tick
+	var yr Range
+	var yf ValueFormatter
+
+	canvasBox = bc.getDefaultCanvasBox()
+	yr = bc.getRanges()
+	yr = bc.setRangeDomains(canvasBox, yr)
+	yf = bc.getValueFormatters()
+
+	if bc.hasAxes() {
+		yt = bc.getAxesTicks(r, yr, yf)
+		canvasBox = bc.getAdjustedCanvasBox(r, canvasBox, yr, yt)
+		yr = bc.setRangeDomains(canvasBox, yr)
+	}
+
+	bc.drawBars(r, canvasBox, yr)
+	bc.drawXAxis(r, canvasBox)
+	bc.drawYAxis(r, canvasBox, yr, yt)
+
+	bc.drawTitle(r)
+	for _, a := range bc.Elements {
+		a(r, canvasBox, bc.styleDefaultsElements())
+	}
+
+	return imager.ToImage(), nil
 }
 
 func (bc BarChart) getRanges() Range {

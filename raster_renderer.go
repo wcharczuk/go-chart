@@ -212,3 +212,8 @@ func (rr *rasterRenderer) ClearTextRotation() {
 func (rr *rasterRenderer) Save(w io.Writer) error {
 	return png.Encode(w, rr.i)
 }
+
+// ToImage implements the Imager interface method.
+func (rr *rasterRenderer) ToImage() image.Image {
+	return rr.i
+}

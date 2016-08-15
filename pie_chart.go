@@ -2,6 +2,7 @@ package chart
 
 import (
 	"errors"
+	"image"
 	"io"
 
 	"github.com/golang/freetype/truetype"
@@ -96,6 +97,42 @@ func (pc PieChart) Render(rp RendererProvider, w io.Writer) error {
 	}
 
 	return r.Save(w)
+}
+
+// ToImage renders the chart with the given renderer to an image.
+func (pc PieChart) ToImage(r Renderer) (image.Image, error) {
+	imager, ok := r.(Imager)
+	if !ok {
+		return nil, errors.New("Renderer does not support ToImage")
+	}
+
+	if len(pc.Values) == 0 {
+		return nil, errors.New("Please provide at least one value.")
+	}
+
+	if pc.Font == nil {
+		defaultFont, err := GetDefaultFont()
+		if err != nil {
+			return nil, err
+		}
+		pc.defaultFont = defaultFont
+	}
+	r.SetDPI(pc.GetDPI(DefaultDPI))
+
+	canvasBox := pc.getDefaultCanvasBox()
+	canvasBox = pc.getCircleAdjustedCanvasBox(canvasBox)
+
+	pc.drawBackground(r)
+	pc.drawCanvas(r, canvasBox)
+
+	finalValues := pc.finalizeValues(pc.Values)
+	pc.drawSlices(r, canvasBox, finalValues)
+	pc.drawTitle(r)
+	for _, a := range pc.Elements {
+		a(r, canvasBox, pc.styleDefaultsElements())
+	}
+
+	return imager.ToImage(), nil
 }
 
 func (pc PieChart) drawBackground(r Renderer) {
