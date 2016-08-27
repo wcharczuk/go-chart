@@ -72,6 +72,11 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 	graph := chart.Chart{
 		Width:  1280,
 		Height: 720,
+		Background: chart.Style{
+			Padding: chart.Box{
+				Top: 50,
+			},
+		},
 		YAxis: chart.YAxis{
 			Name:      "Elapsed Millis",
 			NameStyle: chart.StyleShow(),
@@ -96,7 +101,7 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 		},
 	}
 
-	graph.Elements = []chart.Renderable{chart.Legend(&graph)}
+	graph.Elements = []chart.Renderable{chart.LegendThin(&graph)}
 
 	res.Header().Set("Content-Type", "image/png")
 	graph.Render(chart.PNG, res)
