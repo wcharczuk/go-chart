@@ -210,5 +210,9 @@ func (rr *rasterRenderer) ClearTextRotation() {
 
 // Save implements the interface method.
 func (rr *rasterRenderer) Save(w io.Writer) error {
+	if typed, isTyped := w.(RGBACollector); isTyped {
+		typed.SetRGBA(rr.i)
+		return nil
+	}
 	return png.Encode(w, rr.i)
 }
