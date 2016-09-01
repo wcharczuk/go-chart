@@ -160,3 +160,14 @@ func TestRadianAdd(t *testing.T) {
 	assert.Equal(_pi, Math.RadianAdd(_pi, _2pi))
 	assert.Equal(_pi, Math.RadianAdd(_pi, -_2pi))
 }
+
+func TestRotateCoordinate(t *testing.T) {
+	assert := assert.New(t)
+
+	cx, cy := 10, 10
+	x, y := 5, 5
+
+	rx, ry := Math.RotateCoordinate(cx, cy, x, y, Math.DegreesToRadians(45))
+	assert.Equal(10, rx)
+	assert.Equal(3, ry)
+}

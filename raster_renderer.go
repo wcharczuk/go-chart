@@ -177,12 +177,17 @@ func (rr *rasterRenderer) MeasureText(body string) Box {
 		t = 0
 	}
 
-	return Box{
+	textBox := Box{
 		Top:    int(math.Ceil(t)),
 		Left:   int(math.Ceil(l)),
 		Right:  int(math.Ceil(r)),
 		Bottom: int(math.Ceil(b)),
 	}
+	if rr.rotateRadians == 0 {
+		return textBox
+	}
+
+	return textBox.Rotate(rr.rotateRadians)
 }
 
 // SetTextRotation sets a text rotation.

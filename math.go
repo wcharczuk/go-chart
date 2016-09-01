@@ -214,9 +214,18 @@ func (m mathUtil) DegreesToCompass(deg float64) float64 {
 }
 
 // CirclePoint returns the absolute position of a circle diameter point given
-// by the radius and the angle.
-func (m mathUtil) CirclePoint(cx, cy int, radius, angleRadians float64) (x, y int) {
-	x = cx + int(radius*math.Sin(angleRadians))
-	y = cy - int(radius*math.Cos(angleRadians))
+// by the radius and the theta.
+func (m mathUtil) CirclePoint(cx, cy int, radius, thetaRadians float64) (x, y int) {
+	x = cx + int(radius*math.Sin(thetaRadians))
+	y = cy - int(radius*math.Cos(thetaRadians))
+	return
+}
+
+func (m mathUtil) RotateCoordinate(cx, cy, x, y int, thetaRadians float64) (rx, ry int) {
+	tempX, tempY := float64(x-cx), float64(y-cy)
+	rotatedX := int(math.Ceil(tempX*math.Cos(thetaRadians) - tempY*math.Sin(thetaRadians)))
+	rotatedY := int(math.Ceil(tempX*math.Sin(thetaRadians) + tempY*math.Cos(thetaRadians)))
+	rx = rotatedX + cy
+	ry = rotatedY + cy
 	return
 }
