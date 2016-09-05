@@ -187,7 +187,7 @@ func (rr *rasterRenderer) MeasureText(body string) Box {
 		return textBox
 	}
 
-	return textBox.Rotate(*rr.rotateRadians)
+	return textBox.BoundedRotate(*rr.rotateRadians)
 }
 
 // SetTextRotation sets a text rotation.

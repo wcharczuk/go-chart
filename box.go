@@ -220,16 +220,20 @@ func (b Box) OuterConstrain(bounds, other Box) Box {
 	return newBox
 }
 
-// Rotate rotates a box's corners by a given radian rotation angle.
-func (b Box) Rotate(radians float64) Box {
+// BoundedRotate rotates a box's corners by a given radian rotation angle
+// and returns the maximum bounds or clipping rectangle.
+func (b Box) BoundedRotate(radians float64) Box {
 	cx, cy := b.Center()
 
 	ltx, lty := Math.RotateCoordinate(cx, cy, b.Left, b.Top, radians)
+	lbx, lby := Math.RotateCoordinate(cx, cy, b.Left, b.Bottom, radians)
+	rtx, rty := Math.RotateCoordinate(cx, cy, b.Right, b.Top, radians)
 	rbx, rby := Math.RotateCoordinate(cx, cy, b.Right, b.Bottom, radians)
+
 	return Box{
-		Left:   ltx,
-		Top:    lty,
-		Right:  rbx,
-		Bottom: rby,
+		Left:   Math.MinInt(ltx, lbx),
+		Top:    Math.MinInt(lty, rty),
+		Right:  Math.MaxInt(rtx, rbx),
+		Bottom: Math.MaxInt(lby, rby),
 	}
 }

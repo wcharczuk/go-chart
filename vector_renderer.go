@@ -170,7 +170,7 @@ func (vr *vectorRenderer) MeasureText(body string) (box Box) {
 		if vr.c.textTheta == nil {
 			return
 		}
-		box = box.Rotate(*vr.c.textTheta)
+		box = box.BoundedRotate(*vr.c.textTheta)
 	}
 	return
 }

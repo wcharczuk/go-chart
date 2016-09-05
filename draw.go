@@ -219,6 +219,22 @@ func (d draw) Box(r Renderer, b Box, s Style) {
 	r.FillStroke()
 }
 
+func (d draw) BoxRotated(r Renderer, b Box, thetaRadians float64, s Style) {
+	s.WriteToRenderer(r)
+	cx, cy := b.Center()
+	ltx, lty := Math.RotateCoordinate(cx, cy, b.Left, b.Top, thetaRadians)
+	lbx, lby := Math.RotateCoordinate(cx, cy, b.Left, b.Bottom, thetaRadians)
+	rtx, rty := Math.RotateCoordinate(cx, cy, b.Right, b.Top, thetaRadians)
+	rbx, rby := Math.RotateCoordinate(cx, cy, b.Right, b.Bottom, thetaRadians)
+
+	r.MoveTo(ltx, lty)
+	r.LineTo(rtx, rty)
+	r.LineTo(rbx, rby)
+	r.LineTo(lbx, lby)
+	r.Close()
+	r.FillStroke()
+}
+
 // DrawText draws text with a given style.
 func (d draw) Text(r Renderer, text string, x, y int, style Style) {
 	style.GetTextOptions().WriteToRenderer(r)

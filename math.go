@@ -225,7 +225,7 @@ func (m mathUtil) RotateCoordinate(cx, cy, x, y int, thetaRadians float64) (rx, 
 	tempX, tempY := float64(x-cx), float64(y-cy)
 	rotatedX := tempX*math.Cos(thetaRadians) - tempY*math.Sin(thetaRadians)
 	rotatedY := tempX*math.Sin(thetaRadians) + tempY*math.Cos(thetaRadians)
-	rx = int(rotatedX) + cy
+	rx = int(rotatedX) + cx
 	ry = int(rotatedY) + cy
 	return
 }

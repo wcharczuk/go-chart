@@ -24,12 +24,12 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 				TextRotationDegrees: 45.0,
 			},
 			Ticks: []chart.Tick{
-				{0.0, "0.00"},
-				{2.0, "2.00"},
-				{4.0, "4.00"},
-				{6.0, "6.00"},
-				{8.0, "Eight"},
-				{10.0, "Ten"},
+				{Value: 0.0, Label: "0.00"},
+				{Value: 2.0, Label: "2.00"},
+				{Value: 4.0, Label: "4.00"},
+				{Value: 6.0, Label: "6.00"},
+				{Value: 8.0, Label: "Eight"},
+				{Value: 10.0, Label: "Ten"},
 			},
 		},
 		XAxis: chart.XAxis{
@@ -40,12 +40,12 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 				TextRotationDegrees: 45.0,
 			},
 			Ticks: []chart.Tick{
-				{0.0, "0.00"},
-				{2.0, "2.00"},
-				{4.0, "4.00"},
-				{6.0, "6.00"},
-				{8.0, "Eight"},
-				{10.0, "Ten"},
+				{Value: 0.0, Label: "0.00"},
+				{Value: 2.0, Label: "2.00"},
+				{Value: 4.0, Label: "4.00"},
+				{Value: 6.0, Label: "6.00"},
+				{Value: 8.0, Label: "Eight"},
+				{Value: 10.0, Label: "Ten"},
 			},
 		},
 		Series: []chart.Series{
@@ -60,14 +60,27 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 	graph.Elements = []chart.Renderable{
 		func(r chart.Renderer, cb chart.Box, defaults chart.Style) {
 
-			b := chart.Box{50, 50, 90, 110}
+			b := chart.Box{Top: 50, Left: 50, Right: 150, Bottom: 300}
+
+			cx, cy := b.Center()
+
+			chart.Draw.Box(r, chart.Box{Top: cy - 2, Left: cx - 2, Right: cx + 2, Bottom: cy + 2}, chart.Style{
+				StrokeWidth: 2,
+				StrokeColor: chart.ColorBlack,
+			})
+
 			chart.Draw.Box(r, b, chart.Style{
 				StrokeWidth: 2,
 				StrokeColor: chart.ColorBlue,
 			})
-			chart.Draw.Box(r, b.Rotate(chart.Math.DegreesToRadians(45)), chart.Style{
+			chart.Draw.Box(r, b.BoundedRotate(chart.Math.DegreesToRadians(45)), chart.Style{
 				StrokeWidth: 2,
 				StrokeColor: chart.ColorRed,
+			})
+
+			chart.Draw.BoxRotated(r, b, chart.Math.DegreesToRadians(45), chart.Style{
+				StrokeWidth: 2,
+				StrokeColor: chart.ColorOrange,
 			})
 		},
 	}
