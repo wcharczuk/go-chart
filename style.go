@@ -33,7 +33,7 @@ type Style struct {
 	TextVerticalAlign   TextVerticalAlign
 	TextWrap            TextWrap
 	TextLineSpacing     int
-	TextRotationDegrees float64
+	TextRotationDegrees float64 //0 is unset or normal
 }
 
 // IsZero returns if the object is set or not.
@@ -262,9 +262,8 @@ func (s Style) WriteToRenderer(r Renderer) {
 	r.SetFontColor(s.GetFontColor())
 	r.SetFontSize(s.GetFontSize())
 
-	if s.GetTextRotationDegrees() == 0 {
-		r.ClearTextRotation()
-	} else {
+	r.ClearTextRotation()
+	if s.GetTextRotationDegrees() != 0 {
 		r.SetTextRotation(Math.DegreesToRadians(s.GetTextRotationDegrees()))
 	}
 }

@@ -223,9 +223,9 @@ func (m mathUtil) CirclePoint(cx, cy int, radius, thetaRadians float64) (x, y in
 
 func (m mathUtil) RotateCoordinate(cx, cy, x, y int, thetaRadians float64) (rx, ry int) {
 	tempX, tempY := float64(x-cx), float64(y-cy)
-	rotatedX := int(math.Ceil(tempX*math.Cos(thetaRadians) - tempY*math.Sin(thetaRadians)))
-	rotatedY := int(math.Ceil(tempX*math.Sin(thetaRadians) + tempY*math.Cos(thetaRadians)))
-	rx = rotatedX + cy
-	ry = rotatedY + cy
+	rotatedX := tempX*math.Cos(thetaRadians) - tempY*math.Sin(thetaRadians)
+	rotatedY := tempX*math.Sin(thetaRadians) + tempY*math.Cos(thetaRadians)
+	rx = int(rotatedX) + cy
+	ry = int(rotatedY) + cy
 	return
 }

@@ -28,7 +28,7 @@ type rasterRenderer struct {
 	i  *image.RGBA
 	gc *drawing.RasterGraphicContext
 
-	rotateRadians float64
+	rotateRadians *float64
 
 	s Style
 }
@@ -183,34 +183,34 @@ func (rr *rasterRenderer) MeasureText(body string) Box {
 		Right:  int(math.Ceil(r)),
 		Bottom: int(math.Ceil(b)),
 	}
-	if rr.rotateRadians == 0 {
+	if rr.rotateRadians == nil {
 		return textBox
 	}
 
-	return textBox.Rotate(rr.rotateRadians)
+	return textBox.Rotate(*rr.rotateRadians)
 }
 
 // SetTextRotation sets a text rotation.
 func (rr *rasterRenderer) SetTextRotation(radians float64) {
-	rr.rotateRadians = radians
+	rr.rotateRadians = &radians
 }
 
 func (rr *rasterRenderer) getCoords(x, y int) (xf, yf int) {
-	if rr.rotateRadians == 0 {
+	if rr.rotateRadians == nil {
 		xf = x
 		yf = y
 		return
 	}
 
 	rr.gc.Translate(float64(x), float64(y))
-	rr.gc.Rotate(rr.rotateRadians)
+	rr.gc.Rotate(*rr.rotateRadians)
 	return
 }
 
 // ClearTextRotation clears text rotation.
 func (rr *rasterRenderer) ClearTextRotation() {
 	rr.gc.SetMatrixTransform(drawing.NewIdentityMatrix())
-	rr.rotateRadians = 0
+	rr.rotateRadians = nil
 }
 
 // Save implements the interface method.

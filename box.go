@@ -76,8 +76,8 @@ func (b Box) Height() int {
 
 // Center returns the center of the box
 func (b Box) Center() (x, y int) {
-	w, h := b.Width(), b.Height()
-	return b.Left + w>>1, b.Top + h>>1
+	w2, h2 := b.Width()>>1, b.Height()>>1
+	return b.Left + w2, b.Top + h2
 }
 
 // Aspect returns the aspect ratio of the box.
@@ -227,8 +227,8 @@ func (b Box) Rotate(radians float64) Box {
 	ltx, lty := Math.RotateCoordinate(cx, cy, b.Left, b.Top, radians)
 	rbx, rby := Math.RotateCoordinate(cx, cy, b.Right, b.Bottom, radians)
 	return Box{
-		Top:    lty,
 		Left:   ltx,
+		Top:    lty,
 		Right:  rbx,
 		Bottom: rby,
 	}

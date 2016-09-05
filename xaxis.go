@@ -7,13 +7,15 @@ import (
 
 // XAxis represents the horizontal axis.
 type XAxis struct {
-	Name           string
-	NameStyle      Style
+	Name      string
+	NameStyle Style
+
 	Style          Style
 	ValueFormatter ValueFormatter
 	Range          Range
-	Ticks          []Tick
 
+	TickStyle    Style
+	Ticks        []Tick
 	TickPosition TickPosition
 
 	GridLines      []GridLine
@@ -139,7 +141,7 @@ func (xa XAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 		r.LineTo(tx, canvasBox.Bottom+DefaultVerticalTickHeight)
 		r.Stroke()
 
-		tickStyle.GetTextOptions().WriteToRenderer(r)
+		xa.TickStyle.InheritFrom(xa.Style.InheritFrom(defaults)).WriteToRenderer(r)
 		tb := r.MeasureText(t.Label)
 
 		switch tp {

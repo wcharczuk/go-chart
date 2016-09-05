@@ -144,6 +144,20 @@ func TestBoxShift(t *testing.T) {
 	assert.Equal(12, shifted.Bottom)
 }
 
+func TestBoxCenter(t *testing.T) {
+	assert := assert.New(t)
+
+	b := Box{
+		Top:    10,
+		Left:   10,
+		Right:  20,
+		Bottom: 30,
+	}
+	cx, cy := b.Center()
+	assert.Equal(15, cx)
+	assert.Equal(20, cy)
+}
+
 func TestBoxRotate(t *testing.T) {
 	assert := assert.New(t)
 
@@ -156,6 +170,6 @@ func TestBoxRotate(t *testing.T) {
 	rotated := b.Rotate(Math.DegreesToRadians(45))
 	assert.Equal(1, rotated.Top)
 	assert.Equal(4, rotated.Left)
-	assert.Equal(11, rotated.Right)
-	assert.Equal(15, rotated.Bottom)
+	assert.Equal(10, rotated.Right)
+	assert.Equal(14, rotated.Bottom)
 }

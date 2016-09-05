@@ -22,8 +22,8 @@ type YAxis struct {
 
 	TickStyle Style
 	Ticks     []Tick
-	GridLines []GridLine
 
+	GridLines      []GridLine
 	GridMajorStyle Style
 	GridMinorStyle Style
 }
@@ -149,11 +149,10 @@ func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 
 	var maxTextWidth int
 	for _, t := range ticks {
+		ya.TickStyle.InheritFrom(ya.Style.InheritFrom(defaults)).WriteToRenderer(r)
 
 		v := t.Value
 		ly := canvasBox.Bottom - ra.Translate(v)
-
-		ya.TickStyle.InheritFrom(ya.Style.InheritFrom(defaults)).WriteToRenderer(r)
 		tb := r.MeasureText(t.Label)
 
 		if tb.Width() > maxTextWidth {
@@ -167,7 +166,8 @@ func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 		}
 
 		r.Text(t.Label, finalTextX, finalTextY)
-		r.ClearTextRotation()
+
+		ya.Style.InheritFrom(defaults).WriteToRenderer(r)
 
 		r.MoveTo(lx, ly)
 		if ya.AxisType == YAxisPrimary {
