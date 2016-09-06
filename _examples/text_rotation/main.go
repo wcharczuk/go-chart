@@ -60,7 +60,7 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 	graph.Elements = []chart.Renderable{
 		func(r chart.Renderer, cb chart.Box, defaults chart.Style) {
 
-			b := chart.Box{Top: 50, Left: 50, Right: 150, Bottom: 300}
+			b := chart.Box{Top: 70, Left: 100, Right: 170, Bottom: 300}
 
 			cx, cy := b.Center()
 
@@ -73,12 +73,12 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 				StrokeWidth: 2,
 				StrokeColor: chart.ColorBlue,
 			})
-			chart.Draw.Box(r, b.BoundedRotate(chart.Math.DegreesToRadians(45)), chart.Style{
+			chart.Draw.Box(r, b.BoundedRotate(chart.Math.DegreesToRadians(60)), chart.Style{
 				StrokeWidth: 2,
 				StrokeColor: chart.ColorRed,
 			})
 
-			chart.Draw.BoxRotated(r, b, chart.Math.DegreesToRadians(45), chart.Style{
+			chart.Draw.BoxRotated(r, b, chart.Math.DegreesToRadians(60), chart.Style{
 				StrokeWidth: 2,
 				StrokeColor: chart.ColorOrange,
 			})
