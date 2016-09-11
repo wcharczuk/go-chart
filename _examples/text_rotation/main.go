@@ -57,33 +57,6 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 	}
 
 	res.Header().Set("Content-Type", "image/png")
-	graph.Elements = []chart.Renderable{
-		func(r chart.Renderer, cb chart.Box, defaults chart.Style) {
-
-			b := chart.Box{Top: 70, Left: 100, Right: 170, Bottom: 300}
-
-			cx, cy := b.Center()
-
-			chart.Draw.Box(r, chart.Box{Top: cy - 2, Left: cx - 2, Right: cx + 2, Bottom: cy + 2}, chart.Style{
-				StrokeWidth: 2,
-				StrokeColor: chart.ColorBlack,
-			})
-
-			chart.Draw.Box(r, b, chart.Style{
-				StrokeWidth: 2,
-				StrokeColor: chart.ColorBlue,
-			})
-			chart.Draw.Box(r, b.BoundedRotate(chart.Math.DegreesToRadians(60)), chart.Style{
-				StrokeWidth: 2,
-				StrokeColor: chart.ColorRed,
-			})
-
-			chart.Draw.BoxRotated(r, b, chart.Math.DegreesToRadians(60), chart.Style{
-				StrokeWidth: 2,
-				StrokeColor: chart.ColorOrange,
-			})
-		},
-	}
 	graph.Render(chart.PNG, res)
 }
 

@@ -84,23 +84,20 @@ func (ya YAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 	}
 
 	ya.TickStyle.InheritFrom(ya.Style.InheritFrom(defaults)).WriteToRenderer(r)
-
 	var minx, maxx, miny, maxy = math.MaxInt32, 0, math.MaxInt32, 0
 	var maxTextHeight int
 	for _, t := range ticks {
-
 		v := t.Value
 		ly := canvasBox.Bottom - ra.Translate(v)
 
 		tb := r.MeasureText(t.Label)
+		tbh2 := tb.Height() >> 1
 		finalTextX := tx
 		if ya.AxisType == YAxisSecondary {
 			finalTextX = tx - tb.Width()
 		}
 
-		if tb.Height() > maxTextHeight {
-			maxTextHeight = tb.Height()
-		}
+		maxTextHeight = Math.MaxInt(tb.Height(), maxTextHeight)
 
 		if ya.AxisType == YAxisPrimary {
 			minx = canvasBox.Right
@@ -109,8 +106,9 @@ func (ya YAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 			minx = Math.MinInt(minx, finalTextX)
 			maxx = Math.MaxInt(maxx, tx)
 		}
-		miny = Math.MinInt(miny, ly-tb.Height()>>1)
-		maxy = Math.MaxInt(maxy, ly+tb.Height()>>1)
+
+		miny = Math.MinInt(miny, ly-tbh2)
+		maxy = Math.MaxInt(maxy, ly+tbh2)
 	}
 
 	if ya.NameStyle.Show && len(ya.Name) > 0 {
