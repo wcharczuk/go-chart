@@ -35,9 +35,9 @@ func TestMarketHoursRangeTranslate(t *testing.T) {
 
 	weds := time.Date(2016, 07, 20, 9, 30, 0, 0, Date.Eastern())
 
-	assert.Equal(0, r.Translate(TimeToFloat64(r.Min)))
-	assert.Equal(400, r.Translate(TimeToFloat64(weds)))
-	assert.Equal(1000, r.Translate(TimeToFloat64(r.Max)))
+	assert.Equal(0, r.Translate(Time.ToFloat64(r.Min)))
+	assert.Equal(400, r.Translate(Time.ToFloat64(weds)))
+	assert.Equal(1000, r.Translate(Time.ToFloat64(r.Max)))
 }
 
 func TestMarketHoursRangeGetTicks(t *testing.T) {
@@ -67,6 +67,6 @@ func TestMarketHoursRangeGetTicks(t *testing.T) {
 	ticks := ra.GetTicks(r, defaults, TimeValueFormatter)
 	assert.NotEmpty(ticks)
 	assert.Len(ticks, 5)
-	assert.NotEqual(TimeToFloat64(ra.Min), ticks[0].Value)
+	assert.NotEqual(Time.ToFloat64(ra.Min), ticks[0].Value)
 	assert.NotEmpty(ticks[0].Label)
 }

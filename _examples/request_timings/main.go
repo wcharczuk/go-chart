@@ -14,11 +14,11 @@ func readData() ([]time.Time, []float64) {
 	var yvalues []float64
 	util.ReadFileByLines("requests.csv", func(line string) {
 		parts := strings.Split(line, ",")
-		year := util.ParseInt(parts[0])
-		month := util.ParseInt(parts[1])
-		day := util.ParseInt(parts[2])
-		hour := util.ParseInt(parts[3])
-		elapsedMillis := util.ParseFloat64(parts[4])
+		year := util.String.ParseInt(parts[0])
+		month := util.String.ParseInt(parts[1])
+		day := util.String.ParseInt(parts[2])
+		hour := util.String.ParseInt(parts[3])
+		elapsedMillis := util.String.ParseFloat64(parts[4])
 		xvalues = append(xvalues, time.Date(year, time.Month(month), day, hour, 0, 0, 0, time.UTC))
 		yvalues = append(yvalues, elapsedMillis)
 	})

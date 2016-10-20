@@ -33,12 +33,12 @@ func (mhr MarketHoursRange) IsZero() bool {
 
 // GetMin returns the min value.
 func (mhr MarketHoursRange) GetMin() float64 {
-	return TimeToFloat64(mhr.Min)
+	return Time.ToFloat64(mhr.Min)
 }
 
 // GetMax returns the max value.
 func (mhr MarketHoursRange) GetMax() float64 {
-	return TimeToFloat64(mhr.GetEffectiveMax())
+	return Time.ToFloat64(mhr.GetEffectiveMax())
 }
 
 // GetEffectiveMax gets either the close on the max, or the max itself.
@@ -52,13 +52,13 @@ func (mhr MarketHoursRange) GetEffectiveMax() time.Time {
 
 // SetMin sets the min value.
 func (mhr *MarketHoursRange) SetMin(min float64) {
-	mhr.Min = Float64ToTime(min)
+	mhr.Min = Time.FromFloat64(min)
 	mhr.Min = mhr.Min.In(mhr.GetTimezone())
 }
 
 // SetMax sets the max value.
 func (mhr *MarketHoursRange) SetMax(max float64) {
-	mhr.Max = Float64ToTime(max)
+	mhr.Max = Time.FromFloat64(max)
 	mhr.Max = mhr.Max.In(mhr.GetTimezone())
 }
 
@@ -159,7 +159,7 @@ func (mhr *MarketHoursRange) makeTicks(vf ValueFormatter, times []time.Time) []T
 	ticks := make([]Tick, len(times))
 	for index, t := range times {
 		ticks[index] = Tick{
-			Value: TimeToFloat64(t),
+			Value: Time.ToFloat64(t),
 			Label: vf(t),
 		}
 	}
@@ -172,7 +172,7 @@ func (mhr MarketHoursRange) String() string {
 
 // Translate maps a given value into the ContinuousRange space.
 func (mhr MarketHoursRange) Translate(value float64) int {
-	valueTime := Float64ToTime(value)
+	valueTime := Time.FromFloat64(value)
 	valueTimeEastern := valueTime.In(Date.Eastern())
 	totalSeconds := Date.CalculateMarketSecondsBetween(mhr.Min, mhr.GetEffectiveMax(), mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.HolidayProvider)
 	valueDelta := Date.CalculateMarketSecondsBetween(mhr.Min, valueTimeEastern, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.HolidayProvider)
