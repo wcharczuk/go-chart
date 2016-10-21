@@ -160,6 +160,7 @@ func (xa XAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 				llx := ra.Translate(ticks[index-1].Value)
 				ltx := canvasBox.Left + llx
 				finalTickStyle := tickWithAxisStyle.InheritFrom(Style{TextHorizontalAlign: TextHorizontalAlignCenter})
+
 				Draw.TextWithin(r, t.Label, Box{
 					Left:   ltx,
 					Right:  tx,

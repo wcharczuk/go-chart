@@ -86,6 +86,9 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 			Name:      "Elapsed Millis",
 			NameStyle: chart.StyleShow(),
 			Style:     chart.StyleShow(),
+			TickStyle: chart.Style{
+				TextRotationDegrees: 45.0,
+			},
 		},
 		XAxis: chart.XAxis{
 			Style: chart.Style{
@@ -96,10 +99,6 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 				Show:        true,
 				StrokeColor: chart.ColorAlternateGray,
 				StrokeWidth: 1.0,
-			},
-			TickPosition: chart.TickPositionBetweenTicks,
-			TickStyle: chart.Style{
-				TextRotationDegrees: 45,
 			},
 			GridLines: releases(),
 		},

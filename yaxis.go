@@ -125,11 +125,12 @@ func (ya YAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 
 // Render renders the axis.
 func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, ticks []Tick) {
-	ya.Style.InheritFrom(defaults).WriteToRenderer(r)
+	tickStyle := ya.TickStyle.InheritFrom(ya.Style.InheritFrom(defaults))
+	tickStyle.WriteToRenderer(r)
 
 	sort.Sort(Ticks(ticks))
 
-	sw := ya.Style.GetStrokeWidth(defaults.StrokeWidth)
+	sw := tickStyle.GetStrokeWidth(defaults.StrokeWidth)
 
 	var lx int
 	var tx int
@@ -146,26 +147,30 @@ func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 	r.Stroke()
 
 	var maxTextWidth int
+	var finalTextX, finalTextY int
 	for _, t := range ticks {
-		ya.TickStyle.InheritFrom(ya.Style.InheritFrom(defaults)).WriteToRenderer(r)
-
 		v := t.Value
 		ly := canvasBox.Bottom - ra.Translate(v)
-		tb := r.MeasureText(t.Label)
+
+		tb := Draw.MeasureText(r, t.Label, tickStyle)
 
 		if tb.Width() > maxTextWidth {
 			maxTextWidth = tb.Width()
 		}
 
-		finalTextX := tx
-		finalTextY := ly + tb.Height()>>1
 		if ya.AxisType == YAxisSecondary {
 			finalTextX = tx - tb.Width()
+		} else {
+			finalTextX = tx
 		}
 
-		r.Text(t.Label, finalTextX, finalTextY)
+		if tickStyle.TextRotationDegrees == 0 {
+			finalTextY = ly + tb.Height()>>1
+		} else {
+			finalTextY = ly
+		}
 
-		ya.Style.InheritFrom(defaults).WriteToRenderer(r)
+		tickStyle.WriteToRenderer(r)
 
 		r.MoveTo(lx, ly)
 		if ya.AxisType == YAxisPrimary {
@@ -174,6 +179,8 @@ func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 			r.LineTo(lx-DefaultHorizontalTickWidth, ly)
 		}
 		r.Stroke()
+
+		Draw.Text(r, t.Label, finalTextX, finalTextY, tickStyle)
 	}
 
 	nameStyle := ya.NameStyle.InheritFrom(defaults.InheritFrom(Style{TextRotationDegrees: 90}))
