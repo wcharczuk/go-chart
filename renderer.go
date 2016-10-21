@@ -9,6 +9,9 @@ import (
 
 // Renderer represents the basic methods required to draw a chart.
 type Renderer interface {
+	// ResetStyle should reset any style related settings on the renderer.
+	ResetStyle()
+
 	// GetDPI gets the DPI for the renderer.
 	GetDPI() float64
 

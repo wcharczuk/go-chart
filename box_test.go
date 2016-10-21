@@ -158,18 +158,31 @@ func TestBoxCenter(t *testing.T) {
 	assert.Equal(20, cy)
 }
 
-func TestBoxBoundedRotate(t *testing.T) {
+func TestBoxCornersCenter(t *testing.T) {
 	assert := assert.New(t)
 
-	b := Box{
-		Top:    5,
-		Left:   5,
-		Right:  20,
-		Bottom: 10,
+	bc := BoxCorners{
+		TopLeft:     Point{5, 5},
+		TopRight:    Point{15, 5},
+		BottomRight: Point{15, 15},
+		BottomLeft:  Point{5, 15},
 	}
-	rotated := b.BoundedRotate(Math.DegreesToRadians(45))
-	assert.Equal(1, rotated.Top)
-	assert.Equal(5, rotated.Left)
-	assert.Equal(19, rotated.Right)
-	assert.Equal(14, rotated.Bottom)
+
+	cx, cy := bc.Center()
+	assert.Equal(10, cx)
+	assert.Equal(10, cy)
+}
+
+func TestBoxCornersRotate(t *testing.T) {
+	assert := assert.New(t)
+
+	bc := BoxCorners{
+		TopLeft:     Point{5, 5},
+		TopRight:    Point{15, 5},
+		BottomRight: Point{15, 15},
+		BottomLeft:  Point{5, 15},
+	}
+
+	rotated := bc.Rotate(45)
+	assert.True(rotated.TopLeft.Equals(Point{10, 3}), rotated.String())
 }

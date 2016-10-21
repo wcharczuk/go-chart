@@ -324,12 +324,10 @@ func (c Chart) getAxesAdjustedCanvasBox(r Renderer, canvasBox Box, xr, yr, yra R
 	axesOuterBox := canvasBox.Clone()
 	if c.XAxis.Style.Show {
 		axesBounds := c.XAxis.Measure(r, canvasBox, xr, c.styleDefaultsAxes(), xticks)
-		Draw.Box(r, axesBounds, Style{StrokeWidth: 2, StrokeColor: ColorRed})
 		axesOuterBox = axesOuterBox.Grow(axesBounds)
 	}
 	if c.YAxis.Style.Show {
 		axesBounds := c.YAxis.Measure(r, canvasBox, yr, c.styleDefaultsAxes(), yticks)
-		Draw.Box(r, axesBounds, Style{StrokeWidth: 2, StrokeColor: ColorBlue})
 		axesOuterBox = axesOuterBox.Grow(axesBounds)
 	}
 	if c.YAxisSecondary.Style.Show {

@@ -4,60 +4,47 @@ import (
 	"net/http"
 
 	"github.com/wcharczuk/go-chart"
+	"github.com/wcharczuk/go-chart/drawing"
 )
 
 func drawChart(res http.ResponseWriter, req *http.Request) {
-	/*
-	   In this example we set a rotation on the style for the custom ticks from the `custom_ticks` example.
-	*/
+	f, _ := chart.GetDefaultFont()
+	r, _ := chart.PNG(1024, 1024)
 
-	graph := chart.Chart{
-		YAxis: chart.YAxis{
-			Style: chart.Style{
-				Show: true,
-			},
-			Range: &chart.ContinuousRange{
-				Min: 0.0,
-				Max: 4.0,
-			},
-			TickStyle: chart.Style{
-				TextRotationDegrees: 45.0,
-			},
-			Ticks: []chart.Tick{
-				{Value: 0.0, Label: "0.00"},
-				{Value: 2.0, Label: "2.00"},
-				{Value: 4.0, Label: "4.00"},
-				{Value: 6.0, Label: "6.00"},
-				{Value: 8.0, Label: "Eight"},
-				{Value: 10.0, Label: "Ten"},
-			},
-		},
-		XAxis: chart.XAxis{
-			Style: chart.Style{
-				Show: true,
-			},
-			TickStyle: chart.Style{
-				TextRotationDegrees: 45.0,
-			},
-			Ticks: []chart.Tick{
-				{Value: 0.0, Label: "0.00"},
-				{Value: 2.0, Label: "2.00"},
-				{Value: 4.0, Label: "4.00"},
-				{Value: 6.0, Label: "6.00"},
-				{Value: 8.0, Label: "Eight"},
-				{Value: 10.0, Label: "Ten"},
-			},
-		},
-		Series: []chart.Series{
-			chart.ContinuousSeries{
-				XValues: []float64{1.0, 2.0, 3.0, 4.0, 5.0},
-				YValues: []float64{1.0, 2.0, 3.0, 4.0, 5.0},
-			},
-		},
-	}
+	chart.Draw.Text(r, "Test", 64, 64, chart.Style{
+		FontColor: drawing.ColorBlack,
+		FontSize:  18,
+		Font:      f,
+	})
+
+	chart.Draw.Text(r, "Test", 64, 64, chart.Style{
+		FontColor:           drawing.ColorBlack,
+		FontSize:            18,
+		Font:                f,
+		TextRotationDegrees: 45.0,
+	})
+
+	tb := chart.Draw.MeasureText(r, "Test", chart.Style{
+		FontColor: drawing.ColorBlack,
+		FontSize:  18,
+		Font:      f,
+	}).Shift(64, 64)
+
+	tbc := tb.Corners().Rotate(45)
+
+	chart.Draw.BoxCorners(r, tbc, chart.Style{
+		StrokeColor: drawing.ColorRed,
+		StrokeWidth: 2,
+	})
+
+	tbcb := tbc.Box()
+	chart.Draw.Box(r, tbcb, chart.Style{
+		StrokeColor: drawing.ColorBlue,
+		StrokeWidth: 2,
+	})
 
 	res.Header().Set("Content-Type", "image/png")
-	graph.Render(chart.PNG, res)
+	r.Save(res)
 }
 
 func main() {

@@ -36,6 +36,11 @@ type vectorRenderer struct {
 	fc  *font.Drawer
 }
 
+func (vr *vectorRenderer) ResetStyle() {
+	vr.s = &Style{Font: vr.s.Font}
+	vr.fc = nil
+}
+
 // GetDPI returns the dpi.
 func (vr *vectorRenderer) GetDPI() float64 {
 	return vr.dpi
@@ -170,7 +175,7 @@ func (vr *vectorRenderer) MeasureText(body string) (box Box) {
 		if vr.c.textTheta == nil {
 			return
 		}
-		box = box.BoundedRotate(*vr.c.textTheta)
+		box = box.Corners().Rotate(Math.RadiansToDegrees(*vr.c.textTheta)).Box()
 	}
 	return
 }

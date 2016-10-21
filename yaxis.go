@@ -179,7 +179,7 @@ func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 	nameStyle := ya.NameStyle.InheritFrom(defaults.InheritFrom(Style{TextRotationDegrees: 90}))
 	if ya.NameStyle.Show && len(ya.Name) > 0 {
 		nameStyle.GetTextOptions().WriteToRenderer(r)
-		tb := r.MeasureText(ya.Name)
+		tb := Draw.MeasureText(r, ya.Name, nameStyle)
 
 		var tx int
 		if ya.AxisType == YAxisPrimary {
@@ -188,9 +188,9 @@ func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 			tx = canvasBox.Left - (DefaultYAxisMargin + int(sw) + maxTextWidth + DefaultYAxisMargin)
 		}
 
-		ty := canvasBox.Bottom - (canvasBox.Height()>>1 + tb.Width()>>1)
+		ty := canvasBox.Top + (canvasBox.Height()>>1 + tb.Width()>>1)
 
-		r.Text(ya.Name, tx, ty)
+		Draw.Text(r, ya.Name, tx, ty, nameStyle)
 	}
 
 	if ya.Zero.Style.Show {

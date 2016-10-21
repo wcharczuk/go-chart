@@ -134,6 +134,16 @@ func (m mathUtil) AbsInt(value int) int {
 	return value
 }
 
+// Mean returns the mean of a set of values
+func (m mathUtil) Mean(values ...float64) float64 {
+	return m.Sum(values...) / float64(len(values))
+}
+
+// MeanInt returns the mean of a set of integer values.
+func (m mathUtil) MeanInt(values ...int) int {
+	return m.SumInt(values...) / len(values)
+}
+
 // Sum sums a set of values.
 func (m mathUtil) Sum(values ...float64) float64 {
 	var total float64

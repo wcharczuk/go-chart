@@ -33,6 +33,11 @@ type rasterRenderer struct {
 	s Style
 }
 
+func (rr *rasterRenderer) ResetStyle() {
+	rr.s = Style{Font: rr.s.Font}
+	rr.ClearTextRotation()
+}
+
 // GetDPI returns the dpi.
 func (rr *rasterRenderer) GetDPI() float64 {
 	return rr.gc.GetDPI()
@@ -187,7 +192,7 @@ func (rr *rasterRenderer) MeasureText(body string) Box {
 		return textBox
 	}
 
-	return textBox.BoundedRotate(*rr.rotateRadians)
+	return textBox.Corners().Rotate(Math.RadiansToDegrees(*rr.rotateRadians)).Box()
 }
 
 // SetTextRotation sets a text rotation.
