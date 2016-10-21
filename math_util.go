@@ -19,16 +19,6 @@ const (
 	_r2d  = (180.0 / math.Pi)
 )
 
-// TimeToFloat64 returns a float64 representation of a time.
-func TimeToFloat64(t time.Time) float64 {
-	return float64(t.UnixNano())
-}
-
-// Float64ToTime returns a time from a float64.
-func Float64ToTime(tf float64) time.Time {
-	return time.Unix(0, int64(tf))
-}
-
 var (
 	// Math contains helper methods for common math operations.
 	Math = &mathUtil{}
@@ -144,6 +134,16 @@ func (m mathUtil) AbsInt(value int) int {
 	return value
 }
 
+// Mean returns the mean of a set of values
+func (m mathUtil) Mean(values ...float64) float64 {
+	return m.Sum(values...) / float64(len(values))
+}
+
+// MeanInt returns the mean of a set of integer values.
+func (m mathUtil) MeanInt(values ...int) int {
+	return m.SumInt(values...) / len(values)
+}
+
 // Sum sums a set of values.
 func (m mathUtil) Sum(values ...float64) float64 {
 	var total float64
@@ -214,9 +214,18 @@ func (m mathUtil) DegreesToCompass(deg float64) float64 {
 }
 
 // CirclePoint returns the absolute position of a circle diameter point given
-// by the radius and the angle.
-func (m mathUtil) CirclePoint(cx, cy int, radius, angleRadians float64) (x, y int) {
-	x = cx + int(radius*math.Sin(angleRadians))
-	y = cy - int(radius*math.Cos(angleRadians))
+// by the radius and the theta.
+func (m mathUtil) CirclePoint(cx, cy int, radius, thetaRadians float64) (x, y int) {
+	x = cx + int(radius*math.Sin(thetaRadians))
+	y = cy - int(radius*math.Cos(thetaRadians))
+	return
+}
+
+func (m mathUtil) RotateCoordinate(cx, cy, x, y int, thetaRadians float64) (rx, ry int) {
+	tempX, tempY := float64(x-cx), float64(y-cy)
+	rotatedX := tempX*math.Cos(thetaRadians) - tempY*math.Sin(thetaRadians)
+	rotatedY := tempX*math.Sin(thetaRadians) + tempY*math.Cos(thetaRadians)
+	rx = int(rotatedX) + cx
+	ry = int(rotatedY) + cy
 	return
 }

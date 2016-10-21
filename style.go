@@ -33,6 +33,7 @@ type Style struct {
 	TextVerticalAlign   TextVerticalAlign
 	TextWrap            TextWrap
 	TextLineSpacing     int
+	TextRotationDegrees float64 //0 is unset or normal
 }
 
 // IsZero returns if the object is set or not.
@@ -241,6 +242,16 @@ func (s Style) GetTextLineSpacing(defaults ...int) int {
 	return s.TextLineSpacing
 }
 
+// GetTextRotationDegrees returns the text rotation in degrees.
+func (s Style) GetTextRotationDegrees(defaults ...float64) float64 {
+	if s.TextRotationDegrees == 0 {
+		if len(defaults) > 0 {
+			return defaults[0]
+		}
+	}
+	return s.TextRotationDegrees
+}
+
 // WriteToRenderer passes the style's options to a renderer.
 func (s Style) WriteToRenderer(r Renderer) {
 	r.SetStrokeColor(s.GetStrokeColor())
@@ -250,6 +261,11 @@ func (s Style) WriteToRenderer(r Renderer) {
 	r.SetFont(s.GetFont())
 	r.SetFontColor(s.GetFontColor())
 	r.SetFontSize(s.GetFontSize())
+
+	r.ClearTextRotation()
+	if s.GetTextRotationDegrees() != 0 {
+		r.SetTextRotation(Math.DegreesToRadians(s.GetTextRotationDegrees()))
+	}
 }
 
 // WriteDrawingOptionsToRenderer passes just the drawing style options to a renderer.
@@ -281,6 +297,7 @@ func (s Style) InheritFrom(defaults Style) (final Style) {
 	final.TextVerticalAlign = s.GetTextVerticalAlign(defaults.TextVerticalAlign)
 	final.TextWrap = s.GetTextWrap(defaults.TextWrap)
 	final.TextLineSpacing = s.GetTextLineSpacing(defaults.TextLineSpacing)
+	final.TextRotationDegrees = s.GetTextRotationDegrees(defaults.TextRotationDegrees)
 	return
 }
 
@@ -320,5 +337,6 @@ func (s Style) GetTextOptions() Style {
 		TextVerticalAlign:   s.TextVerticalAlign,
 		TextWrap:            s.TextWrap,
 		TextLineSpacing:     s.TextLineSpacing,
+		TextRotationDegrees: s.TextRotationDegrees,
 	}
 }

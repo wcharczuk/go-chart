@@ -20,9 +20,10 @@ type YAxis struct {
 	ValueFormatter ValueFormatter
 	Range          Range
 
+	TickStyle Style
 	Ticks     []Tick
-	GridLines []GridLine
 
+	GridLines      []GridLine
 	GridMajorStyle Style
 	GridMinorStyle Style
 }
@@ -40,6 +41,11 @@ func (ya YAxis) GetNameStyle() Style {
 // GetStyle returns the style.
 func (ya YAxis) GetStyle() Style {
 	return ya.Style
+}
+
+// GetTickStyle returns the tick style.
+func (ya YAxis) GetTickStyle() Style {
+	return ya.TickStyle
 }
 
 // GetTicks returns the ticks for a series.
@@ -68,8 +74,6 @@ func (ya YAxis) GetGridLines(ticks []Tick) []GridLine {
 
 // Measure returns the bounds of the axis.
 func (ya YAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, ticks []Tick) Box {
-	ya.Style.InheritFrom(defaults).WriteToRenderer(r)
-
 	sort.Sort(Ticks(ticks))
 
 	var tx int
@@ -79,6 +83,7 @@ func (ya YAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 		tx = canvasBox.Left - DefaultYAxisMargin
 	}
 
+	ya.TickStyle.InheritFrom(ya.Style.InheritFrom(defaults)).WriteToRenderer(r)
 	var minx, maxx, miny, maxy = math.MaxInt32, 0, math.MaxInt32, 0
 	var maxTextHeight int
 	for _, t := range ticks {
@@ -86,14 +91,13 @@ func (ya YAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 		ly := canvasBox.Bottom - ra.Translate(v)
 
 		tb := r.MeasureText(t.Label)
+		tbh2 := tb.Height() >> 1
 		finalTextX := tx
 		if ya.AxisType == YAxisSecondary {
 			finalTextX = tx - tb.Width()
 		}
 
-		if tb.Height() > maxTextHeight {
-			maxTextHeight = tb.Height()
-		}
+		maxTextHeight = Math.MaxInt(tb.Height(), maxTextHeight)
 
 		if ya.AxisType == YAxisPrimary {
 			minx = canvasBox.Right
@@ -102,8 +106,9 @@ func (ya YAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 			minx = Math.MinInt(minx, finalTextX)
 			maxx = Math.MaxInt(maxx, tx)
 		}
-		miny = Math.MinInt(miny, ly-tb.Height()>>1)
-		maxy = Math.MaxInt(maxy, ly+tb.Height()>>1)
+
+		miny = Math.MinInt(miny, ly-tbh2)
+		maxy = Math.MaxInt(maxy, ly+tbh2)
 	}
 
 	if ya.NameStyle.Show && len(ya.Name) > 0 {
@@ -120,11 +125,12 @@ func (ya YAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 
 // Render renders the axis.
 func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, ticks []Tick) {
-	ya.Style.InheritFrom(defaults).WriteToRenderer(r)
+	tickStyle := ya.TickStyle.InheritFrom(ya.Style.InheritFrom(defaults))
+	tickStyle.WriteToRenderer(r)
 
 	sort.Sort(Ticks(ticks))
 
-	sw := ya.Style.GetStrokeWidth(defaults.StrokeWidth)
+	sw := tickStyle.GetStrokeWidth(defaults.StrokeWidth)
 
 	var lx int
 	var tx int
@@ -141,23 +147,30 @@ func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 	r.Stroke()
 
 	var maxTextWidth int
+	var finalTextX, finalTextY int
 	for _, t := range ticks {
 		v := t.Value
 		ly := canvasBox.Bottom - ra.Translate(v)
 
-		tb := r.MeasureText(t.Label)
+		tb := Draw.MeasureText(r, t.Label, tickStyle)
 
 		if tb.Width() > maxTextWidth {
 			maxTextWidth = tb.Width()
 		}
 
-		finalTextX := tx
-		finalTextY := ly + tb.Height()>>1
 		if ya.AxisType == YAxisSecondary {
 			finalTextX = tx - tb.Width()
+		} else {
+			finalTextX = tx
 		}
 
-		r.Text(t.Label, finalTextX, finalTextY)
+		if tickStyle.TextRotationDegrees == 0 {
+			finalTextY = ly + tb.Height()>>1
+		} else {
+			finalTextY = ly
+		}
+
+		tickStyle.WriteToRenderer(r)
 
 		r.MoveTo(lx, ly)
 		if ya.AxisType == YAxisPrimary {
@@ -166,15 +179,14 @@ func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 			r.LineTo(lx-DefaultHorizontalTickWidth, ly)
 		}
 		r.Stroke()
+
+		Draw.Text(r, t.Label, finalTextX, finalTextY, tickStyle)
 	}
 
-	nameStyle := ya.NameStyle.InheritFrom(defaults)
+	nameStyle := ya.NameStyle.InheritFrom(defaults.InheritFrom(Style{TextRotationDegrees: 90}))
 	if ya.NameStyle.Show && len(ya.Name) > 0 {
 		nameStyle.GetTextOptions().WriteToRenderer(r)
-
-		r.SetTextRotation(Math.DegreesToRadians(90))
-
-		tb := r.MeasureText(ya.Name)
+		tb := Draw.MeasureText(r, ya.Name, nameStyle)
 
 		var tx int
 		if ya.AxisType == YAxisPrimary {
@@ -183,10 +195,9 @@ func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 			tx = canvasBox.Left - (DefaultYAxisMargin + int(sw) + maxTextWidth + DefaultYAxisMargin)
 		}
 
-		ty := canvasBox.Bottom - (canvasBox.Height()>>1 + tb.Width()>>1)
+		ty := canvasBox.Top + (canvasBox.Height()>>1 + tb.Width()>>1)
 
-		r.Text(ya.Name, tx, ty)
-		r.ClearTextRotation()
+		Draw.Text(r, ya.Name, tx, ty, nameStyle)
 	}
 
 	if ya.Zero.Style.Show {

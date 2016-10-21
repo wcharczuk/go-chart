@@ -54,9 +54,7 @@ func Legend(c *Chart, userDefaults ...Style) Renderable {
 			Bottom: legend.Top + legendPadding.Top,
 		}
 
-		r.SetFont(legendStyle.GetFont())
-		r.SetFontColor(legendStyle.GetFontColor())
-		r.SetFontSize(legendStyle.GetFontSize())
+		legendStyle.GetTextOptions().WriteToRenderer(r)
 
 		// measure
 		labelCount := 0
@@ -78,6 +76,8 @@ func Legend(c *Chart, userDefaults ...Style) Renderable {
 		legend.Bottom = legendContent.Bottom + legendPadding.Bottom
 
 		Draw.Box(r, legend, legendStyle)
+
+		legendStyle.GetTextOptions().WriteToRenderer(r)
 
 		ycursor := legendContent.Top
 		tx := legendContent.Left

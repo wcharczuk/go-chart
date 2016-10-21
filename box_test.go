@@ -143,3 +143,46 @@ func TestBoxShift(t *testing.T) {
 	assert.Equal(11, shifted.Right)
 	assert.Equal(12, shifted.Bottom)
 }
+
+func TestBoxCenter(t *testing.T) {
+	assert := assert.New(t)
+
+	b := Box{
+		Top:    10,
+		Left:   10,
+		Right:  20,
+		Bottom: 30,
+	}
+	cx, cy := b.Center()
+	assert.Equal(15, cx)
+	assert.Equal(20, cy)
+}
+
+func TestBoxCornersCenter(t *testing.T) {
+	assert := assert.New(t)
+
+	bc := BoxCorners{
+		TopLeft:     Point{5, 5},
+		TopRight:    Point{15, 5},
+		BottomRight: Point{15, 15},
+		BottomLeft:  Point{5, 15},
+	}
+
+	cx, cy := bc.Center()
+	assert.Equal(10, cx)
+	assert.Equal(10, cy)
+}
+
+func TestBoxCornersRotate(t *testing.T) {
+	assert := assert.New(t)
+
+	bc := BoxCorners{
+		TopLeft:     Point{5, 5},
+		TopRight:    Point{15, 5},
+		BottomRight: Point{15, 15},
+		BottomLeft:  Point{5, 15},
+	}
+
+	rotated := bc.Rotate(45)
+	assert.True(rotated.TopLeft.Equals(Point{10, 3}), rotated.String())
+}

@@ -11,7 +11,7 @@ func TestTimeValueFormatterWithFormat(t *testing.T) {
 	assert := assert.New(t)
 
 	d := time.Now()
-	di := TimeToFloat64(d)
+	di := Time.ToFloat64(d)
 	df := float64(di)
 
 	s := TimeValueFormatterWithFormat(d, DefaultDateFormat)

@@ -102,12 +102,12 @@ func (c Chart) Render(rp RendererProvider, w io.Writer) error {
 
 	if c.hasAxes() {
 		xt, yt, yta = c.getAxesTicks(r, xr, yr, yra, xf, yf, yfa)
-		canvasBox = c.getAxisAdjustedCanvasBox(r, canvasBox, xr, yr, yra, xt, yt, yta)
+		canvasBox = c.getAxesAdjustedCanvasBox(r, canvasBox, xr, yr, yra, xt, yt, yta)
 		xr, yr, yra = c.setRangeDomains(canvasBox, xr, yr, yra)
 
 		// do a second pass in case things haven't settled yet.
 		xt, yt, yta = c.getAxesTicks(r, xr, yr, yra, xf, yf, yfa)
-		canvasBox = c.getAxisAdjustedCanvasBox(r, canvasBox, xr, yr, yra, xt, yt, yta)
+		canvasBox = c.getAxesAdjustedCanvasBox(r, canvasBox, xr, yr, yra, xt, yt, yta)
 		xr, yr, yra = c.setRangeDomains(canvasBox, xr, yr, yra)
 	}
 
@@ -320,7 +320,7 @@ func (c Chart) getAxesTicks(r Renderer, xr, yr, yar Range, xf, yf, yfa ValueForm
 	return
 }
 
-func (c Chart) getAxisAdjustedCanvasBox(r Renderer, canvasBox Box, xr, yr, yra Range, xticks, yticks, yticksAlt []Tick) Box {
+func (c Chart) getAxesAdjustedCanvasBox(r Renderer, canvasBox Box, xr, yr, yra Range, xticks, yticks, yticksAlt []Tick) Box {
 	axesOuterBox := canvasBox.Clone()
 	if c.XAxis.Style.Show {
 		axesBounds := c.XAxis.Measure(r, canvasBox, xr, c.styleDefaultsAxes(), xticks)

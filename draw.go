@@ -140,6 +140,7 @@ func (d draw) HistogramSeries(r Renderer, canvasBox Box, xrange, yrange Range, s
 // MeasureAnnotation measures how big an annotation would be.
 func (d draw) MeasureAnnotation(r Renderer, canvasBox Box, style Style, lx, ly int, label string) Box {
 	style.WriteToRenderer(r)
+	defer r.ResetStyle()
 
 	textBox := r.MeasureText(label)
 	textWidth := textBox.Width()
@@ -168,6 +169,8 @@ func (d draw) MeasureAnnotation(r Renderer, canvasBox Box, style Style, lx, ly i
 // Annotation draws an anotation with a renderer.
 func (d draw) Annotation(r Renderer, canvasBox Box, style Style, lx, ly int, label string) {
 	style.GetTextOptions().WriteToRenderer(r)
+	defer r.ResetStyle()
+
 	textBox := r.MeasureText(label)
 	textWidth := textBox.Width()
 	halfTextHeight := textBox.Height() >> 1
@@ -209,7 +212,8 @@ func (d draw) Annotation(r Renderer, canvasBox Box, style Style, lx, ly int, lab
 
 // Box draws a box with a given style.
 func (d draw) Box(r Renderer, b Box, s Style) {
-	s.WriteToRenderer(r)
+	s.GetFillAndStrokeOptions().WriteToRenderer(r)
+	defer r.ResetStyle()
 
 	r.MoveTo(b.Left, b.Top)
 	r.LineTo(b.Right, b.Top)
@@ -219,18 +223,44 @@ func (d draw) Box(r Renderer, b Box, s Style) {
 	r.FillStroke()
 }
 
+func (d draw) BoxRotated(r Renderer, b Box, thetaDegrees float64, s Style) {
+	d.BoxCorners(r, b.Corners().Rotate(thetaDegrees), s)
+}
+
+func (d draw) BoxCorners(r Renderer, bc BoxCorners, s Style) {
+	s.GetFillAndStrokeOptions().WriteToRenderer(r)
+	defer r.ResetStyle()
+
+	r.MoveTo(bc.TopLeft.X, bc.TopLeft.Y)
+	r.LineTo(bc.TopRight.X, bc.TopRight.Y)
+	r.LineTo(bc.BottomRight.X, bc.BottomRight.Y)
+	r.LineTo(bc.BottomLeft.X, bc.BottomLeft.Y)
+	r.Close()
+	r.FillStroke()
+}
+
 // DrawText draws text with a given style.
 func (d draw) Text(r Renderer, text string, x, y int, style Style) {
 	style.GetTextOptions().WriteToRenderer(r)
+	defer r.ResetStyle()
+
 	r.Text(text, x, y)
+}
+
+func (d draw) MeasureText(r Renderer, text string, style Style) Box {
+	style.GetTextOptions().WriteToRenderer(r)
+	defer r.ResetStyle()
+
+	return r.MeasureText(text)
 }
 
 // TextWithin draws the text within a given box.
 func (d draw) TextWithin(r Renderer, text string, box Box, style Style) {
+	style.GetTextOptions().WriteToRenderer(r)
+	defer r.ResetStyle()
+
 	lines := Text.WrapFit(r, text, box.Width(), style)
 	linesBox := Text.MeasureLines(r, lines, style)
-
-	style.GetTextOptions().WriteToRenderer(r)
 
 	y := box.Top
 
@@ -252,7 +282,11 @@ func (d draw) TextWithin(r Renderer, text string, box Box, style Style) {
 		default:
 			tx = box.Left
 		}
-		ty = y + lineBox.Height()
+		if style.TextRotationDegrees == 0 {
+			ty = y + lineBox.Height()
+		} else {
+			ty = y
+		}
 
 		d.Text(r, line, tx, ty, style)
 		y += lineBox.Height() + style.GetTextLineSpacing()

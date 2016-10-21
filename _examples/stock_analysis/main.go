@@ -60,8 +60,8 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 		},
 	}
 
-	res.Header().Set("Content-Type", "image/svg+xml")
-	graph.Render(chart.SVG, res)
+	res.Header().Set("Content-Type", "image/png")
+	graph.Render(chart.PNG, res)
 }
 
 func xvalues() []time.Time {

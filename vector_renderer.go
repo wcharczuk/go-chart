@@ -32,9 +32,13 @@ type vectorRenderer struct {
 	b   *bytes.Buffer
 	c   *canvas
 	s   *Style
-	r   float64
 	p   []string
 	fc  *font.Drawer
+}
+
+func (vr *vectorRenderer) ResetStyle() {
+	vr.s = &Style{Font: vr.s.Font}
+	vr.fc = nil
 }
 
 // GetDPI returns the dpi.
@@ -168,18 +172,22 @@ func (vr *vectorRenderer) MeasureText(body string) (box Box) {
 
 		box.Right = w
 		box.Bottom = int(drawing.PointsToPixels(vr.dpi, vr.s.FontSize))
+		if vr.c.textTheta == nil {
+			return
+		}
+		box = box.Corners().Rotate(Math.RadiansToDegrees(*vr.c.textTheta)).Box()
 	}
 	return
 }
 
 // SetTextRotation sets the text rotation.
 func (vr *vectorRenderer) SetTextRotation(radians float64) {
-	vr.c.r = radians
+	vr.c.textTheta = &radians
 }
 
 // ClearTextRotation clears the text rotation.
 func (vr *vectorRenderer) ClearTextRotation() {
-	vr.c.r = 0
+	vr.c.textTheta = nil
 }
 
 // Save saves the renderer's contents to a writer.
@@ -196,11 +204,11 @@ func newCanvas(w io.Writer) *canvas {
 }
 
 type canvas struct {
-	w      io.Writer
-	dpi    float64
-	r      float64
-	width  int
-	height int
+	w         io.Writer
+	dpi       float64
+	textTheta *float64
+	width     int
+	height    int
 }
 
 func (c *canvas) Start(width, height int) {
@@ -218,10 +226,10 @@ func (c *canvas) Path(d string, style Style) {
 }
 
 func (c *canvas) Text(x, y int, body string, style Style) {
-	if c.r == 0 {
+	if c.textTheta == nil {
 		c.w.Write([]byte(fmt.Sprintf(`<text x="%d" y="%d" style="%s">%s</text>`, x, y, c.styleAsSVG(style), body)))
 	} else {
-		transform := fmt.Sprintf(` transform="rotate(%0.2f,%d,%d)"`, Math.RadiansToDegrees(c.r), x, y)
+		transform := fmt.Sprintf(` transform="rotate(%0.2f,%d,%d)"`, Math.RadiansToDegrees(*c.textTheta), x, y)
 		c.w.Write([]byte(fmt.Sprintf(`<text x="%d" y="%d" style="%s"%s>%s</text>`, x, y, c.styleAsSVG(style), transform, body)))
 	}
 }

@@ -30,14 +30,14 @@ func (ts TimeSeries) Len() int {
 
 // GetValue gets a value at a given index.
 func (ts TimeSeries) GetValue(index int) (x, y float64) {
-	x = TimeToFloat64(ts.XValues[index])
+	x = Time.ToFloat64(ts.XValues[index])
 	y = ts.YValues[index]
 	return
 }
 
 // GetLastValue gets the last value.
 func (ts TimeSeries) GetLastValue() (x, y float64) {
-	x = TimeToFloat64(ts.XValues[len(ts.XValues)-1])
+	x = Time.ToFloat64(ts.XValues[len(ts.XValues)-1])
 	y = ts.YValues[len(ts.YValues)-1]
 	return
 }

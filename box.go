@@ -1,6 +1,9 @@
 package chart
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 // Box represents the main 4 dimensions of a box.
 type Box struct {
@@ -76,8 +79,8 @@ func (b Box) Height() int {
 
 // Center returns the center of the box
 func (b Box) Center() (x, y int) {
-	w, h := b.Width(), b.Height()
-	return b.Left + w>>1, b.Top + h>>1
+	w2, h2 := b.Width()>>1, b.Height()>>1
+	return b.Left + w2, b.Top + h2
 }
 
 // Aspect returns the aspect ratio of the box.
@@ -136,6 +139,16 @@ func (b Box) Shift(x, y int) Box {
 		Left:   b.Left + x,
 		Right:  b.Right + x,
 		Bottom: b.Bottom + y,
+	}
+}
+
+// Corners returns the box as a set of corners.
+func (b Box) Corners() BoxCorners {
+	return BoxCorners{
+		TopLeft:     Point{b.Left, b.Top},
+		TopRight:    Point{b.Right, b.Top},
+		BottomRight: Point{b.Right, b.Bottom},
+		BottomLeft:  Point{b.Left, b.Bottom},
 	}
 }
 
@@ -218,4 +231,100 @@ func (b Box) OuterConstrain(bounds, other Box) Box {
 		newBox.Bottom = b.Bottom - delta
 	}
 	return newBox
+}
+
+// BoxCorners is a box with independent corners.
+type BoxCorners struct {
+	TopLeft, TopRight, BottomRight, BottomLeft Point
+}
+
+// Box return the BoxCorners as a regular box.
+func (bc BoxCorners) Box() Box {
+	return Box{
+		Top:    Math.MinInt(bc.TopLeft.Y, bc.TopRight.Y),
+		Left:   Math.MinInt(bc.TopLeft.X, bc.BottomLeft.X),
+		Right:  Math.MaxInt(bc.TopRight.X, bc.BottomRight.X),
+		Bottom: Math.MaxInt(bc.BottomLeft.Y, bc.BottomRight.Y),
+	}
+}
+
+// Width returns the width
+func (bc BoxCorners) Width() int {
+	minLeft := Math.MinInt(bc.TopLeft.X, bc.BottomLeft.X)
+	maxRight := Math.MaxInt(bc.TopRight.X, bc.BottomRight.X)
+	return maxRight - minLeft
+}
+
+// Height returns the height
+func (bc BoxCorners) Height() int {
+	minTop := Math.MinInt(bc.TopLeft.Y, bc.TopRight.Y)
+	maxBottom := Math.MaxInt(bc.BottomLeft.Y, bc.BottomRight.Y)
+	return maxBottom - minTop
+}
+
+// Center returns the center of the box
+func (bc BoxCorners) Center() (x, y int) {
+
+	left := Math.MeanInt(bc.TopLeft.X, bc.BottomLeft.X)
+	right := Math.MeanInt(bc.TopRight.X, bc.BottomRight.X)
+	x = ((right - left) >> 1) + left
+
+	top := Math.MeanInt(bc.TopLeft.Y, bc.TopRight.Y)
+	bottom := Math.MeanInt(bc.BottomLeft.Y, bc.BottomRight.Y)
+	y = ((bottom - top) >> 1) + top
+
+	return
+}
+
+// Rotate rotates the box.
+func (bc BoxCorners) Rotate(thetaDegrees float64) BoxCorners {
+	cx, cy := bc.Center()
+
+	thetaRadians := Math.DegreesToRadians(thetaDegrees)
+
+	tlx, tly := Math.RotateCoordinate(cx, cy, bc.TopLeft.X, bc.TopLeft.Y, thetaRadians)
+	trx, try := Math.RotateCoordinate(cx, cy, bc.TopRight.X, bc.TopRight.Y, thetaRadians)
+	brx, bry := Math.RotateCoordinate(cx, cy, bc.BottomRight.X, bc.BottomRight.Y, thetaRadians)
+	blx, bly := Math.RotateCoordinate(cx, cy, bc.BottomLeft.X, bc.BottomLeft.Y, thetaRadians)
+
+	return BoxCorners{
+		TopLeft:     Point{tlx, tly},
+		TopRight:    Point{trx, try},
+		BottomRight: Point{brx, bry},
+		BottomLeft:  Point{blx, bly},
+	}
+}
+
+// Equals returns if the box equals another box.
+func (bc BoxCorners) Equals(other BoxCorners) bool {
+	return bc.TopLeft.Equals(other.TopLeft) &&
+		bc.TopRight.Equals(other.TopRight) &&
+		bc.BottomRight.Equals(other.BottomRight) &&
+		bc.BottomLeft.Equals(other.BottomLeft)
+}
+
+func (bc BoxCorners) String() string {
+	return fmt.Sprintf("BoxC{%s,%s,%s,%s}", bc.TopLeft.String(), bc.TopRight.String(), bc.BottomRight.String(), bc.BottomLeft.String())
+}
+
+// Point is an X,Y pair
+type Point struct {
+	X, Y int
+}
+
+// DistanceTo calculates the distance to another point.
+func (p Point) DistanceTo(other Point) float64 {
+	dx := math.Pow(float64(p.X-other.X), 2)
+	dy := math.Pow(float64(p.Y-other.Y), 2)
+	return math.Pow(dx+dy, 0.5)
+}
+
+// Equals returns if a point equals another point.
+func (p Point) Equals(other Point) bool {
+	return p.X == other.X && p.Y == other.Y
+}
+
+// String returns a string representation of the point.
+func (p Point) String() string {
+	return fmt.Sprintf("P{%d,%d}", p.X, p.Y)
 }

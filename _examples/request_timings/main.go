@@ -2,23 +2,33 @@ package main
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
-	util "github.com/blendlabs/go-util"
 	"github.com/wcharczuk/go-chart"
 )
+
+func parseInt(str string) int {
+	v, _ := strconv.Atoi(str)
+	return v
+}
+
+func parseFloat64(str string) float64 {
+	v, _ := strconv.ParseFloat(str, 64)
+	return v
+}
 
 func readData() ([]time.Time, []float64) {
 	var xvalues []time.Time
 	var yvalues []float64
-	util.ReadFileByLines("requests.csv", func(line string) {
+	chart.File.ReadByLines("requests.csv", func(line string) {
 		parts := strings.Split(line, ",")
-		year := util.ParseInt(parts[0])
-		month := util.ParseInt(parts[1])
-		day := util.ParseInt(parts[2])
-		hour := util.ParseInt(parts[3])
-		elapsedMillis := util.ParseFloat64(parts[4])
+		year := parseInt(parts[0])
+		month := parseInt(parts[1])
+		day := parseInt(parts[2])
+		hour := parseInt(parts[3])
+		elapsedMillis := parseFloat64(parts[4])
 		xvalues = append(xvalues, time.Date(year, time.Month(month), day, hour, 0, 0, 0, time.UTC))
 		yvalues = append(yvalues, elapsedMillis)
 	})
@@ -27,12 +37,12 @@ func readData() ([]time.Time, []float64) {
 
 func releases() []chart.GridLine {
 	return []chart.GridLine{
-		{Value: chart.TimeToFloat64(time.Date(2016, 8, 1, 9, 30, 0, 0, time.UTC))},
-		{Value: chart.TimeToFloat64(time.Date(2016, 8, 2, 9, 30, 0, 0, time.UTC))},
-		{Value: chart.TimeToFloat64(time.Date(2016, 8, 3, 9, 30, 0, 0, time.UTC))},
-		{Value: chart.TimeToFloat64(time.Date(2016, 8, 4, 9, 30, 0, 0, time.UTC))},
-		{Value: chart.TimeToFloat64(time.Date(2016, 8, 5, 9, 30, 0, 0, time.UTC))},
-		{Value: chart.TimeToFloat64(time.Date(2016, 8, 6, 9, 30, 0, 0, time.UTC))},
+		{Value: chart.Time.ToFloat64(time.Date(2016, 8, 1, 9, 30, 0, 0, time.UTC))},
+		{Value: chart.Time.ToFloat64(time.Date(2016, 8, 2, 9, 30, 0, 0, time.UTC))},
+		{Value: chart.Time.ToFloat64(time.Date(2016, 8, 3, 9, 30, 0, 0, time.UTC))},
+		{Value: chart.Time.ToFloat64(time.Date(2016, 8, 4, 9, 30, 0, 0, time.UTC))},
+		{Value: chart.Time.ToFloat64(time.Date(2016, 8, 5, 9, 30, 0, 0, time.UTC))},
+		{Value: chart.Time.ToFloat64(time.Date(2016, 8, 6, 9, 30, 0, 0, time.UTC))},
 	}
 }
 
@@ -81,9 +91,14 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 			Name:      "Elapsed Millis",
 			NameStyle: chart.StyleShow(),
 			Style:     chart.StyleShow(),
+			TickStyle: chart.Style{
+				TextRotationDegrees: 45.0,
+			},
 		},
 		XAxis: chart.XAxis{
-			Style:          chart.StyleShow(),
+			Style: chart.Style{
+				Show: true,
+			},
 			ValueFormatter: chart.TimeHourValueFormatter,
 			GridMajorStyle: chart.Style{
 				Show:        true,
