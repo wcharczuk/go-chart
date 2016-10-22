@@ -7,6 +7,7 @@ import (
 	"image/png"
 )
 
+// RGBACollector is a render target for a chart.
 type RGBACollector interface {
 	SetRGBA(i *image.RGBA)
 }
