@@ -10,7 +10,10 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 
 	/*
 	   The below will draw the same chart as the `basic` example, except with both the x and y axes turned on.
-	   In this case, both the x and y axis ticks are generated automatically, the x and y ranges are established automatically, the canvas "box" is adjusted to fit the space the axes occupy so as not to clip.
+	   In this case, both the x and y axis ticks are generated automatically, the x and y ranges are established automatically,
+	   the canvas "box" is adjusted to fit the space the axes occupy so as not to clip.
+	   Additionally, it shows how you can use the "Descending" property of continuous ranges to change the ordering of
+	   how values (including ticks) are drawn.
 	*/
 
 	graph := chart.Chart{
