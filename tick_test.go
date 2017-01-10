@@ -42,9 +42,10 @@ func TestGenerateContinuousTicksDescending(t *testing.T) {
 	r.SetFont(f)
 
 	ra := &ContinuousRange{
-		Min:    10.0,
-		Max:    0.0,
-		Domain: 256,
+		Min:        0.0,
+		Max:        10.0,
+		Domain:     256,
+		Descending: true,
 	}
 
 	vf := FloatValueFormatter
@@ -53,5 +54,7 @@ func TestGenerateContinuousTicksDescending(t *testing.T) {
 	assert.NotEmpty(ticks)
 	assert.Len(ticks, 11)
 	assert.Equal(10.0, ticks[0].Value)
+	assert.Equal(9.0, ticks[1].Value)
+	assert.Equal(1.0, ticks[len(ticks)-2].Value)
 	assert.Equal(0.0, ticks[len(ticks)-1].Value)
 }

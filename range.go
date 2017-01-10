@@ -36,6 +36,8 @@ type Range interface {
 	GetDomain() int
 	SetDomain(domain int)
 
+	IsDescending() bool
+
 	// Translate the range to the domain.
 	Translate(value float64) int
 }

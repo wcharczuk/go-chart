@@ -18,7 +18,13 @@ type MarketHoursRange struct {
 
 	ValueFormatter ValueFormatter
 
-	Domain int
+	Descending bool
+	Domain     int
+}
+
+// IsDescending returns if the range is descending.
+func (mhr MarketHoursRange) IsDescending() bool {
+	return mhr.Descending
 }
 
 // GetTimezone returns the timezone for the market hours range.
