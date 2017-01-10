@@ -2,6 +2,7 @@ package chart
 
 import (
 	"errors"
+	"image"
 	"io"
 	"math"
 
@@ -130,6 +131,72 @@ func (c Chart) Render(rp RendererProvider, w io.Writer) error {
 	}
 
 	return r.Save(w)
+}
+
+// ToImage renders the chart with the given renderer to the given io.Writer.
+func (c Chart) ToImage(r Renderer) (image.Image, error) {
+	imager, ok := r.(Imager)
+	if !ok {
+		return nil, errors.New("Renderer does not support ToImage")
+	}
+
+	if len(c.Series) == 0 {
+		return nil, errors.New("Please provide at least one series")
+	}
+	c.YAxisSecondary.AxisType = YAxisSecondary
+
+	if c.Font == nil {
+		defaultFont, err := GetDefaultFont()
+		if err != nil {
+			return nil, err
+		}
+		c.defaultFont = defaultFont
+	}
+	r.SetDPI(c.GetDPI(DefaultDPI))
+
+	c.drawBackground(r)
+
+	var xt, yt, yta []Tick
+	xr, yr, yra := c.getRanges()
+	canvasBox := c.getDefaultCanvasBox()
+	xf, yf, yfa := c.getValueFormatters()
+	xr, yr, yra = c.setRangeDomains(canvasBox, xr, yr, yra)
+
+	err := c.checkRanges(xr, yr, yra)
+	if err != nil {
+		return nil, err
+	}
+
+	if c.hasAxes() {
+		xt, yt, yta = c.getAxesTicks(r, xr, yr, yra, xf, yf, yfa)
+		canvasBox = c.getAxisAdjustedCanvasBox(r, canvasBox, xr, yr, yra, xt, yt, yta)
+		xr, yr, yra = c.setRangeDomains(canvasBox, xr, yr, yra)
+
+		// do a second pass in case things haven't settled yet.
+		xt, yt, yta = c.getAxesTicks(r, xr, yr, yra, xf, yf, yfa)
+		canvasBox = c.getAxisAdjustedCanvasBox(r, canvasBox, xr, yr, yra, xt, yt, yta)
+		xr, yr, yra = c.setRangeDomains(canvasBox, xr, yr, yra)
+	}
+
+	if c.hasAnnotationSeries() {
+		canvasBox = c.getAnnotationAdjustedCanvasBox(r, canvasBox, xr, yr, yra, xf, yf, yfa)
+		xr, yr, yra = c.setRangeDomains(canvasBox, xr, yr, yra)
+		xt, yt, yta = c.getAxesTicks(r, xr, yr, yra, xf, yf, yfa)
+	}
+
+	c.drawCanvas(r, canvasBox)
+	c.drawAxes(r, canvasBox, xr, yr, yra, xt, yt, yta)
+	for index, series := range c.Series {
+		c.drawSeries(r, canvasBox, xr, yr, yra, series, index)
+	}
+
+	c.drawTitle(r)
+
+	for _, a := range c.Elements {
+		a(r, canvasBox, c.styleDefaultsElements())
+	}
+
+	return imager.ToImage(), nil
 }
 
 func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
