@@ -56,7 +56,7 @@ func (r *ContinuousRange) SetDomain(domain int) {
 
 // String returns a simple string for the ContinuousRange.
 func (r ContinuousRange) String() string {
-	return fmt.Sprintf("ContinuousRange [%.2f,%.2f] => %d", r.Min, r.Max, r.Domain)
+	return fmt.Sprintf("ContinuousRange [%.2f,%.2f] => %f", r.Min, r.Max, r.Domain)
 }
 
 // Translate maps a given value into the ContinuousRange space.

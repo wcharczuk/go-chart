@@ -49,17 +49,18 @@ func GenerateContinuousTicks(r Renderer, ra Range, isVertical bool, style Style,
 	style.GetTextOptions().WriteToRenderer(r)
 	labelBox := r.MeasureText(minLabel)
 
-	var tickSize int
+	var tickSize float64
 	if isVertical {
-		tickSize = labelBox.Height() + DefaultMinimumTickVerticalSpacing
+		tickSize = float64(labelBox.Height() + DefaultMinimumTickVerticalSpacing)
 	} else {
-		tickSize = labelBox.Width() + DefaultMinimumTickHorizontalSpacing
+		tickSize = float64(labelBox.Width() + DefaultMinimumTickHorizontalSpacing)
 	}
 
-	domainRemainder := (ra.GetDomain()) - (tickSize * 2)
+	domain := float64(ra.GetDomain())
+	domainRemainder := domain - (tickSize * 2)
 	intermediateTickCount := int(math.Floor(float64(domainRemainder) / float64(tickSize)))
 
-	rangeDelta := max - min
+	rangeDelta := math.Abs(max - min)
 	tickStep := rangeDelta / float64(intermediateTickCount)
 
 	roundTo := Math.GetRoundToForDelta(rangeDelta) / 10

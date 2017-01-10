@@ -25,12 +25,15 @@ const (
 // Axis is a chart feature detailing what values happen where.
 type Axis interface {
 	GetName() string
+	SetName(name string)
+
 	GetStyle() Style
+	SetStyle(style Style)
 
 	GetTicks() []Tick
 	GenerateTicks(r Renderer, ra Range, vf ValueFormatter) []Tick
 
-	// GetGridLines returns the gridlines for the axis.
+	// GenerateGridLines returns the gridlines for the axis.
 	GetGridLines(ticks []Tick) []GridLine
 
 	// Measure should return an absolute box for the axis.

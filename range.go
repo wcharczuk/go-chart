@@ -20,7 +20,7 @@ type Stringable interface {
 	String() string
 }
 
-// Range is a
+// Range is a common interface for a range of values.
 type Range interface {
 	Stringable
 	IsZeroable
