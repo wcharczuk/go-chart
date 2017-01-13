@@ -34,6 +34,28 @@ func TestBarChartRender(t *testing.T) {
 	assert.NotZero(buf.Len())
 }
 
+func TestBarChartRenderZero(t *testing.T) {
+	assert := assert.New(t)
+
+	bc := BarChart{
+		Width:      1024,
+		Title:      "Test Title",
+		TitleStyle: StyleShow(),
+		XAxis:      StyleShow(),
+		YAxis: YAxis{
+			Style: StyleShow(),
+		},
+		Bars: []Value{
+			{Value: 0.0, Label: "One"},
+			{Value: 0.0, Label: "Two"},
+		},
+	}
+
+	buf := bytes.NewBuffer([]byte{})
+	err := bc.Render(PNG, buf)
+	assert.NotNil(err)
+}
+
 func TestBarChartProps(t *testing.T) {
 	assert := assert.New(t)
 
