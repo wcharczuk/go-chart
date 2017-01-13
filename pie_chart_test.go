@@ -29,3 +29,41 @@ func TestPieChart(t *testing.T) {
 	pie.Render(PNG, b)
 	assert.NotZero(b.Len())
 }
+
+func TestPieChartDropsZeroValues(t *testing.T) {
+	assert := assert.New(t)
+
+	pie := PieChart{
+		Canvas: Style{
+			FillColor: ColorLightGray,
+		},
+		Values: []Value{
+			{Value: 5, Label: "Blue"},
+			{Value: 5, Label: "Green"},
+			{Value: 0, Label: "Gray"},
+		},
+	}
+
+	b := bytes.NewBuffer([]byte{})
+	err := pie.Render(PNG, b)
+	assert.Nil(err)
+}
+
+func TestPieChartAllZeroValues(t *testing.T) {
+	assert := assert.New(t)
+
+	pie := PieChart{
+		Canvas: Style{
+			FillColor: ColorLightGray,
+		},
+		Values: []Value{
+			{Value: 0, Label: "Blue"},
+			{Value: 0, Label: "Green"},
+			{Value: 0, Label: "Gray"},
+		},
+	}
+
+	b := bytes.NewBuffer([]byte{})
+	err := pie.Render(PNG, b)
+	assert.NotNil(err)
+}
