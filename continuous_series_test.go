@@ -1,6 +1,7 @@
 package chart
 
 import (
+	"fmt"
 	"testing"
 
 	assert "github.com/blendlabs/go-assert"
@@ -28,4 +29,21 @@ func TestContinuousSeries(t *testing.T) {
 	xn, yn = cs.GetLastValue()
 	assert.Equal(10.0, xn)
 	assert.Equal(10.0, yn)
+}
+
+func TestContinuousSeriesValueFormatter(t *testing.T) {
+	assert := assert.New(t)
+
+	cs := ContinuousSeries{
+		XValueFormatter: func(v interface{}) string {
+			return fmt.Sprintf("%f foo", v)
+		},
+		YValueFormatter: func(v interface{}) string {
+			return fmt.Sprintf("%f bar", v)
+		},
+	}
+
+	xf, yf := cs.GetValueFormatters()
+	assert.Equal("0.100000 foo", xf(0.1))
+	assert.Equal("0.100000 bar", yf(0.1))
 }

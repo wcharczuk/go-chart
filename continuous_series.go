@@ -7,6 +7,9 @@ type ContinuousSeries struct {
 
 	YAxis YAxisType
 
+	XValueFormatter ValueFormatter
+	YValueFormatter ValueFormatter
+
 	XValues []float64
 	YValues []float64
 }
@@ -38,8 +41,16 @@ func (cs ContinuousSeries) GetLastValue() (float64, float64) {
 
 // GetValueFormatters returns value formatter defaults for the series.
 func (cs ContinuousSeries) GetValueFormatters() (x, y ValueFormatter) {
-	x = FloatValueFormatter
-	y = FloatValueFormatter
+	if cs.XValueFormatter != nil {
+		x = cs.XValueFormatter
+	} else {
+		x = FloatValueFormatter
+	}
+	if cs.YValueFormatter != nil {
+		y = cs.YValueFormatter
+	} else {
+		y = FloatValueFormatter
+	}
 	return
 }
 
