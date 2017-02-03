@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/wcharczuk/go-chart"
@@ -18,6 +19,12 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 		XAxis: chart.XAxis{
 			Style: chart.Style{
 				Show: true, //enables / displays the x-axis
+			},
+			TickPosition: chart.TickPositionBetweenTicks,
+			ValueFormatter: func(v interface{}) string {
+				typed := v.(float64)
+				typedDate := chart.Time.FromFloat64(typed)
+				return fmt.Sprintf("%d-%d\n%d", typedDate.Month(), typedDate.Day(), typedDate.Year())
 			},
 		},
 		YAxis: chart.YAxis{
