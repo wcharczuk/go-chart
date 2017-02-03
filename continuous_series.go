@@ -1,5 +1,7 @@
 package chart
 
+import "fmt"
+
 // ContinuousSeries represents a line on a chart.
 type ContinuousSeries struct {
 	Name  string
@@ -63,4 +65,16 @@ func (cs ContinuousSeries) GetYAxis() YAxisType {
 func (cs ContinuousSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
 	style := cs.Style.InheritFrom(defaults)
 	Draw.LineSeries(r, canvasBox, xrange, yrange, style, cs)
+}
+
+// Validate validates the series.
+func (cs ContinuousSeries) Validate() error {
+	if len(cs.XValues) == 0 {
+		return fmt.Errorf("continuous series must have xvalues set")
+	}
+
+	if len(cs.YValues) == 0 {
+		return fmt.Errorf("continuous series must have yvalues set")
+	}
+	return nil
 }

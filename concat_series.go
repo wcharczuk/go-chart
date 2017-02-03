@@ -30,3 +30,15 @@ func (cs ConcatSeries) GetValue(index int) (x, y float64) {
 	}
 	return
 }
+
+// Validate validates the series.
+func (cs ConcatSeries) Validate() error {
+	var err error
+	for _, s := range cs {
+		err = s.Validate()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}

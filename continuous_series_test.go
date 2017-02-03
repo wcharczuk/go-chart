@@ -47,3 +47,26 @@ func TestContinuousSeriesValueFormatter(t *testing.T) {
 	assert.Equal("0.100000 foo", xf(0.1))
 	assert.Equal("0.100000 bar", yf(0.1))
 }
+
+func TestContinuousSeriesValidate(t *testing.T) {
+	assert := assert.New(t)
+
+	cs := ContinuousSeries{
+		Name:    "Test Series",
+		XValues: Sequence.Float64(1.0, 10.0),
+		YValues: Sequence.Float64(1.0, 10.0),
+	}
+	assert.Nil(cs.Validate())
+
+	cs = ContinuousSeries{
+		Name:    "Test Series",
+		XValues: Sequence.Float64(1.0, 10.0),
+	}
+	assert.NotNil(cs.Validate())
+
+	cs = ContinuousSeries{
+		Name:    "Test Series",
+		YValues: Sequence.Float64(1.0, 10.0),
+	}
+	assert.NotNil(cs.Validate())
+}

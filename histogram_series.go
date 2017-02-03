@@ -1,5 +1,7 @@
 package chart
 
+import "fmt"
+
 // HistogramSeries is a special type of series that draws as a histogram.
 // Some peculiarities; it will always be lower bounded at 0 (at the very least).
 // This may alter ranges a bit and generally you want to put a histogram series on it's own y-axis.
@@ -54,4 +56,12 @@ func (hs HistogramSeries) GetBoundedValue(index int) (x, y1, y2 float64) {
 func (hs HistogramSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
 	style := hs.Style.InheritFrom(defaults)
 	Draw.HistogramSeries(r, canvasBox, xrange, yrange, style, hs)
+}
+
+// Validate validates the series.
+func (hs HistogramSeries) Validate() error {
+	if hs.InnerSeries == nil {
+		return fmt.Errorf("histogram series requires InnerSeries to be set")
+	}
+	return nil
 }

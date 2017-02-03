@@ -66,7 +66,7 @@ func (pc PieChart) GetHeight() int {
 // Render renders the chart with the given renderer to the given io.Writer.
 func (pc PieChart) Render(rp RendererProvider, w io.Writer) error {
 	if len(pc.Values) == 0 {
-		return errors.New("Please provide at least one value.")
+		return errors.New("please provide at least one value")
 	}
 
 	r, err := rp(pc.GetWidth(), pc.GetHeight())

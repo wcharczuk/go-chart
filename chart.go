@@ -132,6 +132,17 @@ func (c Chart) Render(rp RendererProvider, w io.Writer) error {
 	return r.Save(w)
 }
 
+func (c Chart) validateSeries() error {
+	var err error
+	for _, s := range c.Series {
+		err = s.Validate()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 	var minx, maxx float64 = math.MaxFloat64, -math.MaxFloat64
 	var miny, maxy float64 = math.MaxFloat64, -math.MaxFloat64

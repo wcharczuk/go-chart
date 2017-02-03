@@ -1,5 +1,7 @@
 package chart
 
+import "fmt"
+
 const (
 	// DefaultMACDPeriodPrimary is the long window.
 	DefaultMACDPeriodPrimary = 26
@@ -286,4 +288,12 @@ func (macdl *MACDLineSeries) ensureEMASeries() {
 func (macdl *MACDLineSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
 	style := macdl.Style.InheritFrom(defaults)
 	Draw.LineSeries(r, canvasBox, xrange, yrange, style, macdl)
+}
+
+// Validate validates the series.
+func (macdl *MACDLineSeries) Validate() error {
+	if macdl.InnerSeries == nil {
+		return fmt.Errorf("macd line series requires InnerSeries to be set")
+	}
+	return nil
 }

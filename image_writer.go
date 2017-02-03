@@ -38,5 +38,5 @@ func (ir *ImageWriter) Image() (image.Image, error) {
 	if ir.contents != nil && ir.contents.Len() > 0 {
 		return png.Decode(ir.contents)
 	}
-	return nil, errors.New("No valid sources for image data, cannot continue.")
+	return nil, errors.New("no valid sources for image data, cannot continue")
 }

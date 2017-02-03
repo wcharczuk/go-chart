@@ -94,7 +94,7 @@ func (sbc StackedBarChart) GetBarSpacing() int {
 // Render renders the chart with the given renderer to the given io.Writer.
 func (sbc StackedBarChart) Render(rp RendererProvider, w io.Writer) error {
 	if len(sbc.Bars) == 0 {
-		return errors.New("Please provide at least one bar.")
+		return errors.New("please provide at least one bar")
 	}
 
 	r, err := rp(sbc.GetWidth(), sbc.GetHeight())

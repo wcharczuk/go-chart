@@ -1,5 +1,7 @@
 package chart
 
+import "fmt"
+
 // LinearRegressionSeries is a series that plots the n-nearest neighbors
 // linear regression for the values.
 type LinearRegressionSeries struct {
@@ -129,4 +131,12 @@ func (lrs *LinearRegressionSeries) computeCoefficients() {
 func (lrs *LinearRegressionSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
 	style := lrs.Style.InheritFrom(defaults)
 	Draw.LineSeries(r, canvasBox, xrange, yrange, style, lrs)
+}
+
+// Validate validates the series.
+func (lrs *LinearRegressionSeries) Validate() error {
+	if lrs.InnerSeries == nil {
+		return fmt.Errorf("linear regression series requires InnerSeries to be set")
+	}
+	return nil
 }

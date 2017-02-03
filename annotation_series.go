@@ -1,6 +1,9 @@
 package chart
 
-import "math"
+import (
+	"fmt"
+	"math"
+)
 
 // AnnotationSeries is a series of labels on the chart.
 type AnnotationSeries struct {
@@ -72,4 +75,12 @@ func (as AnnotationSeries) Render(r Renderer, canvasBox Box, xrange, yrange Rang
 			Draw.Annotation(r, canvasBox, style, lx, ly, a.Label)
 		}
 	}
+}
+
+// Validate validates the series.
+func (as AnnotationSeries) Validate() error {
+	if len(as.Annotations) == 0 {
+		return fmt.Errorf("annotation series requires annotations to be set and not empty")
+	}
+	return nil
 }
