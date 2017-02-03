@@ -398,3 +398,29 @@ func TestChartRegressionBadRangesByUser(t *testing.T) {
 	c.Render(PNG, buffer)
 	assert.True(true, "Render needs to finish.")
 }
+
+func TestChartValidatesSeries(t *testing.T) {
+	assert := assert.New(t)
+
+	c := Chart{
+		Series: []Series{
+			ContinuousSeries{
+				XValues: Sequence.Float64(1.0, 10.0),
+				YValues: Sequence.Float64(1.0, 10.0),
+			},
+		},
+	}
+
+	assert.Nil(c.validateSeries())
+
+	c = Chart{
+		Series: []Series{
+			ContinuousSeries{
+				XValues: Sequence.Float64(1.0, 10.0),
+			},
+		},
+	}
+
+	assert.NotNil(c.validateSeries())
+
+}
