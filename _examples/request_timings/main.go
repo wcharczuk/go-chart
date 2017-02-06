@@ -40,7 +40,7 @@ func releases() []chart.GridLine {
 	return []chart.GridLine{
 		{Value: chart.Time.ToFloat64(time.Date(2016, 8, 1, 9, 30, 0, 0, time.UTC))},
 		{Value: chart.Time.ToFloat64(time.Date(2016, 8, 2, 9, 30, 0, 0, time.UTC))},
-		{Value: chart.Time.ToFloat64(time.Date(2016, 8, 3, 9, 30, 0, 0, time.UTC))},
+		{Value: chart.Time.ToFloat64(time.Date(2016, 8, 2, 15, 30, 0, 0, time.UTC))},
 		{Value: chart.Time.ToFloat64(time.Date(2016, 8, 4, 9, 30, 0, 0, time.UTC))},
 		{Value: chart.Time.ToFloat64(time.Date(2016, 8, 5, 9, 30, 0, 0, time.UTC))},
 		{Value: chart.Time.ToFloat64(time.Date(2016, 8, 6, 9, 30, 0, 0, time.UTC))},
