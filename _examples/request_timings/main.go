@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -93,6 +94,9 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 			Style:     chart.StyleShow(),
 			TickStyle: chart.Style{
 				TextRotationDegrees: 45.0,
+			},
+			ValueFormatter: func(v interface{}) string {
+				return fmt.Sprintf("%d ms", int(v.(float64)))
 			},
 		},
 		XAxis: chart.XAxis{
