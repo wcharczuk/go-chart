@@ -208,18 +208,6 @@ func (d date) IsNASDAQHoliday(t time.Time) bool {
 	return d.IsNYSEHoliday(t)
 }
 
-// Eastern returns the eastern timezone.
-func (d date) Eastern() *time.Location {
-	if _eastern == nil {
-		_easternLock.Lock()
-		defer _easternLock.Unlock()
-		if _eastern == nil {
-			_eastern, _ = time.LoadLocation("America/New_York")
-		}
-	}
-	return _eastern
-}
-
 // Time returns a new time.Time for the given clock components.
 func (d date) Time(hour, min, sec, nsec int, loc *time.Location) time.Time {
 	return time.Date(0, 0, 0, hour, min, sec, nsec, loc)
