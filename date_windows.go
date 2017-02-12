@@ -10,7 +10,7 @@ func (d date) Eastern() *time.Location {
 		_easternLock.Lock()
 		defer _easternLock.Unlock()
 		if _eastern == nil {
-			_eastern, _ = time.LoadLocation("Eastern Standard Time")
+			_eastern, _ = time.LoadLocation("EST")
 		}
 	}
 	return _eastern
