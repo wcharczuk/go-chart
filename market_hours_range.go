@@ -96,7 +96,7 @@ func (mhr MarketHoursRange) GetHolidayProvider() HolidayProvider {
 // GetMarketOpen returns the market open time.
 func (mhr MarketHoursRange) GetMarketOpen() time.Time {
 	if mhr.MarketOpen.IsZero() {
-		return NYSEOpen
+		return NYSEOpen()
 	}
 	return mhr.MarketOpen
 }
@@ -104,7 +104,7 @@ func (mhr MarketHoursRange) GetMarketOpen() time.Time {
 // GetMarketClose returns the market close time.
 func (mhr MarketHoursRange) GetMarketClose() time.Time {
 	if mhr.MarketClose.IsZero() {
-		return NYSEClose
+		return NYSEClose()
 	}
 	return mhr.MarketClose
 }

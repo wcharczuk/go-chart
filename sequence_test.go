@@ -21,7 +21,7 @@ func TestSequenceMarketHours(t *testing.T) {
 	assert := assert.New(t)
 
 	today := time.Date(2016, 07, 01, 12, 0, 0, 0, Date.Eastern())
-	mh := Sequence.MarketHours(today, today, NYSEOpen, NYSEClose, Date.IsNYSEHoliday)
+	mh := Sequence.MarketHours(today, today, NYSEOpen(), NYSEClose(), Date.IsNYSEHoliday)
 	assert.Len(mh, 8)
 	assert.Equal(Date.Eastern(), mh[0].Location())
 }
@@ -29,7 +29,7 @@ func TestSequenceMarketHours(t *testing.T) {
 func TestSequenceMarketQuarters(t *testing.T) {
 	assert := assert.New(t)
 	today := time.Date(2016, 07, 01, 12, 0, 0, 0, Date.Eastern())
-	mh := Sequence.MarketHourQuarters(today, today, NYSEOpen, NYSEClose, Date.IsNYSEHoliday)
+	mh := Sequence.MarketHourQuarters(today, today, NYSEOpen(), NYSEClose(), Date.IsNYSEHoliday)
 	assert.Len(mh, 4)
 	assert.Equal(9, mh[0].Hour())
 	assert.Equal(30, mh[0].Minute())

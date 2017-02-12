@@ -13,8 +13,8 @@ func TestMarketHoursRangeGetDelta(t *testing.T) {
 	r := &MarketHoursRange{
 		Min:             time.Date(2016, 07, 19, 9, 30, 0, 0, Date.Eastern()),
 		Max:             time.Date(2016, 07, 22, 16, 00, 0, 0, Date.Eastern()),
-		MarketOpen:      NYSEOpen,
-		MarketClose:     NYSEClose,
+		MarketOpen:      NYSEOpen(),
+		MarketClose:     NYSEClose(),
 		HolidayProvider: Date.IsNYSEHoliday,
 	}
 
@@ -27,8 +27,8 @@ func TestMarketHoursRangeTranslate(t *testing.T) {
 	r := &MarketHoursRange{
 		Min:             time.Date(2016, 07, 18, 9, 30, 0, 0, Date.Eastern()),
 		Max:             time.Date(2016, 07, 22, 16, 00, 0, 0, Date.Eastern()),
-		MarketOpen:      NYSEOpen,
-		MarketClose:     NYSEClose,
+		MarketOpen:      NYSEOpen(),
+		MarketClose:     NYSEClose(),
 		HolidayProvider: Date.IsNYSEHoliday,
 		Domain:          1000,
 	}
@@ -56,10 +56,10 @@ func TestMarketHoursRangeGetTicks(t *testing.T) {
 	}
 
 	ra := &MarketHoursRange{
-		Min:             Date.On(NYSEOpen, Date.Date(2016, 07, 18, Date.Eastern())),
-		Max:             Date.On(NYSEClose, Date.Date(2016, 07, 22, Date.Eastern())),
-		MarketOpen:      NYSEOpen,
-		MarketClose:     NYSEClose,
+		Min:             Date.On(NYSEOpen(), Date.Date(2016, 07, 18, Date.Eastern())),
+		Max:             Date.On(NYSEClose(), Date.Date(2016, 07, 22, Date.Eastern())),
+		MarketOpen:      NYSEOpen(),
+		MarketClose:     NYSEClose(),
 		HolidayProvider: Date.IsNYSEHoliday,
 		Domain:          1024,
 	}

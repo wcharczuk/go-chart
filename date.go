@@ -50,25 +50,23 @@ var (
 	_eastern     *time.Location
 )
 
-var (
-	// NYSEOpen is when the NYSE opens.
-	NYSEOpen = Date.Time(9, 30, 0, 0, Date.Eastern())
+// NYSEOpen is when the NYSE opens.
+func NYSEOpen() time.Time { return Date.Time(9, 30, 0, 0, Date.Eastern()) }
 
-	// NYSEClose is when the NYSE closes.
-	NYSEClose = Date.Time(16, 0, 0, 0, Date.Eastern())
+// NYSEClose is when the NYSE closes.
+func NYSEClose() time.Time { return Date.Time(16, 0, 0, 0, Date.Eastern()) }
 
-	// NASDAQOpen is when NASDAQ opens.
-	NASDAQOpen = Date.Time(9, 30, 0, 0, Date.Eastern())
+// NASDAQOpen is when NASDAQ opens.
+func NASDAQOpen() time.Time { return Date.Time(9, 30, 0, 0, Date.Eastern()) }
 
-	// NASDAQClose is when NASDAQ closes.
-	NASDAQClose = Date.Time(16, 0, 0, 0, Date.Eastern())
+// NASDAQClose is when NASDAQ closes.
+func NASDAQClose() time.Time { return Date.Time(16, 0, 0, 0, Date.Eastern()) }
 
-	// NYSEArcaOpen is when NYSEARCA opens.
-	NYSEArcaOpen = Date.Time(4, 0, 0, 0, Date.Eastern())
+// NYSEArcaOpen is when NYSEARCA opens.
+func NYSEArcaOpen() time.Time { return Date.Time(4, 0, 0, 0, Date.Eastern()) }
 
-	// NYSEArcaClose is when NYSEARCA closes.
-	NYSEArcaClose = Date.Time(20, 0, 0, 0, Date.Eastern())
-)
+// NYSEArcaClose is when NYSEARCA closes.
+func NYSEArcaClose() time.Time { return Date.Time(20, 0, 0, 0, Date.Eastern()) }
 
 // HolidayProvider is a function that returns if a given time falls on a holiday.
 type HolidayProvider func(time.Time) bool
