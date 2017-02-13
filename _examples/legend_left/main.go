@@ -65,13 +65,13 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 			},
 
 			chart.ContinuousSeries{
-				Name:    "Free Yourself",
+				Name:    "Moo Bar",
 				XValues: []float64{1.0, 2.0, 3.0, 4.0, 5.0},
 				YValues: []float64{1.0, 2.0, 3.0, 4.0, 5.0},
 			},
 
 			chart.ContinuousSeries{
-				Name:    "Wheres Ja?",
+				Name:    "Zoo Bar Baz",
 				XValues: []float64{1.0, 2.0, 3.0, 4.0, 5.0},
 				YValues: []float64{1.0, 2.0, 3.0, 4.0, 5.0},
 			},
