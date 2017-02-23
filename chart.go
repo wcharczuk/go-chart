@@ -97,6 +97,8 @@ func (c Chart) Render(rp RendererProvider, w io.Writer) error {
 
 	err = c.checkRanges(xr, yr, yra)
 	if err != nil {
+		// (try to) dump the raw background to the stream.
+		r.Save(w)
 		return err
 	}
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/wcharczuk/go-chart"
@@ -38,5 +39,5 @@ func drawChartWide(res http.ResponseWriter, req *http.Request) {
 func main() {
 	http.HandleFunc("/", drawChart)
 	http.HandleFunc("/wide", drawChartWide)
-	http.ListenAndServe(":8080", nil)
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
