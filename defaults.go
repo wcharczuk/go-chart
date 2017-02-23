@@ -105,7 +105,7 @@ var (
 	ColorAlternateLightGray = drawing.Color{R: 187, G: 190, B: 191, A: 255}
 
 	// ColorTransparent is a transparent (alpha zero) color.
-	ColorTransparent = drawing.Color{R: 0, G: 0, B: 0, A: 0}
+	ColorTransparent = drawing.Color{R: 1, G: 1, B: 1, A: 0}
 )
 
 var (
