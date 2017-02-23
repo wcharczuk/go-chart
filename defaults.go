@@ -33,6 +33,11 @@ const (
 	// DefaultTitleTop is the default distance from the top of the chart to put the title.
 	DefaultTitleTop = 10
 
+	// DefaultBackgroundStrokeWidth is the default stroke on the chart background.
+	DefaultBackgroundStrokeWidth = 0.0
+	// DefaultCanvasStrokeWidth is the default stroke on the chart canvas.
+	DefaultCanvasStrokeWidth = 0.0
+
 	// DefaultLineSpacing is the default vertical distance between lines of text.
 	DefaultLineSpacing = 5
 

@@ -463,7 +463,7 @@ func (c Chart) styleDefaultsBackground() Style {
 	return Style{
 		FillColor:   DefaultBackgroundColor,
 		StrokeColor: DefaultBackgroundStrokeColor,
-		StrokeWidth: DefaultStrokeWidth,
+		StrokeWidth: DefaultBackgroundStrokeWidth,
 	}
 }
 
@@ -471,7 +471,7 @@ func (c Chart) styleDefaultsCanvas() Style {
 	return Style{
 		FillColor:   DefaultCanvasColor,
 		StrokeColor: DefaultCanvasStrokeColor,
-		StrokeWidth: DefaultStrokeWidth,
+		StrokeWidth: DefaultCanvasStrokeWidth,
 	}
 }
 
