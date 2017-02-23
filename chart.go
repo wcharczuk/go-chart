@@ -479,7 +479,7 @@ func (c Chart) styleDefaultsSeries(seriesIndex int) Style {
 	strokeColor := GetDefaultColor(seriesIndex)
 	return Style{
 		StrokeColor: strokeColor,
-		StrokeWidth: DefaultStrokeWidth,
+		StrokeWidth: DefaultSeriesLineWidth,
 		Font:        c.GetFont(),
 		FontSize:    DefaultFontSize,
 	}
