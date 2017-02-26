@@ -97,6 +97,8 @@ func (c Chart) Render(rp RendererProvider, w io.Writer) error {
 
 	err = c.checkRanges(xr, yr, yra)
 	if err != nil {
+		// (try to) dump the raw background to the stream.
+		r.Save(w)
 		return err
 	}
 
@@ -461,7 +463,7 @@ func (c Chart) styleDefaultsBackground() Style {
 	return Style{
 		FillColor:   DefaultBackgroundColor,
 		StrokeColor: DefaultBackgroundStrokeColor,
-		StrokeWidth: DefaultStrokeWidth,
+		StrokeWidth: DefaultBackgroundStrokeWidth,
 	}
 }
 
@@ -469,7 +471,7 @@ func (c Chart) styleDefaultsCanvas() Style {
 	return Style{
 		FillColor:   DefaultCanvasColor,
 		StrokeColor: DefaultCanvasStrokeColor,
-		StrokeWidth: DefaultStrokeWidth,
+		StrokeWidth: DefaultCanvasStrokeWidth,
 	}
 }
 
@@ -477,7 +479,7 @@ func (c Chart) styleDefaultsSeries(seriesIndex int) Style {
 	strokeColor := GetDefaultColor(seriesIndex)
 	return Style{
 		StrokeColor: strokeColor,
-		StrokeWidth: DefaultStrokeWidth,
+		StrokeWidth: DefaultSeriesLineWidth,
 		Font:        c.GetFont(),
 		FontSize:    DefaultFontSize,
 	}
