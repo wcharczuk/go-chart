@@ -148,6 +148,14 @@ func (m mathUtil) AbsInt(value int) int {
 	return value
 }
 
+// AbsInt64 returns the absolute value of a long.
+func (m mathUtil) AbsInt64(value int64) int64 {
+	if value < 0 {
+		return -value
+	}
+	return value
+}
+
 // Mean returns the mean of a set of values
 func (m mathUtil) Mean(values ...float64) float64 {
 	return m.Sum(values...) / float64(len(values))

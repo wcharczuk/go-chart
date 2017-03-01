@@ -155,3 +155,34 @@ func (s sequence) MarketDayMondayCloses(from, to time.Time, marketOpen, marketCl
 	}
 	return times
 }
+
+func (s sequence) Hours(start time.Time, totalHours int) []time.Time {
+	times := make([]time.Time, totalHours)
+
+	last := start
+	for i := 0; i < totalHours; i++ {
+		times[i] = last
+		last = last.Add(time.Hour)
+	}
+
+	return times
+}
+
+// HoursFill adds zero values for the data bounded by the start and end of the xdata array.
+func (s sequence) HoursFill(xdata []time.Time, ydata []float64) ([]time.Time, []float64) {
+	start := Date.Start(xdata)
+	end := Date.End(xdata)
+
+	totalHours := Math.AbsInt(Date.DiffHours(start, end))
+
+	finalTimes := s.Hours(start, totalHours+1)
+	finalValues := make([]float64, totalHours+1)
+
+	var hoursFromStart int
+	for i, xd := range xdata {
+		hoursFromStart = Date.DiffHours(start, xd)
+		finalValues[hoursFromStart] = ydata[i]
+	}
+
+	return finalTimes, finalValues
+}

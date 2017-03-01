@@ -236,3 +236,53 @@ func TestDateIsNYSEHoliday(t *testing.T) {
 	}
 	assert.Equal(holidays, 55)
 }
+
+func TestTimeStart(t *testing.T) {
+	assert := assert.New(t)
+
+	times := []time.Time{
+		time.Now().AddDate(0, 0, -4),
+		time.Now().AddDate(0, 0, -2),
+		time.Now().AddDate(0, 0, -1),
+		time.Now().AddDate(0, 0, -3),
+		time.Now().AddDate(0, 0, -5),
+	}
+
+	assert.InTimeDelta(Date.Start(times), times[4], time.Millisecond)
+}
+
+func TestTimeEnd(t *testing.T) {
+	assert := assert.New(t)
+
+	times := []time.Time{
+		time.Now().AddDate(0, 0, -4),
+		time.Now().AddDate(0, 0, -2),
+		time.Now().AddDate(0, 0, -1),
+		time.Now().AddDate(0, 0, -3),
+		time.Now().AddDate(0, 0, -5),
+	}
+
+	assert.InTimeDelta(Date.End(times), times[2], time.Millisecond)
+}
+
+func TestDateDiffDays(t *testing.T) {
+	assert := assert.New(t)
+
+	t1 := time.Date(2017, 02, 27, 12, 0, 0, 0, time.UTC)
+	t2 := time.Date(2017, 01, 10, 3, 0, 0, 0, time.UTC)
+	t3 := time.Date(2017, 02, 24, 16, 0, 0, 0, time.UTC)
+
+	assert.Equal(48, Date.DiffDays(t2, t1))
+	assert.Equal(2, Date.DiffDays(t3, t1)) // technically we should round down.
+}
+
+func TestDateDiffHours(t *testing.T) {
+	assert := assert.New(t)
+
+	t1 := time.Date(2017, 02, 27, 12, 0, 0, 0, time.UTC)
+	t2 := time.Date(2017, 02, 24, 16, 0, 0, 0, time.UTC)
+	t3 := time.Date(2017, 02, 28, 12, 0, 0, 0, time.UTC)
+
+	assert.Equal(68, Date.DiffHours(t2, t1))
+	assert.Equal(24, Date.DiffHours(t1, t3))
+}
