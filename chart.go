@@ -295,6 +295,9 @@ func (c Chart) checkRanges(xr, yr, yra Range) error {
 	if math.IsNaN(xDelta) {
 		return errors.New("nan x-range delta")
 	}
+	if xDelta == 0 {
+		return errors.New("zero x-range delta; there needs to be at least (2) values")
+	}
 
 	yDelta := yr.GetDelta()
 	if math.IsInf(yDelta, 0) {
