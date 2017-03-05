@@ -1,7 +1,6 @@
 package chart
 
 import (
-	"fmt"
 	"image"
 	"image/png"
 	"io"
@@ -119,7 +118,6 @@ func (rr *rasterRenderer) FillStroke() {
 
 // Circle fully draws a circle at a given point but does not apply the fill or stroke.
 func (rr *rasterRenderer) Circle(radius float64, x, y int) {
-	fmt.Printf("RasterRenderer.Circle(%f, %d, %d)\n", radius, x, y)
 	xf := float64(x)
 	yf := float64(y)
 
