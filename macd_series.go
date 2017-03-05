@@ -27,6 +27,24 @@ type MACDSeries struct {
 	macdl  *MACDLineSeries
 }
 
+// Validate validates the series.
+func (macd MACDSeries) Validate() error {
+	var err error
+	if macd.signal != nil {
+		err = macd.signal.Validate()
+	}
+	if err != nil {
+		return err
+	}
+	if macd.macdl != nil {
+		err = macd.macdl.Validate()
+	}
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // GetPeriods returns the primary and secondary periods.
 func (macd MACDSeries) GetPeriods() (w1, w2, sig int) {
 	if macd.PrimaryPeriod == 0 {
@@ -119,6 +137,14 @@ type MACDSignalSeries struct {
 	SignalPeriod    int
 
 	signal *EMASeries
+}
+
+// Validate validates the series.
+func (macds MACDSignalSeries) Validate() error {
+	if macds.signal != nil {
+		return macds.signal.Validate()
+	}
+	return nil
 }
 
 // GetPeriods returns the primary and secondary periods.
@@ -214,6 +240,27 @@ type MACDLineSeries struct {
 	Sigma float64
 }
 
+// Validate validates the series.
+func (macdl MACDLineSeries) Validate() error {
+	var err error
+	if macdl.ema1 != nil {
+		err = macdl.ema1.Validate()
+	}
+	if err != nil {
+		return err
+	}
+	if macdl.ema2 != nil {
+		err = macdl.ema2.Validate()
+	}
+	if err != nil {
+		return err
+	}
+	if macdl.InnerSeries == nil {
+		return fmt.Errorf("MACDLineSeries: must provide an inner series")
+	}
+	return nil
+}
+
 // GetName returns the name of the time series.
 func (macdl MACDLineSeries) GetName() string {
 	return macdl.Name
@@ -288,12 +335,4 @@ func (macdl *MACDLineSeries) ensureEMASeries() {
 func (macdl *MACDLineSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
 	style := macdl.Style.InheritFrom(defaults)
 	Draw.LineSeries(r, canvasBox, xrange, yrange, style, macdl)
-}
-
-// Validate validates the series.
-func (macdl *MACDLineSeries) Validate() error {
-	if macdl.InnerSeries == nil {
-		return fmt.Errorf("macd line series requires InnerSeries to be set")
-	}
-	return nil
 }
