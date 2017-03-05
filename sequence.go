@@ -8,10 +8,14 @@ import (
 var (
 	// Sequence contains some sequence utilities.
 	// These utilities can be useful for generating test data.
-	Sequence = &sequence{}
+	Sequence = &sequence{
+		rnd: rand.New(rand.NewSource(time.Now().Unix())),
+	}
 )
 
-type sequence struct{}
+type sequence struct {
+	rnd *rand.Rand
+}
 
 // Float64 produces an array of floats from [start,end] by optional steps.
 func (s sequence) Float64(start, end float64, steps ...float64) []float64 {
@@ -35,11 +39,10 @@ func (s sequence) Float64(start, end float64, steps ...float64) []float64 {
 
 // Random generates a fixed length sequence of random values between (0, scale).
 func (s sequence) Random(samples int, scale float64) []float64 {
-	rnd := rand.New(rand.NewSource(time.Now().Unix()))
 	values := make([]float64, samples)
 
 	for x := 0; x < samples; x++ {
-		values[x] = rnd.Float64() * scale
+		values[x] = s.rnd.Float64() * scale
 	}
 
 	return values
@@ -47,11 +50,10 @@ func (s sequence) Random(samples int, scale float64) []float64 {
 
 // Random generates a fixed length sequence of random values with a given average, above and below that average by (-scale, scale)
 func (s sequence) RandomWithAverage(samples int, average, scale float64) []float64 {
-	rnd := rand.New(rand.NewSource(time.Now().Unix()))
 	values := make([]float64, samples)
 
 	for x := 0; x < samples; x++ {
-		jitter := scale - (rnd.Float64() * (2 * scale))
+		jitter := scale - (s.rnd.Float64() * (2 * scale))
 		values[x] = average + jitter
 	}
 

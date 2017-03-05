@@ -1,6 +1,7 @@
 package chart
 
 import (
+	"fmt"
 	"image"
 	"image/png"
 	"io"
@@ -116,17 +117,17 @@ func (rr *rasterRenderer) FillStroke() {
 	rr.gc.FillStroke()
 }
 
-// Circle implements the interface method.
+// Circle fully draws and strokes a circle at a given point.
 func (rr *rasterRenderer) Circle(radius float64, x, y int) {
+	fmt.Printf("RasterRenderer.Circle(%f, %d, %d)\n", radius, x, y)
 	xf := float64(x)
 	yf := float64(y)
-	rr.gc.MoveTo(xf-radius, yf)              //9
-	rr.gc.QuadCurveTo(xf, yf, xf, yf-radius) //12
-	rr.gc.QuadCurveTo(xf, yf, xf+radius, yf) //3
-	rr.gc.QuadCurveTo(xf, yf, xf, yf+radius) //6
-	rr.gc.QuadCurveTo(xf, yf, xf-radius, yf) //9
-	rr.gc.Close()
-	rr.gc.FillStroke()
+
+	rr.gc.MoveTo(xf-radius, yf)                            //9
+	rr.gc.QuadCurveTo(xf-radius, yf-radius, xf, yf-radius) //12
+	rr.gc.QuadCurveTo(xf+radius, yf-radius, xf+radius, yf) //3
+	rr.gc.QuadCurveTo(xf+radius, yf+radius, xf, yf+radius) //6
+	rr.gc.QuadCurveTo(xf-radius, yf+radius, xf-radius, yf) //9
 }
 
 // SetFont implements the interface method.
