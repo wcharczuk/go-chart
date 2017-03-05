@@ -8,7 +8,6 @@ import (
 )
 
 func drawChart(res http.ResponseWriter, req *http.Request) {
-	println("drawing scatter plot")
 	graph := chart.Chart{
 		Series: []chart.Series{
 			chart.ContinuousSeries{
@@ -19,6 +18,24 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 				},
 				XValues: chart.Sequence.Random(32, 1024),
 				YValues: chart.Sequence.Random(32, 1024),
+			},
+			chart.ContinuousSeries{
+				Style: chart.Style{
+					Show:        true,
+					StrokeWidth: chart.Disabled,
+					DotWidth:    5,
+				},
+				XValues: chart.Sequence.Random(16, 1024),
+				YValues: chart.Sequence.Random(16, 1024),
+			},
+			chart.ContinuousSeries{
+				Style: chart.Style{
+					Show:        true,
+					StrokeWidth: chart.Disabled,
+					DotWidth:    7,
+				},
+				XValues: chart.Sequence.Random(8, 1024),
+				YValues: chart.Sequence.Random(8, 1024),
 			},
 		},
 	}
