@@ -23,7 +23,7 @@ func parseFloat64(str string) float64 {
 func readData() ([]time.Time, []float64) {
 	var xvalues []time.Time
 	var yvalues []float64
-	chart.File.ReadByLines("requests.csv", func(line string) {
+	err := chart.File.ReadByLines("requests.csv", func(line string) {
 		parts := strings.Split(line, ",")
 		year := parseInt(parts[0])
 		month := parseInt(parts[1])
@@ -33,6 +33,9 @@ func readData() ([]time.Time, []float64) {
 		xvalues = append(xvalues, time.Date(year, time.Month(month), day, hour, 0, 0, 0, time.UTC))
 		yvalues = append(yvalues, elapsedMillis)
 	})
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 	return xvalues, yvalues
 }
 

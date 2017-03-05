@@ -49,7 +49,9 @@ func (lrs LinearRegressionSeries) GetWindow() int {
 
 // GetEndIndex returns the effective window end.
 func (lrs LinearRegressionSeries) GetEndIndex() int {
-	return Math.MinInt(lrs.GetOffset()+(lrs.Len()), (lrs.InnerSeries.Len() - 1))
+	offset := lrs.GetOffset() + lrs.Len()
+	innerSeriesLastIndex := lrs.InnerSeries.Len() - 1
+	return Math.MinInt(offset, innerSeriesLastIndex)
 }
 
 // GetOffset returns the data offset.
@@ -62,7 +64,7 @@ func (lrs LinearRegressionSeries) GetOffset() int {
 
 // GetValue gets a value at a given index.
 func (lrs *LinearRegressionSeries) GetValue(index int) (x, y float64) {
-	if lrs.InnerSeries == nil {
+	if lrs.InnerSeries == nil || lrs.InnerSeries.Len() == 0 {
 		return
 	}
 	if lrs.m == 0 && lrs.b == 0 {
@@ -78,7 +80,7 @@ func (lrs *LinearRegressionSeries) GetValue(index int) (x, y float64) {
 // GetLastValue computes the last moving average value but walking back window size samples,
 // and recomputing the last moving average chunk.
 func (lrs *LinearRegressionSeries) GetLastValue() (x, y float64) {
-	if lrs.InnerSeries == nil {
+	if lrs.InnerSeries == nil || lrs.InnerSeries.Len() == 0 {
 		return
 	}
 	if lrs.m == 0 && lrs.b == 0 {

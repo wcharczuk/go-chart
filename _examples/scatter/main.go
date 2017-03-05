@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/wcharczuk/go-chart"
-	"github.com/wcharczuk/go-chart/drawing"
 )
 
 func drawChart(res http.ResponseWriter, req *http.Request) {
@@ -17,7 +16,6 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 					Show:        true,
 					StrokeWidth: chart.Disabled,
 					DotWidth:    3,
-					DotColor:    drawing.ColorRed,
 				},
 				XValues: chart.Sequence.Random(32, 1024),
 				YValues: chart.Sequence.Random(32, 1024),

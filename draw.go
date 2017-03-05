@@ -52,6 +52,7 @@ func (d draw) LineSeries(r Renderer, canvasBox Box, xrange, yrange Range, style 
 			y = cb - yrange.Translate(vy)
 			r.LineTo(x, y)
 		}
+		r.Stroke()
 	}
 
 	if style.ShouldDrawDot() {

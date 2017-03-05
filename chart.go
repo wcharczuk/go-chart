@@ -513,6 +513,7 @@ func (c Chart) styleDefaultsCanvas() Style {
 func (c Chart) styleDefaultsSeries(seriesIndex int) Style {
 	strokeColor := GetDefaultColor(seriesIndex)
 	return Style{
+		DotColor:    strokeColor,
 		StrokeColor: strokeColor,
 		StrokeWidth: DefaultSeriesLineWidth,
 		Font:        c.GetFont(),
