@@ -104,6 +104,16 @@ func (c Color) Equals(other Color) bool {
 		c.A == other.A
 }
 
+// AverageWith averages two colors.
+func (c Color) AverageWith(other Color) Color {
+	return Color{
+		R: (c.R + other.R) >> 1,
+		G: (c.G + other.G) >> 1,
+		B: (c.B + other.B) >> 1,
+		A: c.A,
+	}
+}
+
 // String returns a css string representation of the color.
 func (c Color) String() string {
 	fa := float64(c.A) / float64(255)

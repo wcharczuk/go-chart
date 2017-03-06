@@ -109,9 +109,9 @@ func TestBoxConstrain(t *testing.T) {
 func TestBoxOuterConstrain(t *testing.T) {
 	assert := assert.New(t)
 
-	box := Box{0, 0, 100, 100}
-	canvas := Box{5, 5, 95, 95}
-	taller := Box{-10, 5, 50, 50}
+	box := NewBox(0, 0, 100, 100)
+	canvas := NewBox(5, 5, 95, 95)
+	taller := NewBox(-10, 5, 50, 50)
 
 	c := canvas.OuterConstrain(box, taller)
 	assert.Equal(15, c.Top, c.String())
@@ -119,7 +119,7 @@ func TestBoxOuterConstrain(t *testing.T) {
 	assert.Equal(95, c.Right, c.String())
 	assert.Equal(95, c.Bottom, c.String())
 
-	wider := Box{5, 5, 110, 50}
+	wider := NewBox(5, 5, 110, 50)
 	d := canvas.OuterConstrain(box, wider)
 	assert.Equal(5, d.Top, d.String())
 	assert.Equal(5, d.Left, d.String())
