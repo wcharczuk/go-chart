@@ -225,3 +225,11 @@ func GetDefaultFont() (*truetype.Font, error) {
 	}
 	return _defaultFont, nil
 }
+
+const (
+	// ContentTypePNG is the png mime type.
+	ContentTypePNG = "image/png"
+
+	// ContentTypeSVG is the svg mime type.
+	ContentTypeSVG = "image/svg+xml"
+)

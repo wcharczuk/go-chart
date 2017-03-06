@@ -125,8 +125,8 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 
 	graph.Elements = []chart.Renderable{chart.LegendThin(&graph)}
 
-	res.Header().Set("Content-Type", "image/png")
-	graph.Render(chart.PNG, res)
+	res.Header().Set("Content-Type", chart.ContentTypeSVG)
+	graph.Render(chart.SVG, res)
 }
 
 func main() {

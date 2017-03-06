@@ -222,7 +222,7 @@ func (c *canvas) Path(d string, style Style) {
 	if len(style.StrokeDashArray) > 0 {
 		strokeDashArrayProperty = c.getStrokeDashArray(style)
 	}
-	c.w.Write([]byte(fmt.Sprintf(`<path %s d="%s" style="%s"/>\n`, strokeDashArrayProperty, d, c.styleAsSVG(style))))
+	c.w.Write([]byte(fmt.Sprintf(`<path %s d="%s" style="%s"/>`, strokeDashArrayProperty, d, c.styleAsSVG(style))))
 }
 
 func (c *canvas) Text(x, y int, body string, style Style) {
@@ -235,7 +235,7 @@ func (c *canvas) Text(x, y int, body string, style Style) {
 }
 
 func (c *canvas) Circle(x, y, r int, style Style) {
-	c.w.Write([]byte(fmt.Sprintf(`<circle cx="%d" cy="%d" r="%d" style="%s">`, x, y, r, c.styleAsSVG(style))))
+	c.w.Write([]byte(fmt.Sprintf(`<circle cx="%d" cy="%d" r="%d" style="%s"/>`, x, y, r, c.styleAsSVG(style))))
 }
 
 func (c *canvas) End() {
@@ -274,30 +274,36 @@ func (c *canvas) styleAsSVG(s Style) string {
 	fs := s.FontSize
 	fnc := s.FontColor
 
-	strokeWidthText := "stroke-width:0"
+	var pieces []string
+
 	if sw != 0 {
-		strokeWidthText = "stroke-width:" + fmt.Sprintf("%d", int(sw))
+		pieces = append(pieces, "stroke-width:"+fmt.Sprintf("%d", int(sw)))
+	} else {
+		pieces = append(pieces, "stroke-width:0")
 	}
 
-	strokeText := "stroke:none"
 	if !sc.IsZero() {
-		strokeText = "stroke:" + sc.String()
+		pieces = append(pieces, "stroke:"+sc.String())
+	} else {
+		pieces = append(pieces, "stroke:none")
 	}
 
-	fillText := "fill:none"
 	if !fc.IsZero() {
-		fillText = "fill:" + fc.String()
+		pieces = append(pieces, "fill:"+fc.String())
+	} else {
+		pieces = append(pieces, "fill:none")
 	}
 
-	fontSizeText := ""
 	if fs != 0 {
-		fontSizeText = "font-size:" + fmt.Sprintf("%.1fpx", drawing.PointsToPixels(c.dpi, fs))
+		pieces = append(pieces, "font-size:"+fmt.Sprintf("%.1fpx", drawing.PointsToPixels(c.dpi, fs)))
 	}
 
 	if !fnc.IsZero() {
-		fillText = "fill:" + fnc.String()
+		pieces = append(pieces, "fill:"+fnc.String())
 	}
 
-	fontText := c.getFontFace(s)
-	return strings.Join([]string{strokeWidthText, strokeText, fillText, fontSizeText, fontText}, ";")
+	if s.Font != nil {
+		pieces = append(pieces, c.getFontFace(s))
+	}
+	return strings.Join(pieces, ";")
 }
