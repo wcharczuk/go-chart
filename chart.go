@@ -315,6 +315,10 @@ func (c Chart) checkRanges(xr, yr, yra Range) error {
 		return errors.New("nan y-range delta")
 	}
 
+	if yDelta == 0 {
+		return errors.New("zero y-range delta")
+	}
+
 	if c.hasSecondarySeries() {
 		yraDelta := yra.GetDelta()
 		if math.IsInf(yraDelta, 0) {
@@ -322,6 +326,9 @@ func (c Chart) checkRanges(xr, yr, yra Range) error {
 		}
 		if math.IsNaN(yraDelta) {
 			return errors.New("nan secondary y-range delta")
+		}
+		if yraDelta == 0 {
+			return errors.New("zero secondary y-range delta")
 		}
 	}
 

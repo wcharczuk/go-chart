@@ -183,11 +183,6 @@ var (
 	DashArrayDashesLarge = []int{10, 10}
 )
 
-// NewColor returns a new color.
-func NewColor(r, g, b, a uint8) drawing.Color {
-	return drawing.Color{R: r, G: g, B: b, A: a}
-}
-
 // GetDefaultColor returns a color from the default list by index.
 // NOTE: the index will wrap around (using a modulo).
 func GetDefaultColor(index int) drawing.Color {
