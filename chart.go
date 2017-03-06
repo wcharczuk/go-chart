@@ -314,7 +314,6 @@ func (c Chart) checkRanges(xr, yr, yra Range) error {
 	if math.IsNaN(yDelta) {
 		return errors.New("nan y-range delta")
 	}
-
 	if yDelta == 0 {
 		return errors.New("zero y-range delta")
 	}
