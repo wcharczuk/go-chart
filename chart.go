@@ -283,11 +283,13 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 		yrangeAlt.SetMin(minya)
 		yrangeAlt.SetMax(maxya)
 
-		delta := yrangeAlt.GetDelta()
-		roundTo := Math.GetRoundToForDelta(delta)
-		rmin, rmax := Math.RoundDown(yrangeAlt.GetMin(), roundTo), Math.RoundUp(yrangeAlt.GetMax(), roundTo)
-		yrangeAlt.SetMin(rmin)
-		yrangeAlt.SetMax(rmax)
+		if c.YAxisSecondary.Style.Show {
+			delta := yrangeAlt.GetDelta()
+			roundTo := Math.GetRoundToForDelta(delta)
+			rmin, rmax := Math.RoundDown(yrangeAlt.GetMin(), roundTo), Math.RoundUp(yrangeAlt.GetMax(), roundTo)
+			yrangeAlt.SetMin(rmin)
+			yrangeAlt.SetMax(rmax)
+		}
 	}
 
 	return
