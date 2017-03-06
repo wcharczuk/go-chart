@@ -23,11 +23,11 @@ func NewBox(top, left, right, bottom int) Box {
 
 // Box represents the main 4 dimensions of a box.
 type Box struct {
-	IsSet  bool
 	Top    int
 	Left   int
 	Right  int
 	Bottom int
+	IsSet  bool
 }
 
 // IsZero returns if the box is set or not.
