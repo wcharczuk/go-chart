@@ -98,11 +98,11 @@ func (c Chart) Render(rp RendererProvider, w io.Writer) error {
 	xr, yr, yra := c.getRanges()
 	canvasBox := c.getDefaultCanvasBox()
 	xf, yf, yfa := c.getValueFormatters()
+
 	xr, yr, yra = c.setRangeDomains(canvasBox, xr, yr, yra)
 
 	err = c.checkRanges(xr, yr, yra)
 	if err != nil {
-		// (try to) dump the raw background to the stream.
 		r.Save(w)
 		return err
 	}
@@ -260,11 +260,15 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 		yrange.SetMin(miny)
 		yrange.SetMax(maxy)
 
-		delta := yrange.GetDelta()
-		roundTo := Math.GetRoundToForDelta(delta)
-		rmin, rmax := Math.RoundDown(yrange.GetMin(), roundTo), Math.RoundUp(yrange.GetMax(), roundTo)
-		yrange.SetMin(rmin)
-		yrange.SetMax(rmax)
+		// only round if we're showing the axis
+		if c.YAxis.Style.Show {
+			delta := yrange.GetDelta()
+			roundTo := Math.GetRoundToForDelta(delta)
+			rmin, rmax := Math.RoundDown(yrange.GetMin(), roundTo), Math.RoundUp(yrange.GetMax(), roundTo)
+
+			yrange.SetMin(rmin)
+			yrange.SetMax(rmax)
+		}
 	}
 
 	if len(c.YAxisSecondary.Ticks) > 0 {
