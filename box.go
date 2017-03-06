@@ -5,16 +5,36 @@ import (
 	"math"
 )
 
+var (
+	// BoxZero is a preset box that represents an intentional zero value.
+	BoxZero = Box{IsSet: true}
+)
+
+// NewBox returns a new (set) box.
+func NewBox(top, left, right, bottom int) Box {
+	return Box{
+		IsSet:  true,
+		Top:    top,
+		Left:   left,
+		Right:  right,
+		Bottom: bottom,
+	}
+}
+
 // Box represents the main 4 dimensions of a box.
 type Box struct {
 	Top    int
 	Left   int
 	Right  int
 	Bottom int
+	IsSet  bool
 }
 
 // IsZero returns if the box is set or not.
 func (b Box) IsZero() bool {
+	if b.IsSet {
+		return false
+	}
 	return b.Top == 0 && b.Left == 0 && b.Right == 0 && b.Bottom == 0
 }
 
@@ -25,7 +45,7 @@ func (b Box) String() string {
 
 // GetTop returns a coalesced value with a default.
 func (b Box) GetTop(defaults ...int) int {
-	if b.Top == 0 {
+	if !b.IsSet && b.Top == 0 {
 		if len(defaults) > 0 {
 			return defaults[0]
 		}
@@ -36,7 +56,7 @@ func (b Box) GetTop(defaults ...int) int {
 
 // GetLeft returns a coalesced value with a default.
 func (b Box) GetLeft(defaults ...int) int {
-	if b.Left == 0 {
+	if !b.IsSet && b.Left == 0 {
 		if len(defaults) > 0 {
 			return defaults[0]
 		}
@@ -47,7 +67,7 @@ func (b Box) GetLeft(defaults ...int) int {
 
 // GetRight returns a coalesced value with a default.
 func (b Box) GetRight(defaults ...int) int {
-	if b.Right == 0 {
+	if !b.IsSet && b.Right == 0 {
 		if len(defaults) > 0 {
 			return defaults[0]
 		}
@@ -58,7 +78,7 @@ func (b Box) GetRight(defaults ...int) int {
 
 // GetBottom returns a coalesced value with a default.
 func (b Box) GetBottom(defaults ...int) int {
-	if b.Bottom == 0 {
+	if !b.IsSet && b.Bottom == 0 {
 		if len(defaults) > 0 {
 			return defaults[0]
 		}
@@ -91,6 +111,7 @@ func (b Box) Aspect() float64 {
 // Clone returns a new copy of the box.
 func (b Box) Clone() Box {
 	return Box{
+		IsSet:  b.IsSet,
 		Top:    b.Top,
 		Left:   b.Left,
 		Right:  b.Right,

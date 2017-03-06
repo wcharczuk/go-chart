@@ -8,6 +8,12 @@ import (
 	"github.com/wcharczuk/go-chart/drawing"
 )
 
+const (
+	// Disabled indicates if the value should be interpreted as set intentionally to zero.
+	// this is because golang optionals aren't here yet.
+	Disabled = -1
+)
+
 // StyleShow is a prebuilt style with the `Show` property set to true.
 func StyleShow() Style {
 	return Style{
@@ -24,7 +30,11 @@ type Style struct {
 	StrokeColor     drawing.Color
 	StrokeDashArray []float64
 
+	DotColor drawing.Color
+	DotWidth float64
+
 	FillColor drawing.Color
+
 	FontSize  float64
 	FontColor drawing.Color
 	Font      *truetype.Font
@@ -38,7 +48,14 @@ type Style struct {
 
 // IsZero returns if the object is set or not.
 func (s Style) IsZero() bool {
-	return s.StrokeColor.IsZero() && s.FillColor.IsZero() && s.StrokeWidth == 0 && s.FontColor.IsZero() && s.FontSize == 0 && s.Font == nil
+	return s.StrokeColor.IsZero() &&
+		s.StrokeWidth == 0 &&
+		s.DotColor.IsZero() &&
+		s.DotWidth == 0 &&
+		s.FillColor.IsZero() &&
+		s.FontColor.IsZero() &&
+		s.FontSize == 0 &&
+		s.Font == nil
 }
 
 // String returns a text representation of the style.
@@ -81,6 +98,18 @@ func (s Style) String() string {
 		output = append(output, fmt.Sprintf("\"stroke_dash_array\": [%s]", dashArray))
 	} else {
 		output = append(output, "\"stroke_dash_array\": null")
+	}
+
+	if s.DotWidth >= 0 {
+		output = append(output, fmt.Sprintf("\"dot_width\": %0.2f", s.DotWidth))
+	} else {
+		output = append(output, "\"dot_width\": null")
+	}
+
+	if !s.DotColor.IsZero() {
+		output = append(output, fmt.Sprintf("\"dot_color\": %s", s.DotColor.String()))
+	} else {
+		output = append(output, "\"dot_color\": null")
 	}
 
 	if !s.FillColor.IsZero() {
@@ -132,6 +161,17 @@ func (s Style) GetFillColor(defaults ...drawing.Color) drawing.Color {
 	return s.FillColor
 }
 
+// GetDotColor returns the stroke color.
+func (s Style) GetDotColor(defaults ...drawing.Color) drawing.Color {
+	if s.DotColor.IsZero() {
+		if len(defaults) > 0 {
+			return defaults[0]
+		}
+		return drawing.ColorTransparent
+	}
+	return s.DotColor
+}
+
 // GetStrokeWidth returns the stroke width.
 func (s Style) GetStrokeWidth(defaults ...float64) float64 {
 	if s.StrokeWidth == 0 {
@@ -141,6 +181,17 @@ func (s Style) GetStrokeWidth(defaults ...float64) float64 {
 		return DefaultStrokeWidth
 	}
 	return s.StrokeWidth
+}
+
+// GetDotWidth returns the dot width for scatter plots.
+func (s Style) GetDotWidth(defaults ...float64) float64 {
+	if s.DotWidth == 0 {
+		if len(defaults) > 0 {
+			return defaults[0]
+		}
+		return DefaultDotWidth
+	}
+	return s.DotWidth
 }
 
 // GetStrokeDashArray returns the stroke dash array.
@@ -288,6 +339,10 @@ func (s Style) InheritFrom(defaults Style) (final Style) {
 	final.StrokeColor = s.GetStrokeColor(defaults.StrokeColor)
 	final.StrokeWidth = s.GetStrokeWidth(defaults.StrokeWidth)
 	final.StrokeDashArray = s.GetStrokeDashArray(defaults.StrokeDashArray)
+
+	final.DotColor = s.GetDotColor(defaults.DotColor)
+	final.DotWidth = s.GetDotWidth(defaults.DotWidth)
+
 	final.FillColor = s.GetFillColor(defaults.FillColor)
 	final.FontColor = s.GetFontColor(defaults.FontColor)
 	final.FontSize = s.GetFontSize(defaults.FontSize)
@@ -298,6 +353,7 @@ func (s Style) InheritFrom(defaults Style) (final Style) {
 	final.TextWrap = s.GetTextWrap(defaults.TextWrap)
 	final.TextLineSpacing = s.GetTextLineSpacing(defaults.TextLineSpacing)
 	final.TextRotationDegrees = s.GetTextRotationDegrees(defaults.TextRotationDegrees)
+
 	return
 }
 
@@ -314,6 +370,16 @@ func (s Style) GetStrokeOptions() Style {
 func (s Style) GetFillOptions() Style {
 	return Style{
 		FillColor: s.FillColor,
+	}
+}
+
+// GetDotOptions returns the dot components.
+func (s Style) GetDotOptions() Style {
+	return Style{
+		StrokeDashArray: nil,
+		FillColor:       s.DotColor,
+		StrokeColor:     s.DotColor,
+		StrokeWidth:     1.0,
 	}
 }
 
@@ -339,4 +405,19 @@ func (s Style) GetTextOptions() Style {
 		TextLineSpacing:     s.TextLineSpacing,
 		TextRotationDegrees: s.TextRotationDegrees,
 	}
+}
+
+// ShouldDrawStroke tells drawing functions if they should draw the stroke.
+func (s Style) ShouldDrawStroke() bool {
+	return !s.StrokeColor.IsZero() && s.StrokeWidth > 0
+}
+
+// ShouldDrawDot tells drawing functions if they should draw the dot.
+func (s Style) ShouldDrawDot() bool {
+	return !s.DotColor.IsZero() && s.DotWidth > 0
+}
+
+// ShouldDrawFill tells drawing functions if they should draw the stroke.
+func (s Style) ShouldDrawFill() bool {
+	return !s.FillColor.IsZero()
 }

@@ -14,6 +14,8 @@ const (
 	DefaultChartWidth = 1024
 	// DefaultStrokeWidth is the default chart stroke width.
 	DefaultStrokeWidth = 0.0
+	// DefaultDotWidth is the default chart dot width.
+	DefaultDotWidth = 0.0
 	// DefaultSeriesLineWidth is the default line width.
 	DefaultSeriesLineWidth = 1.0
 	// DefaultAxisLineWidth is the line width of the axis lines.

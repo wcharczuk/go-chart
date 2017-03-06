@@ -3,6 +3,8 @@ package drawing
 import (
 	"testing"
 
+	"image/color"
+
 	"github.com/blendlabs/go-assert"
 )
 
@@ -38,4 +40,14 @@ func TestColorFromHex(t *testing.T) {
 
 	shortBlue := ColorFromHex("00F")
 	assert.Equal(ColorBlue, shortBlue)
+}
+
+func TestColorFromAlphaMixedRGBA(t *testing.T) {
+	assert := assert.New(t)
+
+	black := ColorFromAlphaMixedRGBA(color.Black.RGBA())
+	assert.True(black.Equals(ColorBlack), black.String())
+
+	white := ColorFromAlphaMixedRGBA(color.White.RGBA())
+	assert.True(white.Equals(ColorWhite), white.String())
 }

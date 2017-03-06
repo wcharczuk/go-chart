@@ -141,8 +141,10 @@ func (c Chart) Render(rp RendererProvider, w io.Writer) error {
 
 func (c Chart) checkHasVisibleSeries() error {
 	hasVisibleSeries := false
+	var style Style
 	for _, s := range c.Series {
-		hasVisibleSeries = hasVisibleSeries || (s.GetStyle().IsZero() || s.GetStyle().Show)
+		style = s.GetStyle()
+		hasVisibleSeries = hasVisibleSeries || (style.IsZero() || style.Show)
 	}
 	if !hasVisibleSeries {
 		return fmt.Errorf("must have (1) visible series; make sure if you set a style, you set .Show = true")
@@ -511,6 +513,7 @@ func (c Chart) styleDefaultsCanvas() Style {
 func (c Chart) styleDefaultsSeries(seriesIndex int) Style {
 	strokeColor := GetDefaultColor(seriesIndex)
 	return Style{
+		DotColor:    strokeColor,
 		StrokeColor: strokeColor,
 		StrokeWidth: DefaultSeriesLineWidth,
 		Font:        c.GetFont(),

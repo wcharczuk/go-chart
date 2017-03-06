@@ -2,6 +2,8 @@ package chart
 
 import (
 	"bytes"
+	"image"
+	"image/png"
 	"math"
 	"testing"
 	"time"
@@ -482,4 +484,92 @@ func TestChartCheckRangesWithRanges(t *testing.T) {
 
 	xr, yr, yra := c.getRanges()
 	assert.Nil(c.checkRanges(xr, yr, yra))
+}
+
+func at(i image.Image, x, y int) drawing.Color {
+	return drawing.ColorFromAlphaMixedRGBA(i.At(x, y).RGBA())
+}
+
+func TestChartE2ELine(t *testing.T) {
+	assert := assert.New(t)
+
+	c := Chart{
+		Height: 50,
+		Width:  50,
+		Canvas: Style{
+			Padding: Box{IsSet: true},
+		},
+		Background: Style{
+			Padding: Box{IsSet: true},
+		},
+		Series: []Series{
+			ContinuousSeries{
+				XValues: Sequence.Float64(0, 4, 1),
+				YValues: Sequence.Float64(0, 4, 1),
+			},
+		},
+	}
+
+	var buffer = &bytes.Buffer{}
+	err := c.Render(PNG, buffer)
+	assert.Nil(err)
+
+	// do color tests ...
+
+	i, err := png.Decode(buffer)
+	assert.Nil(err)
+
+	// test the bottom and top of the line
+	assert.Equal(drawing.ColorWhite, at(i, 0, 0))
+	assert.Equal(drawing.ColorWhite, at(i, 49, 49))
+
+	// test a line mid point
+	defaultSeriesColor := GetDefaultColor(0)
+	assert.Equal(defaultSeriesColor, at(i, 0, 49))
+	assert.Equal(defaultSeriesColor, at(i, 49, 0))
+	assert.Equal(drawing.ColorFromHex("bddbf6"), at(i, 24, 24))
+}
+
+func TestChartE2ELineWithFill(t *testing.T) {
+	assert := assert.New(t)
+
+	c := Chart{
+		Height: 50,
+		Width:  50,
+		Canvas: Style{
+			Padding: Box{IsSet: true},
+		},
+		Background: Style{
+			Padding: Box{IsSet: true},
+		},
+		Series: []Series{
+			ContinuousSeries{
+				Style: Style{
+					Show:        true,
+					StrokeColor: drawing.ColorBlue,
+					FillColor:   drawing.ColorRed,
+				},
+				XValues: Sequence.Float64(0, 4, 1),
+				YValues: Sequence.Float64(0, 4, 1),
+			},
+		},
+	}
+
+	var buffer = &bytes.Buffer{}
+	err := c.Render(PNG, buffer)
+	assert.Nil(err)
+
+	// do color tests ...
+
+	i, err := png.Decode(buffer)
+	assert.Nil(err)
+
+	// test the bottom and top of the line
+	assert.Equal(drawing.ColorWhite, at(i, 0, 0))
+	assert.Equal(drawing.ColorRed, at(i, 49, 49))
+
+	// test a line mid point
+	defaultSeriesColor := drawing.ColorBlue
+	assert.Equal(defaultSeriesColor, at(i, 0, 49))
+	assert.Equal(defaultSeriesColor, at(i, 49, 0))
 }

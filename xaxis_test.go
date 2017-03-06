@@ -61,7 +61,7 @@ func TestXAxisMeasure(t *testing.T) {
 	assert.Nil(err)
 	ticks := []Tick{{Value: 1.0, Label: "1.0"}, {Value: 2.0, Label: "2.0"}, {Value: 3.0, Label: "3.0"}}
 	xa := XAxis{}
-	xab := xa.Measure(r, Box{0, 0, 100, 100}, &ContinuousRange{Min: 1.0, Max: 3.0, Domain: 100}, style, ticks)
+	xab := xa.Measure(r, NewBox(0, 0, 100, 100), &ContinuousRange{Min: 1.0, Max: 3.0, Domain: 100}, style, ticks)
 	assert.Equal(122, xab.Width())
 	assert.Equal(21, xab.Height())
 }

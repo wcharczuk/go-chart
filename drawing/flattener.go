@@ -23,10 +23,10 @@ type Flattener interface {
 // Flatten convert curves into straight segments keeping join segments info
 func Flatten(path *Path, flattener Flattener, scale float64) {
 	// First Point
-	var startX, startY float64 = 0, 0
+	var startX, startY float64
 	// Current Point
-	var x, y float64 = 0, 0
-	i := 0
+	var x, y float64
+	var i int
 	for _, cmp := range path.Components {
 		switch cmp {
 		case MoveToComponent:
@@ -43,6 +43,7 @@ func Flatten(path *Path, flattener Flattener, scale float64) {
 			flattener.LineJoin()
 			i += 2
 		case QuadCurveToComponent:
+			// we include the previous point for the start of the curve
 			TraceQuad(flattener, path.Points[i-2:], 0.5)
 			x, y = path.Points[i+2], path.Points[i+3]
 			flattener.LineTo(x, y)
