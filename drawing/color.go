@@ -46,12 +46,20 @@ func ColorFromHex(hex string) Color {
 	return c
 }
 
+// ColorFromAlphaMixedRGBA returns the system alpha mixed rgba values.
+func ColorFromAlphaMixedRGBA(r, g, b, a uint32) Color {
+	fa := float64(a) / 255.0
+	var c Color
+	c.R = uint8(float64(r) / fa)
+	c.G = uint8(float64(g) / fa)
+	c.B = uint8(float64(b) / fa)
+	c.A = uint8(a | (a >> 8))
+	return c
+}
+
 // Color is our internal color type because color.Color is bullshit.
 type Color struct {
-	R uint8
-	G uint8
-	B uint8
-	A uint8
+	R, G, B, A uint8
 }
 
 // RGBA returns the color as a pre-alpha mixed color set.
@@ -86,6 +94,14 @@ func (c Color) WithAlpha(a uint8) Color {
 		B: c.B,
 		A: a,
 	}
+}
+
+// Equals returns true if the color equals another.
+func (c Color) Equals(other Color) bool {
+	return c.R == other.R &&
+		c.G == other.G &&
+		c.B == other.B &&
+		c.A == other.A
 }
 
 // String returns a css string representation of the color.

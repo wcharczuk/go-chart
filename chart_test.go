@@ -483,3 +483,24 @@ func TestChartCheckRangesWithRanges(t *testing.T) {
 	xr, yr, yra := c.getRanges()
 	assert.Nil(c.checkRanges(xr, yr, yra))
 }
+
+func TestChartE2ELine(t *testing.T) {
+	assert := assert.New(t)
+
+	c := Chart{
+		Series: []Series{
+			ContinuousSeries{
+				XValues: Sequence.Float64(0, 4, 1),
+				YValues: Sequence.Float64(0, 4, 1),
+			},
+		},
+	}
+
+	var buffer = &bytes.Buffer{}
+	err := c.Render(PNG, buffer)
+	assert.Nil(err)
+
+	// do color tests ...
+
+	
+}
