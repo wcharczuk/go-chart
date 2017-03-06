@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 
+	_ "net/http/pprof"
+
 	"github.com/wcharczuk/go-chart"
 )
 
@@ -16,8 +18,8 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 					StrokeWidth: chart.Disabled,
 					DotWidth:    3,
 				},
-				XValues: chart.Sequence.Random(4096, 1024),
-				YValues: chart.Sequence.Random(4096, 1024),
+				XValues: chart.Sequence.Random(8192, 1024),
+				YValues: chart.Sequence.Random(8192, 1024),
 			},
 		},
 	}
@@ -27,7 +29,6 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		log.Println(err.Error())
 	}
-
 }
 
 func unit(res http.ResponseWriter, req *http.Request) {
