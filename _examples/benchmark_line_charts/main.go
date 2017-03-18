@@ -1,3 +1,4 @@
+// Usage: http://localhost:8080?series=100&values=1000
 package main
 
 import (
@@ -15,27 +16,19 @@ func random(min, max float64) float64 {
 }
 
 func drawLargeChart(res http.ResponseWriter, r *http.Request) {
-	/*
-		Usage: http://localhost:8080?series=100&values=1000
-	*/
-
-	numSeriesString := r.FormValue("series")
-
-	numSeriesInt64, err := strconv.ParseInt(numSeriesString, 10, 64)
+	numSeriesInt64, err := strconv.ParseInt(r.FormValue("series"), 10, 64)
 	if err != nil {
 		numSeriesInt64 = int64(1)
 	}
 	numSeries := int(numSeriesInt64)
 
-	series := make([]chart.Series, numSeries)
-
-	numValuesString := r.FormValue("values")
-
-	numValuesInt64, err := strconv.ParseInt(numValuesString, 10, 64)
+	numValuesInt64, err := strconv.ParseInt(r.FormValue("values"), 10, 64)
 	if err != nil {
 		numValuesInt64 = int64(100)
 	}
 	numValues := int(numValuesInt64)
+
+	series := make([]chart.Series, numSeries)
 
 	for i := 0; i < numSeries; i++ {
 		xValues := make([]time.Time, numValues)
