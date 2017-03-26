@@ -19,10 +19,11 @@ func SVG(width, height int) (Renderer, error) {
 	canvas := newCanvas(buffer)
 	canvas.Start(width, height)
 	return &vectorRenderer{
-		b: buffer,
-		c: canvas,
-		s: &Style{},
-		p: []string{},
+		b:   buffer,
+		c:   canvas,
+		s:   &Style{},
+		p:   []string{},
+		dpi: DefaultDPI,
 	}, nil
 }
 
@@ -288,7 +289,9 @@ func (c *canvas) styleAsSVG(s Style) string {
 		pieces = append(pieces, "stroke:none")
 	}
 
-	if !fc.IsZero() {
+	if !fnc.IsZero() {
+		pieces = append(pieces, "fill:"+fnc.String())
+	} else if !fc.IsZero() {
 		pieces = append(pieces, "fill:"+fc.String())
 	} else {
 		pieces = append(pieces, "fill:none")
@@ -296,10 +299,6 @@ func (c *canvas) styleAsSVG(s Style) string {
 
 	if fs != 0 {
 		pieces = append(pieces, "font-size:"+fmt.Sprintf("%.1fpx", drawing.PointsToPixels(c.dpi, fs)))
-	}
-
-	if !fnc.IsZero() {
-		pieces = append(pieces, "fill:"+fnc.String())
 	}
 
 	if s.Font != nil {
