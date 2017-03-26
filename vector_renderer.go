@@ -200,7 +200,8 @@ func (vr *vectorRenderer) Save(w io.Writer) error {
 
 func newCanvas(w io.Writer) *canvas {
 	return &canvas{
-		w: w,
+		w:   w,
+		dpi: DefaultDPI,
 	}
 }
 
