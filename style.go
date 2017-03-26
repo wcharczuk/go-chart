@@ -21,6 +21,18 @@ func StyleShow() Style {
 	}
 }
 
+// StyleTextDefaults returns a style for drawing outside a
+// chart context.
+func StyleTextDefaults() Style {
+	font, _ := GetDefaultFont()
+	return Style{
+		Show:      true,
+		Font:      font,
+		FontColor: DefaultAxisColor,
+		FontSize:  DefaultAxisFontSize,
+	}
+}
+
 // Style is a simple style set.
 type Style struct {
 	Show    bool
