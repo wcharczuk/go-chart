@@ -28,8 +28,8 @@ func StyleTextDefaults() Style {
 	return Style{
 		Show:      true,
 		Font:      font,
-		FontColor: DefaultAxisColor,
-		FontSize:  DefaultAxisFontSize,
+		FontColor: DefaultTextColor,
+		FontSize:  DefaultTitleFontSize,
 	}
 }
 
