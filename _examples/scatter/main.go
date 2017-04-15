@@ -17,7 +17,7 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 					Show:             true,
 					StrokeWidth:      chart.Disabled,
 					DotWidth:         5,
-					DotColorProvider: chart.Viridis,
+					DotColorProvider: chart.Jet,
 				},
 				XValues: chart.Sequence.Random(128, 1024),
 				YValues: chart.Sequence.Random(128, 1024),

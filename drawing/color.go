@@ -57,6 +57,11 @@ func ColorFromAlphaMixedRGBA(r, g, b, a uint32) Color {
 	return c
 }
 
+// ColorChannelFromFloat returns a normalized byte from a given float value.
+func ColorChannelFromFloat(v float64) uint8 {
+	return uint8(v * 255)
+}
+
 // Color is our internal color type because color.Color is bullshit.
 type Color struct {
 	R, G, B, A uint8
