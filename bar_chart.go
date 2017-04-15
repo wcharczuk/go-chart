@@ -14,6 +14,8 @@ type BarChart struct {
 	Title      string
 	TitleStyle Style
 
+	ColorPalette ColorPalette
+
 	Width  int
 	Height int
 	DPI    float64
@@ -407,23 +409,23 @@ func (bc BarChart) getBackgroundStyle() Style {
 
 func (bc BarChart) styleDefaultsBackground() Style {
 	return Style{
-		FillColor:   DefaultBackgroundColor,
-		StrokeColor: DefaultBackgroundStrokeColor,
+		FillColor:   bc.GetColorPalette().BackgroundColor(),
+		StrokeColor: bc.GetColorPalette().BackgroundStrokeColor(),
 		StrokeWidth: DefaultStrokeWidth,
 	}
 }
 
 func (bc BarChart) styleDefaultsBar(index int) Style {
 	return Style{
-		StrokeColor: GetAlternateColor(index),
+		StrokeColor: bc.GetColorPalette().GetSeriesColor(index),
 		StrokeWidth: 3.0,
-		FillColor:   GetAlternateColor(index),
+		FillColor:   bc.GetColorPalette().GetSeriesColor(index),
 	}
 }
 
 func (bc BarChart) styleDefaultsTitle() Style {
 	return bc.TitleStyle.InheritFrom(Style{
-		FontColor:           DefaultTextColor,
+		FontColor:           bc.GetColorPalette().TextColor(),
 		Font:                bc.GetFont(),
 		FontSize:            bc.getTitleFontSize(),
 		TextHorizontalAlign: TextHorizontalAlignCenter,
@@ -448,10 +450,10 @@ func (bc BarChart) getTitleFontSize() float64 {
 
 func (bc BarChart) styleDefaultsAxes() Style {
 	return Style{
-		StrokeColor:         DefaultAxisColor,
+		StrokeColor:         bc.GetColorPalette().AxisStrokeColor(),
 		Font:                bc.GetFont(),
 		FontSize:            DefaultAxisFontSize,
-		FontColor:           DefaultAxisColor,
+		FontColor:           bc.GetColorPalette().TextColor(),
 		TextHorizontalAlign: TextHorizontalAlignCenter,
 		TextVerticalAlign:   TextVerticalAlignTop,
 		TextWrap:            TextWrapWord,
@@ -462,4 +464,12 @@ func (bc BarChart) styleDefaultsElements() Style {
 	return Style{
 		Font: bc.GetFont(),
 	}
+}
+
+// GetColorPalette returns the color palette for the chart.
+func (bc BarChart) GetColorPalette() ColorPalette {
+	if bc.ColorPalette != nil {
+		return bc.ColorPalette
+	}
+	return AlternateColorPalette
 }

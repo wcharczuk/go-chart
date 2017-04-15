@@ -14,18 +14,19 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 		Series: []chart.Series{
 			chart.ContinuousSeries{
 				Style: chart.Style{
-					Show:        true,
-					StrokeWidth: chart.Disabled,
-					DotWidth:    3,
+					Show:             true,
+					StrokeWidth:      chart.Disabled,
+					DotWidthProvider: func(rx, ry, x, y float64) float64 { return 10 * (y / ry) },
+					DotColorProvider: chart.Vidris,
 				},
-				XValues: chart.Sequence.Random(8192, 1024),
-				YValues: chart.Sequence.Random(8192, 1024),
+				XValues: chart.Sequence.Random(128, 1024),
+				YValues: chart.Sequence.Random(128, 1024),
 			},
 		},
 	}
 
-	res.Header().Set("Content-Type", chart.ContentTypeSVG)
-	err := graph.Render(chart.SVG, res)
+	res.Header().Set("Content-Type", chart.ContentTypePNG)
+	err := graph.Render(chart.PNG, res)
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -49,8 +50,8 @@ func unit(res http.ResponseWriter, req *http.Request) {
 		},
 	}
 
-	res.Header().Set("Content-Type", chart.ContentTypeSVG)
-	err := graph.Render(chart.SVG, res)
+	res.Header().Set("Content-Type", chart.ContentTypePNG)
+	err := graph.Render(chart.PNG, res)
 	if err != nil {
 		log.Println(err.Error())
 	}

@@ -1,5 +1,7 @@
 package chart
 
+import "github.com/wcharczuk/go-chart/drawing"
+
 // ValueProvider is a type that produces values.
 type ValueProvider interface {
 	Len() int
@@ -33,3 +35,9 @@ type FullBoundedValueProvider interface {
 	BoundedValueProvider
 	BoundedLastValueProvider
 }
+
+// SizeProvider is a provider for integer size.
+type SizeProvider func(rx, ry, x, y float64) float64
+
+// ColorProvider is a provider for dot size.
+type ColorProvider func(rx, ry, x, y float64) drawing.Color

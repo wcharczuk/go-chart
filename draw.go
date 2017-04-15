@@ -56,14 +56,25 @@ func (d draw) LineSeries(r Renderer, canvasBox Box, xrange, yrange Range, style 
 	}
 
 	if style.ShouldDrawDot() {
-		dotWidth := style.GetDotWidth()
+		defaultDotWidth := style.GetDotWidth()
 
 		style.GetDotOptions().WriteDrawingOptionsToRenderer(r)
-
 		for i := 0; i < vs.Len(); i++ {
 			vx, vy = vs.GetValue(i)
 			x = cl + xrange.Translate(vx)
 			y = cb - yrange.Translate(vy)
+
+			dotWidth := defaultDotWidth
+			if style.DotWidthProvider != nil {
+				dotWidth = style.DotWidthProvider(xrange.GetDelta(), yrange.GetDelta(), vx, vy)
+			}
+
+			if style.DotColorProvider != nil {
+				dotColor := style.DotColorProvider(xrange.GetDelta(), yrange.GetDelta(), vx, vy)
+
+				r.SetFillColor(dotColor)
+				r.SetStrokeColor(dotColor)
+			}
 
 			r.Circle(dotWidth, x, y)
 			r.FillStroke()

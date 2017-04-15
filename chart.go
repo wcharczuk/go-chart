@@ -14,6 +14,8 @@ type Chart struct {
 	Title      string
 	TitleStyle Style
 
+	ColorPalette ColorPalette
+
 	Width  int
 	Height int
 	DPI    float64
@@ -490,7 +492,7 @@ func (c Chart) drawSeries(r Renderer, canvasBox Box, xrange, yrange, yrangeAlt R
 func (c Chart) drawTitle(r Renderer) {
 	if len(c.Title) > 0 && c.TitleStyle.Show {
 		r.SetFont(c.TitleStyle.GetFont(c.GetFont()))
-		r.SetFontColor(c.TitleStyle.GetFontColor(DefaultTextColor))
+		r.SetFontColor(c.TitleStyle.GetFontColor(c.GetColorPalette().TextColor()))
 		titleFontSize := c.TitleStyle.GetFontSize(DefaultTitleFontSize)
 		r.SetFontSize(titleFontSize)
 
@@ -508,25 +510,24 @@ func (c Chart) drawTitle(r Renderer) {
 
 func (c Chart) styleDefaultsBackground() Style {
 	return Style{
-		FillColor:   DefaultBackgroundColor,
-		StrokeColor: DefaultBackgroundStrokeColor,
+		FillColor:   c.GetColorPalette().BackgroundColor(),
+		StrokeColor: c.GetColorPalette().BackgroundStrokeColor(),
 		StrokeWidth: DefaultBackgroundStrokeWidth,
 	}
 }
 
 func (c Chart) styleDefaultsCanvas() Style {
 	return Style{
-		FillColor:   DefaultCanvasColor,
-		StrokeColor: DefaultCanvasStrokeColor,
+		FillColor:   c.GetColorPalette().CanvasColor(),
+		StrokeColor: c.GetColorPalette().CanvasStrokeColor(),
 		StrokeWidth: DefaultCanvasStrokeWidth,
 	}
 }
 
 func (c Chart) styleDefaultsSeries(seriesIndex int) Style {
-	strokeColor := GetDefaultColor(seriesIndex)
 	return Style{
-		DotColor:    strokeColor,
-		StrokeColor: strokeColor,
+		DotColor:    c.GetColorPalette().GetSeriesColor(seriesIndex),
+		StrokeColor: c.GetColorPalette().GetSeriesColor(seriesIndex),
 		StrokeWidth: DefaultSeriesLineWidth,
 		Font:        c.GetFont(),
 		FontSize:    DefaultFontSize,
@@ -536,9 +537,9 @@ func (c Chart) styleDefaultsSeries(seriesIndex int) Style {
 func (c Chart) styleDefaultsAxes() Style {
 	return Style{
 		Font:        c.GetFont(),
-		FontColor:   DefaultAxisColor,
+		FontColor:   c.GetColorPalette().TextColor(),
 		FontSize:    DefaultAxisFontSize,
-		StrokeColor: DefaultAxisColor,
+		StrokeColor: c.GetColorPalette().AxisStrokeColor(),
 		StrokeWidth: DefaultAxisLineWidth,
 	}
 }
@@ -547,6 +548,14 @@ func (c Chart) styleDefaultsElements() Style {
 	return Style{
 		Font: c.GetFont(),
 	}
+}
+
+// GetColorPalette returns the color palette for the chart.
+func (c Chart) GetColorPalette() ColorPalette {
+	if c.ColorPalette != nil {
+		return c.ColorPalette
+	}
+	return DefaultColorPalette
 }
 
 // Box returns the chart bounds as a box.
