@@ -266,7 +266,10 @@ var viridisColors = [256]drawing.Color{
 }
 
 // Viridis creates a color map provider.
-func Viridis(rx, ry, x, y float64) drawing.Color {
-	index := uint8((y / ry) * 256)
+func Viridis(xr, yr Range, x, y float64) drawing.Color {
+	delta := yr.GetDelta()
+	normalized := y / delta
+	adjusted := normalized + yr.GetMin()
+	index := uint8(adjusted * 256)
 	return viridisColors[index]
 }
