@@ -6,7 +6,7 @@ func colorFromValues(r, g, b float64) drawing.Color {
 	return drawing.Color{R: uint8(r * 256), G: uint8(g * 256), B: uint8(b * 256), A: 255}
 }
 
-var vidrisColors = [256]drawing.Color{
+var viridisColors = [256]drawing.Color{
 	colorFromValues(0.26700401, 0.00487433, 0.32941519),
 	colorFromValues(0.26851048, 0.00960483, 0.33542652),
 	colorFromValues(0.26994384, 0.01462494, 0.34137895),
@@ -265,8 +265,8 @@ var vidrisColors = [256]drawing.Color{
 	colorFromValues(0.99324789, 0.90615657, 0.1439362),
 }
 
-// Vidris creates a vidris color map provider.
-func Vidris(rx, ry, x, y float64) drawing.Color {
+// Viridis creates a color map provider.
+func Viridis(rx, ry, x, y float64) drawing.Color {
 	index := uint8((y / ry) * 256)
-	return vidrisColors[index]
+	return viridisColors[index]
 }
