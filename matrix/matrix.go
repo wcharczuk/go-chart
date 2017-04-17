@@ -72,14 +72,22 @@ func NewFromArrays(a [][]float64) *Matrix {
 	return m
 }
 
-// Vector is just an array of values.
-type Vector []float64
-
 // Matrix represents a 2d dense array of floats.
 type Matrix struct {
 	epsilon    float64
 	elements   []float64
 	rows, cols int
+}
+
+// Epsilon returns the maximum precision for math operations.
+func (m *Matrix) Epsilon() float64 {
+	return m.epsilon
+}
+
+// WithEpsilon sets the epsilon on the matrix and returns a reference to the matrix.
+func (m *Matrix) WithEpsilon(epsilon float64) *Matrix {
+	m.epsilon = epsilon
+	return m
 }
 
 // Arrays returns the matrix as a two dimensional jagged array.
