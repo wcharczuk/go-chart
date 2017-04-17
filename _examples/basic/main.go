@@ -26,8 +26,8 @@ func drawChartWide(res http.ResponseWriter, req *http.Request) {
 		Width: 1920, //this overrides the default.
 		Series: []chart.Series{
 			chart.ContinuousSeries{
-				XValues: []float64{1.0, 2.0, 3.0, 4.0, 5.0},
-				YValues: []float64{1.0, 2.0, 3.0, 4.0, 5.0},
+				XValues: []float64{1.0, 2.0, 3.0, 4.0},
+				YValues: []float64{1.0, 2.0, 3.0, 4.0},
 			},
 		},
 	}
