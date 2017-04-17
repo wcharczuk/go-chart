@@ -46,7 +46,7 @@ type Style struct {
 	DotWidth float64
 
 	DotWidthProvider SizeProvider
-	DotColorProvider ColorProvider
+	DotColorProvider DotColorProvider
 
 	FillColor drawing.Color
 

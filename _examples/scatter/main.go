@@ -7,9 +7,15 @@ import (
 	_ "net/http/pprof"
 
 	"github.com/wcharczuk/go-chart"
+	"github.com/wcharczuk/go-chart/drawing"
 )
 
 func drawChart(res http.ResponseWriter, req *http.Request) {
+
+	viridisByY := func(xr, yr chart.Range, x, y float64) drawing.Color {
+		return chart.Viridis(y, yr.GetMin(), yr.GetMax())
+	}
+
 	graph := chart.Chart{
 		Series: []chart.Series{
 			chart.ContinuousSeries{
@@ -17,7 +23,7 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 					Show:             true,
 					StrokeWidth:      chart.Disabled,
 					DotWidth:         5,
-					DotColorProvider: chart.Jet,
+					DotColorProvider: viridisByY,
 				},
 				XValues: chart.Sequence.Random(128, 1024),
 				YValues: chart.Sequence.Random(128, 1024),
