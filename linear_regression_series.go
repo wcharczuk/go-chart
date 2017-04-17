@@ -9,7 +9,7 @@ type LinearRegressionSeries struct {
 	Style Style
 	YAxis YAxisType
 
-	Window      int
+	Limit       int
 	Offset      int
 	InnerSeries ValueProvider
 
@@ -36,18 +36,18 @@ func (lrs LinearRegressionSeries) GetYAxis() YAxisType {
 
 // Len returns the number of elements in the series.
 func (lrs LinearRegressionSeries) Len() int {
-	return Math.MinInt(lrs.GetWindow(), lrs.InnerSeries.Len()-lrs.GetOffset())
+	return Math.MinInt(lrs.GetLimit(), lrs.InnerSeries.Len()-lrs.GetOffset())
 }
 
-// GetWindow returns the window size.
-func (lrs LinearRegressionSeries) GetWindow() int {
-	if lrs.Window == 0 {
+// GetLimit returns the window size.
+func (lrs LinearRegressionSeries) GetLimit() int {
+	if lrs.Limit == 0 {
 		return lrs.InnerSeries.Len()
 	}
-	return lrs.Window
+	return lrs.Limit
 }
 
-// GetEndIndex returns the effective window end.
+// GetEndIndex returns the effective limit end.
 func (lrs LinearRegressionSeries) GetEndIndex() int {
 	offset := lrs.GetOffset() + lrs.Len()
 	innerSeriesLastIndex := lrs.InnerSeries.Len() - 1
@@ -105,7 +105,6 @@ func (lrs *LinearRegressionSeries) computeCoefficients() {
 
 	xvalues := NewRingBufferWithCapacity(lrs.Len())
 	for index := startIndex; index < endIndex; index++ {
-
 		x, _ := lrs.InnerSeries.GetValue(index)
 		xvalues.Enqueue(x)
 	}
