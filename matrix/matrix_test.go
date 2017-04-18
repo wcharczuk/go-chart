@@ -316,3 +316,15 @@ func TestMatrixU(t *testing.T) {
 	u := m.U()
 	assert.True(u.Equals(New(3, 3, 0, 0, 0, 4, 0, 0, 7, 8, 0)))
 }
+
+func TestMatrixString(t *testing.T) {
+	assert := assert.New(t)
+
+	m := NewFromArrays([][]float64{
+		{1, 2, 3},
+		{4, 5, 6},
+		{7, 8, 9},
+	})
+
+	assert.Equal("1 2 3 \n4 5 6 \n7 8 9 \n", m.String())
+}

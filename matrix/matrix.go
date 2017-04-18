@@ -3,7 +3,6 @@ package matrix
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"math"
 )
 
@@ -239,6 +238,7 @@ func (m *Matrix) L() *Matrix {
 }
 
 // U returns the matrix with zeros above the diagonal.
+// Does not include the diagonal.
 func (m *Matrix) U() *Matrix {
 	m2 := New(m.rows, m.cols)
 	for row := 0; row < m.rows; row++ {
@@ -254,7 +254,7 @@ func (m *Matrix) String() string {
 	buffer := bytes.NewBuffer(nil)
 	for row := 0; row < m.rows; row++ {
 		for col := 0; col < m.cols; col++ {
-			buffer.WriteString(fmt.Sprintf("%f", m.Get(row, col)))
+			buffer.WriteString(f64s(m.Get(row, col)))
 			buffer.WriteRune(' ')
 		}
 		buffer.WriteRune('\n')

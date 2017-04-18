@@ -2,6 +2,7 @@ package matrix
 
 import (
 	"math"
+	"strconv"
 )
 
 func minInt(values ...int) int {
@@ -24,4 +25,8 @@ func maxInt(values ...int) int {
 		}
 	}
 	return max
+}
+
+func f64s(v float64) string {
+	return strconv.FormatFloat(v, 'f', -1, 64)
 }
