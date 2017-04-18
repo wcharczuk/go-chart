@@ -328,3 +328,17 @@ func TestMatrixString(t *testing.T) {
 
 	assert.Equal("1 2 3 \n4 5 6 \n7 8 9 \n", m.String())
 }
+
+func TestMatrixQR(t *testing.T) {
+	assert := assert.New(t)
+
+	m := NewFromArrays([][]float64{
+		{12, -51, 4},
+		{6, 167, -68},
+		{-4, 24, -41},
+	})
+
+	q, r := m.QR()
+	assert.NotNil(q)
+	assert.NotNil(r)
+}

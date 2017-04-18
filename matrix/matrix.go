@@ -20,8 +20,7 @@ var (
 func New(rows, cols int, values ...float64) *Matrix {
 	if len(values) == 0 {
 		return &Matrix{
-			rows:     rows,
-			cols:     cols,
+			stride:   cols,
 			epsilon:  DefaultEpsilon,
 			elements: make([]float64, rows*cols),
 		}
@@ -29,8 +28,7 @@ func New(rows, cols int, values ...float64) *Matrix {
 	elems := make([]float64, rows*cols)
 	copy(elems, values)
 	return &Matrix{
-		rows:     rows,
-		cols:     cols,
+		stride:   cols,
 		epsilon:  DefaultEpsilon,
 		elements: elems,
 	}
@@ -45,8 +43,8 @@ func Identity(order int) *Matrix {
 	return m
 }
 
-// Zeros returns a matrix of a given size zeroed.
-func Zeros(rows, cols int) *Matrix {
+// Zero returns a matrix of a given size zeroed.
+func Zero(rows, cols int) *Matrix {
 	return New(rows, cols)
 }
 
@@ -58,11 +56,19 @@ func Ones(rows, cols int) *Matrix {
 	}
 
 	return &Matrix{
-		rows:     rows,
-		cols:     cols,
+		stride:   cols,
 		epsilon:  DefaultEpsilon,
 		elements: ones,
 	}
+}
+
+// Eye returns the eye matrix.
+func Eye(n int) *Matrix {
+	m := Zero(n, n)
+	for i := 0; i < len(m.elements); i += n + 1 {
+		m.elements[i] = 1
+	}
+	return m
 }
 
 // NewFromArrays creates a matrix from a jagged array set.
@@ -83,9 +89,24 @@ func NewFromArrays(a [][]float64) *Matrix {
 
 // Matrix represents a 2d dense array of floats.
 type Matrix struct {
-	epsilon    float64
-	elements   []float64
-	rows, cols int
+	epsilon  float64
+	elements []float64
+	stride   int
+}
+
+// String returns a string representation of the matrix.
+func (m *Matrix) String() string {
+	buffer := bytes.NewBuffer(nil)
+	rows, cols := m.Size()
+
+	for row := 0; row < rows; row++ {
+		for col := 0; col < cols; col++ {
+			buffer.WriteString(f64s(m.Get(row, col)))
+			buffer.WriteRune(' ')
+		}
+		buffer.WriteRune('\n')
+	}
+	return buffer.String()
 }
 
 // Epsilon returns the maximum precision for math operations.
@@ -99,14 +120,38 @@ func (m *Matrix) WithEpsilon(epsilon float64) *Matrix {
 	return m
 }
 
+// Each applies the action to each element of the matrix in
+// rows => cols order.
+func (m *Matrix) Each(action func(row, cow int, value float64)) {
+	rows, cols := m.Size()
+	for row := 0; row < rows; row++ {
+		for col := 0; col < cols; col++ {
+			action(row, col, m.Get(row, col))
+		}
+	}
+}
+
+// Round rounds all the values in a matrix to it epsilon,
+// returning a reference to the original
+func (m *Matrix) Round() *Matrix {
+	rows, cols := m.Size()
+	for row := 0; row < rows; row++ {
+		for col := 0; col < cols; col++ {
+			m.Set(row, col, roundToEpsilon(m.Get(row, col), m.epsilon))
+		}
+	}
+	return m
+}
+
 // Arrays returns the matrix as a two dimensional jagged array.
 func (m *Matrix) Arrays() [][]float64 {
-	a := make([][]float64, m.rows)
+	rows, cols := m.Size()
+	a := make([][]float64, rows)
 
-	for row := 0; row < m.rows; row++ {
-		a[row] = make([]float64, m.cols)
+	for row := 0; row < rows; row++ {
+		a[row] = make([]float64, cols)
 
-		for col := 0; col < m.cols; col++ {
+		for col := 0; col < cols; col++ {
 			a[row][col] = m.Get(row, col)
 		}
 	}
@@ -115,22 +160,25 @@ func (m *Matrix) Arrays() [][]float64 {
 
 // Size returns the dimensions of the matrix.
 func (m *Matrix) Size() (rows, cols int) {
-	rows = m.rows
-	cols = m.cols
+	rows = len(m.elements) / m.stride
+	cols = m.stride
 	return
 }
 
 // IsSquare returns if the row count is equal to the column count.
 func (m *Matrix) IsSquare() bool {
-	return m.rows == m.cols
+	return m.stride == (len(m.elements) / m.stride)
 }
 
 // IsSymmetric returns if the matrix is symmetric about its diagonal.
 func (m *Matrix) IsSymmetric() bool {
-	if m.rows != m.cols {
+	rows, cols := m.Size()
+
+	if rows != cols {
 		return false
 	}
-	for i := 0; i < m.rows; i++ {
+
+	for i := 0; i < rows; i++ {
 		for j := 0; j < i; j++ {
 			if m.Get(i, j) != m.Get(j, i) {
 				return false
@@ -142,20 +190,21 @@ func (m *Matrix) IsSymmetric() bool {
 
 // Get returns the element at the given row, col.
 func (m *Matrix) Get(row, col int) float64 {
-	index := (m.cols * row) + col
+	index := (m.stride * row) + col
 	return m.elements[index]
 }
 
 // Set sets a value.
 func (m *Matrix) Set(row, col int, val float64) {
-	index := (m.cols * row) + col
+	index := (m.stride * row) + col
 	m.elements[index] = val
 }
 
 // Col returns a column of the matrix as a vector.
 func (m *Matrix) Col(col int) Vector {
-	values := make([]float64, m.rows)
-	for row := 0; row < m.rows; row++ {
+	rows, _ := m.Size()
+	values := make([]float64, rows)
+	for row := 0; row < rows; row++ {
 		values[row] = m.Get(row, col)
 	}
 	return Vector(values)
@@ -163,8 +212,9 @@ func (m *Matrix) Col(col int) Vector {
 
 // Row returns a row of the matrix as a vector.
 func (m *Matrix) Row(row int) Vector {
-	values := make([]float64, m.cols)
-	for col := 0; col < m.cols; col++ {
+	_, cols := m.Size()
+	values := make([]float64, cols)
+	for col := 0; col < cols; col++ {
 		values[col] = m.Get(row, col)
 	}
 	return Vector(values)
@@ -172,18 +222,15 @@ func (m *Matrix) Row(row int) Vector {
 
 // Copy returns a duplicate of a given matrix.
 func (m *Matrix) Copy() *Matrix {
-	m2 := New(m.rows, m.cols)
-	for row := 0; row < m.rows; row++ {
-		for col := 0; col < m.cols; col++ {
-			m2.Set(row, col, m.Get(row, col))
-		}
-	}
+	m2 := &Matrix{stride: m.stride, epsilon: m.epsilon, elements: make([]float64, len(m.elements))}
+	copy(m2.elements, m.elements)
 	return m2
 }
 
 // DiagonalVector returns a vector from the diagonal of a matrix.
 func (m *Matrix) DiagonalVector() Vector {
-	rank := minInt(m.rows, m.cols)
+	rows, cols := m.Size()
+	rank := minInt(rows, cols)
 	values := make([]float64, rank)
 
 	for index := 0; index < rank; index++ {
@@ -194,7 +241,8 @@ func (m *Matrix) DiagonalVector() Vector {
 
 // Diagonal returns a matrix from the diagonal of a matrix.
 func (m *Matrix) Diagonal() *Matrix {
-	rank := minInt(m.rows, m.cols)
+	rows, cols := m.Size()
+	rank := minInt(rows, cols)
 	m2 := New(rank, rank)
 
 	for index := 0; index < rank; index++ {
@@ -211,16 +259,20 @@ func (m *Matrix) Equals(other *Matrix) bool {
 		return true
 	}
 
-	if otherRows, otherCols := other.Size(); otherRows != m.rows || otherCols != m.cols {
+	if m.stride != other.stride {
 		return false
 	}
 
-	for row := 0; row < m.rows; row++ {
-		for col := 0; col < m.cols; col++ {
-			if m.Get(row, col) != other.Get(row, col) {
-				return false
-			}
+	msize := len(m.elements)
+	m2size := len(other.elements)
 
+	if msize != m2size {
+		return false
+	}
+
+	for i := 0; i < msize; i++ {
+		if m.elements[i] != other.elements[i] {
+			return false
 		}
 	}
 	return true
@@ -228,9 +280,10 @@ func (m *Matrix) Equals(other *Matrix) bool {
 
 // L returns the matrix with zeros below the diagonal.
 func (m *Matrix) L() *Matrix {
-	m2 := New(m.rows, m.cols)
-	for row := 0; row < m.rows; row++ {
-		for col := row; col < m.cols; col++ {
+	rows, cols := m.Size()
+	m2 := New(rows, cols)
+	for row := 0; row < rows; row++ {
+		for col := row; col < cols; col++ {
 			m2.Set(row, col, m.Get(row, col))
 		}
 	}
@@ -240,37 +293,46 @@ func (m *Matrix) L() *Matrix {
 // U returns the matrix with zeros above the diagonal.
 // Does not include the diagonal.
 func (m *Matrix) U() *Matrix {
-	m2 := New(m.rows, m.cols)
-	for row := 0; row < m.rows; row++ {
-		for col := 0; col < row && col < m.cols; col++ {
+	rows, cols := m.Size()
+	m2 := New(rows, cols)
+	for row := 0; row < rows; row++ {
+		for col := 0; col < row && col < cols; col++ {
 			m2.Set(row, col, m.Get(row, col))
 		}
 	}
 	return m2
 }
 
-// String returns a string representation of the matrix.
-func (m *Matrix) String() string {
-	buffer := bytes.NewBuffer(nil)
-	for row := 0; row < m.rows; row++ {
-		for col := 0; col < m.cols; col++ {
-			buffer.WriteString(f64s(m.Get(row, col)))
-			buffer.WriteRune(' ')
-		}
-		buffer.WriteRune('\n')
+// math operations
+
+// Multiply multiplies two matrices.
+func (m *Matrix) Multiply(m2 *Matrix) (m3 *Matrix, err error) {
+	if m.stride*m2.stride != len(m2.elements) {
+		return nil, ErrDimensionMismatch
 	}
-	return buffer.String()
+
+	m3 = &Matrix{epsilon: m.epsilon, stride: m2.stride, elements: make([]float64, (len(m.elements)/m.stride)*m2.stride)}
+	for m1c0, m3x := 0, 0; m1c0 < len(m.elements); m1c0 += m.stride {
+		for m2r0 := 0; m2r0 < m2.stride; m2r0++ {
+			for m1x, m2x := m1c0, m2r0; m2x < len(m2.elements); m2x += m2.stride {
+				m3.elements[m3x] += m.elements[m1x] * m2.elements[m2x]
+				m1x++
+			}
+			m3x++
+		}
+	}
+	return
 }
 
 // Decompositions
 
-// LU returns the LU decomposition of a matrix.
-func (m *Matrix) LU() (l, u, p *Matrix) {
-	return
-}
-
 // QR performs the qr decomposition.
 func (m *Matrix) QR() (q, r *Matrix) {
+	defer func() {
+		q = q.Round()
+		r = r.Round()
+	}()
+
 	rows, cols := m.Size()
 	qr := m.Copy()
 	q = New(rows, cols)

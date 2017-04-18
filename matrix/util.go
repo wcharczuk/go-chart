@@ -30,3 +30,7 @@ func maxInt(values ...int) int {
 func f64s(v float64) string {
 	return strconv.FormatFloat(v, 'f', -1, 64)
 }
+
+func roundToEpsilon(value, epsilon float64) float64 {
+	return math.Nextafter(value, value)
+}
