@@ -212,12 +212,12 @@ func TestMatrixSwapRows(t *testing.T) {
 		{4, 5, 6},
 		{7, 8, 9},
 	})
-	
-	m.SwapRows(0,1)
 
-	assert.Equal([]float64{4,5,6}, m.Row(0))
-	assert.Equal([]float64{1,2,3}, m.Row(1))
-	assert.Equal([]float64{7,8,9}, m.Row(2))
+	m.SwapRows(0, 1)
+
+	assert.Equal([]float64{4, 5, 6}, m.Row(0))
+	assert.Equal([]float64{1, 2, 3}, m.Row(1))
+	assert.Equal([]float64{7, 8, 9}, m.Row(2))
 }
 
 func TestMatrixCopy(t *testing.T) {
@@ -390,7 +390,7 @@ func TestMatrixTranspose(t *testing.T) {
 	assert.Equal(3, rows)
 	assert.Equal(4, cols)
 
-	assert.Equal(1, m2.Get(0,0))
-	assert.Equal(10, m2.Get(0,3))
-	assert.Equal(3, m2.Get(2,0))
-)
+	assert.Equal(1, m2.Get(0, 0))
+	assert.Equal(10, m2.Get(0, 3))
+	assert.Equal(3, m2.Get(2, 0))
+}
