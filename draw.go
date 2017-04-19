@@ -66,11 +66,11 @@ func (d draw) LineSeries(r Renderer, canvasBox Box, xrange, yrange Range, style 
 
 			dotWidth := defaultDotWidth
 			if style.DotWidthProvider != nil {
-				dotWidth = style.DotWidthProvider(xrange, yrange, vx, vy)
+				dotWidth = style.DotWidthProvider(xrange, yrange, i, vx, vy)
 			}
 
 			if style.DotColorProvider != nil {
-				dotColor := style.DotColorProvider(xrange, yrange, vx, vy)
+				dotColor := style.DotColorProvider(xrange, yrange, i, vx, vy)
 
 				r.SetFillColor(dotColor)
 				r.SetStrokeColor(dotColor)

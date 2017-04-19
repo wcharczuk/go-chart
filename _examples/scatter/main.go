@@ -12,7 +12,7 @@ import (
 
 func drawChart(res http.ResponseWriter, req *http.Request) {
 
-	viridisByY := func(xr, yr chart.Range, x, y float64) drawing.Color {
+	viridisByY := func(xr, yr chart.Range, index int, x, y float64) drawing.Color {
 		return chart.Viridis(y, yr.GetMin(), yr.GetMax())
 	}
 
