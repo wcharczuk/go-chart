@@ -1,6 +1,11 @@
 package chart
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+
+	"github.com/wcharczuk/go-chart/matrix"
+)
 
 // PolynomialRegressionSeries implements a polynomial regression over a given
 // inner series.
@@ -11,7 +16,7 @@ type PolynomialRegressionSeries struct {
 
 	Limit       int
 	Offset      int
-	Order       int
+	Degree      int
 	InnerSeries ValueProvider
 
 	coeffs []float64
@@ -65,6 +70,12 @@ func (prs *PolynomialRegressionSeries) Validate() error {
 	if prs.InnerSeries == nil {
 		return fmt.Errorf("linear regression series requires InnerSeries to be set")
 	}
+
+	endIndex := prs.GetEndIndex()
+	if endIndex >= prs.InnerSeries.Len() {
+		return fmt.Errorf("invalid window; inner series has length %d but end index is %d", prs.InnerSeries.Len(), endIndex)
+	}
+
 	return nil
 }
 
@@ -73,18 +84,52 @@ func (prs *PolynomialRegressionSeries) GetValue(index int) (x, y float64) {
 	if prs.InnerSeries == nil || prs.InnerSeries.Len() == 0 {
 		return
 	}
+
+	if prs.coeffs == nil {
+		coeffs, err := prs.computeCoefficients()
+		if err != nil {
+			panic(err)
+		}
+		prs.coeffs = coeffs
+	}
+
+	offset := prs.GetOffset()
+	effectiveIndex := Math.MinInt(index+offset, prs.InnerSeries.Len())
+	x, y = prs.InnerSeries.GetValue(effectiveIndex)
+	y = prs.apply(x)
 	return
 }
 
-func (prs *PolynomialRegressionSeries) computeCoefficients() {
-	vandMatrix := make([][]float64, prs.Len(), prs.Order+1)
-	var xvalue float64
-	for i := 0; i < prs.Len(); i++ {
-		_, xvalue = prs.InnerSeries.GetValue(i)
-		var mult float64 = 1.0
-		for j := 0; j < prs.Order+1; j++ {
-			vandMatrix[i][j] = mult
-			mult = mult * xvalue
-		}
+func (prs *PolynomialRegressionSeries) apply(v float64) (out float64) {
+	for index, coeff := range prs.coeffs {
+		out = out + (coeff * math.Pow(v, float64(index)))
 	}
+	return
+}
+
+func (prs *PolynomialRegressionSeries) computeCoefficients() ([]float64, error) {
+	xvalues, yvalues := prs.values()
+	return matrix.Poly(xvalues, yvalues, prs.Degree)
+}
+
+func (prs *PolynomialRegressionSeries) values() (xvalues, yvalues []float64) {
+	startIndex := prs.GetOffset()
+	endIndex := prs.GetEndIndex()
+
+	xvalues = make([]float64, endIndex-startIndex)
+	yvalues = make([]float64, endIndex-startIndex)
+
+	for index := startIndex; index < endIndex; index++ {
+		x, y := prs.InnerSeries.GetValue(index)
+		xvalues[index] = x
+		yvalues[index] = y
+	}
+
+	return
+}
+
+// Render renders the series.
+func (prs *PolynomialRegressionSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
+	style := prs.Style.InheritFrom(defaults)
+	Draw.LineSeries(r, canvasBox, xrange, yrange, style, prs)
 }

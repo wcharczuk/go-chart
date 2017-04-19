@@ -204,6 +204,22 @@ func TestMatrixRow(t *testing.T) {
 	assert.Equal([]float64{7, 8, 9}, m.Row(2))
 }
 
+func TestMatrixSwapRows(t *testing.T) {
+	assert := assert.New(t)
+
+	m := NewFromArrays([][]float64{
+		{1, 2, 3},
+		{4, 5, 6},
+		{7, 8, 9},
+	})
+	
+	m.SwapRows(0,1)
+
+	assert.Equal([]float64{4,5,6}, m.Row(0))
+	assert.Equal([]float64{1,2,3}, m.Row(1))
+	assert.Equal([]float64{7,8,9}, m.Row(2))
+}
+
 func TestMatrixCopy(t *testing.T) {
 	assert := assert.New(t)
 
@@ -357,3 +373,24 @@ func TestMatrixQR(t *testing.T) {
 	assert.NotNil(q)
 	assert.NotNil(r)
 }
+
+func TestMatrixTranspose(t *testing.T) {
+	assert := assert.New(t)
+
+	m := NewFromArrays([][]float64{
+		{1, 2, 3},
+		{4, 5, 6},
+		{7, 8, 9},
+		{10, 11, 12},
+	})
+
+	m2 := m.Transpose()
+
+	rows, cols := m2.Size()
+	assert.Equal(3, rows)
+	assert.Equal(4, cols)
+
+	assert.Equal(1, m2.Get(0,0))
+	assert.Equal(10, m2.Get(0,3))
+	assert.Equal(3, m2.Get(2,0))
+)
