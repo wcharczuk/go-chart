@@ -62,7 +62,7 @@ func TestLinearRegressionSeriesWindowAndOffset(t *testing.T) {
 	linRegSeries := &LinearRegressionSeries{
 		InnerSeries: mainSeries,
 		Offset:      10,
-		Window:      10,
+		Limit:       10,
 	}
 
 	assert.Equal(10, linRegSeries.Len())
