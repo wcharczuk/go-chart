@@ -100,8 +100,7 @@ func (prs *PolynomialRegressionSeries) GetValue(index int) (x, y float64) {
 	return
 }
 
-// GetLastValue computes the last moving average value but walking back window size samples,
-// and recomputing the last moving average chunk.
+// GetLastValue computes the last poly regression value.
 func (prs *PolynomialRegressionSeries) GetLastValue() (x, y float64) {
 	if prs.InnerSeries == nil || prs.InnerSeries.Len() == 0 {
 		return
