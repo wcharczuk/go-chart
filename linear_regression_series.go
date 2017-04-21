@@ -77,8 +77,7 @@ func (lrs *LinearRegressionSeries) GetValue(index int) (x, y float64) {
 	return
 }
 
-// GetLastValue computes the last moving average value but walking back window size samples,
-// and recomputing the last moving average chunk.
+// GetLastValue computes the last linear regression value.
 func (lrs *LinearRegressionSeries) GetLastValue() (x, y float64) {
 	if lrs.InnerSeries == nil || lrs.InnerSeries.Len() == 0 {
 		return

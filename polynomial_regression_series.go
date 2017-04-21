@@ -100,6 +100,25 @@ func (prs *PolynomialRegressionSeries) GetValue(index int) (x, y float64) {
 	return
 }
 
+// GetLastValue computes the last moving average value but walking back window size samples,
+// and recomputing the last moving average chunk.
+func (prs *PolynomialRegressionSeries) GetLastValue() (x, y float64) {
+	if prs.InnerSeries == nil || prs.InnerSeries.Len() == 0 {
+		return
+	}
+	if prs.coeffs == nil {
+		coeffs, err := prs.computeCoefficients()
+		if err != nil {
+			panic(err)
+		}
+		prs.coeffs = coeffs
+	}
+	endIndex := prs.GetEndIndex()
+	x, y = prs.InnerSeries.GetValue(endIndex)
+	y = prs.apply(x)
+	return
+}
+
 func (prs *PolynomialRegressionSeries) apply(v float64) (out float64) {
 	for index, coeff := range prs.coeffs {
 		out = out + (coeff * math.Pow(v, float64(index)))
