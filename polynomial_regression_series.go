@@ -139,8 +139,8 @@ func (prs *PolynomialRegressionSeries) values() (xvalues, yvalues []float64) {
 
 	for index := startIndex; index < endIndex; index++ {
 		x, y := prs.InnerSeries.GetValue(index)
-		xvalues[index] = x
-		yvalues[index] = y
+		xvalues[index-startIndex] = x
+		yvalues[index-startIndex] = y
 	}
 
 	return
