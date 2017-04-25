@@ -52,9 +52,9 @@ func (prs PolynomialRegressionSeries) GetLimit() int {
 
 // GetEndIndex returns the effective limit end.
 func (prs PolynomialRegressionSeries) GetEndIndex() int {
-	offset := prs.GetOffset() + prs.Len()
+	windowEnd := prs.GetOffset() + prs.GetLimit()
 	innerSeriesLastIndex := prs.InnerSeries.Len() - 1
-	return Math.MinInt(offset, innerSeriesLastIndex)
+	return Math.MinInt(windowEnd, innerSeriesLastIndex)
 }
 
 // GetOffset returns the data offset.

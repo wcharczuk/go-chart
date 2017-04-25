@@ -49,9 +49,9 @@ func (lrs LinearRegressionSeries) GetLimit() int {
 
 // GetEndIndex returns the effective limit end.
 func (lrs LinearRegressionSeries) GetEndIndex() int {
-	offset := lrs.GetOffset() + lrs.Len()
+	windowEnd := lrs.GetOffset() + lrs.GetLimit()
 	innerSeriesLastIndex := lrs.InnerSeries.Len() - 1
-	return Math.MinInt(offset, innerSeriesLastIndex)
+	return Math.MinInt(windowEnd, innerSeriesLastIndex)
 }
 
 // GetOffset returns the data offset.
