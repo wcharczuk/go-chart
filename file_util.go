@@ -14,24 +14,30 @@ var (
 type fileUtil struct{}
 
 // ReadByLines reads a file and calls the handler for each line.
-func (fu fileUtil) ReadByLines(filePath string, handler func(line string)) error {
-	if f, err := os.Open(filePath); err == nil {
+func (fu fileUtil) ReadByLines(filePath string, handler func(line string) error) error {
+	var f *os.File
+	var err error
+	if f, err = os.Open(filePath); err == nil {
 		defer f.Close()
-
+		var line string
 		scanner := bufio.NewScanner(f)
 		for scanner.Scan() {
-			line := scanner.Text()
-			handler(line)
+			line = scanner.Text()
+			err = handler(line)
+			if err != nil {
+				return err
+			}
 		}
-	} else {
-		return err
 	}
-	return nil
+	return err
+
 }
 
 // ReadByChunks reads a file in `chunkSize` pieces, dispatched to the handler.
-func (fu fileUtil) ReadByChunks(filePath string, chunkSize int, handler func(line []byte)) error {
-	if f, err := os.Open(filePath); err == nil {
+func (fu fileUtil) ReadByChunks(filePath string, chunkSize int, handler func(line []byte) error) error {
+	var f *os.File
+	var err error
+	if f, err = os.Open(filePath); err == nil {
 		defer f.Close()
 
 		chunk := make([]byte, chunkSize)
@@ -41,10 +47,11 @@ func (fu fileUtil) ReadByChunks(filePath string, chunkSize int, handler func(lin
 				break
 			}
 			readData := chunk[:readBytes]
-			handler(readData)
+			err = handler(readData)
+			if err != nil {
+				return err
+			}
 		}
-	} else {
-		return err
 	}
-	return nil
+	return err
 }
