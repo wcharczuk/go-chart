@@ -354,13 +354,13 @@ func (c Chart) getValueFormatters() (x, y, ya ValueFormatter) {
 		}
 	}
 	if c.XAxis.ValueFormatter != nil {
-		x = c.XAxis.ValueFormatter
+		x = c.XAxis.GetValueFormatter()
 	}
 	if c.YAxis.ValueFormatter != nil {
-		y = c.YAxis.ValueFormatter
+		y = c.YAxis.GetValueFormatter()
 	}
 	if c.YAxisSecondary.ValueFormatter != nil {
-		ya = c.YAxisSecondary.ValueFormatter
+		ya = c.YAxisSecondary.GetValueFormatter()
 	}
 	return
 }

@@ -41,6 +41,14 @@ func (ya YAxis) GetStyle() Style {
 	return ya.Style
 }
 
+// GetValueFormatter returns the value formatter for the axis.
+func (ya YAxis) GetValueFormatter() ValueFormatter {
+	if ya.ValueFormatter != nil {
+		return ya.ValueFormatter
+	}
+	return FloatValueFormatter
+}
+
 // GetTickStyle returns the tick style.
 func (ya YAxis) GetTickStyle() Style {
 	return ya.TickStyle

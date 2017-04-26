@@ -30,6 +30,14 @@ func (xa XAxis) GetStyle() Style {
 	return xa.Style
 }
 
+// GetValueFormatter returns the value formatter for the axis.
+func (xa XAxis) GetValueFormatter() ValueFormatter {
+	if xa.ValueFormatter != nil {
+		return xa.ValueFormatter
+	}
+	return FloatValueFormatter
+}
+
 // GetTickPosition returns the tick position option for the axis.
 func (xa XAxis) GetTickPosition(defaults ...TickPosition) TickPosition {
 	if xa.TickPosition == TickPositionUnset {
