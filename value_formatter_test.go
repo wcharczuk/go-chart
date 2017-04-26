@@ -14,9 +14,9 @@ func TestTimeValueFormatterWithFormat(t *testing.T) {
 	di := Time.ToFloat64(d)
 	df := float64(di)
 
-	s := TimeValueFormatterWithFormat(d, DefaultDateFormat)
-	si := TimeValueFormatterWithFormat(di, DefaultDateFormat)
-	sf := TimeValueFormatterWithFormat(df, DefaultDateFormat)
+	s := formatTime(d, DefaultDateFormat)
+	si := formatTime(di, DefaultDateFormat)
+	sf := formatTime(df, DefaultDateFormat)
 	assert.Equal(s, si)
 	assert.Equal(s, sf)
 
