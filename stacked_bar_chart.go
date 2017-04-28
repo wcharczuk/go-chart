@@ -200,7 +200,7 @@ func (sbc StackedBarChart) drawYAxis(r Renderer, canvasBox Box) {
 		r.LineTo(canvasBox.Right+DefaultHorizontalTickWidth, canvasBox.Bottom)
 		r.Stroke()
 
-		ticks := Sequence.Float64(1.0, 0.0, 0.2)
+		ticks := Generate.Float64(1.0, 0.0, 0.2)
 		for _, t := range ticks {
 			axisStyle.GetStrokeOptions().WriteToRenderer(r)
 			ty := canvasBox.Bottom - int(t*float64(canvasBox.Height()))

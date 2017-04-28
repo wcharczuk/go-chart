@@ -391,8 +391,8 @@ func TestChartRegressionBadRangesByUser(t *testing.T) {
 		},
 		Series: []Series{
 			ContinuousSeries{
-				XValues: Sequence.Float64(1.0, 10.0),
-				YValues: Sequence.Float64(1.0, 10.0),
+				XValues: Generate.Float64(1.0, 10.0),
+				YValues: Generate.Float64(1.0, 10.0),
 			},
 		},
 	}
@@ -407,8 +407,8 @@ func TestChartValidatesSeries(t *testing.T) {
 	c := Chart{
 		Series: []Series{
 			ContinuousSeries{
-				XValues: Sequence.Float64(1.0, 10.0),
-				YValues: Sequence.Float64(1.0, 10.0),
+				XValues: Generate.Float64(1.0, 10.0),
+				YValues: Generate.Float64(1.0, 10.0),
 			},
 		},
 	}
@@ -418,7 +418,7 @@ func TestChartValidatesSeries(t *testing.T) {
 	c = Chart{
 		Series: []Series{
 			ContinuousSeries{
-				XValues: Sequence.Float64(1.0, 10.0),
+				XValues: Generate.Float64(1.0, 10.0),
 			},
 		},
 	}
@@ -504,8 +504,8 @@ func TestChartE2ELine(t *testing.T) {
 		},
 		Series: []Series{
 			ContinuousSeries{
-				XValues: Sequence.Float64(0, 4, 1),
-				YValues: Sequence.Float64(0, 4, 1),
+				XValues: Generate.Float64(0, 4, 1),
+				YValues: Generate.Float64(0, 4, 1),
 			},
 		},
 	}
@@ -549,8 +549,8 @@ func TestChartE2ELineWithFill(t *testing.T) {
 					StrokeColor: drawing.ColorBlue,
 					FillColor:   drawing.ColorRed,
 				},
-				XValues: Sequence.Float64(0, 4, 1),
-				YValues: Sequence.Float64(0, 4, 1),
+				XValues: Generate.Float64(0, 4, 1),
+				YValues: Generate.Float64(0, 4, 1),
 			},
 		},
 	}

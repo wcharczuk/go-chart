@@ -177,10 +177,10 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 	for _, s := range c.Series {
 		if s.GetStyle().IsZero() || s.GetStyle().Show {
 			seriesAxis := s.GetYAxis()
-			if bvp, isBoundedValueProvider := s.(BoundedValueProvider); isBoundedValueProvider {
+			if bvp, isBoundedValuesProvider := s.(BoundedValuesProvider); isBoundedValuesProvider {
 				seriesLength := bvp.Len()
 				for index := 0; index < seriesLength; index++ {
-					vx, vy1, vy2 := bvp.GetBoundedValue(index)
+					vx, vy1, vy2 := bvp.GetBoundedValues(index)
 
 					minx = math.Min(minx, vx)
 					maxx = math.Max(maxx, vx)
@@ -198,10 +198,10 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 						seriesMappedToSecondaryAxis = true
 					}
 				}
-			} else if vp, isValueProvider := s.(ValueProvider); isValueProvider {
+			} else if vp, isValuesProvider := s.(ValuesProvider); isValuesProvider {
 				seriesLength := vp.Len()
 				for index := 0; index < seriesLength; index++ {
-					vx, vy := vp.GetValue(index)
+					vx, vy := vp.GetValues(index)
 
 					minx = math.Min(minx, vx)
 					maxx = math.Max(maxx, vx)

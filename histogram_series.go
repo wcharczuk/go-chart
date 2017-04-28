@@ -9,7 +9,7 @@ type HistogramSeries struct {
 	Name        string
 	Style       Style
 	YAxis       YAxisType
-	InnerSeries ValueProvider
+	InnerSeries ValuesProvider
 }
 
 // GetName implements Series.GetName.
@@ -27,19 +27,19 @@ func (hs HistogramSeries) GetYAxis() YAxisType {
 	return hs.YAxis
 }
 
-// Len implements BoundedValueProvider.Len.
+// Len implements BoundedValuesProvider.Len.
 func (hs HistogramSeries) Len() int {
 	return hs.InnerSeries.Len()
 }
 
-// GetValue implements ValueProvider.GetValue.
-func (hs HistogramSeries) GetValue(index int) (x, y float64) {
-	return hs.InnerSeries.GetValue(index)
+// GetValues implements ValuesProvider.GetValues.
+func (hs HistogramSeries) GetValues(index int) (x, y float64) {
+	return hs.InnerSeries.GetValues(index)
 }
 
-// GetBoundedValue implements BoundedValueProvider.GetBoundedValue
-func (hs HistogramSeries) GetBoundedValue(index int) (x, y1, y2 float64) {
-	vx, vy := hs.InnerSeries.GetValue(index)
+// GetBoundedValues implements BoundedValuesProvider.GetBoundedValue
+func (hs HistogramSeries) GetBoundedValues(index int) (x, y1, y2 float64) {
+	vx, vy := hs.InnerSeries.GetValues(index)
 
 	x = vx
 

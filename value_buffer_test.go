@@ -6,10 +6,10 @@ import (
 	"github.com/blendlabs/go-assert"
 )
 
-func TestRingBuffer(t *testing.T) {
+func TestValueBuffer(t *testing.T) {
 	assert := assert.New(t)
 
-	buffer := NewRingBuffer()
+	buffer := NewValueBuffer()
 
 	buffer.Enqueue(1)
 	assert.Equal(1, buffer.Len())
@@ -96,14 +96,14 @@ func TestRingBuffer(t *testing.T) {
 	value = buffer.Dequeue()
 	assert.Equal(8, value)
 	assert.Equal(0, buffer.Len())
-	assert.Nil(buffer.Peek())
-	assert.Nil(buffer.PeekBack())
+	assert.Zero(buffer.Peek())
+	assert.Zero(buffer.PeekBack())
 }
 
 func TestRingBufferClear(t *testing.T) {
 	assert := assert.New(t)
 
-	buffer := NewRingBuffer()
+	buffer := NewValueBuffer()
 	buffer.Enqueue(1)
 	buffer.Enqueue(1)
 	buffer.Enqueue(1)
@@ -117,21 +117,21 @@ func TestRingBufferClear(t *testing.T) {
 
 	buffer.Clear()
 	assert.Equal(0, buffer.Len())
-	assert.Nil(buffer.Peek())
-	assert.Nil(buffer.PeekBack())
+	assert.Zero(buffer.Peek())
+	assert.Zero(buffer.PeekBack())
 }
 
 func TestRingBufferAsSlice(t *testing.T) {
 	assert := assert.New(t)
 
-	buffer := NewRingBuffer()
+	buffer := NewValueBuffer()
 	buffer.Enqueue(1)
 	buffer.Enqueue(2)
 	buffer.Enqueue(3)
 	buffer.Enqueue(4)
 	buffer.Enqueue(5)
 
-	contents := buffer.AsSlice()
+	contents := buffer.Array()
 	assert.Len(contents, 5)
 	assert.Equal(1, contents[0])
 	assert.Equal(2, contents[1])
@@ -143,20 +143,40 @@ func TestRingBufferAsSlice(t *testing.T) {
 func TestRingBufferEach(t *testing.T) {
 	assert := assert.New(t)
 
-	buffer := NewRingBuffer()
+	buffer := NewValueBuffer()
 
 	for x := 1; x < 17; x++ {
-		buffer.Enqueue(x)
+		buffer.Enqueue(float64(x))
 	}
 
 	called := 0
-	buffer.Each(func(v interface{}) {
-		if typed, isTyped := v.(int); isTyped {
-			if typed == (called + 1) {
-				called++
-			}
+	buffer.Each(func(_ int, v float64) {
+		if v == float64(called+1) {
+			called++
 		}
 	})
 
 	assert.Equal(16, called)
+}
+
+func TestNewValueBuffer(t *testing.T) {
+	assert := assert.New(t)
+
+	empty := NewValueBuffer()
+	assert.NotNil(empty)
+	assert.Zero(empty.Len())
+	assert.Equal(valueBufferDefaultCapacity, empty.Capacity())
+	assert.Zero(empty.Peek())
+	assert.Zero(empty.PeekBack())
+}
+
+func TestNewValueBufferWithValues(t *testing.T) {
+	assert := assert.New(t)
+
+	values := NewValueBuffer(1, 2, 3, 4)
+	assert.NotNil(values)
+	assert.Equal(4, values.Len())
+	assert.Equal(valueBufferDefaultCapacity, values.Capacity())
+	assert.Equal(1, values.Peek())
+	assert.Equal(4, values.PeekBack())
 }

@@ -29,7 +29,7 @@ func TestPolynomialRegression(t *testing.T) {
 	}
 
 	for i := 0; i < 100; i++ {
-		_, y := poly.GetValue(i)
+		_, y := poly.GetValues(i)
 		assert.InDelta(float64(i*i), y, matrix.DefaultEpsilon)
 	}
 }

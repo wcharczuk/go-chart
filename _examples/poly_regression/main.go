@@ -10,7 +10,7 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 
 	/*
 		In this example we add a new type of series, a `PolynomialRegressionSeries` that takes another series as a required argument.
-		InnerSeries only needs to implement `ValueProvider`, so really you could chain `PolynomialRegressionSeries` together if you wanted.
+		InnerSeries only needs to implement `ValuesProvider`, so really you could chain `PolynomialRegressionSeries` together if you wanted.
 	*/
 
 	mainSeries := chart.ContinuousSeries{

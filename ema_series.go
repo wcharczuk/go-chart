@@ -14,7 +14,7 @@ type EMASeries struct {
 	YAxis YAxisType
 
 	Period      int
-	InnerSeries ValueProvider
+	InnerSeries ValuesProvider
 
 	cache []float64
 }
@@ -52,23 +52,23 @@ func (ema EMASeries) GetSigma() float64 {
 	return 2.0 / (float64(ema.GetPeriod()) + 1)
 }
 
-// GetValue gets a value at a given index.
-func (ema *EMASeries) GetValue(index int) (x, y float64) {
+// GetValues gets a value at a given index.
+func (ema *EMASeries) GetValues(index int) (x, y float64) {
 	if ema.InnerSeries == nil {
 		return
 	}
 	if len(ema.cache) == 0 {
 		ema.ensureCachedValues()
 	}
-	vx, _ := ema.InnerSeries.GetValue(index)
+	vx, _ := ema.InnerSeries.GetValues(index)
 	x = vx
 	y = ema.cache[index]
 	return
 }
 
-// GetLastValue computes the last moving average value but walking back window size samples,
+// GetLastValues computes the last moving average value but walking back window size samples,
 // and recomputing the last moving average chunk.
-func (ema *EMASeries) GetLastValue() (x, y float64) {
+func (ema *EMASeries) GetLastValues() (x, y float64) {
 	if ema.InnerSeries == nil {
 		return
 	}
@@ -76,7 +76,7 @@ func (ema *EMASeries) GetLastValue() (x, y float64) {
 		ema.ensureCachedValues()
 	}
 	lastIndex := ema.InnerSeries.Len() - 1
-	x, _ = ema.InnerSeries.GetValue(lastIndex)
+	x, _ = ema.InnerSeries.GetValues(lastIndex)
 	y = ema.cache[lastIndex]
 	return
 }
@@ -86,7 +86,7 @@ func (ema *EMASeries) ensureCachedValues() {
 	ema.cache = make([]float64, seriesLength)
 	sigma := ema.GetSigma()
 	for x := 0; x < seriesLength; x++ {
-		_, y := ema.InnerSeries.GetValue(x)
+		_, y := ema.InnerSeries.GetValues(x)
 		if x == 0 {
 			ema.cache[x] = y
 			continue

@@ -14,7 +14,7 @@ type SMASeries struct {
 	YAxis YAxisType
 
 	Period      int
-	InnerSeries ValueProvider
+	InnerSeries ValuesProvider
 }
 
 // GetName returns the name of the time series.
@@ -48,25 +48,25 @@ func (sma SMASeries) GetPeriod(defaults ...int) int {
 	return sma.Period
 }
 
-// GetValue gets a value at a given index.
-func (sma SMASeries) GetValue(index int) (x, y float64) {
+// GetValues gets a value at a given index.
+func (sma SMASeries) GetValues(index int) (x, y float64) {
 	if sma.InnerSeries == nil || sma.InnerSeries.Len() == 0 {
 		return
 	}
-	px, _ := sma.InnerSeries.GetValue(index)
+	px, _ := sma.InnerSeries.GetValues(index)
 	x = px
 	y = sma.getAverage(index)
 	return
 }
 
-// GetLastValue computes the last moving average value but walking back window size samples,
+// GetLastValues computes the last moving average value but walking back window size samples,
 // and recomputing the last moving average chunk.
-func (sma SMASeries) GetLastValue() (x, y float64) {
+func (sma SMASeries) GetLastValues() (x, y float64) {
 	if sma.InnerSeries == nil || sma.InnerSeries.Len() == 0 {
 		return
 	}
 	seriesLen := sma.InnerSeries.Len()
-	px, _ := sma.InnerSeries.GetValue(seriesLen - 1)
+	px, _ := sma.InnerSeries.GetValues(seriesLen - 1)
 	x = px
 	y = sma.getAverage(seriesLen - 1)
 	return
@@ -78,7 +78,7 @@ func (sma SMASeries) getAverage(index int) float64 {
 	var accum float64
 	var count float64
 	for x := index; x >= floor; x-- {
-		_, vy := sma.InnerSeries.GetValue(x)
+		_, vy := sma.InnerSeries.GetValues(x)
 		accum += vy
 		count += 1.0
 	}

@@ -112,31 +112,31 @@ func (mhr MarketHoursRange) GetMarketClose() time.Time {
 // GetTicks returns the ticks for the range.
 // This is to override the default continous ticks that would be generated for the range.
 func (mhr *MarketHoursRange) GetTicks(r Renderer, defaults Style, vf ValueFormatter) []Tick {
-	times := Sequence.MarketHours(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
+	times := Generate.MarketHours(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
 	timesWidth := mhr.measureTimes(r, defaults, vf, times)
 	if timesWidth <= mhr.Domain {
 		return mhr.makeTicks(vf, times)
 	}
 
-	times = Sequence.MarketHourQuarters(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
+	times = Generate.MarketHourQuarters(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
 	timesWidth = mhr.measureTimes(r, defaults, vf, times)
 	if timesWidth <= mhr.Domain {
 		return mhr.makeTicks(vf, times)
 	}
 
-	times = Sequence.MarketDayCloses(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
+	times = Generate.MarketDayCloses(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
 	timesWidth = mhr.measureTimes(r, defaults, vf, times)
 	if timesWidth <= mhr.Domain {
 		return mhr.makeTicks(vf, times)
 	}
 
-	times = Sequence.MarketDayAlternateCloses(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
+	times = Generate.MarketDayAlternateCloses(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
 	timesWidth = mhr.measureTimes(r, defaults, vf, times)
 	if timesWidth <= mhr.Domain {
 		return mhr.makeTicks(vf, times)
 	}
 
-	times = Sequence.MarketDayMondayCloses(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
+	times = Generate.MarketDayMondayCloses(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
 	timesWidth = mhr.measureTimes(r, defaults, vf, times)
 	if timesWidth <= mhr.Domain {
 		return mhr.makeTicks(vf, times)

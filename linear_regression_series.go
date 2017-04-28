@@ -11,7 +11,7 @@ type LinearRegressionSeries struct {
 
 	Limit       int
 	Offset      int
-	InnerSeries ValueProvider
+	InnerSeries ValuesProvider
 
 	m       float64
 	b       float64
@@ -62,8 +62,8 @@ func (lrs LinearRegressionSeries) GetOffset() int {
 	return lrs.Offset
 }
 
-// GetValue gets a value at a given index.
-func (lrs *LinearRegressionSeries) GetValue(index int) (x, y float64) {
+// GetValues gets a value at a given index.
+func (lrs *LinearRegressionSeries) GetValues(index int) (x, y float64) {
 	if lrs.InnerSeries == nil || lrs.InnerSeries.Len() == 0 {
 		return
 	}
@@ -72,13 +72,13 @@ func (lrs *LinearRegressionSeries) GetValue(index int) (x, y float64) {
 	}
 	offset := lrs.GetOffset()
 	effectiveIndex := Math.MinInt(index+offset, lrs.InnerSeries.Len())
-	x, y = lrs.InnerSeries.GetValue(effectiveIndex)
+	x, y = lrs.InnerSeries.GetValues(effectiveIndex)
 	y = (lrs.m * lrs.normalize(x)) + lrs.b
 	return
 }
 
-// GetLastValue computes the last linear regression value.
-func (lrs *LinearRegressionSeries) GetLastValue() (x, y float64) {
+// GetLastValues computes the last linear regression value.
+func (lrs *LinearRegressionSeries) GetLastValues() (x, y float64) {
 	if lrs.InnerSeries == nil || lrs.InnerSeries.Len() == 0 {
 		return
 	}
@@ -86,7 +86,7 @@ func (lrs *LinearRegressionSeries) GetLastValue() (x, y float64) {
 		lrs.computeCoefficients()
 	}
 	endIndex := lrs.GetEndIndex()
-	x, y = lrs.InnerSeries.GetValue(endIndex)
+	x, y = lrs.InnerSeries.GetValues(endIndex)
 	y = (lrs.m * lrs.normalize(x)) + lrs.b
 	return
 }
@@ -102,18 +102,18 @@ func (lrs *LinearRegressionSeries) computeCoefficients() {
 
 	p := float64(endIndex - startIndex)
 
-	xvalues := NewRingBufferWithCapacity(lrs.Len())
+	xvalues := NewValueBufferWithCapacity(lrs.Len())
 	for index := startIndex; index < endIndex; index++ {
-		x, _ := lrs.InnerSeries.GetValue(index)
+		x, _ := lrs.InnerSeries.GetValues(index)
 		xvalues.Enqueue(x)
 	}
 
-	lrs.avgx = xvalues.Average()
-	lrs.stddevx = xvalues.StdDev()
+	lrs.avgx = Sequence{xvalues}.Average()
+	lrs.stddevx = Sequence{xvalues}.StdDev()
 
 	var sumx, sumy, sumxx, sumxy float64
 	for index := startIndex; index < endIndex; index++ {
-		x, y := lrs.InnerSeries.GetValue(index)
+		x, y := lrs.InnerSeries.GetValues(index)
 
 		x = lrs.normalize(x)
 

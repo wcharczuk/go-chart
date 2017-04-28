@@ -10,7 +10,7 @@ type MinSeries struct {
 	Name        string
 	Style       Style
 	YAxis       YAxisType
-	InnerSeries ValueProvider
+	InnerSeries ValuesProvider
 
 	minValue *float64
 }
@@ -35,10 +35,10 @@ func (ms MinSeries) Len() int {
 	return ms.InnerSeries.Len()
 }
 
-// GetValue gets a value at a given index.
-func (ms *MinSeries) GetValue(index int) (x, y float64) {
+// GetValues gets a value at a given index.
+func (ms *MinSeries) GetValues(index int) (x, y float64) {
 	ms.ensureMinValue()
-	x, _ = ms.InnerSeries.GetValue(index)
+	x, _ = ms.InnerSeries.GetValues(index)
 	y = *ms.minValue
 	return
 }
@@ -54,7 +54,7 @@ func (ms *MinSeries) ensureMinValue() {
 		minValue := math.MaxFloat64
 		var y float64
 		for x := 0; x < ms.InnerSeries.Len(); x++ {
-			_, y = ms.InnerSeries.GetValue(x)
+			_, y = ms.InnerSeries.GetValues(x)
 			if y < minValue {
 				minValue = y
 			}
@@ -76,7 +76,7 @@ type MaxSeries struct {
 	Name        string
 	Style       Style
 	YAxis       YAxisType
-	InnerSeries ValueProvider
+	InnerSeries ValuesProvider
 
 	maxValue *float64
 }
@@ -101,10 +101,10 @@ func (ms MaxSeries) Len() int {
 	return ms.InnerSeries.Len()
 }
 
-// GetValue gets a value at a given index.
-func (ms *MaxSeries) GetValue(index int) (x, y float64) {
+// GetValues gets a value at a given index.
+func (ms *MaxSeries) GetValues(index int) (x, y float64) {
 	ms.ensureMaxValue()
-	x, _ = ms.InnerSeries.GetValue(index)
+	x, _ = ms.InnerSeries.GetValues(index)
 	y = *ms.maxValue
 	return
 }
@@ -120,7 +120,7 @@ func (ms *MaxSeries) ensureMaxValue() {
 		maxValue := -math.MaxFloat64
 		var y float64
 		for x := 0; x < ms.InnerSeries.Len(); x++ {
-			_, y = ms.InnerSeries.GetValue(x)
+			_, y = ms.InnerSeries.GetValues(x)
 			if y > maxValue {
 				maxValue = y
 			}

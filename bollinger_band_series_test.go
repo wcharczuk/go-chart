@@ -1,6 +1,7 @@
 package chart
 
 import (
+	"fmt"
 	"math"
 	"testing"
 
@@ -10,9 +11,9 @@ import (
 func TestBollingerBandSeries(t *testing.T) {
 	assert := assert.New(t)
 
-	s1 := mockValueProvider{
-		X: Sequence.Float64(1.0, 100.0),
-		Y: Sequence.Random(100, 1024),
+	s1 := mockValuesProvider{
+		X: Generate.Float64(1.0, 100.0),
+		Y: Generate.Random(100, 1024),
 	}
 
 	bbs := &BollingerBandsSeries{
@@ -24,27 +25,27 @@ func TestBollingerBandSeries(t *testing.T) {
 	y2values := make([]float64, 100)
 
 	for x := 0; x < 100; x++ {
-		xvalues[x], y1values[x], y2values[x] = bbs.GetBoundedValue(x)
+		xvalues[x], y1values[x], y2values[x] = bbs.GetBoundedValues(x)
 	}
 
 	for x := bbs.GetPeriod(); x < 100; x++ {
-		assert.True(y1values[x] > y2values[x])
+		assert.True(y1values[x] > y2values[x], fmt.Sprintf("%v vs. %v", y1values[x], y2values[x]))
 	}
 }
 
 func TestBollingerBandLastValue(t *testing.T) {
 	assert := assert.New(t)
 
-	s1 := mockValueProvider{
-		X: Sequence.Float64(1.0, 100.0),
-		Y: Sequence.Float64(1.0, 100.0),
+	s1 := mockValuesProvider{
+		X: Generate.Float64(1.0, 100.0),
+		Y: Generate.Float64(1.0, 100.0),
 	}
 
 	bbs := &BollingerBandsSeries{
 		InnerSeries: s1,
 	}
 
-	x, y1, y2 := bbs.GetBoundedLastValue()
+	x, y1, y2 := bbs.GetBoundedLastValues()
 	assert.Equal(100.0, x)
 	assert.Equal(101, math.Floor(y1))
 	assert.Equal(83, math.Floor(y2))

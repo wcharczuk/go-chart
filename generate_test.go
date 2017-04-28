@@ -10,10 +10,10 @@ import (
 func TestSequenceFloat64(t *testing.T) {
 	assert := assert.New(t)
 
-	asc := Sequence.Float64(1.0, 10.0)
+	asc := Generate.Float64(1.0, 10.0)
 	assert.Len(asc, 10)
 
-	desc := Sequence.Float64(10.0, 1.0)
+	desc := Generate.Float64(10.0, 1.0)
 	assert.Len(desc, 10)
 }
 
@@ -21,7 +21,7 @@ func TestSequenceMarketHours(t *testing.T) {
 	assert := assert.New(t)
 
 	today := time.Date(2016, 07, 01, 12, 0, 0, 0, Date.Eastern())
-	mh := Sequence.MarketHours(today, today, NYSEOpen(), NYSEClose(), Date.IsNYSEHoliday)
+	mh := Generate.MarketHours(today, today, NYSEOpen(), NYSEClose(), Date.IsNYSEHoliday)
 	assert.Len(mh, 8)
 	assert.Equal(Date.Eastern(), mh[0].Location())
 }
@@ -29,7 +29,7 @@ func TestSequenceMarketHours(t *testing.T) {
 func TestSequenceMarketQuarters(t *testing.T) {
 	assert := assert.New(t)
 	today := time.Date(2016, 07, 01, 12, 0, 0, 0, Date.Eastern())
-	mh := Sequence.MarketHourQuarters(today, today, NYSEOpen(), NYSEClose(), Date.IsNYSEHoliday)
+	mh := Generate.MarketHourQuarters(today, today, NYSEOpen(), NYSEClose(), Date.IsNYSEHoliday)
 	assert.Len(mh, 4)
 	assert.Equal(9, mh[0].Hour())
 	assert.Equal(30, mh[0].Minute())
@@ -48,7 +48,7 @@ func TestSequenceHours(t *testing.T) {
 	assert := assert.New(t)
 
 	today := time.Date(2016, 07, 01, 12, 0, 0, 0, time.UTC)
-	seq := Sequence.Hours(today, 24)
+	seq := Generate.Hours(today, 24)
 
 	end := Date.End(seq)
 	assert.Len(seq, 24)
@@ -81,7 +81,7 @@ func TestSequenceHoursFill(t *testing.T) {
 		0.6,
 	}
 
-	filledTimes, filledValues := Sequence.HoursFill(xdata, ydata)
+	filledTimes, filledValues := Generate.HoursFilled(xdata, ydata)
 	assert.Len(filledTimes, Date.DiffHours(Date.Start(xdata), Date.End(xdata))+1)
 	assert.Equal(len(filledValues), len(filledTimes))
 

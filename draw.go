@@ -10,7 +10,7 @@ var (
 type draw struct{}
 
 // LineSeries draws a line series with a renderer.
-func (d draw) LineSeries(r Renderer, canvasBox Box, xrange, yrange Range, style Style, vs ValueProvider) {
+func (d draw) LineSeries(r Renderer, canvasBox Box, xrange, yrange Range, style Style, vs ValuesProvider) {
 	if vs.Len() == 0 {
 		return
 	}
@@ -18,7 +18,7 @@ func (d draw) LineSeries(r Renderer, canvasBox Box, xrange, yrange Range, style 
 	cb := canvasBox.Bottom
 	cl := canvasBox.Left
 
-	v0x, v0y := vs.GetValue(0)
+	v0x, v0y := vs.GetValues(0)
 	x0 := cl + xrange.Translate(v0x)
 	y0 := cb - yrange.Translate(v0y)
 
@@ -31,7 +31,7 @@ func (d draw) LineSeries(r Renderer, canvasBox Box, xrange, yrange Range, style 
 		style.GetFillOptions().WriteDrawingOptionsToRenderer(r)
 		r.MoveTo(x0, y0)
 		for i := 1; i < vs.Len(); i++ {
-			vx, vy = vs.GetValue(i)
+			vx, vy = vs.GetValues(i)
 			x = cl + xrange.Translate(vx)
 			y = cb - yrange.Translate(vy)
 			r.LineTo(x, y)
@@ -47,7 +47,7 @@ func (d draw) LineSeries(r Renderer, canvasBox Box, xrange, yrange Range, style 
 
 		r.MoveTo(x0, y0)
 		for i := 1; i < vs.Len(); i++ {
-			vx, vy = vs.GetValue(i)
+			vx, vy = vs.GetValues(i)
 			x = cl + xrange.Translate(vx)
 			y = cb - yrange.Translate(vy)
 			r.LineTo(x, y)
@@ -60,7 +60,7 @@ func (d draw) LineSeries(r Renderer, canvasBox Box, xrange, yrange Range, style 
 
 		style.GetDotOptions().WriteDrawingOptionsToRenderer(r)
 		for i := 0; i < vs.Len(); i++ {
-			vx, vy = vs.GetValue(i)
+			vx, vy = vs.GetValues(i)
 			x = cl + xrange.Translate(vx)
 			y = cb - yrange.Translate(vy)
 
@@ -82,8 +82,8 @@ func (d draw) LineSeries(r Renderer, canvasBox Box, xrange, yrange Range, style 
 	}
 }
 
-// BoundedSeries draws a series that implements BoundedValueProvider.
-func (d draw) BoundedSeries(r Renderer, canvasBox Box, xrange, yrange Range, style Style, bbs BoundedValueProvider, drawOffsetIndexes ...int) {
+// BoundedSeries draws a series that implements BoundedValuesProvider.
+func (d draw) BoundedSeries(r Renderer, canvasBox Box, xrange, yrange Range, style Style, bbs BoundedValuesProvider, drawOffsetIndexes ...int) {
 	drawOffsetIndex := 0
 	if len(drawOffsetIndexes) > 0 {
 		drawOffsetIndex = drawOffsetIndexes[0]
@@ -92,7 +92,7 @@ func (d draw) BoundedSeries(r Renderer, canvasBox Box, xrange, yrange Range, sty
 	cb := canvasBox.Bottom
 	cl := canvasBox.Left
 
-	v0x, v0y1, v0y2 := bbs.GetBoundedValue(0)
+	v0x, v0y1, v0y2 := bbs.GetBoundedValues(0)
 	x0 := cl + xrange.Translate(v0x)
 	y0 := cb - yrange.Translate(v0y1)
 
@@ -107,7 +107,7 @@ func (d draw) BoundedSeries(r Renderer, canvasBox Box, xrange, yrange Range, sty
 	style.GetFillAndStrokeOptions().WriteToRenderer(r)
 	r.MoveTo(x0, y0)
 	for i := 1; i < bbs.Len(); i++ {
-		vx, vy1, vy2 = bbs.GetBoundedValue(i)
+		vx, vy1, vy2 = bbs.GetBoundedValues(i)
 
 		xvalues[i] = vx
 		y2values[i] = vy2
@@ -133,7 +133,7 @@ func (d draw) BoundedSeries(r Renderer, canvasBox Box, xrange, yrange Range, sty
 }
 
 // HistogramSeries draws a value provider as boxes from 0.
-func (d draw) HistogramSeries(r Renderer, canvasBox Box, xrange, yrange Range, style Style, vs ValueProvider, barWidths ...int) {
+func (d draw) HistogramSeries(r Renderer, canvasBox Box, xrange, yrange Range, style Style, vs ValuesProvider, barWidths ...int) {
 	if vs.Len() == 0 {
 		return
 	}
@@ -150,7 +150,7 @@ func (d draw) HistogramSeries(r Renderer, canvasBox Box, xrange, yrange Range, s
 
 	//foreach datapoint, draw a box.
 	for index := 0; index < seriesLength; index++ {
-		vx, vy := vs.GetValue(index)
+		vx, vy := vs.GetValues(index)
 		y0 := yrange.Translate(0)
 		x := cl + xrange.Translate(vx)
 		y := yrange.Translate(vy)

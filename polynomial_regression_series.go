@@ -17,7 +17,7 @@ type PolynomialRegressionSeries struct {
 	Limit       int
 	Offset      int
 	Degree      int
-	InnerSeries ValueProvider
+	InnerSeries ValuesProvider
 
 	coeffs []float64
 }
@@ -79,8 +79,8 @@ func (prs *PolynomialRegressionSeries) Validate() error {
 	return nil
 }
 
-// GetValue returns the series value for a given index.
-func (prs *PolynomialRegressionSeries) GetValue(index int) (x, y float64) {
+// GetValues returns the series value for a given index.
+func (prs *PolynomialRegressionSeries) GetValues(index int) (x, y float64) {
 	if prs.InnerSeries == nil || prs.InnerSeries.Len() == 0 {
 		return
 	}
@@ -95,13 +95,13 @@ func (prs *PolynomialRegressionSeries) GetValue(index int) (x, y float64) {
 
 	offset := prs.GetOffset()
 	effectiveIndex := Math.MinInt(index+offset, prs.InnerSeries.Len())
-	x, y = prs.InnerSeries.GetValue(effectiveIndex)
+	x, y = prs.InnerSeries.GetValues(effectiveIndex)
 	y = prs.apply(x)
 	return
 }
 
-// GetLastValue computes the last poly regression value.
-func (prs *PolynomialRegressionSeries) GetLastValue() (x, y float64) {
+// GetLastValues computes the last poly regression value.
+func (prs *PolynomialRegressionSeries) GetLastValues() (x, y float64) {
 	if prs.InnerSeries == nil || prs.InnerSeries.Len() == 0 {
 		return
 	}
@@ -113,7 +113,7 @@ func (prs *PolynomialRegressionSeries) GetLastValue() (x, y float64) {
 		prs.coeffs = coeffs
 	}
 	endIndex := prs.GetEndIndex()
-	x, y = prs.InnerSeries.GetValue(endIndex)
+	x, y = prs.InnerSeries.GetValues(endIndex)
 	y = prs.apply(x)
 	return
 }
@@ -138,7 +138,7 @@ func (prs *PolynomialRegressionSeries) values() (xvalues, yvalues []float64) {
 	yvalues = make([]float64, endIndex-startIndex)
 
 	for index := startIndex; index < endIndex; index++ {
-		x, y := prs.InnerSeries.GetValue(index)
+		x, y := prs.InnerSeries.GetValues(index)
 		xvalues[index-startIndex] = x
 		yvalues[index-startIndex] = y
 	}

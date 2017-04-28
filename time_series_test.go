@@ -24,7 +24,7 @@ func TestTimeSeriesGetValue(t *testing.T) {
 		},
 	}
 
-	x0, y0 := ts.GetValue(0)
+	x0, y0 := ts.GetValues(0)
 	assert.NotZero(x0)
 	assert.Equal(1.0, y0)
 }
