@@ -1,4 +1,4 @@
-package chart
+package util
 
 import (
 	"math/rand"
@@ -17,8 +17,8 @@ type generate struct {
 	rnd *rand.Rand
 }
 
-// Float64 produces an array of floats from [start,end] by optional steps.
-func (g generate) Float64(start, end float64, steps ...float64) []float64 {
+// Values produces an array of floats from [start,end] by optional steps.
+func (g generate) Values(start, end float64, steps ...float64) Sequence {
 	var values []float64
 	step := 1.0
 	if len(steps) > 0 {
@@ -34,22 +34,22 @@ func (g generate) Float64(start, end float64, steps ...float64) []float64 {
 			values = append(values, x)
 		}
 	}
-	return values
+	return Sequence{Array(values)}
 }
 
 // Random generates a fixed length sequence of random values between (0, scale).
-func (g generate) Random(samples int, scale float64) []float64 {
+func (g generate) RandomValues(samples int, scale float64) Sequence {
 	values := make([]float64, samples)
 
 	for x := 0; x < samples; x++ {
 		values[x] = g.rnd.Float64() * scale
 	}
 
-	return values
+	return Sequence{Array(values)}
 }
 
 // Random generates a fixed length sequence of random values with a given average, above and below that average by (-scale, scale)
-func (g generate) RandomWithAverage(samples int, average, scale float64) []float64 {
+func (g generate) RandomValuesWithAverage(samples int, average, scale float64) Sequence {
 	values := make([]float64, samples)
 
 	for x := 0; x < samples; x++ {
@@ -57,7 +57,7 @@ func (g generate) RandomWithAverage(samples int, average, scale float64) []float
 		values[x] = average + jitter
 	}
 
-	return values
+	return Sequence{Array(values)}
 }
 
 // Days generates a sequence of timestamps by day, from -days to today.
