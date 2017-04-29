@@ -3,6 +3,8 @@ package chart
 import (
 	"fmt"
 	"time"
+
+	"github.com/wcharczuk/go-chart/util"
 )
 
 // MarketHoursRange is a special type of range that compresses a time range into just the
@@ -14,7 +16,7 @@ type MarketHoursRange struct {
 	MarketOpen  time.Time
 	MarketClose time.Time
 
-	HolidayProvider HolidayProvider
+	HolidayProvider util.HolidayProvider
 
 	ValueFormatter ValueFormatter
 

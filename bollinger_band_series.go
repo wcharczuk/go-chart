@@ -1,6 +1,10 @@
 package chart
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/wcharczuk/go-chart/util"
+)
 
 // BollingerBandsSeries draws bollinger bands for an inner series.
 // Bollinger bands are defined by two lines, one at SMA+k*stddev, one at SMA-k*stdev.
@@ -13,7 +17,7 @@ type BollingerBandsSeries struct {
 	K           float64
 	InnerSeries ValuesProvider
 
-	valueBuffer *ValueBuffer
+	valueBuffer *util.ValueBuffer
 }
 
 // GetName returns the name of the time series.
@@ -63,7 +67,7 @@ func (bbs *BollingerBandsSeries) GetBoundedValues(index int) (x, y1, y2 float64)
 		return
 	}
 	if bbs.valueBuffer == nil || index == 0 {
-		bbs.valueBuffer = NewValueBufferWithCapacity(bbs.GetPeriod())
+		bbs.valueBuffer = util.NewValueBufferWithCapacity(bbs.GetPeriod())
 	}
 	if bbs.valueBuffer.Len() >= bbs.GetPeriod() {
 		bbs.valueBuffer.Dequeue()
@@ -72,8 +76,8 @@ func (bbs *BollingerBandsSeries) GetBoundedValues(index int) (x, y1, y2 float64)
 	bbs.valueBuffer.Enqueue(py)
 	x = px
 
-	ay := Sequence{bbs.valueBuffer}.Average()
-	std := Sequence{bbs.valueBuffer}.StdDev()
+	ay := util.Sequence{bbs.valueBuffer}.Average()
+	std := util.Sequence{bbs.valueBuffer}.StdDev()
 
 	y1 = ay + (bbs.GetK() * std)
 	y2 = ay - (bbs.GetK() * std)
