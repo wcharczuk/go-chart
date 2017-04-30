@@ -123,8 +123,8 @@ func (ts timeSequence) Hours(start time.Time, totalHours int) []time.Time {
 
 // HoursFilled adds zero values for the data bounded by the start and end of the xdata array.
 func (ts timeSequence) HoursFilled(xdata []time.Time, ydata []float64) ([]time.Time, []float64) {
-	start := util.Date.Start(xdata)
-	end := util.Date.End(xdata)
+	start := Time.Start(xdata)
+	end := Time.End(xdata)
 
 	totalHours := util.Math.AbsInt(util.Date.DiffHours(start, end))
 
