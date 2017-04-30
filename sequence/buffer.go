@@ -1,4 +1,4 @@
-package util
+package sequence
 
 import (
 	"fmt"

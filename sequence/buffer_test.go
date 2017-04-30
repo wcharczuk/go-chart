@@ -1,4 +1,4 @@
-package util
+package sequence
 
 import (
 	"testing"
@@ -6,10 +6,10 @@ import (
 	"github.com/blendlabs/go-assert"
 )
 
-func TestValueBuffer(t *testing.T) {
+func TestBuffer(t *testing.T) {
 	assert := assert.New(t)
 
-	buffer := NewValueBuffer()
+	buffer := NewBuffer()
 
 	buffer.Enqueue(1)
 	assert.Equal(1, buffer.Len())
@@ -100,10 +100,10 @@ func TestValueBuffer(t *testing.T) {
 	assert.Zero(buffer.PeekBack())
 }
 
-func TestRingBufferClear(t *testing.T) {
+func TestBufferClear(t *testing.T) {
 	assert := assert.New(t)
 
-	buffer := NewValueBuffer()
+	buffer := NewBuffer()
 	buffer.Enqueue(1)
 	buffer.Enqueue(1)
 	buffer.Enqueue(1)
@@ -121,10 +121,10 @@ func TestRingBufferClear(t *testing.T) {
 	assert.Zero(buffer.PeekBack())
 }
 
-func TestRingBufferAsSlice(t *testing.T) {
+func TestBufferArray(t *testing.T) {
 	assert := assert.New(t)
 
-	buffer := NewValueBuffer()
+	buffer := NewBuffer()
 	buffer.Enqueue(1)
 	buffer.Enqueue(2)
 	buffer.Enqueue(3)
@@ -140,10 +140,10 @@ func TestRingBufferAsSlice(t *testing.T) {
 	assert.Equal(5, contents[4])
 }
 
-func TestRingBufferEach(t *testing.T) {
+func TestBufferEach(t *testing.T) {
 	assert := assert.New(t)
 
-	buffer := NewValueBuffer()
+	buffer := NewBuffer()
 
 	for x := 1; x < 17; x++ {
 		buffer.Enqueue(float64(x))
@@ -159,10 +159,10 @@ func TestRingBufferEach(t *testing.T) {
 	assert.Equal(16, called)
 }
 
-func TestNewValueBuffer(t *testing.T) {
+func TestNewBuffer(t *testing.T) {
 	assert := assert.New(t)
 
-	empty := NewValueBuffer()
+	empty := NewBuffer()
 	assert.NotNil(empty)
 	assert.Zero(empty.Len())
 	assert.Equal(valueBufferDefaultCapacity, empty.Capacity())
@@ -170,13 +170,24 @@ func TestNewValueBuffer(t *testing.T) {
 	assert.Zero(empty.PeekBack())
 }
 
-func TestNewValueBufferWithValues(t *testing.T) {
+func TestNewBufferWithValues(t *testing.T) {
 	assert := assert.New(t)
 
-	values := NewValueBuffer(1, 2, 3, 4)
+	values := NewBuffer(1, 2, 3, 4, 5)
 	assert.NotNil(values)
-	assert.Equal(4, values.Len())
+	assert.Equal(5, values.Len())
 	assert.Equal(valueBufferDefaultCapacity, values.Capacity())
 	assert.Equal(1, values.Peek())
-	assert.Equal(4, values.PeekBack())
+	assert.Equal(5, values.PeekBack())
+}
+
+func TestBufferGrowth(t *testing.T) {
+	assert := assert.New(t)
+
+	values := NewBuffer(1, 2, 3, 4, 5)
+	for i := 0; i < 1<<10; i++ {
+		values.Enqueue(float64(i))
+	}
+
+	assert.Equal(1<<10-1, values.PeekBack())
 }
