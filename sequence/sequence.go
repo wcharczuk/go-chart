@@ -36,6 +36,10 @@ func (s Seq) FoldLeft(mapfn func(i int, v0, v float64) float64) (v0 float64) {
 		return 0
 	}
 
+	if s.Len() == 1 {
+		return s.GetValue(0)
+	}
+
 	v0 = s.GetValue(0)
 	for i := 1; i < s.Len(); i++ {
 		v0 = mapfn(i, v0, s.GetValue(i))
@@ -49,7 +53,12 @@ func (s Seq) FoldRight(mapfn func(i int, v0, v float64) float64) (v0 float64) {
 		return 0
 	}
 
-	for i := s.Len() - 1; i >= 0; i-- {
+	if s.Len() == 1 {
+		return s.GetValue(0)
+	}
+
+	v0 = s.GetValue(s.Len() - 1)
+	for i := s.Len() - 2; i >= 0; i-- {
 		v0 = mapfn(i, v0, s.GetValue(i))
 	}
 	return

@@ -176,7 +176,6 @@ func TestNewBufferWithValues(t *testing.T) {
 	values := NewBuffer(1, 2, 3, 4, 5)
 	assert.NotNil(values)
 	assert.Equal(5, values.Len())
-	assert.Equal(bufferDefaultCapacity, values.Capacity())
 	assert.Equal(1, values.Peek())
 	assert.Equal(5, values.PeekBack())
 }

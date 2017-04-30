@@ -1,5 +1,10 @@
 package sequence
 
+// NewArray creates a new array.
+func NewArray(values ...float64) Array {
+	return Array(values)
+}
+
 // Array is a wrapper for an array of floats that implements `ValuesProvider`.
 type Array []float64
 
