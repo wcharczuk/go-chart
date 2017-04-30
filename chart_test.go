@@ -505,8 +505,8 @@ func TestChartE2ELine(t *testing.T) {
 		},
 		Series: []Series{
 			ContinuousSeries{
-				XValues: sequence.Values(0, 4, 1),
-				YValues: sequence.Values(0, 4, 1),
+				XValues: sequence.ValuesWithStep(0, 4, 1),
+				YValues: sequence.ValuesWithStep(0, 4, 1),
 			},
 		},
 	}
@@ -550,8 +550,8 @@ func TestChartE2ELineWithFill(t *testing.T) {
 					StrokeColor: drawing.ColorBlue,
 					FillColor:   drawing.ColorRed,
 				},
-				XValues: sequence.Values(0, 4, 1),
-				YValues: sequence.Values(0, 4, 1),
+				XValues: sequence.ValuesWithStep(0, 4, 1),
+				YValues: sequence.ValuesWithStep(0, 4, 1),
 			},
 		},
 	}

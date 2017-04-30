@@ -21,7 +21,7 @@ func (m mockValuesProvider) GetValues(index int) (x, y float64) {
 	if index < 0 {
 		panic("negative index at GetValue()")
 	}
-	if index > util.Math.MinInt(len(m.X), len(m.Y)) {
+	if index >= util.Math.MinInt(len(m.X), len(m.Y)) {
 		panic("index is outside the length of m.X or m.Y")
 	}
 	x = m.X[index]

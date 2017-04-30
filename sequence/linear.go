@@ -24,7 +24,7 @@ type Linear struct {
 
 // Len returns the number of elements in the sequence.
 func (lg Linear) Len() int {
-	return int((lg.limit - lg.offset) / lg.step)
+	return (int((lg.limit - lg.offset) / lg.step)) + 1
 }
 
 // GetValue returns the value at a given index.
