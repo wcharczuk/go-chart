@@ -8,10 +8,10 @@ import (
 )
 
 const (
-	valueBufferMinimumGrow     = 4
-	valueBufferShrinkThreshold = 32
-	valueBufferGrowFactor      = 200
-	valueBufferDefaultCapacity = 4
+	bufferMinimumGrow     = 4
+	bufferShrinkThreshold = 32
+	bufferGrowFactor      = 200
+	bufferDefaultCapacity = 4
 )
 
 var (
@@ -21,7 +21,7 @@ var (
 // NewBuffer creates a new value buffer with an optional set of values.
 func NewBuffer(values ...float64) *Buffer {
 	var tail int
-	array := make([]float64, util.Math.MaxInt(len(values), valueBufferDefaultCapacity))
+	array := make([]float64, util.Math.MaxInt(len(values), bufferDefaultCapacity))
 	if len(values) > 0 {
 		copy(array, values)
 		tail = len(values)
@@ -55,7 +55,7 @@ type Buffer struct {
 	size  int
 }
 
-// Len returns the length of the ValueBuffer (as it is currently populated).
+// Len returns the length of the Buffer (as it is currently populated).
 // Actual memory footprint may be different.
 func (b *Buffer) Len() int {
 	return b.size
@@ -67,12 +67,12 @@ func (b *Buffer) GetValue(index int) float64 {
 	return b.array[effectiveIndex]
 }
 
-// Capacity returns the total size of the ValueBuffer, including empty elements.
+// Capacity returns the total size of the Buffer, including empty elements.
 func (b *Buffer) Capacity() int {
 	return len(b.array)
 }
 
-// SetCapacity sets the capacity of the ValueBuffer.
+// SetCapacity sets the capacity of the Buffer.
 func (b *Buffer) SetCapacity(capacity int) {
 	newArray := make([]float64, capacity)
 	if b.size > 0 {
@@ -92,26 +92,20 @@ func (b *Buffer) SetCapacity(capacity int) {
 	}
 }
 
-// Clear removes all objects from the ValueBuffer.
+// Clear removes all objects from the Buffer.
 func (b *Buffer) Clear() {
-	if b.head < b.tail {
-		arrayClear(b.array, b.head, b.size)
-	} else {
-		arrayClear(b.array, b.head, len(b.array)-b.head)
-		arrayClear(b.array, 0, b.tail)
-	}
-
+	b.array = make([]float64, bufferDefaultCapacity)
 	b.head = 0
 	b.tail = 0
 	b.size = 0
 }
 
-// Enqueue adds an element to the "back" of the ValueBuffer.
+// Enqueue adds an element to the "back" of the Buffer.
 func (b *Buffer) Enqueue(value float64) {
 	if b.size == len(b.array) {
-		newCapacity := int(len(b.array) * int(valueBufferGrowFactor/100))
-		if newCapacity < (len(b.array) + valueBufferMinimumGrow) {
-			newCapacity = len(b.array) + valueBufferMinimumGrow
+		newCapacity := int(len(b.array) * int(bufferGrowFactor/100))
+		if newCapacity < (len(b.array) + bufferMinimumGrow) {
+			newCapacity = len(b.array) + bufferMinimumGrow
 		}
 		b.SetCapacity(newCapacity)
 	}
@@ -152,7 +146,7 @@ func (b *Buffer) PeekBack() float64 {
 	return b.array[b.tail-1]
 }
 
-// TrimExcess resizes the buffer to better fit the contents.
+// TrimExcess resizes the capacity of the buffer to better fit the contents.
 func (b *Buffer) TrimExcess() {
 	threshold := float64(len(b.array)) * 0.9
 	if b.size < int(threshold) {
