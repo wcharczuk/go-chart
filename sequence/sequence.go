@@ -13,6 +13,15 @@ type Seq struct {
 	Provider
 }
 
+// Array enumerates the sequence into a slice.
+func (s Seq) Array() (output []float64) {
+	output = make([]float64, s.Len())
+	for i := 0; i < s.Len(); i++ {
+		output[i] = s.GetValue(i)
+	}
+	return
+}
+
 // Each applies the `mapfn` to all values in the value provider.
 func (s Seq) Each(mapfn func(int, float64)) {
 	for i := 0; i < s.Len(); i++ {

@@ -5,13 +5,14 @@ import (
 	"time"
 
 	"github.com/blendlabs/go-assert"
+	"github.com/wcharczuk/go-chart/util"
 )
 
 func TestTimeValueFormatterWithFormat(t *testing.T) {
 	assert := assert.New(t)
 
 	d := time.Now()
-	di := Time.ToFloat64(d)
+	di := util.Time.ToFloat64(d)
 	df := float64(di)
 
 	s := formatTime(d, DefaultDateFormat)

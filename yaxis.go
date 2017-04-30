@@ -1,6 +1,10 @@
 package chart
 
-import "math"
+import (
+	"math"
+
+	util "github.com/wcharczuk/go-chart/util"
+)
 
 // YAxis is a veritcal rule of the range.
 // There can be (2) y-axes; a primary and secondary.
@@ -101,18 +105,18 @@ func (ya YAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 			finalTextX = tx - tb.Width()
 		}
 
-		maxTextHeight = Math.MaxInt(tb.Height(), maxTextHeight)
+		maxTextHeight = util.Math.MaxInt(tb.Height(), maxTextHeight)
 
 		if ya.AxisType == YAxisPrimary {
 			minx = canvasBox.Right
-			maxx = Math.MaxInt(maxx, tx+tb.Width())
+			maxx = util.Math.MaxInt(maxx, tx+tb.Width())
 		} else if ya.AxisType == YAxisSecondary {
-			minx = Math.MinInt(minx, finalTextX)
-			maxx = Math.MaxInt(maxx, tx)
+			minx = util.Math.MinInt(minx, finalTextX)
+			maxx = util.Math.MaxInt(maxx, tx)
 		}
 
-		miny = Math.MinInt(miny, ly-tbh2)
-		maxy = Math.MaxInt(maxy, ly+tbh2)
+		miny = util.Math.MinInt(miny, ly-tbh2)
+		maxy = util.Math.MaxInt(maxy, ly+tbh2)
 	}
 
 	if ya.NameStyle.Show && len(ya.Name) > 0 {

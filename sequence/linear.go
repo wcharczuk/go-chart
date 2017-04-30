@@ -1,5 +1,15 @@
 package sequence
 
+// Values returns the array values of a linear sequence with a given start, end and optional step.
+func Values(start, end float64) []float64 {
+	return Seq{NewLinear().WithOffset(start).WithLimit(end).WithStep(1.0)}.Array()
+}
+
+// ValuesWithStep returns the array values of a linear sequence with a given start, end and optional step.
+func ValuesWithStep(start, end, step float64) []float64 {
+	return Seq{NewLinear().WithOffset(start).WithLimit(end).WithStep(step)}.Array()
+}
+
 // NewLinear returns a new linear generator.
 func NewLinear() *Linear {
 	return &Linear{}

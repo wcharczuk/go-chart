@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	"github.com/golang/freetype/truetype"
+	"github.com/wcharczuk/go-chart/roboto"
 )
 
 var (
@@ -17,7 +18,7 @@ func GetDefaultFont() (*truetype.Font, error) {
 		_defaultFontLock.Lock()
 		defer _defaultFontLock.Unlock()
 		if _defaultFont == nil {
-			font, err := truetype.Parse(roboto)
+			font, err := truetype.Parse(roboto.Roboto)
 			if err != nil {
 				return nil, err
 			}

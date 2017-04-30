@@ -3,6 +3,8 @@ package chart
 import (
 	"fmt"
 	"time"
+
+	util "github.com/wcharczuk/go-chart/util"
 )
 
 // TimeSeries is a line on a chart.
@@ -33,14 +35,14 @@ func (ts TimeSeries) Len() int {
 
 // GetValues gets a value at a given index.
 func (ts TimeSeries) GetValues(index int) (x, y float64) {
-	x = Time.ToFloat64(ts.XValues[index])
+	x = util.Time.ToFloat64(ts.XValues[index])
 	y = ts.YValues[index]
 	return
 }
 
 // GetLastValues gets the last value.
 func (ts TimeSeries) GetLastValues() (x, y float64) {
-	x = Time.ToFloat64(ts.XValues[len(ts.XValues)-1])
+	x = util.Time.ToFloat64(ts.XValues[len(ts.XValues)-1])
 	y = ts.YValues[len(ts.YValues)-1]
 	return
 }

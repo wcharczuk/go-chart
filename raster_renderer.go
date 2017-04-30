@@ -6,6 +6,7 @@ import (
 	"io"
 	"math"
 
+	util "github.com/blendlabs/go-util"
 	"github.com/golang/freetype/truetype"
 	"github.com/wcharczuk/go-chart/drawing"
 )
@@ -191,7 +192,7 @@ func (rr *rasterRenderer) MeasureText(body string) Box {
 		return textBox
 	}
 
-	return textBox.Corners().Rotate(Math.RadiansToDegrees(*rr.rotateRadians)).Box()
+	return textBox.Corners().Rotate(util.Math.RadiansToDegrees(*rr.rotateRadians)).Box()
 }
 
 // SetTextRotation sets a text rotation.

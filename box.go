@@ -3,6 +3,8 @@ package chart
 import (
 	"fmt"
 	"math"
+
+	util "github.com/wcharczuk/go-chart/util"
 )
 
 var (
@@ -89,12 +91,12 @@ func (b Box) GetBottom(defaults ...int) int {
 
 // Width returns the width
 func (b Box) Width() int {
-	return Math.AbsInt(b.Right - b.Left)
+	return util.Math.AbsInt(b.Right - b.Left)
 }
 
 // Height returns the height
 func (b Box) Height() int {
-	return Math.AbsInt(b.Bottom - b.Top)
+	return util.Math.AbsInt(b.Bottom - b.Top)
 }
 
 // Center returns the center of the box
@@ -146,10 +148,10 @@ func (b Box) Equals(other Box) bool {
 // Grow grows a box based on another box.
 func (b Box) Grow(other Box) Box {
 	return Box{
-		Top:    Math.MinInt(b.Top, other.Top),
-		Left:   Math.MinInt(b.Left, other.Left),
-		Right:  Math.MaxInt(b.Right, other.Right),
-		Bottom: Math.MaxInt(b.Bottom, other.Bottom),
+		Top:    util.Math.MinInt(b.Top, other.Top),
+		Left:   util.Math.MinInt(b.Left, other.Left),
+		Right:  util.Math.MaxInt(b.Right, other.Right),
+		Bottom: util.Math.MaxInt(b.Bottom, other.Bottom),
 	}
 }
 
@@ -220,10 +222,10 @@ func (b Box) Fit(other Box) Box {
 func (b Box) Constrain(other Box) Box {
 	newBox := b.Clone()
 
-	newBox.Top = Math.MaxInt(newBox.Top, other.Top)
-	newBox.Left = Math.MaxInt(newBox.Left, other.Left)
-	newBox.Right = Math.MinInt(newBox.Right, other.Right)
-	newBox.Bottom = Math.MinInt(newBox.Bottom, other.Bottom)
+	newBox.Top = util.Math.MaxInt(newBox.Top, other.Top)
+	newBox.Left = util.Math.MaxInt(newBox.Left, other.Left)
+	newBox.Right = util.Math.MinInt(newBox.Right, other.Right)
+	newBox.Bottom = util.Math.MinInt(newBox.Bottom, other.Bottom)
 
 	return newBox
 }
@@ -262,36 +264,36 @@ type BoxCorners struct {
 // Box return the BoxCorners as a regular box.
 func (bc BoxCorners) Box() Box {
 	return Box{
-		Top:    Math.MinInt(bc.TopLeft.Y, bc.TopRight.Y),
-		Left:   Math.MinInt(bc.TopLeft.X, bc.BottomLeft.X),
-		Right:  Math.MaxInt(bc.TopRight.X, bc.BottomRight.X),
-		Bottom: Math.MaxInt(bc.BottomLeft.Y, bc.BottomRight.Y),
+		Top:    util.Math.MinInt(bc.TopLeft.Y, bc.TopRight.Y),
+		Left:   util.Math.MinInt(bc.TopLeft.X, bc.BottomLeft.X),
+		Right:  util.Math.MaxInt(bc.TopRight.X, bc.BottomRight.X),
+		Bottom: util.Math.MaxInt(bc.BottomLeft.Y, bc.BottomRight.Y),
 	}
 }
 
 // Width returns the width
 func (bc BoxCorners) Width() int {
-	minLeft := Math.MinInt(bc.TopLeft.X, bc.BottomLeft.X)
-	maxRight := Math.MaxInt(bc.TopRight.X, bc.BottomRight.X)
+	minLeft := util.Math.MinInt(bc.TopLeft.X, bc.BottomLeft.X)
+	maxRight := util.Math.MaxInt(bc.TopRight.X, bc.BottomRight.X)
 	return maxRight - minLeft
 }
 
 // Height returns the height
 func (bc BoxCorners) Height() int {
-	minTop := Math.MinInt(bc.TopLeft.Y, bc.TopRight.Y)
-	maxBottom := Math.MaxInt(bc.BottomLeft.Y, bc.BottomRight.Y)
+	minTop := util.Math.MinInt(bc.TopLeft.Y, bc.TopRight.Y)
+	maxBottom := util.Math.MaxInt(bc.BottomLeft.Y, bc.BottomRight.Y)
 	return maxBottom - minTop
 }
 
 // Center returns the center of the box
 func (bc BoxCorners) Center() (x, y int) {
 
-	left := Math.MeanInt(bc.TopLeft.X, bc.BottomLeft.X)
-	right := Math.MeanInt(bc.TopRight.X, bc.BottomRight.X)
+	left := util.Math.MeanInt(bc.TopLeft.X, bc.BottomLeft.X)
+	right := util.Math.MeanInt(bc.TopRight.X, bc.BottomRight.X)
 	x = ((right - left) >> 1) + left
 
-	top := Math.MeanInt(bc.TopLeft.Y, bc.TopRight.Y)
-	bottom := Math.MeanInt(bc.BottomLeft.Y, bc.BottomRight.Y)
+	top := util.Math.MeanInt(bc.TopLeft.Y, bc.TopRight.Y)
+	bottom := util.Math.MeanInt(bc.BottomLeft.Y, bc.BottomRight.Y)
 	y = ((bottom - top) >> 1) + top
 
 	return
@@ -301,12 +303,12 @@ func (bc BoxCorners) Center() (x, y int) {
 func (bc BoxCorners) Rotate(thetaDegrees float64) BoxCorners {
 	cx, cy := bc.Center()
 
-	thetaRadians := Math.DegreesToRadians(thetaDegrees)
+	thetaRadians := util.Math.DegreesToRadians(thetaDegrees)
 
-	tlx, tly := Math.RotateCoordinate(cx, cy, bc.TopLeft.X, bc.TopLeft.Y, thetaRadians)
-	trx, try := Math.RotateCoordinate(cx, cy, bc.TopRight.X, bc.TopRight.Y, thetaRadians)
-	brx, bry := Math.RotateCoordinate(cx, cy, bc.BottomRight.X, bc.BottomRight.Y, thetaRadians)
-	blx, bly := Math.RotateCoordinate(cx, cy, bc.BottomLeft.X, bc.BottomLeft.Y, thetaRadians)
+	tlx, tly := util.Math.RotateCoordinate(cx, cy, bc.TopLeft.X, bc.TopLeft.Y, thetaRadians)
+	trx, try := util.Math.RotateCoordinate(cx, cy, bc.TopRight.X, bc.TopRight.Y, thetaRadians)
+	brx, bry := util.Math.RotateCoordinate(cx, cy, bc.BottomRight.X, bc.BottomRight.Y, thetaRadians)
+	blx, bly := util.Math.RotateCoordinate(cx, cy, bc.BottomLeft.X, bc.BottomLeft.Y, thetaRadians)
 
 	return BoxCorners{
 		TopLeft:     Point{tlx, tly},

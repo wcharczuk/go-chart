@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	assert "github.com/blendlabs/go-assert"
+	"github.com/wcharczuk/go-chart/sequence"
 )
 
 func TestContinuousSeries(t *testing.T) {
@@ -12,8 +13,8 @@ func TestContinuousSeries(t *testing.T) {
 
 	cs := ContinuousSeries{
 		Name:    "Test Series",
-		XValues: Generate.Float64(1.0, 10.0),
-		YValues: Generate.Float64(1.0, 10.0),
+		XValues: sequence.Values(1.0, 10.0),
+		YValues: sequence.Values(1.0, 10.0),
 	}
 
 	assert.Equal("Test Series", cs.GetName())
@@ -53,20 +54,20 @@ func TestContinuousSeriesValidate(t *testing.T) {
 
 	cs := ContinuousSeries{
 		Name:    "Test Series",
-		XValues: Generate.Float64(1.0, 10.0),
-		YValues: Generate.Float64(1.0, 10.0),
+		XValues: sequence.Values(1.0, 10.0),
+		YValues: sequence.Values(1.0, 10.0),
 	}
 	assert.Nil(cs.Validate())
 
 	cs = ContinuousSeries{
 		Name:    "Test Series",
-		XValues: Generate.Float64(1.0, 10.0),
+		XValues: sequence.Values(1.0, 10.0),
 	}
 	assert.NotNil(cs.Validate())
 
 	cs = ContinuousSeries{
 		Name:    "Test Series",
-		YValues: Generate.Float64(1.0, 10.0),
+		YValues: sequence.Values(1.0, 10.0),
 	}
 	assert.NotNil(cs.Validate())
 }

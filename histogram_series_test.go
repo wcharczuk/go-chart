@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	assert "github.com/blendlabs/go-assert"
+	"github.com/wcharczuk/go-chart/sequence"
 )
 
 func TestHistogramSeries(t *testing.T) {
@@ -11,8 +12,8 @@ func TestHistogramSeries(t *testing.T) {
 
 	cs := ContinuousSeries{
 		Name:    "Test Series",
-		XValues: Generate.Float64(1.0, 20.0),
-		YValues: Generate.Float64(10.0, -10.0),
+		XValues: sequence.Values(1.0, 20.0),
+		YValues: sequence.Values(10.0, -10.0),
 	}
 
 	hs := HistogramSeries{

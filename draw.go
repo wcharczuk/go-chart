@@ -1,6 +1,10 @@
 package chart
 
-import "math"
+import (
+	"math"
+
+	util "github.com/wcharczuk/go-chart/util"
+)
 
 var (
 	// Draw contains helpers for drawing common objects.
@@ -36,8 +40,8 @@ func (d draw) LineSeries(r Renderer, canvasBox Box, xrange, yrange Range, style 
 			y = cb - yrange.Translate(vy)
 			r.LineTo(x, y)
 		}
-		r.LineTo(x, Math.MinInt(cb, cb-yv0))
-		r.LineTo(x0, Math.MinInt(cb, cb-yv0))
+		r.LineTo(x, util.Math.MinInt(cb, cb-yv0))
+		r.LineTo(x0, util.Math.MinInt(cb, cb-yv0))
 		r.LineTo(x0, y0)
 		r.Fill()
 	}

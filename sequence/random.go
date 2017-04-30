@@ -3,7 +3,25 @@ package sequence
 import (
 	"math"
 	"math/rand"
+	"time"
 )
+
+// RandomValues returns an array of random values.
+func RandomValues(count int) []float64 {
+	return Seq{NewRandom().WithLen(count)}.Array()
+}
+
+// RandomValuesWithAverage returns an array of random values with a given average.
+func RandomValuesWithAverage(average float64, count int) []float64 {
+	return Seq{NewRandom().WithAverage(average).WithLen(count)}.Array()
+}
+
+// NewRandom creates a new random sequence.
+func NewRandom() *Random {
+	return &Random{
+		rnd: rand.New(rand.NewSource(time.Now().Unix())),
+	}
+}
 
 // Random is a random number sequence generator.
 type Random struct {

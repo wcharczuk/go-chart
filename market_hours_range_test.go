@@ -5,17 +5,18 @@ import (
 	"time"
 
 	assert "github.com/blendlabs/go-assert"
+	"github.com/wcharczuk/go-chart/util"
 )
 
 func TestMarketHoursRangeGetDelta(t *testing.T) {
 	assert := assert.New(t)
 
 	r := &MarketHoursRange{
-		Min:             time.Date(2016, 07, 19, 9, 30, 0, 0, Date.Eastern()),
-		Max:             time.Date(2016, 07, 22, 16, 00, 0, 0, Date.Eastern()),
-		MarketOpen:      NYSEOpen(),
-		MarketClose:     NYSEClose(),
-		HolidayProvider: Date.IsNYSEHoliday,
+		Min:             time.Date(2016, 07, 19, 9, 30, 0, 0, util.Date.Eastern()),
+		Max:             time.Date(2016, 07, 22, 16, 00, 0, 0, util.Date.Eastern()),
+		MarketOpen:      util.NYSEOpen(),
+		MarketClose:     util.NYSEClose(),
+		HolidayProvider: util.Date.IsNYSEHoliday,
 	}
 
 	assert.NotZero(r.GetDelta())
@@ -25,19 +26,19 @@ func TestMarketHoursRangeTranslate(t *testing.T) {
 	assert := assert.New(t)
 
 	r := &MarketHoursRange{
-		Min:             time.Date(2016, 07, 18, 9, 30, 0, 0, Date.Eastern()),
-		Max:             time.Date(2016, 07, 22, 16, 00, 0, 0, Date.Eastern()),
-		MarketOpen:      NYSEOpen(),
-		MarketClose:     NYSEClose(),
-		HolidayProvider: Date.IsNYSEHoliday,
+		Min:             time.Date(2016, 07, 18, 9, 30, 0, 0, util.Date.Eastern()),
+		Max:             time.Date(2016, 07, 22, 16, 00, 0, 0, util.Date.Eastern()),
+		MarketOpen:      util.NYSEOpen(),
+		MarketClose:     util.NYSEClose(),
+		HolidayProvider: util.Date.IsNYSEHoliday,
 		Domain:          1000,
 	}
 
-	weds := time.Date(2016, 07, 20, 9, 30, 0, 0, Date.Eastern())
+	weds := time.Date(2016, 07, 20, 9, 30, 0, 0, util.Date.Eastern())
 
-	assert.Equal(0, r.Translate(Time.ToFloat64(r.Min)))
-	assert.Equal(400, r.Translate(Time.ToFloat64(weds)))
-	assert.Equal(1000, r.Translate(Time.ToFloat64(r.Max)))
+	assert.Equal(0, r.Translate(util.Time.ToFloat64(r.Min)))
+	assert.Equal(400, r.Translate(util.Time.ToFloat64(weds)))
+	assert.Equal(1000, r.Translate(util.Time.ToFloat64(r.Max)))
 }
 
 func TestMarketHoursRangeGetTicks(t *testing.T) {
@@ -56,17 +57,17 @@ func TestMarketHoursRangeGetTicks(t *testing.T) {
 	}
 
 	ra := &MarketHoursRange{
-		Min:             Date.On(NYSEOpen(), Date.Date(2016, 07, 18, Date.Eastern())),
-		Max:             Date.On(NYSEClose(), Date.Date(2016, 07, 22, Date.Eastern())),
-		MarketOpen:      NYSEOpen(),
-		MarketClose:     NYSEClose(),
-		HolidayProvider: Date.IsNYSEHoliday,
+		Min:             util.Date.On(util.NYSEOpen(), util.Date.Date(2016, 07, 18, util.Date.Eastern())),
+		Max:             util.Date.On(util.NYSEClose(), util.Date.Date(2016, 07, 22, util.Date.Eastern())),
+		MarketOpen:      util.NYSEOpen(),
+		MarketClose:     util.NYSEClose(),
+		HolidayProvider: util.Date.IsNYSEHoliday,
 		Domain:          1024,
 	}
 
 	ticks := ra.GetTicks(r, defaults, TimeValueFormatter)
 	assert.NotEmpty(ticks)
 	assert.Len(ticks, 5)
-	assert.NotEqual(Time.ToFloat64(ra.Min), ticks[0].Value)
+	assert.NotEqual(util.Time.ToFloat64(ra.Min), ticks[0].Value)
 	assert.NotEmpty(ticks[0].Label)
 }

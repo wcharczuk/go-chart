@@ -5,6 +5,7 @@ import (
 	"math"
 
 	"github.com/wcharczuk/go-chart/matrix"
+	util "github.com/wcharczuk/go-chart/util"
 )
 
 // PolynomialRegressionSeries implements a polynomial regression over a given
@@ -39,7 +40,7 @@ func (prs PolynomialRegressionSeries) GetYAxis() YAxisType {
 
 // Len returns the number of elements in the series.
 func (prs PolynomialRegressionSeries) Len() int {
-	return Math.MinInt(prs.GetLimit(), prs.InnerSeries.Len()-prs.GetOffset())
+	return util.Math.MinInt(prs.GetLimit(), prs.InnerSeries.Len()-prs.GetOffset())
 }
 
 // GetLimit returns the window size.
@@ -54,7 +55,7 @@ func (prs PolynomialRegressionSeries) GetLimit() int {
 func (prs PolynomialRegressionSeries) GetEndIndex() int {
 	windowEnd := prs.GetOffset() + prs.GetLimit()
 	innerSeriesLastIndex := prs.InnerSeries.Len() - 1
-	return Math.MinInt(windowEnd, innerSeriesLastIndex)
+	return util.Math.MinInt(windowEnd, innerSeriesLastIndex)
 }
 
 // GetOffset returns the data offset.
@@ -94,7 +95,7 @@ func (prs *PolynomialRegressionSeries) GetValues(index int) (x, y float64) {
 	}
 
 	offset := prs.GetOffset()
-	effectiveIndex := Math.MinInt(index+offset, prs.InnerSeries.Len())
+	effectiveIndex := util.Math.MinInt(index+offset, prs.InnerSeries.Len())
 	x, y = prs.InnerSeries.GetValues(effectiveIndex)
 	y = prs.apply(x)
 	return

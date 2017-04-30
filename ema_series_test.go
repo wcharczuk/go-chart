@@ -4,10 +4,11 @@ import (
 	"testing"
 
 	"github.com/blendlabs/go-assert"
+	"github.com/wcharczuk/go-chart/sequence"
 )
 
 var (
-	emaXValues = Generate.Float64(1.0, 50.0)
+	emaXValues = sequence.Values(1.0, 50.0)
 	emaYValues = []float64{
 		1, 2, 3, 4, 5, 4, 3, 2,
 		1, 2, 3, 4, 5, 4, 3, 2,

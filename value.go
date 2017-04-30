@@ -1,5 +1,7 @@
 package chart
 
+import util "github.com/blendlabs/go-util"
+
 // Value is a chart value.
 type Value struct {
 	Style Style
@@ -21,7 +23,7 @@ func (vs Values) Values() []float64 {
 
 // ValuesNormalized returns normalized values.
 func (vs Values) ValuesNormalized() []float64 {
-	return Math.Normalize(vs.Values()...)
+	return util.Math.Normalize(vs.Values()...)
 }
 
 // Normalize returns the values normalized.
@@ -38,7 +40,7 @@ func (vs Values) Normalize() []Value {
 			output = append(output, Value{
 				Style: v.Style,
 				Label: v.Label,
-				Value: Math.RoundDown(v.Value/total, 0.0001),
+				Value: util.Math.RoundDown(v.Value/total, 0.0001),
 			})
 		}
 	}

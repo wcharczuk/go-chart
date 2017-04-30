@@ -1,6 +1,10 @@
 package chart
 
-import "fmt"
+import (
+	"fmt"
+
+	util "github.com/wcharczuk/go-chart/util"
+)
 
 const (
 	// DefaultSimpleMovingAveragePeriod is the default number of values to average.
@@ -74,7 +78,7 @@ func (sma SMASeries) GetLastValues() (x, y float64) {
 
 func (sma SMASeries) getAverage(index int) float64 {
 	period := sma.GetPeriod()
-	floor := Math.MaxInt(0, index-period)
+	floor := util.Math.MaxInt(0, index-period)
 	var accum float64
 	var count float64
 	for x := index; x >= floor; x-- {

@@ -1,6 +1,11 @@
 package chart
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/wcharczuk/go-chart/sequence"
+	util "github.com/wcharczuk/go-chart/util"
+)
 
 // LinearRegressionSeries is a series that plots the n-nearest neighbors
 // linear regression for the values.
@@ -36,7 +41,7 @@ func (lrs LinearRegressionSeries) GetYAxis() YAxisType {
 
 // Len returns the number of elements in the series.
 func (lrs LinearRegressionSeries) Len() int {
-	return Math.MinInt(lrs.GetLimit(), lrs.InnerSeries.Len()-lrs.GetOffset())
+	return util.Math.MinInt(lrs.GetLimit(), lrs.InnerSeries.Len()-lrs.GetOffset())
 }
 
 // GetLimit returns the window size.
@@ -51,7 +56,7 @@ func (lrs LinearRegressionSeries) GetLimit() int {
 func (lrs LinearRegressionSeries) GetEndIndex() int {
 	windowEnd := lrs.GetOffset() + lrs.GetLimit()
 	innerSeriesLastIndex := lrs.InnerSeries.Len() - 1
-	return Math.MinInt(windowEnd, innerSeriesLastIndex)
+	return util.Math.MinInt(windowEnd, innerSeriesLastIndex)
 }
 
 // GetOffset returns the data offset.
@@ -71,7 +76,7 @@ func (lrs *LinearRegressionSeries) GetValues(index int) (x, y float64) {
 		lrs.computeCoefficients()
 	}
 	offset := lrs.GetOffset()
-	effectiveIndex := Math.MinInt(index+offset, lrs.InnerSeries.Len())
+	effectiveIndex := util.Math.MinInt(index+offset, lrs.InnerSeries.Len())
 	x, y = lrs.InnerSeries.GetValues(effectiveIndex)
 	y = (lrs.m * lrs.normalize(x)) + lrs.b
 	return
@@ -102,14 +107,14 @@ func (lrs *LinearRegressionSeries) computeCoefficients() {
 
 	p := float64(endIndex - startIndex)
 
-	xvalues := NewValueBufferWithCapacity(lrs.Len())
+	xvalues := sequence.NewBufferWithCapacity(lrs.Len())
 	for index := startIndex; index < endIndex; index++ {
 		x, _ := lrs.InnerSeries.GetValues(index)
 		xvalues.Enqueue(x)
 	}
 
-	lrs.avgx = Sequence{xvalues}.Average()
-	lrs.stddevx = Sequence{xvalues}.StdDev()
+	lrs.avgx = sequence.Seq{Provider: xvalues}.Average()
+	lrs.stddevx = sequence.Seq{Provider: xvalues}.StdDev()
 
 	var sumx, sumy, sumxx, sumxy float64
 	for index := startIndex; index < endIndex; index++ {
