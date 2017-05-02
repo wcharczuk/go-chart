@@ -15,7 +15,7 @@ func TestValues(t *testing.T) {
 	assert.Equal(100, values[99])
 }
 
-func TestValueWithStep(t *testing.T) {
+func TestValuesWithStep(t *testing.T) {
 	assert := assert.New(t)
 
 	values := ValuesWithStep(0, 100, 5)
@@ -23,6 +23,11 @@ func TestValueWithStep(t *testing.T) {
 	assert.Len(values, 21)
 }
 
-func TestValuesLen(t *testing.T) {
+func TestValuesReversed(t *testing.T) {
 	assert := assert.New(t)
+
+	values := Values(10.0, 1.0)
+	assert.Equal(10, len(values))
+	assert.Equal(10.0, values[0])
+	assert.Equal(1.0, values[9])
 }

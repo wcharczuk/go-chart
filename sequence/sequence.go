@@ -27,7 +27,6 @@ func (s Seq) Array() (output []float64) {
 		return
 	}
 
-	println(s.Len())
 	output = make([]float64, s.Len())
 	for i := 0; i < s.Len(); i++ {
 		output[i] = s.GetValue(i)
