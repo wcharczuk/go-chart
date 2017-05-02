@@ -90,5 +90,6 @@ func TestSequenceNormalize(t *testing.T) {
 	assert.NotEmpty(normalized)
 	assert.Len(normalized, 5)
 	assert.Equal(0, normalized[0])
+	assert.Equal(0.25, normalized[1])
 	assert.Equal(1, normalized[4])
 }

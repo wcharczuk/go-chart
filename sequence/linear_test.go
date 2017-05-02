@@ -22,3 +22,7 @@ func TestValueWithStep(t *testing.T) {
 	assert.Equal(100, values[20])
 	assert.Len(values, 21)
 }
+
+func TestValuesLen(t *testing.T) {
+	assert := assert.New(t)
+}

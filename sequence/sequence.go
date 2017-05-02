@@ -23,6 +23,11 @@ type Seq struct {
 
 // Array enumerates the sequence into a slice.
 func (s Seq) Array() (output []float64) {
+	if s.Len() == 0 {
+		return
+	}
+
+	println(s.Len())
 	output = make([]float64, s.Len())
 	for i := 0; i < s.Len(); i++ {
 		output[i] = s.GetValue(i)
@@ -236,7 +241,7 @@ func (s Seq) Percentile(percent float64) (percentile float64) {
 	return percentile
 }
 
-// Normalize maps every value to the interval [0, 1.0).
+// Normalize maps every value to the interval [0, 1.0].
 func (s Seq) Normalize() Seq {
 	min, max := s.MinMax()
 
