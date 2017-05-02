@@ -1,6 +1,14 @@
 package sequence
 
-import "math"
+import (
+	"math"
+	"sort"
+)
+
+// New returns a new sequence.
+func New(values ...float64) Seq {
+	return Seq{Provider: Array(values)}
+}
 
 // Provider is a provider for values for a sequence.
 type Provider interface {
@@ -73,6 +81,88 @@ func (s Seq) FoldRight(mapfn func(i int, v0, v float64) float64) (v0 float64) {
 	return
 }
 
+// Min returns the minimum value in the sequence.
+func (s Seq) Min() float64 {
+	if s.Len() == 0 {
+		return 0
+	}
+	min := s.GetValue(0)
+	var value float64
+	for i := 1; i < s.Len(); i++ {
+		value = s.GetValue(i)
+		if value < min {
+			min = value
+		}
+	}
+	return min
+}
+
+// Max returns the maximum value in the sequence.
+func (s Seq) Max() float64 {
+	if s.Len() == 0 {
+		return 0
+	}
+	max := s.GetValue(0)
+	var value float64
+	for i := 1; i < s.Len(); i++ {
+		value = s.GetValue(i)
+		if value > max {
+			max = value
+		}
+	}
+	return max
+}
+
+// MinMax returns the minimum and the maximum in one pass.
+func (s Seq) MinMax() (min, max float64) {
+	if s.Len() == 0 {
+		return
+	}
+	min = s.GetValue(0)
+	max = min
+	var value float64
+	for i := 1; i < s.Len(); i++ {
+		value = s.GetValue(i)
+		if value < min {
+			min = value
+		}
+		if value > max {
+			max = value
+		}
+	}
+	return
+}
+
+// Sort returns the sequence sorted in ascending order.
+// This fully enumerates the sequence.
+func (s Seq) Sort() Seq {
+	if s.Len() == 0 {
+		return s
+	}
+	values := s.Array()
+	sort.Float64s(values)
+	return Seq{Provider: Array(values)}
+}
+
+// Median returns the median or middle value in the sorted sequence.
+func (s Seq) Median() (median float64) {
+	l := s.Len()
+	if l == 0 {
+		return
+	}
+
+	sorted := s.Sort()
+	if l%2 == 0 {
+		v0 := sorted.GetValue(l/2 - 1)
+		v1 := sorted.GetValue(l/2 + 1)
+		median = (v0 + v1) / 2
+	} else {
+		median = float64(sorted.GetValue(l << 1))
+	}
+
+	return
+}
+
 // Sum adds all the elements of a series together.
 func (s Seq) Sum() (accum float64) {
 	if s.Len() == 0 {
@@ -117,4 +207,44 @@ func (s Seq) StdDev() float64 {
 	}
 
 	return math.Pow(s.Variance(), 0.5)
+}
+
+//Percentile finds the relative standing in a slice of floats.
+// `percent` should be given on the interval [0,1.0).
+func (s Seq) Percentile(percent float64) (percentile float64) {
+	l := s.Len()
+	if l == 0 {
+		return 0
+	}
+
+	if percent < 0 || percent > 1.0 {
+		panic("percent out of range [0.0, 1.0)")
+	}
+
+	sorted := s.Sort()
+	index := percent * float64(l)
+	if index == float64(int64(index)) {
+		i := f64i(index)
+		ci := sorted.GetValue(i - 1)
+		c := sorted.GetValue(i)
+		percentile = (ci + c) / 2.0
+	} else {
+		i := f64i(index)
+		percentile = sorted.GetValue(i)
+	}
+
+	return percentile
+}
+
+// Normalize maps every value to the interval [0, 1.0).
+func (s Seq) Normalize() Seq {
+	min, max := s.MinMax()
+
+	delta := max - min
+	output := make([]float64, s.Len())
+	for i := 0; i < s.Len(); i++ {
+		output[i] = (s.GetValue(i) - min) / delta
+	}
+
+	return Seq{Provider: Array(output)}
 }

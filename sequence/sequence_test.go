@@ -81,3 +81,14 @@ func TestSequenceVariance(t *testing.T) {
 	values := Seq{NewArray(1, 2, 3, 4, 5)}
 	assert.Equal(2, values.Variance())
 }
+
+func TestSequenceNormalize(t *testing.T) {
+	assert := assert.New(t)
+
+	normalized := New(1, 2, 3, 4, 5).Normalize().Array()
+
+	assert.NotEmpty(normalized)
+	assert.Len(normalized, 5)
+	assert.Equal(0, normalized[0])
+	assert.Equal(1, normalized[4])
+}
