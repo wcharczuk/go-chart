@@ -1,4 +1,4 @@
-package sequence
+package seq
 
 import (
 	"testing"
@@ -85,7 +85,7 @@ func TestSequenceVariance(t *testing.T) {
 func TestSequenceNormalize(t *testing.T) {
 	assert := assert.New(t)
 
-	normalized := New(1, 2, 3, 4, 5).Normalize().Array()
+	normalized := Values(1, 2, 3, 4, 5).Normalize().Array()
 
 	assert.NotEmpty(normalized)
 	assert.Len(normalized, 5)

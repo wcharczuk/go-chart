@@ -1,18 +1,18 @@
-package sequence
+package seq
 
-// Values returns the array values of a linear sequence with a given start, end and optional step.
-func Values(start, end float64) []float64 {
+// Range returns the array values of a linear seq with a given start, end and optional step.
+func Range(start, end float64) []float64 {
 	return Seq{NewLinear().WithStart(start).WithEnd(end).WithStep(1.0)}.Array()
 }
 
-// ValuesWithStep returns the array values of a linear sequence with a given start, end and optional step.
-func ValuesWithStep(start, end, step float64) []float64 {
+// RangeWithStep returns the array values of a linear seq with a given start, end and optional step.
+func RangeWithStep(start, end, step float64) []float64 {
 	return Seq{NewLinear().WithStart(start).WithEnd(end).WithStep(step)}.Array()
 }
 
 // NewLinear returns a new linear generator.
 func NewLinear() *Linear {
-	return &Linear{}
+	return &Linear{step: 1.0}
 }
 
 // Linear is a stepwise generator.
@@ -22,7 +22,22 @@ type Linear struct {
 	step  float64
 }
 
-// Len returns the number of elements in the sequence.
+// Start returns the start value.
+func (lg Linear) Start() float64 {
+	return lg.start
+}
+
+// End returns the end value.
+func (lg Linear) End() float64 {
+	return lg.end
+}
+
+// Step returns the step value.
+func (lg Linear) Step() float64 {
+	return lg.step
+}
+
+// Len returns the number of elements in the seq.
 func (lg Linear) Len() int {
 	if lg.start < lg.end {
 		return int((lg.end-lg.start)/lg.step) + 1

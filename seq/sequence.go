@@ -1,27 +1,32 @@
-package sequence
+package seq
 
 import (
 	"math"
 	"sort"
 )
 
-// New returns a new sequence.
-func New(values ...float64) Seq {
+// New wraps a provider with a seq.
+func New(provider Provider) Seq {
+	return Seq{Provider: provider}
+}
+
+// Values returns a new seq composed of a given set of values.
+func Values(values ...float64) Seq {
 	return Seq{Provider: Array(values)}
 }
 
-// Provider is a provider for values for a sequence.
+// Provider is a provider for values for a seq.
 type Provider interface {
 	Len() int
 	GetValue(int) float64
 }
 
-// Seq is a utility wrapper for sequence providers.
+// Seq is a utility wrapper for seq providers.
 type Seq struct {
 	Provider
 }
 
-// Array enumerates the sequence into a slice.
+// Array enumerates the seq into a slice.
 func (s Seq) Array() (output []float64) {
 	if s.Len() == 0 {
 		return
@@ -42,7 +47,7 @@ func (s Seq) Each(mapfn func(int, float64)) {
 }
 
 // Map applies the `mapfn` to all values in the value provider,
-// returning a new sequence.
+// returning a new seq.
 func (s Seq) Map(mapfn func(i int, v float64) float64) Seq {
 	output := make([]float64, s.Len())
 	for i := 0; i < s.Len(); i++ {
@@ -51,7 +56,7 @@ func (s Seq) Map(mapfn func(i int, v float64) float64) Seq {
 	return Seq{Array(output)}
 }
 
-// FoldLeft collapses a sequence from left to right.
+// FoldLeft collapses a seq from left to right.
 func (s Seq) FoldLeft(mapfn func(i int, v0, v float64) float64) (v0 float64) {
 	if s.Len() == 0 {
 		return 0
@@ -68,7 +73,7 @@ func (s Seq) FoldLeft(mapfn func(i int, v0, v float64) float64) (v0 float64) {
 	return
 }
 
-// FoldRight collapses a sequence from right to left.
+// FoldRight collapses a seq from right to left.
 func (s Seq) FoldRight(mapfn func(i int, v0, v float64) float64) (v0 float64) {
 	if s.Len() == 0 {
 		return 0
@@ -85,7 +90,7 @@ func (s Seq) FoldRight(mapfn func(i int, v0, v float64) float64) (v0 float64) {
 	return
 }
 
-// Min returns the minimum value in the sequence.
+// Min returns the minimum value in the seq.
 func (s Seq) Min() float64 {
 	if s.Len() == 0 {
 		return 0
@@ -101,7 +106,7 @@ func (s Seq) Min() float64 {
 	return min
 }
 
-// Max returns the maximum value in the sequence.
+// Max returns the maximum value in the seq.
 func (s Seq) Max() float64 {
 	if s.Len() == 0 {
 		return 0
@@ -137,8 +142,8 @@ func (s Seq) MinMax() (min, max float64) {
 	return
 }
 
-// Sort returns the sequence sorted in ascending order.
-// This fully enumerates the sequence.
+// Sort returns the seq sorted in ascending order.
+// This fully enumerates the seq.
 func (s Seq) Sort() Seq {
 	if s.Len() == 0 {
 		return s
@@ -148,7 +153,7 @@ func (s Seq) Sort() Seq {
 	return Seq{Provider: Array(values)}
 }
 
-// Median returns the median or middle value in the sorted sequence.
+// Median returns the median or middle value in the sorted seq.
 func (s Seq) Median() (median float64) {
 	l := s.Len()
 	if l == 0 {

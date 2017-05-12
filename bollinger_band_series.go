@@ -3,7 +3,7 @@ package chart
 import (
 	"fmt"
 
-	"github.com/wcharczuk/go-chart/sequence"
+	"github.com/wcharczuk/go-chart/seq"
 )
 
 // BollingerBandsSeries draws bollinger bands for an inner series.
@@ -17,7 +17,7 @@ type BollingerBandsSeries struct {
 	K           float64
 	InnerSeries ValuesProvider
 
-	valueBuffer *sequence.Buffer
+	valueBuffer *seq.Buffer
 }
 
 // GetName returns the name of the time series.
@@ -67,7 +67,7 @@ func (bbs *BollingerBandsSeries) GetBoundedValues(index int) (x, y1, y2 float64)
 		return
 	}
 	if bbs.valueBuffer == nil || index == 0 {
-		bbs.valueBuffer = sequence.NewBufferWithCapacity(bbs.GetPeriod())
+		bbs.valueBuffer = seq.NewBufferWithCapacity(bbs.GetPeriod())
 	}
 	if bbs.valueBuffer.Len() >= bbs.GetPeriod() {
 		bbs.valueBuffer.Dequeue()
@@ -76,8 +76,8 @@ func (bbs *BollingerBandsSeries) GetBoundedValues(index int) (x, y1, y2 float64)
 	bbs.valueBuffer.Enqueue(py)
 	x = px
 
-	ay := sequence.Seq{Provider: bbs.valueBuffer}.Average()
-	std := sequence.Seq{Provider: bbs.valueBuffer}.StdDev()
+	ay := seq.New(bbs.valueBuffer).Average()
+	std := seq.New(bbs.valueBuffer).StdDev()
 
 	y1 = ay + (bbs.GetK() * std)
 	y2 = ay - (bbs.GetK() * std)
@@ -96,15 +96,15 @@ func (bbs *BollingerBandsSeries) GetBoundedLastValues() (x, y1, y2 float64) {
 		startAt = 0
 	}
 
-	vb := sequence.NewBufferWithCapacity(period)
+	vb := seq.NewBufferWithCapacity(period)
 	for index := startAt; index < seriesLength; index++ {
 		xn, yn := bbs.InnerSeries.GetValues(index)
 		vb.Enqueue(yn)
 		x = xn
 	}
 
-	ay := sequence.Seq{Provider: vb}.Average()
-	std := sequence.Seq{Provider: vb}.StdDev()
+	ay := seq.Seq{Provider: vb}.Average()
+	std := seq.Seq{Provider: vb}.StdDev()
 
 	y1 = ay + (bbs.GetK() * std)
 	y2 = ay - (bbs.GetK() * std)

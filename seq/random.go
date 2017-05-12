@@ -1,4 +1,4 @@
-package sequence
+package seq
 
 import (
 	"math"
@@ -16,14 +16,14 @@ func RandomValuesWithAverage(average float64, count int) []float64 {
 	return Seq{NewRandom().WithAverage(average).WithLen(count)}.Array()
 }
 
-// NewRandom creates a new random sequence.
+// NewRandom creates a new random seq.
 func NewRandom() *Random {
 	return &Random{
 		rnd: rand.New(rand.NewSource(time.Now().Unix())),
 	}
 }
 
-// Random is a random number sequence generator.
+// Random is a random number seq generator.
 type Random struct {
 	rnd     *rand.Rand
 	scale   *float64
@@ -55,10 +55,20 @@ func (r *Random) WithLen(length int) *Random {
 	return r
 }
 
+// Scale returns the scale.
+func (r Random) Scale() *float64 {
+	return r.scale
+}
+
 // WithScale sets the scale and returns the Random.
 func (r *Random) WithScale(scale float64) *Random {
 	r.scale = &scale
 	return r
+}
+
+// Average returns the average.
+func (r Random) Average() *float64 {
+	return r.average
 }
 
 // WithAverage sets the average and returns the Random.

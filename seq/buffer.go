@@ -1,4 +1,4 @@
-package sequence
+package seq
 
 import (
 	"fmt"
@@ -47,7 +47,7 @@ func NewBufferWithCapacity(capacity int) *Buffer {
 // Buffer is a fifo datastructure that is backed by a pre-allocated array.
 // Instead of allocating a whole new node object for each element, array elements are re-used (which saves GC churn).
 // Enqueue can be O(n), Dequeue is generally O(1).
-// Buffer implements `sequence.Provider`
+// Buffer implements `seq.Provider`
 type Buffer struct {
 	array []float64
 	head  int
@@ -61,7 +61,7 @@ func (b *Buffer) Len() int {
 	return b.size
 }
 
-// GetValue implements sequence provider.
+// GetValue implements seq provider.
 func (b *Buffer) GetValue(index int) float64 {
 	effectiveIndex := (b.head + index) % len(b.array)
 	return b.array[effectiveIndex]

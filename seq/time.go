@@ -1,4 +1,4 @@
-package sequence
+package seq
 
 import (
 	"time"
@@ -6,12 +6,12 @@ import (
 	"github.com/wcharczuk/go-chart/util"
 )
 
-// Time is a utility singleton with helper functions for time sequence generation.
+// Time is a utility singleton with helper functions for time seq generation.
 var Time timeSequence
 
 type timeSequence struct{}
 
-// Days generates a sequence of timestamps by day, from -days to today.
+// Days generates a seq of timestamps by day, from -days to today.
 func (ts timeSequence) Days(days int) []time.Time {
 	var values []time.Time
 	for day := days; day >= 0; day-- {

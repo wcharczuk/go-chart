@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/wcharczuk/go-chart/sequence"
+	"github.com/wcharczuk/go-chart/seq"
 	"github.com/wcharczuk/go-chart/util"
 )
 
@@ -115,31 +115,31 @@ func (mhr MarketHoursRange) GetMarketClose() time.Time {
 // GetTicks returns the ticks for the range.
 // This is to override the default continous ticks that would be generated for the range.
 func (mhr *MarketHoursRange) GetTicks(r Renderer, defaults Style, vf ValueFormatter) []Tick {
-	times := sequence.Time.MarketHours(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
+	times := seq.Time.MarketHours(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
 	timesWidth := mhr.measureTimes(r, defaults, vf, times)
 	if timesWidth <= mhr.Domain {
 		return mhr.makeTicks(vf, times)
 	}
 
-	times = sequence.Time.MarketHourQuarters(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
+	times = seq.Time.MarketHourQuarters(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
 	timesWidth = mhr.measureTimes(r, defaults, vf, times)
 	if timesWidth <= mhr.Domain {
 		return mhr.makeTicks(vf, times)
 	}
 
-	times = sequence.Time.MarketDayCloses(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
+	times = seq.Time.MarketDayCloses(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
 	timesWidth = mhr.measureTimes(r, defaults, vf, times)
 	if timesWidth <= mhr.Domain {
 		return mhr.makeTicks(vf, times)
 	}
 
-	times = sequence.Time.MarketDayAlternateCloses(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
+	times = seq.Time.MarketDayAlternateCloses(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
 	timesWidth = mhr.measureTimes(r, defaults, vf, times)
 	if timesWidth <= mhr.Domain {
 		return mhr.makeTicks(vf, times)
 	}
 
-	times = sequence.Time.MarketDayMondayCloses(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
+	times = seq.Time.MarketDayMondayCloses(mhr.Min, mhr.Max, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
 	timesWidth = mhr.measureTimes(r, defaults, vf, times)
 	if timesWidth <= mhr.Domain {
 		return mhr.makeTicks(vf, times)

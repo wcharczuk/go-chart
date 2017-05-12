@@ -5,6 +5,7 @@ import (
 
 	"github.com/wcharczuk/go-chart"
 	"github.com/wcharczuk/go-chart/drawing"
+	"github.com/wcharczuk/go-chart/seq"
 )
 
 func drawChart(res http.ResponseWriter, req *http.Request) {
@@ -30,8 +31,8 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 		},
 		Series: []chart.Series{
 			chart.ContinuousSeries{
-				XValues: chart.Sequence.Float64(1.0, 100.0),
-				YValues: chart.Sequence.Random(100.0, 256.0),
+				XValues: seq.Wrap(seq.NewLinear().WithStart(1.0).WithEnd(100.0)).Array(),
+				YValues: seq.Wrap(seq.NewRandom().WithLen(100).WithAverage(256)).Array(),
 			},
 		},
 	}
@@ -57,8 +58,8 @@ func drawChartDefault(res http.ResponseWriter, req *http.Request) {
 		},
 		Series: []chart.Series{
 			chart.ContinuousSeries{
-				XValues: chart.Sequence.Float64(1.0, 100.0),
-				YValues: chart.Sequence.Random(100.0, 256.0),
+				XValues: seq.Wrap(seq.NewLinear().WithStart(1.0).WithEnd(100.0)).Array(),
+				YValues: seq.Wrap(seq.NewRandom().WithLen(100).WithAverage(256)).Array(),
 			},
 		},
 	}

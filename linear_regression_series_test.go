@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	assert "github.com/blendlabs/go-assert"
-	"github.com/wcharczuk/go-chart/sequence"
+	"github.com/wcharczuk/go-chart/seq"
 )
 
 func TestLinearRegressionSeries(t *testing.T) {
@@ -12,8 +12,8 @@ func TestLinearRegressionSeries(t *testing.T) {
 
 	mainSeries := ContinuousSeries{
 		Name:    "A test series",
-		XValues: sequence.Values(1.0, 100.0),
-		YValues: sequence.Values(1.0, 100.0),
+		XValues: seq.Range(1.0, 100.0),
+		YValues: seq.Range(1.0, 100.0),
 	}
 
 	linRegSeries := &LinearRegressionSeries{
@@ -34,8 +34,8 @@ func TestLinearRegressionSeriesDesc(t *testing.T) {
 
 	mainSeries := ContinuousSeries{
 		Name:    "A test series",
-		XValues: sequence.Values(100.0, 1.0),
-		YValues: sequence.Values(100.0, 1.0),
+		XValues: seq.Range(100.0, 1.0),
+		YValues: seq.Range(100.0, 1.0),
 	}
 
 	linRegSeries := &LinearRegressionSeries{
@@ -56,8 +56,8 @@ func TestLinearRegressionSeriesWindowAndOffset(t *testing.T) {
 
 	mainSeries := ContinuousSeries{
 		Name:    "A test series",
-		XValues: sequence.Values(100.0, 1.0),
-		YValues: sequence.Values(100.0, 1.0),
+		XValues: seq.Range(100.0, 1.0),
+		YValues: seq.Range(100.0, 1.0),
 	}
 
 	linRegSeries := &LinearRegressionSeries{

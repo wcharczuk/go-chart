@@ -6,15 +6,15 @@ import (
 	"testing"
 
 	"github.com/blendlabs/go-assert"
-	"github.com/wcharczuk/go-chart/sequence"
+	"github.com/wcharczuk/go-chart/seq"
 )
 
 func TestBollingerBandSeries(t *testing.T) {
 	assert := assert.New(t)
 
 	s1 := mockValuesProvider{
-		X: sequence.Values(1.0, 100.0),
-		Y: sequence.RandomValuesWithAverage(1024, 100),
+		X: seq.Range(1.0, 100.0),
+		Y: seq.RandomValuesWithAverage(1024, 100),
 	}
 
 	bbs := &BollingerBandsSeries{
@@ -38,8 +38,8 @@ func TestBollingerBandLastValue(t *testing.T) {
 	assert := assert.New(t)
 
 	s1 := mockValuesProvider{
-		X: sequence.Values(1.0, 100.0),
-		Y: sequence.Values(1.0, 100.0),
+		X: seq.Range(1.0, 100.0),
+		Y: seq.Range(1.0, 100.0),
 	}
 
 	bbs := &BollingerBandsSeries{

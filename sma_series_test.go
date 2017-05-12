@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/blendlabs/go-assert"
-	"github.com/wcharczuk/go-chart/sequence"
+	"github.com/wcharczuk/go-chart/seq"
 	"github.com/wcharczuk/go-chart/util"
 )
 
@@ -33,8 +33,8 @@ func TestSMASeriesGetValue(t *testing.T) {
 	assert := assert.New(t)
 
 	mockSeries := mockValuesProvider{
-		sequence.Values(1.0, 10.0),
-		sequence.Values(10, 1.0),
+		seq.Range(1.0, 10.0),
+		seq.Range(10, 1.0),
 	}
 	assert.Equal(10, mockSeries.Len())
 
@@ -64,8 +64,8 @@ func TestSMASeriesGetLastValueWindowOverlap(t *testing.T) {
 	assert := assert.New(t)
 
 	mockSeries := mockValuesProvider{
-		sequence.Values(1.0, 10.0),
-		sequence.Values(10, 1.0),
+		seq.Range(1.0, 10.0),
+		seq.Range(10, 1.0),
 	}
 	assert.Equal(10, mockSeries.Len())
 
@@ -90,8 +90,8 @@ func TestSMASeriesGetLastValue(t *testing.T) {
 	assert := assert.New(t)
 
 	mockSeries := mockValuesProvider{
-		sequence.Values(1.0, 100.0),
-		sequence.Values(100, 1.0),
+		seq.Range(1.0, 100.0),
+		seq.Range(100, 1.0),
 	}
 	assert.Equal(100, mockSeries.Len())
 

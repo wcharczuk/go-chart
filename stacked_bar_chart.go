@@ -7,7 +7,7 @@ import (
 	"math"
 
 	"github.com/golang/freetype/truetype"
-	"github.com/wcharczuk/go-chart/sequence"
+	"github.com/wcharczuk/go-chart/seq"
 	util "github.com/wcharczuk/go-chart/util"
 )
 
@@ -202,7 +202,7 @@ func (sbc StackedBarChart) drawYAxis(r Renderer, canvasBox Box) {
 		r.LineTo(canvasBox.Right+DefaultHorizontalTickWidth, canvasBox.Bottom)
 		r.Stroke()
 
-		ticks := sequence.ValuesWithStep(0.0, 1.0, 0.2)
+		ticks := seq.RangeWithStep(0.0, 1.0, 0.2)
 		for _, t := range ticks {
 			axisStyle.GetStrokeOptions().WriteToRenderer(r)
 			ty := canvasBox.Bottom - int(t*float64(canvasBox.Height()))

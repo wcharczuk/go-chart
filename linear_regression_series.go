@@ -3,7 +3,7 @@ package chart
 import (
 	"fmt"
 
-	"github.com/wcharczuk/go-chart/sequence"
+	"github.com/wcharczuk/go-chart/seq"
 	util "github.com/wcharczuk/go-chart/util"
 )
 
@@ -107,14 +107,14 @@ func (lrs *LinearRegressionSeries) computeCoefficients() {
 
 	p := float64(endIndex - startIndex)
 
-	xvalues := sequence.NewBufferWithCapacity(lrs.Len())
+	xvalues := seq.NewBufferWithCapacity(lrs.Len())
 	for index := startIndex; index < endIndex; index++ {
 		x, _ := lrs.InnerSeries.GetValues(index)
 		xvalues.Enqueue(x)
 	}
 
-	lrs.avgx = sequence.Seq{Provider: xvalues}.Average()
-	lrs.stddevx = sequence.Seq{Provider: xvalues}.StdDev()
+	lrs.avgx = seq.Seq{Provider: xvalues}.Average()
+	lrs.stddevx = seq.Seq{Provider: xvalues}.StdDev()
 
 	var sumx, sumy, sumxx, sumxy float64
 	for index := startIndex; index < endIndex; index++ {

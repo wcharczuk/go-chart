@@ -1,4 +1,4 @@
-package sequence
+package seq
 
 // NewArray creates a new array.
 func NewArray(values ...float64) Array {

@@ -1,4 +1,4 @@
-package sequence
+package seq
 
 import (
 	"testing"
