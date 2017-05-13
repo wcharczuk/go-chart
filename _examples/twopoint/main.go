@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"log"
 	"os"
-	//"time"
-	"github.com/wcharczuk/go-chart" //exposes "chart"
+
+	"github.com/wcharczuk/go-chart"
 )
 
 func main() {
@@ -18,8 +18,6 @@ func main() {
 		Style: chart.Style{
 			Show: true,
 		},
-
-		//XValues: []time.Time{time.Unix(3*b,0),time.Unix(4*b,0),time.Unix(5*b,0),time.Unix(6*b,0),time.Unix(7*b,0),time.Unix(8*b,0),time.Unix(9*b,0),time.Unix(10*b,0)},
 		XValues: []float64{10 * b, 20 * b, 30 * b, 40 * b, 50 * b, 60 * b, 70 * b, 80 * b},
 		YValues: []float64{1.0, 2.0, 30.0, 4.0, 50.0, 6.0, 7.0, 88.0},
 	}

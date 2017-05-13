@@ -4,13 +4,14 @@ import (
 	"net/http"
 
 	"github.com/wcharczuk/go-chart"
+	"github.com/wcharczuk/go-chart/seq"
 )
 
 func drawChart(res http.ResponseWriter, req *http.Request) {
 	mainSeries := chart.ContinuousSeries{
 		Name:    "A test series",
-		XValues: chart.Sequence.Float64(1.0, 100.0),
-		YValues: chart.Sequence.RandomWithAverage(100, 100, 50),
+		XValues: seq.Range(1.0, 100.0),
+		YValues: seq.New(seq.NewRandom().WithLen(100).WithAverage(100).WithScale(50)).Array(),
 	}
 
 	minSeries := &chart.MinSeries{

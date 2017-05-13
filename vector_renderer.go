@@ -9,6 +9,7 @@ import (
 
 	"golang.org/x/image/font"
 
+	util "github.com/blendlabs/go-util"
 	"github.com/golang/freetype/truetype"
 	"github.com/wcharczuk/go-chart/drawing"
 )
@@ -89,8 +90,8 @@ func (vr *vectorRenderer) QuadCurveTo(cx, cy, x, y int) {
 }
 
 func (vr *vectorRenderer) ArcTo(cx, cy int, rx, ry, startAngle, delta float64) {
-	startAngle = Math.RadianAdd(startAngle, _pi2)
-	endAngle := Math.RadianAdd(startAngle, delta)
+	startAngle = util.Math.RadianAdd(startAngle, _pi2)
+	endAngle := util.Math.RadianAdd(startAngle, delta)
 
 	startx := cx + int(rx*math.Sin(startAngle))
 	starty := cy - int(ry*math.Cos(startAngle))
@@ -104,7 +105,7 @@ func (vr *vectorRenderer) ArcTo(cx, cy int, rx, ry, startAngle, delta float64) {
 	endx := cx + int(rx*math.Sin(endAngle))
 	endy := cy - int(ry*math.Cos(endAngle))
 
-	dd := Math.RadiansToDegrees(delta)
+	dd := util.Math.RadiansToDegrees(delta)
 
 	vr.p = append(vr.p, fmt.Sprintf("A %d %d %0.2f 0 1 %d %d", int(rx), int(ry), dd, endx, endy))
 }
@@ -176,7 +177,7 @@ func (vr *vectorRenderer) MeasureText(body string) (box Box) {
 		if vr.c.textTheta == nil {
 			return
 		}
-		box = box.Corners().Rotate(Math.RadiansToDegrees(*vr.c.textTheta)).Box()
+		box = box.Corners().Rotate(util.Math.RadiansToDegrees(*vr.c.textTheta)).Box()
 	}
 	return
 }
@@ -231,7 +232,7 @@ func (c *canvas) Text(x, y int, body string, style Style) {
 	if c.textTheta == nil {
 		c.w.Write([]byte(fmt.Sprintf(`<text x="%d" y="%d" style="%s">%s</text>`, x, y, c.styleAsSVG(style), body)))
 	} else {
-		transform := fmt.Sprintf(` transform="rotate(%0.2f,%d,%d)"`, Math.RadiansToDegrees(*c.textTheta), x, y)
+		transform := fmt.Sprintf(` transform="rotate(%0.2f,%d,%d)"`, util.Math.RadiansToDegrees(*c.textTheta), x, y)
 		c.w.Write([]byte(fmt.Sprintf(`<text x="%d" y="%d" style="%s"%s>%s</text>`, x, y, c.styleAsSVG(style), transform, body)))
 	}
 }

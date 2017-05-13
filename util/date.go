@@ -1,4 +1,4 @@
-package chart
+package util
 
 import (
 	"sync"
@@ -393,34 +393,4 @@ func (d date) NextDayOfWeek(after time.Time, dayOfWeek time.Weekday) time.Time {
 	// 5 vs 1, add 7-(5-1) ~ 3 days
 	dayDelta := 7 - int(afterWeekday-dayOfWeek)
 	return after.AddDate(0, 0, dayDelta)
-}
-
-// Start returns the earliest (min) time in a list of times.
-func (d date) Start(times []time.Time) time.Time {
-	if len(times) == 0 {
-		return time.Time{}
-	}
-
-	start := times[0]
-	for _, t := range times[1:] {
-		if t.Before(start) {
-			start = t
-		}
-	}
-	return start
-}
-
-// Start returns the earliest (min) time in a list of times.
-func (d date) End(times []time.Time) time.Time {
-	if len(times) == 0 {
-		return time.Time{}
-	}
-
-	end := times[0]
-	for _, t := range times[1:] {
-		if t.After(end) {
-			end = t
-		}
-	}
-	return end
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	util "github.com/blendlabs/go-util"
 	"github.com/golang/freetype/truetype"
 	"github.com/wcharczuk/go-chart/drawing"
 )
@@ -330,7 +331,7 @@ func (s Style) WriteToRenderer(r Renderer) {
 
 	r.ClearTextRotation()
 	if s.GetTextRotationDegrees() != 0 {
-		r.SetTextRotation(Math.DegreesToRadians(s.GetTextRotationDegrees()))
+		r.SetTextRotation(util.Math.DegreesToRadians(s.GetTextRotationDegrees()))
 	}
 }
 

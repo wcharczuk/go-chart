@@ -1,4 +1,4 @@
-package chart
+package util
 
 import (
 	"math"
@@ -47,7 +47,7 @@ func (m mathUtil) MinAndMax(values ...float64) (min float64, max float64) {
 	}
 	min = values[0]
 	max = values[0]
-	for _, v := range values {
+	for _, v := range values[1:] {
 		if max < v {
 			max = v
 		}
@@ -68,7 +68,7 @@ func (m mathUtil) MinAndMaxOfTime(values ...time.Time) (min time.Time, max time.
 	min = values[0]
 	max = values[0]
 
-	for _, v := range values {
+	for _, v := range values[1:] {
 		if max.Before(v) {
 			max = v
 		}

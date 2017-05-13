@@ -2,38 +2,38 @@ package chart
 
 import "github.com/wcharczuk/go-chart/drawing"
 
-// ValueProvider is a type that produces values.
-type ValueProvider interface {
+// ValuesProvider is a type that produces values.
+type ValuesProvider interface {
 	Len() int
-	GetValue(index int) (float64, float64)
+	GetValues(index int) (float64, float64)
 }
 
-// BoundedValueProvider allows series to return a range.
-type BoundedValueProvider interface {
+// BoundedValuesProvider allows series to return a range.
+type BoundedValuesProvider interface {
 	Len() int
-	GetBoundedValue(index int) (x, y1, y2 float64)
+	GetBoundedValues(index int) (x, y1, y2 float64)
 }
 
-// LastValueProvider is a special type of value provider that can return it's (potentially computed) last value.
-type LastValueProvider interface {
-	GetLastValue() (x, y float64)
+// LastValuesProvider is a special type of value provider that can return it's (potentially computed) last value.
+type LastValuesProvider interface {
+	GetLastValues() (x, y float64)
 }
 
-// BoundedLastValueProvider is a special type of value provider that can return it's (potentially computed) bounded last value.
-type BoundedLastValueProvider interface {
-	GetBoundedLastValue() (x, y1, y2 float64)
+// BoundedLastValuesProvider is a special type of value provider that can return it's (potentially computed) bounded last value.
+type BoundedLastValuesProvider interface {
+	GetBoundedLastValues() (x, y1, y2 float64)
 }
 
-// FullValueProvider is an interface that combines `ValueProvider` and `LastValueProvider`
-type FullValueProvider interface {
-	ValueProvider
-	LastValueProvider
+// FullValuesProvider is an interface that combines `ValuesProvider` and `LastValuesProvider`
+type FullValuesProvider interface {
+	ValuesProvider
+	LastValuesProvider
 }
 
-// FullBoundedValueProvider is an interface that combines `BoundedValueProvider` and `BoundedLastValueProvider`
-type FullBoundedValueProvider interface {
-	BoundedValueProvider
-	BoundedLastValueProvider
+// FullBoundedValuesProvider is an interface that combines `BoundedValuesProvider` and `BoundedLastValuesProvider`
+type FullBoundedValuesProvider interface {
+	BoundedValuesProvider
+	BoundedLastValuesProvider
 }
 
 // SizeProvider is a provider for integer size.

@@ -7,6 +7,7 @@ import (
 	"math"
 
 	"github.com/golang/freetype/truetype"
+	util "github.com/wcharczuk/go-chart/util"
 )
 
 // BarChart is a chart that draws bars on a range.
@@ -368,7 +369,7 @@ func (bc BarChart) getAdjustedCanvasBox(r Renderer, canvasBox Box, yrange Range,
 				lines := Text.WrapFit(r, bar.Label, barLabelBox.Width(), axisStyle)
 				linesBox := Text.MeasureLines(r, lines, axisStyle)
 
-				xaxisHeight = Math.MinInt(linesBox.Height()+(2*DefaultXAxisMargin), xaxisHeight)
+				xaxisHeight = util.Math.MinInt(linesBox.Height()+(2*DefaultXAxisMargin), xaxisHeight)
 			}
 		}
 
@@ -435,7 +436,7 @@ func (bc BarChart) styleDefaultsTitle() Style {
 }
 
 func (bc BarChart) getTitleFontSize() float64 {
-	effectiveDimension := Math.MinInt(bc.GetWidth(), bc.GetHeight())
+	effectiveDimension := util.Math.MinInt(bc.GetWidth(), bc.GetHeight())
 	if effectiveDimension >= 2048 {
 		return 48
 	} else if effectiveDimension >= 1024 {

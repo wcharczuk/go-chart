@@ -4,13 +4,15 @@ import (
 	"net/http"
 
 	"github.com/wcharczuk/go-chart"
+	"github.com/wcharczuk/go-chart/seq"
+	"github.com/wcharczuk/go-chart/util"
 )
 
 func drawChart(res http.ResponseWriter, req *http.Request) {
-	start := chart.Date.Date(2016, 7, 01, chart.Date.Eastern())
-	end := chart.Date.Date(2016, 07, 21, chart.Date.Eastern())
-	xv := chart.Sequence.MarketHours(start, end, chart.NYSEOpen, chart.NYSEClose, chart.Date.IsNYSEHoliday)
-	yv := chart.Sequence.RandomWithAverage(len(xv), 200, 10)
+	start := util.Date.Date(2016, 7, 01, util.Date.Eastern())
+	end := util.Date.Date(2016, 07, 21, util.Date.Eastern())
+	xv := seq.Time.MarketHours(start, end, util.NYSEOpen(), util.NYSEClose(), util.Date.IsNYSEHoliday)
+	yv := seq.New(seq.NewRandom().WithLen(len(xv)).WithAverage(200).WithScale(10)).Array()
 
 	graph := chart.Chart{
 		XAxis: chart.XAxis{
@@ -18,9 +20,9 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 			TickPosition:   chart.TickPositionBetweenTicks,
 			ValueFormatter: chart.TimeHourValueFormatter,
 			Range: &chart.MarketHoursRange{
-				MarketOpen:      chart.NYSEOpen,
-				MarketClose:     chart.NYSEClose,
-				HolidayProvider: chart.Date.IsNYSEHoliday,
+				MarketOpen:      util.NYSEOpen(),
+				MarketClose:     util.NYSEClose(),
+				HolidayProvider: util.Date.IsNYSEHoliday,
 			},
 		},
 		YAxis: chart.YAxis{

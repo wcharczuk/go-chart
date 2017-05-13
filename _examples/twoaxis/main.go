@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/wcharczuk/go-chart"
+	util "github.com/wcharczuk/go-chart/util"
 )
 
 func drawChart(res http.ResponseWriter, req *http.Request) {
@@ -23,7 +24,7 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 			TickPosition: chart.TickPositionBetweenTicks,
 			ValueFormatter: func(v interface{}) string {
 				typed := v.(float64)
-				typedDate := chart.Time.FromFloat64(typed)
+				typedDate := util.Time.FromFloat64(typed)
 				return fmt.Sprintf("%d-%d\n%d", typedDate.Month(), typedDate.Day(), typedDate.Year())
 			},
 		},

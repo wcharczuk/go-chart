@@ -1,6 +1,10 @@
 package chart
 
-import "strings"
+import (
+	"strings"
+
+	util "github.com/wcharczuk/go-chart/util"
+)
 
 // TextHorizontalAlign is an enum for the horizontal alignment options.
 type TextHorizontalAlign int
@@ -145,7 +149,7 @@ func (t text) MeasureLines(r Renderer, lines []string, style Style) Box {
 	var output Box
 	for index, line := range lines {
 		lineBox := r.MeasureText(line)
-		output.Right = Math.MaxInt(lineBox.Right, output.Right)
+		output.Right = util.Math.MaxInt(lineBox.Right, output.Right)
 		output.Bottom += lineBox.Height()
 		if index < len(lines)-1 {
 			output.Bottom += +style.GetTextLineSpacing()

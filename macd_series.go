@@ -17,7 +17,7 @@ type MACDSeries struct {
 	Name        string
 	Style       Style
 	YAxis       YAxisType
-	InnerSeries ValueProvider
+	InnerSeries ValuesProvider
 
 	PrimaryPeriod   int
 	SecondaryPeriod int
@@ -89,8 +89,8 @@ func (macd MACDSeries) Len() int {
 	return macd.InnerSeries.Len()
 }
 
-// GetValue gets a value at a given index. For MACD it is the signal value.
-func (macd *MACDSeries) GetValue(index int) (x float64, y float64) {
+// GetValues gets a value at a given index. For MACD it is the signal value.
+func (macd *MACDSeries) GetValues(index int) (x float64, y float64) {
 	if macd.InnerSeries == nil {
 		return
 	}
@@ -99,10 +99,10 @@ func (macd *MACDSeries) GetValue(index int) (x float64, y float64) {
 		macd.ensureChildSeries()
 	}
 
-	_, lv := macd.macdl.GetValue(index)
-	_, sv := macd.signal.GetValue(index)
+	_, lv := macd.macdl.GetValues(index)
+	_, sv := macd.signal.GetValues(index)
 
-	x, _ = macd.InnerSeries.GetValue(index)
+	x, _ = macd.InnerSeries.GetValues(index)
 	y = lv - sv
 
 	return
@@ -130,7 +130,7 @@ type MACDSignalSeries struct {
 	Name        string
 	Style       Style
 	YAxis       YAxisType
-	InnerSeries ValueProvider
+	InnerSeries ValuesProvider
 
 	PrimaryPeriod   int
 	SecondaryPeriod int
@@ -191,8 +191,8 @@ func (macds *MACDSignalSeries) Len() int {
 	return macds.InnerSeries.Len()
 }
 
-// GetValue gets a value at a given index. For MACD it is the signal value.
-func (macds *MACDSignalSeries) GetValue(index int) (x float64, y float64) {
+// GetValues gets a value at a given index. For MACD it is the signal value.
+func (macds *MACDSignalSeries) GetValues(index int) (x float64, y float64) {
 	if macds.InnerSeries == nil {
 		return
 	}
@@ -200,8 +200,8 @@ func (macds *MACDSignalSeries) GetValue(index int) (x float64, y float64) {
 	if macds.signal == nil {
 		macds.ensureSignal()
 	}
-	x, _ = macds.InnerSeries.GetValue(index)
-	_, y = macds.signal.GetValue(index)
+	x, _ = macds.InnerSeries.GetValues(index)
+	_, y = macds.signal.GetValues(index)
 	return
 }
 
@@ -229,7 +229,7 @@ type MACDLineSeries struct {
 	Name        string
 	Style       Style
 	YAxis       YAxisType
-	InnerSeries ValueProvider
+	InnerSeries ValuesProvider
 
 	PrimaryPeriod   int
 	SecondaryPeriod int
@@ -300,8 +300,8 @@ func (macdl *MACDLineSeries) Len() int {
 	return macdl.InnerSeries.Len()
 }
 
-// GetValue gets a value at a given index. For MACD it is the signal value.
-func (macdl *MACDLineSeries) GetValue(index int) (x float64, y float64) {
+// GetValues gets a value at a given index. For MACD it is the signal value.
+func (macdl *MACDLineSeries) GetValues(index int) (x float64, y float64) {
 	if macdl.InnerSeries == nil {
 		return
 	}
@@ -309,10 +309,10 @@ func (macdl *MACDLineSeries) GetValue(index int) (x float64, y float64) {
 		macdl.ensureEMASeries()
 	}
 
-	x, _ = macdl.InnerSeries.GetValue(index)
+	x, _ = macdl.InnerSeries.GetValues(index)
 
-	_, emav1 := macdl.ema1.GetValue(index)
-	_, emav2 := macdl.ema2.GetValue(index)
+	_, emav1 := macdl.ema1.GetValues(index)
+	_, emav2 := macdl.ema2.GetValues(index)
 
 	y = emav2 - emav1
 	return

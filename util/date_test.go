@@ -1,4 +1,4 @@
-package chart
+package util
 
 import (
 	"testing"
@@ -235,34 +235,6 @@ func TestDateIsNYSEHoliday(t *testing.T) {
 		cursor = cursor.AddDate(0, 0, 1)
 	}
 	assert.Equal(holidays, 55)
-}
-
-func TestTimeStart(t *testing.T) {
-	assert := assert.New(t)
-
-	times := []time.Time{
-		time.Now().AddDate(0, 0, -4),
-		time.Now().AddDate(0, 0, -2),
-		time.Now().AddDate(0, 0, -1),
-		time.Now().AddDate(0, 0, -3),
-		time.Now().AddDate(0, 0, -5),
-	}
-
-	assert.InTimeDelta(Date.Start(times), times[4], time.Millisecond)
-}
-
-func TestTimeEnd(t *testing.T) {
-	assert := assert.New(t)
-
-	times := []time.Time{
-		time.Now().AddDate(0, 0, -4),
-		time.Now().AddDate(0, 0, -2),
-		time.Now().AddDate(0, 0, -1),
-		time.Now().AddDate(0, 0, -3),
-		time.Now().AddDate(0, 0, -5),
-	}
-
-	assert.InTimeDelta(Date.End(times), times[2], time.Millisecond)
 }
 
 func TestDateDiffDays(t *testing.T) {

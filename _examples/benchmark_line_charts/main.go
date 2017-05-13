@@ -20,10 +20,16 @@ func drawLargeChart(res http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		numSeriesInt64 = int64(1)
 	}
+	if numSeriesInt64 == 0 {
+		numSeriesInt64 = 1
+	}
 	numSeries := int(numSeriesInt64)
 
 	numValuesInt64, err := strconv.ParseInt(r.FormValue("values"), 10, 64)
 	if err != nil {
+		numValuesInt64 = int64(100)
+	}
+	if numValuesInt64 == 0 {
 		numValuesInt64 = int64(100)
 	}
 	numValues := int(numValuesInt64)

@@ -31,13 +31,13 @@ func (cs ContinuousSeries) Len() int {
 	return len(cs.XValues)
 }
 
-// GetValue gets a value at a given index.
-func (cs ContinuousSeries) GetValue(index int) (float64, float64) {
+// GetValues gets the x,y values at a given index.
+func (cs ContinuousSeries) GetValues(index int) (float64, float64) {
 	return cs.XValues[index], cs.YValues[index]
 }
 
-// GetLastValue gets the last value.
-func (cs ContinuousSeries) GetLastValue() (float64, float64) {
+// GetLastValues gets the last x,y values.
+func (cs ContinuousSeries) GetLastValues() (float64, float64) {
 	return cs.XValues[len(cs.XValues)-1], cs.YValues[len(cs.YValues)-1]
 }
 

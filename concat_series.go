@@ -7,7 +7,7 @@ type ConcatSeries []Series
 func (cs ConcatSeries) Len() int {
 	total := 0
 	for _, s := range cs {
-		if typed, isValueProvider := s.(ValueProvider); isValueProvider {
+		if typed, isValuesProvider := s.(ValuesProvider); isValuesProvider {
 			total += typed.Len()
 		}
 	}
@@ -19,10 +19,10 @@ func (cs ConcatSeries) Len() int {
 func (cs ConcatSeries) GetValue(index int) (x, y float64) {
 	cursor := 0
 	for _, s := range cs {
-		if typed, isValueProvider := s.(ValueProvider); isValueProvider {
+		if typed, isValuesProvider := s.(ValuesProvider); isValuesProvider {
 			len := typed.Len()
 			if index < cursor+len {
-				x, y = typed.GetValue(index - cursor) //FENCEPOSTS.
+				x, y = typed.GetValues(index - cursor) //FENCEPOSTS.
 				return
 			}
 			cursor += typed.Len()

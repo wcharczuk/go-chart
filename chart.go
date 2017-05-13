@@ -7,6 +7,7 @@ import (
 	"math"
 
 	"github.com/golang/freetype/truetype"
+	util "github.com/wcharczuk/go-chart/util"
 )
 
 // Chart is what we're drawing.
@@ -177,10 +178,10 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 	for _, s := range c.Series {
 		if s.GetStyle().IsZero() || s.GetStyle().Show {
 			seriesAxis := s.GetYAxis()
-			if bvp, isBoundedValueProvider := s.(BoundedValueProvider); isBoundedValueProvider {
+			if bvp, isBoundedValuesProvider := s.(BoundedValuesProvider); isBoundedValuesProvider {
 				seriesLength := bvp.Len()
 				for index := 0; index < seriesLength; index++ {
-					vx, vy1, vy2 := bvp.GetBoundedValue(index)
+					vx, vy1, vy2 := bvp.GetBoundedValues(index)
 
 					minx = math.Min(minx, vx)
 					maxx = math.Max(maxx, vx)
@@ -198,10 +199,10 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 						seriesMappedToSecondaryAxis = true
 					}
 				}
-			} else if vp, isValueProvider := s.(ValueProvider); isValueProvider {
+			} else if vp, isValuesProvider := s.(ValuesProvider); isValuesProvider {
 				seriesLength := vp.Len()
 				for index := 0; index < seriesLength; index++ {
-					vx, vy := vp.GetValue(index)
+					vx, vy := vp.GetValues(index)
 
 					minx = math.Min(minx, vx)
 					maxx = math.Max(maxx, vx)
@@ -265,8 +266,8 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 		// only round if we're showing the axis
 		if c.YAxis.Style.Show {
 			delta := yrange.GetDelta()
-			roundTo := Math.GetRoundToForDelta(delta)
-			rmin, rmax := Math.RoundDown(yrange.GetMin(), roundTo), Math.RoundUp(yrange.GetMax(), roundTo)
+			roundTo := util.Math.GetRoundToForDelta(delta)
+			rmin, rmax := util.Math.RoundDown(yrange.GetMin(), roundTo), util.Math.RoundUp(yrange.GetMax(), roundTo)
 
 			yrange.SetMin(rmin)
 			yrange.SetMax(rmax)
@@ -287,8 +288,8 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 
 		if c.YAxisSecondary.Style.Show {
 			delta := yrangeAlt.GetDelta()
-			roundTo := Math.GetRoundToForDelta(delta)
-			rmin, rmax := Math.RoundDown(yrangeAlt.GetMin(), roundTo), Math.RoundUp(yrangeAlt.GetMax(), roundTo)
+			roundTo := util.Math.GetRoundToForDelta(delta)
+			rmin, rmax := util.Math.RoundDown(yrangeAlt.GetMin(), roundTo), util.Math.RoundUp(yrangeAlt.GetMax(), roundTo)
 			yrangeAlt.SetMin(rmin)
 			yrangeAlt.SetMax(rmax)
 		}

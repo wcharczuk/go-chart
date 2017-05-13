@@ -10,6 +10,7 @@ import (
 
 	"github.com/blendlabs/go-assert"
 	"github.com/wcharczuk/go-chart/drawing"
+	"github.com/wcharczuk/go-chart/seq"
 )
 
 func TestChartGetDPI(t *testing.T) {
@@ -391,8 +392,8 @@ func TestChartRegressionBadRangesByUser(t *testing.T) {
 		},
 		Series: []Series{
 			ContinuousSeries{
-				XValues: Sequence.Float64(1.0, 10.0),
-				YValues: Sequence.Float64(1.0, 10.0),
+				XValues: seq.Range(1.0, 10.0),
+				YValues: seq.Range(1.0, 10.0),
 			},
 		},
 	}
@@ -407,8 +408,8 @@ func TestChartValidatesSeries(t *testing.T) {
 	c := Chart{
 		Series: []Series{
 			ContinuousSeries{
-				XValues: Sequence.Float64(1.0, 10.0),
-				YValues: Sequence.Float64(1.0, 10.0),
+				XValues: seq.Range(1.0, 10.0),
+				YValues: seq.Range(1.0, 10.0),
 			},
 		},
 	}
@@ -418,7 +419,7 @@ func TestChartValidatesSeries(t *testing.T) {
 	c = Chart{
 		Series: []Series{
 			ContinuousSeries{
-				XValues: Sequence.Float64(1.0, 10.0),
+				XValues: seq.Range(1.0, 10.0),
 			},
 		},
 	}
@@ -504,8 +505,8 @@ func TestChartE2ELine(t *testing.T) {
 		},
 		Series: []Series{
 			ContinuousSeries{
-				XValues: Sequence.Float64(0, 4, 1),
-				YValues: Sequence.Float64(0, 4, 1),
+				XValues: seq.RangeWithStep(0, 4, 1),
+				YValues: seq.RangeWithStep(0, 4, 1),
 			},
 		},
 	}
@@ -549,8 +550,8 @@ func TestChartE2ELineWithFill(t *testing.T) {
 					StrokeColor: drawing.ColorBlue,
 					FillColor:   drawing.ColorRed,
 				},
-				XValues: Sequence.Float64(0, 4, 1),
-				YValues: Sequence.Float64(0, 4, 1),
+				XValues: seq.RangeWithStep(0, 4, 1),
+				YValues: seq.RangeWithStep(0, 4, 1),
 			},
 		},
 	}

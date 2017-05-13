@@ -1,6 +1,6 @@
 // +build windows
 
-package chart
+package util
 
 import "time"
 
