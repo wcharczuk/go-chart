@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/wcharczuk/go-chart"
+	util "github.com/wcharczuk/go-chart/util"
 )
 
 func parseInt(str string) int {
@@ -23,7 +24,7 @@ func parseFloat64(str string) float64 {
 func readData() ([]time.Time, []float64) {
 	var xvalues []time.Time
 	var yvalues []float64
-	err := chart.File.ReadByLines("requests.csv", func(line string) {
+	err := util.File.ReadByLines("requests.csv", func(line string) error {
 		parts := strings.Split(line, ",")
 		year := parseInt(parts[0])
 		month := parseInt(parts[1])
@@ -32,6 +33,7 @@ func readData() ([]time.Time, []float64) {
 		elapsedMillis := parseFloat64(parts[4])
 		xvalues = append(xvalues, time.Date(year, time.Month(month), day, hour, 0, 0, 0, time.UTC))
 		yvalues = append(yvalues, elapsedMillis)
+		return nil
 	})
 	if err != nil {
 		fmt.Println(err.Error())
@@ -41,12 +43,12 @@ func readData() ([]time.Time, []float64) {
 
 func releases() []chart.GridLine {
 	return []chart.GridLine{
-		{Value: chart.Time.ToFloat64(time.Date(2016, 8, 1, 9, 30, 0, 0, time.UTC))},
-		{Value: chart.Time.ToFloat64(time.Date(2016, 8, 2, 9, 30, 0, 0, time.UTC))},
-		{Value: chart.Time.ToFloat64(time.Date(2016, 8, 2, 15, 30, 0, 0, time.UTC))},
-		{Value: chart.Time.ToFloat64(time.Date(2016, 8, 4, 9, 30, 0, 0, time.UTC))},
-		{Value: chart.Time.ToFloat64(time.Date(2016, 8, 5, 9, 30, 0, 0, time.UTC))},
-		{Value: chart.Time.ToFloat64(time.Date(2016, 8, 6, 9, 30, 0, 0, time.UTC))},
+		{Value: util.Time.ToFloat64(time.Date(2016, 8, 1, 9, 30, 0, 0, time.UTC))},
+		{Value: util.Time.ToFloat64(time.Date(2016, 8, 2, 9, 30, 0, 0, time.UTC))},
+		{Value: util.Time.ToFloat64(time.Date(2016, 8, 2, 15, 30, 0, 0, time.UTC))},
+		{Value: util.Time.ToFloat64(time.Date(2016, 8, 4, 9, 30, 0, 0, time.UTC))},
+		{Value: util.Time.ToFloat64(time.Date(2016, 8, 5, 9, 30, 0, 0, time.UTC))},
+		{Value: util.Time.ToFloat64(time.Date(2016, 8, 6, 9, 30, 0, 0, time.UTC))},
 	}
 }
 
@@ -125,8 +127,8 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 
 	graph.Elements = []chart.Renderable{chart.LegendThin(&graph)}
 
-	res.Header().Set("Content-Type", chart.ContentTypeSVG)
-	graph.Render(chart.SVG, res)
+	res.Header().Set("Content-Type", chart.ContentTypePNG)
+	graph.Render(chart.PNG, res)
 }
 
 func main() {

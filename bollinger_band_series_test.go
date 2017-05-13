@@ -14,7 +14,7 @@ func TestBollingerBandSeries(t *testing.T) {
 
 	s1 := mockValuesProvider{
 		X: seq.Range(1.0, 100.0),
-		Y: seq.RandomValuesWithAverage(1024, 100),
+		Y: seq.RandomValuesWithMax(100, 1024),
 	}
 
 	bbs := &BollingerBandsSeries{

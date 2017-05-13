@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/wcharczuk/go-chart"
+	"github.com/wcharczuk/go-chart/seq"
 )
 
 func drawChart(res http.ResponseWriter, req *http.Request) {
@@ -15,8 +16,8 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 
 	mainSeries := chart.ContinuousSeries{
 		Name:    "A test series",
-		XValues: chart.Sequence.Float64(1.0, 100.0), //generates a []float64 from 1.0 to 100.0 in 1.0 step increments, or 100 elements.
-		YValues: chart.Sequence.Random(100, 100),    //generates a []float64 randomly from 0 to 100 with 100 elements.
+		XValues: seq.Range(1.0, 100.0),                 //generates a []float64 from 1.0 to 100.0 in 1.0 step increments, or 100 elements.
+		YValues: seq.RandomValuesWithAverage(100, 100), //generates a []float64 randomly from 0 to 100 with 100 elements.
 	}
 
 	polyRegSeries := &chart.PolynomialRegressionSeries{
