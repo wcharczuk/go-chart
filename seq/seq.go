@@ -15,12 +15,6 @@ func Values(values ...float64) Seq {
 	return Seq{Provider: Array(values)}
 }
 
-// Provider is a provider for values for a seq.
-type Provider interface {
-	Len() int
-	GetValue(int) float64
-}
-
 // Seq is a utility wrapper for seq providers.
 type Seq struct {
 	Provider
@@ -28,12 +22,13 @@ type Seq struct {
 
 // Array enumerates the seq into a slice.
 func (s Seq) Array() (output []float64) {
-	if s.Len() == 0 {
+	slen := s.Len()
+	if slen == 0 {
 		return
 	}
 
-	output = make([]float64, s.Len())
-	for i := 0; i < s.Len(); i++ {
+	output = make([]float64, slen)
+	for i := 0; i < slen; i++ {
 		output[i] = s.GetValue(i)
 	}
 	return
@@ -149,7 +144,43 @@ func (s Seq) Sort() Seq {
 		return s
 	}
 	values := s.Array()
-	sort.Float64s(values)
+	sort.Slice(values, func(i, j int) bool {
+		return values[i] < values[j]
+	})
+	return Seq{Provider: Array(values)}
+}
+
+// SortDescending returns the seq sorted in descending order.
+// This fully enumerates the seq.
+func (s Seq) SortDescending() Seq {
+	if s.Len() == 0 {
+		return s
+	}
+	values := s.Array()
+	sort.Slice(values, func(i, j int) bool {
+		return values[i] > values[j]
+	})
+	return Seq{Provider: Array(values)}
+}
+
+// Reverse reverses the sequence's order.
+func (s Seq) Reverse() Seq {
+	slen := s.Len()
+	if slen == 0 {
+		return s
+	}
+
+	slen2 := slen >> 1
+	values := s.Array()
+
+	i := 0
+	j := slen - 1
+	for i < slen2 {
+		values[i], values[j] = values[j], values[i]
+		i++
+		j--
+	}
+
 	return Seq{Provider: Array(values)}
 }
 

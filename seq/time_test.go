@@ -12,7 +12,7 @@ func TestTimeMarketHours(t *testing.T) {
 	assert := assert.New(t)
 
 	today := time.Date(2016, 07, 01, 12, 0, 0, 0, util.Date.Eastern())
-	mh := Time.MarketHours(today, today, util.NYSEOpen(), util.NYSEClose(), util.Date.IsNYSEHoliday)
+	mh := TimeUtil.MarketHours(today, today, util.NYSEOpen(), util.NYSEClose(), util.Date.IsNYSEHoliday)
 	assert.Len(mh, 8)
 	assert.Equal(util.Date.Eastern(), mh[0].Location())
 }
@@ -20,7 +20,7 @@ func TestTimeMarketHours(t *testing.T) {
 func TestTimeMarketHourQuarters(t *testing.T) {
 	assert := assert.New(t)
 	today := time.Date(2016, 07, 01, 12, 0, 0, 0, util.Date.Eastern())
-	mh := Time.MarketHourQuarters(today, today, util.NYSEOpen(), util.NYSEClose(), util.Date.IsNYSEHoliday)
+	mh := TimeUtil.MarketHourQuarters(today, today, util.NYSEOpen(), util.NYSEClose(), util.Date.IsNYSEHoliday)
 	assert.Len(mh, 4)
 	assert.Equal(9, mh[0].Hour())
 	assert.Equal(30, mh[0].Minute())
@@ -39,9 +39,9 @@ func TestTimeHours(t *testing.T) {
 	assert := assert.New(t)
 
 	today := time.Date(2016, 07, 01, 12, 0, 0, 0, time.UTC)
-	seq := Time.Hours(today, 24)
+	seq := TimeUtil.Hours(today, 24)
 
-	end := Time.End(seq)
+	end := Times(seq...).Max()
 	assert.Len(seq, 24)
 	assert.Equal(2016, end.Year())
 	assert.Equal(07, int(end.Month()))
@@ -72,8 +72,8 @@ func TestSequenceHoursFill(t *testing.T) {
 		0.6,
 	}
 
-	filledTimes, filledValues := Time.HoursFilled(xdata, ydata)
-	assert.Len(filledTimes, util.Date.DiffHours(Time.Start(xdata), Time.End(xdata))+1)
+	filledTimes, filledValues := TimeUtil.HoursFilled(xdata, ydata)
+	assert.Len(filledTimes, util.Date.DiffHours(Times(xdata...).Start(), Times(xdata...).End())+1)
 	assert.Equal(len(filledValues), len(filledTimes))
 
 	assert.NotZero(filledValues[0])
@@ -93,7 +93,7 @@ func TestTimeStart(t *testing.T) {
 		time.Now().AddDate(0, 0, -5),
 	}
 
-	assert.InTimeDelta(Time.Start(times), times[4], time.Millisecond)
+	assert.InTimeDelta(Times(times...).Start(), times[4], time.Millisecond)
 }
 
 func TestTimeEnd(t *testing.T) {
@@ -107,5 +107,5 @@ func TestTimeEnd(t *testing.T) {
 		time.Now().AddDate(0, 0, -5),
 	}
 
-	assert.InTimeDelta(Time.End(times), times[2], time.Millisecond)
+	assert.InTimeDelta(Times(times...).End(), times[2], time.Millisecond)
 }

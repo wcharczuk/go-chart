@@ -1,6 +1,11 @@
 package seq
 
-import "math"
+import (
+	"math"
+	"time"
+
+	"github.com/wcharczuk/go-chart/util"
+)
 
 func round(input float64, places int) (rounded float64) {
 	if math.IsNaN(input) {
@@ -29,4 +34,23 @@ func round(input float64, places int) (rounded float64) {
 func f64i(value float64) int {
 	r := round(value, 0)
 	return int(r)
+}
+
+// SetOfTime is a simple hash set for timestamps as float64s.
+type SetOfTime map[float64]bool
+
+// Add adds the value to the hash set.
+func (sot SetOfTime) Add(tv time.Time) {
+	sot[util.Time.ToFloat64(tv)] = true
+}
+
+// Has returns if the set contains a given time.
+func (sot SetOfTime) Has(tv time.Time) bool {
+	_, hasValue := sot[util.Time.ToFloat64(tv)]
+	return hasValue
+}
+
+// Remove removes the value from the set.
+func (sot SetOfTime) Remove(tv time.Time) {
+	delete(sot, util.Time.ToFloat64(tv))
 }

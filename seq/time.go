@@ -6,21 +6,12 @@ import (
 	"github.com/wcharczuk/go-chart/util"
 )
 
-// Time is a utility singleton with helper functions for time seq generation.
-var Time timeSequence
+// TimeUtil is a utility singleton with helper functions for time seq generation.
+var TimeUtil timeUtil
 
-type timeSequence struct{}
+type timeUtil struct{}
 
-// Days generates a seq of timestamps by day, from -days to today.
-func (ts timeSequence) Days(days int) []time.Time {
-	var values []time.Time
-	for day := days; day >= 0; day-- {
-		values = append(values, time.Now().AddDate(0, 0, -day))
-	}
-	return values
-}
-
-func (ts timeSequence) MarketHours(from, to time.Time, marketOpen, marketClose time.Time, isHoliday util.HolidayProvider) []time.Time {
+func (tu timeUtil) MarketHours(from, to time.Time, marketOpen, marketClose time.Time, isHoliday util.HolidayProvider) []time.Time {
 	var times []time.Time
 	cursor := util.Date.On(marketOpen, from)
 	toClose := util.Date.On(marketClose, to)
@@ -41,7 +32,7 @@ func (ts timeSequence) MarketHours(from, to time.Time, marketOpen, marketClose t
 	return times
 }
 
-func (ts timeSequence) MarketHourQuarters(from, to time.Time, marketOpen, marketClose time.Time, isHoliday util.HolidayProvider) []time.Time {
+func (tu timeUtil) MarketHourQuarters(from, to time.Time, marketOpen, marketClose time.Time, isHoliday util.HolidayProvider) []time.Time {
 	var times []time.Time
 	cursor := util.Date.On(marketOpen, from)
 	toClose := util.Date.On(marketClose, to)
@@ -62,7 +53,7 @@ func (ts timeSequence) MarketHourQuarters(from, to time.Time, marketOpen, market
 	return times
 }
 
-func (ts timeSequence) MarketDayCloses(from, to time.Time, marketOpen, marketClose time.Time, isHoliday util.HolidayProvider) []time.Time {
+func (tu timeUtil) MarketDayCloses(from, to time.Time, marketOpen, marketClose time.Time, isHoliday util.HolidayProvider) []time.Time {
 	var times []time.Time
 	cursor := util.Date.On(marketOpen, from)
 	toClose := util.Date.On(marketClose, to)
@@ -78,7 +69,7 @@ func (ts timeSequence) MarketDayCloses(from, to time.Time, marketOpen, marketClo
 	return times
 }
 
-func (ts timeSequence) MarketDayAlternateCloses(from, to time.Time, marketOpen, marketClose time.Time, isHoliday util.HolidayProvider) []time.Time {
+func (tu timeUtil) MarketDayAlternateCloses(from, to time.Time, marketOpen, marketClose time.Time, isHoliday util.HolidayProvider) []time.Time {
 	var times []time.Time
 	cursor := util.Date.On(marketOpen, from)
 	toClose := util.Date.On(marketClose, to)
@@ -94,7 +85,7 @@ func (ts timeSequence) MarketDayAlternateCloses(from, to time.Time, marketOpen, 
 	return times
 }
 
-func (ts timeSequence) MarketDayMondayCloses(from, to time.Time, marketOpen, marketClose time.Time, isHoliday util.HolidayProvider) []time.Time {
+func (tu timeUtil) MarketDayMondayCloses(from, to time.Time, marketOpen, marketClose time.Time, isHoliday util.HolidayProvider) []time.Time {
 	var times []time.Time
 	cursor := util.Date.On(marketClose, from)
 	toClose := util.Date.On(marketClose, to)
@@ -109,7 +100,7 @@ func (ts timeSequence) MarketDayMondayCloses(from, to time.Time, marketOpen, mar
 	return times
 }
 
-func (ts timeSequence) Hours(start time.Time, totalHours int) []time.Time {
+func (tu timeUtil) Hours(start time.Time, totalHours int) []time.Time {
 	times := make([]time.Time, totalHours)
 
 	last := start
@@ -122,13 +113,12 @@ func (ts timeSequence) Hours(start time.Time, totalHours int) []time.Time {
 }
 
 // HoursFilled adds zero values for the data bounded by the start and end of the xdata array.
-func (ts timeSequence) HoursFilled(xdata []time.Time, ydata []float64) ([]time.Time, []float64) {
-	start := Time.Start(xdata)
-	end := Time.End(xdata)
+func (tu timeUtil) HoursFilled(xdata []time.Time, ydata []float64) ([]time.Time, []float64) {
+	start, end := Times(xdata...).MinAndMax()
 
 	totalHours := util.Math.AbsInt(util.Date.DiffHours(start, end))
 
-	finalTimes := ts.Hours(start, totalHours+1)
+	finalTimes := tu.Hours(start, totalHours+1)
 	finalValues := make([]float64, totalHours+1)
 
 	var hoursFromStart int
@@ -138,34 +128,4 @@ func (ts timeSequence) HoursFilled(xdata []time.Time, ydata []float64) ([]time.T
 	}
 
 	return finalTimes, finalValues
-}
-
-// Start returns the earliest (min) time in a list of times.
-func (ts timeSequence) Start(times []time.Time) time.Time {
-	if len(times) == 0 {
-		return time.Time{}
-	}
-
-	start := times[0]
-	for _, t := range times[1:] {
-		if t.Before(start) {
-			start = t
-		}
-	}
-	return start
-}
-
-// Start returns the earliest (min) time in a list of times.
-func (ts timeSequence) End(times []time.Time) time.Time {
-	if len(times) == 0 {
-		return time.Time{}
-	}
-
-	end := times[0]
-	for _, t := range times[1:] {
-		if t.After(end) {
-			end = t
-		}
-	}
-	return end
 }
