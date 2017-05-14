@@ -168,6 +168,60 @@ func (d draw) HistogramSeries(r Renderer, canvasBox Box, xrange, yrange Range, s
 	}
 }
 
+func (d draw) CandlestickSeries(r Renderer, canvasBox Box, xrange, yrange Range, style Style, cs CandlestickSeries) {
+	if cs.Len() == 0 {
+		return
+	}
+
+	candleValues := cs.CandleValues()
+
+	//calculate bar width?
+	seriesLength := len(candleValues)
+	barWidth := int(math.Floor(float64(xrange.GetDomain()) / float64(seriesLength)))
+
+	bw2 := barWidth >> 1
+
+	cb := canvasBox.Bottom
+	cl := canvasBox.Left
+
+	var cv CandleValue
+	for index := 0; index < seriesLength; index++ {
+		cv = candleValues[index]
+
+		y0 := yrange.Translate(cv.Open)
+		y1 := yrange.Translate(cv.Close)
+
+		x := cl + xrange.Translate(util.Time.ToFloat64(cv.Timestamp))
+
+		// draw open / close box.
+		if cv.Open < cv.Close {
+			d.Box(r, Box{
+				Top:    cb - y0,
+				Left:   x - bw2,
+				Right:  x + bw2,
+				Bottom: cb - y1,
+			}, style.InheritFrom(Style{FillColor: ColorAlternateGreen}))
+		} else {
+			d.Box(r, Box{
+				Top:    cb - y1,
+				Left:   x - bw2,
+				Right:  x + bw2,
+				Bottom: cb - y0,
+			}, style.InheritFrom(Style{FillColor: ColorRed}))
+		}
+
+		// draw high / low t bars
+		y0 = yrange.Translate(cv.High)
+		y1 = yrange.Translate(cv.Low)
+
+		style.InheritFrom(Style{StrokeColor: DefaultStrokeColor}).WriteToRenderer(r)
+
+		r.MoveTo(x, cb-y0)
+		r.LineTo(x, cb-y1)
+		r.Stroke()
+	}
+}
+
 // MeasureAnnotation measures how big an annotation would be.
 func (d draw) MeasureAnnotation(r Renderer, canvasBox Box, style Style, lx, ly int, label string) Box {
 	style.WriteToRenderer(r)

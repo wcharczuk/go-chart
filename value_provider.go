@@ -5,7 +5,7 @@ import "github.com/wcharczuk/go-chart/drawing"
 // ValuesProvider is a type that produces values.
 type ValuesProvider interface {
 	Len() int
-	GetValues(index int) (float64, float64)
+	GetValues(index int) (x float64, y float64)
 }
 
 // BoundedValuesProvider allows series to return a range.
