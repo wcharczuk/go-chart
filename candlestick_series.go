@@ -3,14 +3,24 @@ package chart
 import (
 	"fmt"
 	"time"
+
+	"math"
+
+	"github.com/wcharczuk/go-chart/util"
 )
 
+// CandleValue is a day's data for a candlestick plot.
 type CandleValue struct {
 	Timestamp time.Time
 	High      float64
 	Low       float64
 	Open      float64
 	Close     float64
+}
+
+// IsZero returns if the value is zero or not.
+func (cv CandleValue) IsZero() bool {
+	return cv.Timestamp.IsZero()
 }
 
 // CandlestickSeries is a special type of series that takes a norma value provider
@@ -46,18 +56,50 @@ func (cs CandlestickSeries) CandleValues() []CandleValue {
 	// compute the low, or the min
 
 	totalValues := cs.InnerSeries.Len()
+	if totalValues == 0 {
+		return nil
+	}
 
+	var value CandleValue
 	var values []CandleValue
+	var lastYear, lastMonth, lastDay int
+	var year, month, day int
 
-	var day int
-	for i := 0; i < totalValues; i++ {
-		if day == 0 {
-			// extract day value from time value
+	var tv float64
+	var t time.Time
+	var lv, v float64
+
+	tv, v = cs.InnerSeries.GetValues(0)
+	t = util.Time.FromFloat64(tv)
+	year, month, day = t.Year(), int(t.Month()), t.Day()
+	value.Timestamp = cs.newTimestamp(year, month, day)
+	value.Open, value.Low, value.High = v, v, v
+
+	for i := 1; i < totalValues; i++ {
+		tv, v = cs.InnerSeries.GetValues(i)
+		t = util.Time.FromFloat64(tv)
+		year, month, day = t.Year(), int(t.Month()), t.Day()
+
+		// if we've transitioned to a new day or we're on the last value
+		if lastYear != year || lastMonth != month || lastDay != day || i == (totalValues-1) {
+			value.Close = lv
+			values = append(values, value)
+
+			value = CandleValue{
+				Timestamp: cs.newTimestamp(year, month, day),
+			}
 		}
-		if 
+
+		value.Low = math.Min(value.Low, v)
+		value.High = math.Max(value.Low, v)
+		lv = v
 	}
 
 	return values
+}
+
+func (cs CandlestickSeries) newTimestamp(year, month, day int) time.Time {
+	return time.Date(year, time.Month(month), day, 12, 0, 0, 0, util.Date.Eastern())
 }
 
 // Render implements Series.Render.
