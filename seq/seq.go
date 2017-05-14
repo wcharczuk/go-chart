@@ -137,6 +137,22 @@ func (s Seq) MinMax() (min, max float64) {
 	return
 }
 
+// First returns the value at index 0.
+func (s Seq) First() float64 {
+	if s.Len() == 0 {
+		return 0
+	}
+	return s.GetValue(0)
+}
+
+// Last returns the value at index (len)-1.
+func (s Seq) Last() float64 {
+	if s.Len() == 0 {
+		return 0
+	}
+	return s.GetValue(s.Len() - 1)
+}
+
 // Sort returns the seq sorted in ascending order.
 // This fully enumerates the seq.
 func (s Seq) Sort() Seq {

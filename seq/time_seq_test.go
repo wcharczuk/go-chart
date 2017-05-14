@@ -40,6 +40,27 @@ func TestTimeSeqSort(t *testing.T) {
 	assert.Equal(max, last)
 }
 
+func TestTimeSeqSortDescending(t *testing.T) {
+	assert := assert.New(t)
+
+	seq := Times(
+		parseTime("2016-05-14 12:00:00"),
+		parseTime("2017-05-14 12:00:00"),
+		parseTime("2015-05-14 12:00:00"),
+		parseTime("2017-05-13 12:00:00"),
+	)
+
+	sorted := seq.SortDescending()
+	assert.Equal(4, sorted.Len())
+	min, max := sorted.MinAndMax()
+	assert.Equal(parseTime("2015-05-14 12:00:00"), min)
+	assert.Equal(parseTime("2017-05-14 12:00:00"), max)
+
+	first, last := sorted.First(), sorted.Last()
+	assert.Equal(max, first)
+	assert.Equal(min, last)
+}
+
 func TestTimeSeqDays(t *testing.T) {
 	assert := assert.New(t)
 
