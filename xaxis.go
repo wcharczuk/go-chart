@@ -156,7 +156,7 @@ func (xa XAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 				tx = tx - tb.Width()>>1
 				ty = canvasBox.Bottom + DefaultXAxisMargin + tb.Height()
 			} else {
-				ty = canvasBox.Bottom + (2 * DefaultXAxisMargin)
+				ty = canvasBox.Bottom + (1.5 * DefaultXAxisMargin)
 			}
 			Draw.Text(r, t.Label, tx, ty, tickWithAxisStyle)
 			maxTextHeight = util.Math.MaxInt(maxTextHeight, tb.Height())

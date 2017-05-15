@@ -60,7 +60,12 @@ func (cs CandlestickSeries) Len() int {
 }
 
 // GetValues returns the values at a given index.
-func (cs CandlestickSeries) GetValues(index int) (time.Time, float64) {
+func (cs CandlestickSeries) GetValues(index int) (float64, float64) {
+	return util.Time.ToFloat64(cs.XValues[index]), cs.YValues[index]
+}
+
+// GetRawValues returns the values at a given index.
+func (cs CandlestickSeries) GetRawValues(index int) (time.Time, float64) {
 	return cs.XValues[index], cs.YValues[index]
 }
 
@@ -78,7 +83,7 @@ func (cs CandlestickSeries) CandleValues() []CandleValue {
 	var t time.Time
 	var lv, v float64
 
-	t, v = cs.GetValues(0)
+	t, v = cs.GetRawValues(0)
 	year, month, day = t.Year(), int(t.Month()), t.Day()
 
 	lastYear, lastMonth, lastDay = year, month, day
@@ -92,7 +97,7 @@ func (cs CandlestickSeries) CandleValues() []CandleValue {
 	lv = v
 
 	for i := 1; i < totalValues; i++ {
-		t, v = cs.GetValues(i)
+		t, v = cs.GetRawValues(i)
 		year, month, day = t.Year(), int(t.Month()), t.Day()
 
 		// if we've transitioned to a new day or we're on the last value

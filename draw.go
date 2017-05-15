@@ -175,37 +175,34 @@ func (d draw) CandlestickSeries(r Renderer, canvasBox Box, xrange, yrange Range,
 
 	candleValues := cs.CandleValues()
 
-	//calculate bar width?
-	seriesLength := len(candleValues)
-	barWidth := int(math.Floor(float64(xrange.GetDomain()) / float64(seriesLength)))
-
-	bw2 := barWidth >> 1
-
 	cb := canvasBox.Bottom
 	cl := canvasBox.Left
 
 	var cv CandleValue
-	for index := 0; index < seriesLength; index++ {
+	for index := 0; index < len(candleValues); index++ {
 		cv = candleValues[index]
 
 		y0 := yrange.Translate(cv.Open)
 		y1 := yrange.Translate(cv.Close)
 
-		x := cl + xrange.Translate(util.Time.ToFloat64(cv.Timestamp))
+		x0 := cl + xrange.Translate(util.Time.ToFloat64(util.Date.On(util.NYSEOpen(), cv.Timestamp)))
+		x1 := cl + xrange.Translate(util.Time.ToFloat64(util.Date.On(util.NYSEClose(), cv.Timestamp)))
+
+		x := x0 + ((x1 - x0) >> 1)
 
 		// draw open / close box.
 		if cv.Open < cv.Close {
 			d.Box(r, Box{
 				Top:    cb - y0,
-				Left:   x - bw2,
-				Right:  x + bw2,
+				Left:   x0,
+				Right:  x1,
 				Bottom: cb - y1,
 			}, style.InheritFrom(Style{FillColor: ColorAlternateGreen}))
 		} else {
 			d.Box(r, Box{
 				Top:    cb - y1,
-				Left:   x - bw2,
-				Right:  x + bw2,
+				Left:   x0,
+				Right:  x1,
 				Bottom: cb - y0,
 			}, style.InheritFrom(Style{FillColor: ColorRed}))
 		}
@@ -216,8 +213,16 @@ func (d draw) CandlestickSeries(r Renderer, canvasBox Box, xrange, yrange Range,
 
 		style.InheritFrom(Style{StrokeColor: DefaultStrokeColor}).WriteToRenderer(r)
 
+		r.MoveTo(x0, cb-y0)
+		r.LineTo(x1, cb-y0)
+		r.Stroke()
+
 		r.MoveTo(x, cb-y0)
 		r.LineTo(x, cb-y1)
+		r.Stroke()
+
+		r.MoveTo(x0, cb-y1)
+		r.LineTo(x1, cb-y1)
 		r.Stroke()
 	}
 }

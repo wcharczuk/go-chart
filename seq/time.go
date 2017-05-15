@@ -60,8 +60,8 @@ func (tu timeUtil) MarketDayCloses(from, to time.Time, marketOpen, marketClose t
 	for cursor.Before(toClose) || cursor.Equal(toClose) {
 		isValidTradingDay := !isHoliday(cursor) && util.Date.IsWeekDay(cursor.Weekday())
 		if isValidTradingDay {
-			todayClose := util.Date.On(marketClose, cursor)
-			times = append(times, todayClose)
+			newValue := util.Date.NoonOn(cursor)
+			times = append(times, newValue)
 		}
 
 		cursor = util.Date.NextDay(cursor)

@@ -91,7 +91,7 @@ func (mhr *MarketHoursRange) SetDomain(domain int) {
 // GetHolidayProvider coalesces a userprovided holiday provider and the date.DefaultHolidayProvider.
 func (mhr MarketHoursRange) GetHolidayProvider() util.HolidayProvider {
 	if mhr.HolidayProvider == nil {
-		return func(_ time.Time) bool { return false }
+		return util.Date.IsNYSEHoliday
 	}
 	return mhr.HolidayProvider
 }
@@ -146,7 +146,6 @@ func (mhr *MarketHoursRange) GetTicks(r Renderer, defaults Style, vf ValueFormat
 	}
 
 	return GenerateContinuousTicks(r, mhr, false, defaults, vf)
-
 }
 
 func (mhr *MarketHoursRange) measureTimes(r Renderer, defaults Style, vf ValueFormatter, times []time.Time) int {
@@ -183,8 +182,8 @@ func (mhr MarketHoursRange) String() string {
 func (mhr MarketHoursRange) Translate(value float64) int {
 	valueTime := util.Time.FromFloat64(value)
 	valueTimeEastern := valueTime.In(util.Date.Eastern())
-	totalSeconds := util.Date.CalculateMarketSecondsBetween(mhr.Min, mhr.GetEffectiveMax(), mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.HolidayProvider)
-	valueDelta := util.Date.CalculateMarketSecondsBetween(mhr.Min, valueTimeEastern, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.HolidayProvider)
+	totalSeconds := util.Date.CalculateMarketSecondsBetween(mhr.Min, mhr.GetEffectiveMax(), mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
+	valueDelta := util.Date.CalculateMarketSecondsBetween(mhr.Min, valueTimeEastern, mhr.GetMarketOpen(), mhr.GetMarketClose(), mhr.GetHolidayProvider())
 	translated := int((float64(valueDelta) / float64(totalSeconds)) * float64(mhr.Domain))
 
 	if mhr.IsDescending() {
