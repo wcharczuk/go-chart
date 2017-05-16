@@ -32,8 +32,14 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 
 	tbc := tb.Corners().Rotate(45)
 
-	chart.Draw.BoxCorners(r, tbc, chart.Style{
+	chart.Draw.Box2d(r, tbc, chart.Style{
 		StrokeColor: drawing.ColorRed,
+		StrokeWidth: 2,
+	})
+
+	tbc2 := tbc.Shift(tbc.Height(), 0)
+	chart.Draw.Box2d(r, tbc2, chart.Style{
+		StrokeColor: drawing.ColorGreen,
 		StrokeWidth: 2,
 	})
 

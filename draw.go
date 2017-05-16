@@ -314,17 +314,17 @@ func (d draw) Box(r Renderer, b Box, s Style) {
 }
 
 func (d draw) BoxRotated(r Renderer, b Box, thetaDegrees float64, s Style) {
-	d.BoxCorners(r, b.Corners().Rotate(thetaDegrees), s)
+	d.Box2d(r, b.Corners().Rotate(thetaDegrees), s)
 }
 
-func (d draw) BoxCorners(r Renderer, bc BoxCorners, s Style) {
+func (d draw) Box2d(r Renderer, bc Box2d, s Style) {
 	s.GetFillAndStrokeOptions().WriteToRenderer(r)
 	defer r.ResetStyle()
 
-	r.MoveTo(bc.TopLeft.X, bc.TopLeft.Y)
-	r.LineTo(bc.TopRight.X, bc.TopRight.Y)
-	r.LineTo(bc.BottomRight.X, bc.BottomRight.Y)
-	r.LineTo(bc.BottomLeft.X, bc.BottomLeft.Y)
+	r.MoveTo(int(bc.TopLeft.X), int(bc.TopLeft.Y))
+	r.LineTo(int(bc.TopRight.X), int(bc.TopRight.Y))
+	r.LineTo(int(bc.BottomRight.X), int(bc.BottomRight.Y))
+	r.LineTo(int(bc.BottomLeft.X), int(bc.BottomLeft.Y))
 	r.Close()
 	r.FillStroke()
 }
