@@ -99,51 +99,22 @@ func (bc Box2d) Equals(other Box2d) bool {
 
 // Overlaps returns if two boxes overlap.
 func (bc Box2d) Overlaps(other Box2d) bool {
-	for _, polygon := range []Box2d{bc, other} {
-		points := polygon.Points()
-		for i1 := 0; i1 < len(points); i1++ {
-			i2 := (i1 + 1) % len(points)
+	pa := bc.Points()
+	pb := other.Points()
+	for i := 0; i < 4; i++ {
+		for j := 0; j < 4; j++ {
+			pa0 := pa[i]
+			pa1 := pa[(i+1)%4]
 
-			p1 := polygon.Points()[i1]
-			p2 := polygon.Points()[i2]
+			pb0 := pb[j]
+			pb1 := pb[(j+1)%4]
 
-			normal := Point{X: p2.Y - p1.Y, Y: p1.X - p2.X}
-
-			minA := math.MaxFloat64
-			maxA := -math.MaxFloat64
-
-			for _, p := range bc.Points() {
-				projected := normal.X*p.X + normal.Y*p.Y
-
-				if projected < minA {
-					minA = projected
-				}
-				if projected > maxA {
-					maxA = projected
-				}
-			}
-
-			minB := math.MaxFloat64
-			maxB := -math.MaxFloat64
-
-			for _, p := range other.Points() {
-				projected := normal.X*p.X + normal.Y*p.Y
-
-				if projected < minB {
-					minB = projected
-				}
-				if projected > maxB {
-					maxB = projected
-				}
-			}
-
-			if maxA < minB || maxB < minA {
-				return false
+			if util.Math.LinesIntersect(pa0.X, pa0.Y, pa1.X, pa1.Y, pb0.X, pb0.Y, pb1.X, pb1.Y) {
+				return true
 			}
 		}
 	}
-
-	return true
+	return false
 }
 
 func (bc Box2d) String() string {

@@ -173,7 +173,7 @@ func (d draw) CandlestickSeries(r Renderer, canvasBox Box, xrange, yrange Range,
 		return
 	}
 
-	candleValues := cs.CandleValues()
+	candleValues := cs.GetCandleValues()
 
 	cb := canvasBox.Bottom
 	cl := canvasBox.Left

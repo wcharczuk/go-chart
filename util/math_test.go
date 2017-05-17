@@ -182,3 +182,27 @@ func TestRotateCoordinate45(t *testing.T) {
 	assert.Equal(7, rx)
 	assert.Equal(7, ry)
 }
+
+func TestLinesIntersect(t *testing.T) {
+	assert := assert.New(t)
+
+	p0x := 1.0
+	p0y := 1.0
+
+	p1x := 3.0
+	p1y := 1.0
+
+	p2x := 2.0
+	p2y := 2.0
+
+	p3x := 2.0
+	p3y := 0.0
+
+	p4x := 2.0
+	p4y := 2.0
+	p5x := 3.0
+	p5y := 2.0
+
+	assert.True(Math.LinesIntersect(p0x, p0y, p1x, p1y, p2x, p2y, p3x, p3y))
+	assert.False(Math.LinesIntersect(p0x, p0y, p1x, p1y, p4x, p4y, p5x, p5y))
+}

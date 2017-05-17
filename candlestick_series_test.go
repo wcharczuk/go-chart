@@ -40,11 +40,13 @@ func TestCandlestickSeriesCandleValues(t *testing.T) {
 
 	xdata, ydata := generateDummyStockData()
 
-	candleSeries := CandlestickSeries{
-		XValues: xdata,
-		YValues: ydata,
+	candleSeries := &CandlestickSeries{
+		InnerSeries: TimeSeries{
+			XValues: xdata,
+			YValues: ydata,
+		},
 	}
 
-	values := candleSeries.CandleValues()
+	values := candleSeries.GetCandleValues()
 	assert.Len(values, 43) // should be 60 days per the generator.
 }

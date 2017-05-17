@@ -251,3 +251,17 @@ func (m mathUtil) RotateCoordinate(cx, cy, x, y int, thetaRadians float64) (rx, 
 	ry = int(rotatedY) + cy
 	return
 }
+
+func (m mathUtil) LinesIntersect(l0x0, l0y0, l0x1, l0y1, l1x0, l1y0, l1x1, l1y1 float64) bool {
+	var s0x, s0y, s1x, s1y float64
+	s0x = l0x1 - l0x0
+	s0y = l0y1 - l0y0
+	s1x = l1x1 - l1x0
+	s1y = l1y1 - l1y0
+
+	var s, t float64
+	s = (-s0y*(l0x0-l1x0) + s0x*(l0y0-l1y0)) / (-s1x*s0y + s0x*s1y)
+	t = (s1x*(l0y0-l1y0) - s1y*(l0x0-l1x0)) / (-s1x*s0y + s0x*s1y)
+
+	return s >= 0 && s <= 1 && t >= 0 && t <= 1
+}

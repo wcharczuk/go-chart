@@ -35,43 +35,50 @@ type CandlestickSeries struct {
 	Style Style
 	YAxis YAxisType
 
-	XValues []time.Time
-	YValues []float64
+	// CandleValues will be used in place of creating them from the `InnerSeries`.
+	CandleValues []CandleValue
+
+	// InnerSeries is used if the `CandleValues` are not set.
+	InnerSeries ValuesProvider
 }
 
 // GetName implements Series.GetName.
-func (cs CandlestickSeries) GetName() string {
+func (cs *CandlestickSeries) GetName() string {
 	return cs.Name
 }
 
 // GetStyle implements Series.GetStyle.
-func (cs CandlestickSeries) GetStyle() Style {
+func (cs *CandlestickSeries) GetStyle() Style {
 	return cs.Style
 }
 
 // GetYAxis returns which yaxis the series is mapped to.
-func (cs CandlestickSeries) GetYAxis() YAxisType {
+func (cs *CandlestickSeries) GetYAxis() YAxisType {
 	return cs.YAxis
 }
 
 // Len returns the length of the series.
-func (cs CandlestickSeries) Len() int {
-	return util.Math.MinInt(len(cs.XValues), len(cs.YValues))
+func (cs *CandlestickSeries) Len() int {
+	return len(cs.GetCandleValues())
 }
 
-// GetValues returns the values at a given index.
-func (cs CandlestickSeries) GetValues(index int) (float64, float64) {
-	return util.Time.ToFloat64(cs.XValues[index]), cs.YValues[index]
+// GetBoundedValues returns the bounded values at a given index.
+func (cs *CandlestickSeries) GetBoundedValues(index int) (x, y0, y1 float64) {
+	value := cs.GetCandleValues()[index]
+	return util.Time.ToFloat64(value.Timestamp), value.Low, value.High
 }
 
-// GetRawValues returns the values at a given index.
-func (cs CandlestickSeries) GetRawValues(index int) (time.Time, float64) {
-	return cs.XValues[index], cs.YValues[index]
+// GetCandleValues returns the candle values.
+func (cs CandlestickSeries) GetCandleValues() []CandleValue {
+	if cs.CandleValues == nil {
+		cs.CandleValues = cs.GenerateCandleValues()
+	}
+	return cs.CandleValues
 }
 
-// CandleValues returns the candlestick values for each day represented by the inner series.
-func (cs CandlestickSeries) CandleValues() []CandleValue {
-	totalValues := cs.Len()
+// GenerateCandleValues returns the candlestick values for each day represented by the inner series.
+func (cs CandlestickSeries) GenerateCandleValues() []CandleValue {
+	totalValues := cs.InnerSeries.Len()
 	if totalValues == 0 {
 		return nil
 	}
@@ -81,9 +88,10 @@ func (cs CandlestickSeries) CandleValues() []CandleValue {
 	var year, month, day int
 
 	var t time.Time
-	var lv, v float64
+	var tv, lv, v float64
 
-	t, v = cs.GetRawValues(0)
+	tv, v = cs.InnerSeries.GetValues(0)
+	t = util.Time.FromFloat64(tv)
 	year, month, day = t.Year(), int(t.Month()), t.Day()
 
 	lastYear, lastMonth, lastDay = year, month, day
@@ -97,7 +105,8 @@ func (cs CandlestickSeries) CandleValues() []CandleValue {
 	lv = v
 
 	for i := 1; i < totalValues; i++ {
-		t, v = cs.GetRawValues(i)
+		tv, v = cs.InnerSeries.GetValues(0)
+		t = util.Time.FromFloat64(tv)
 		year, month, day = t.Year(), int(t.Month()), t.Day()
 
 		// if we've transitioned to a new day or we're on the last value
@@ -137,11 +146,8 @@ func (cs CandlestickSeries) Render(r Renderer, canvasBox Box, xrange, yrange Ran
 
 // Validate validates the series.
 func (cs CandlestickSeries) Validate() error {
-	if cs.XValues == nil {
-		return fmt.Errorf("candlestick series requires `XValues` to be set")
-	}
-	if cs.YValues == nil {
-		return fmt.Errorf("candlestick series requires `YValues` to be set")
+	if cs.CandleValues == nil && cs.InnerSeries == nil {
+		return fmt.Errorf("candlestick series requires either `CandleValues` or `InnerSeries` to be set")
 	}
 	return nil
 }
