@@ -7,11 +7,10 @@ import (
 	"math"
 	"strings"
 
-	"golang.org/x/image/font"
-
-	util "github.com/blendlabs/go-util"
 	"github.com/golang/freetype/truetype"
 	"github.com/wcharczuk/go-chart/drawing"
+	"github.com/wcharczuk/go-chart/util"
+	"golang.org/x/image/font"
 )
 
 // SVG returns a new png/raster renderer.
@@ -162,7 +161,8 @@ func (vr *vectorRenderer) Text(body string, x, y int) {
 }
 
 // MeasureText uses the truetype font drawer to measure the width of text.
-func (vr *vectorRenderer) MeasureText(body string) (box Box) {
+func (vr *vectorRenderer) MeasureText(body string) Box2d {
+	var box Box
 	if vr.s.GetFont() != nil {
 		vr.fc = &font.Drawer{
 			Face: truetype.NewFace(vr.s.GetFont(), &truetype.Options{
@@ -175,11 +175,11 @@ func (vr *vectorRenderer) MeasureText(body string) (box Box) {
 		box.Right = w
 		box.Bottom = int(drawing.PointsToPixels(vr.dpi, vr.s.FontSize))
 		if vr.c.textTheta == nil {
-			return
+			return box.Corners()
 		}
-		box = box.Corners().Rotate(util.Math.RadiansToDegrees(*vr.c.textTheta)).Box()
+		return box.Corners().Rotate(util.Math.RadiansToDegrees(*vr.c.textTheta))
 	}
-	return
+	return box.Corners()
 }
 
 // SetTextRotation sets the text rotation.

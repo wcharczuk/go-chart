@@ -26,11 +26,31 @@ func (bc Box2d) Points() []Point {
 // Box return the Box2d as a regular box.
 func (bc Box2d) Box() Box {
 	return Box{
-		Top:    int(math.Min(bc.TopLeft.Y, bc.TopRight.Y)),
-		Left:   int(math.Min(bc.TopLeft.X, bc.BottomLeft.X)),
-		Right:  int(math.Max(bc.TopRight.X, bc.BottomRight.X)),
-		Bottom: int(math.Max(bc.BottomLeft.Y, bc.BottomRight.Y)),
+		Top:    int(bc.Top()),
+		Left:   int(bc.Left()),
+		Right:  int(bc.Right()),
+		Bottom: int(bc.Bottom()),
 	}
+}
+
+// Top returns the top-most corner y value.
+func (bc Box2d) Top() float64 {
+	return math.Min(bc.TopLeft.Y, bc.TopRight.Y)
+}
+
+// Left returns the left-most corner x value.
+func (bc Box2d) Left() float64 {
+	return math.Min(bc.TopLeft.X, bc.BottomLeft.X)
+}
+
+// Right returns the right-most corner x value.
+func (bc Box2d) Right() float64 {
+	return math.Max(bc.TopRight.X, bc.BottomRight.X)
+}
+
+// Bottom returns the bottom-most corner y value.
+func (bc Box2d) Bottom() float64 {
+	return math.Max(bc.BottomLeft.Y, bc.BottomLeft.Y)
 }
 
 // Width returns the width
@@ -117,6 +137,17 @@ func (bc Box2d) Overlaps(other Box2d) bool {
 	return false
 }
 
+// Grow grows a box by a given set of dimensions.
+func (bc Box2d) Grow(by Box) Box2d {
+	top, left, right, bottom := float64(by.Top), float64(by.Left), float64(by.Right), float64(by.Bottom)
+	return Box2d{
+		TopLeft:     Point{X: bc.TopLeft.X - left, Y: bc.TopLeft.Y - top},
+		TopRight:    Point{X: bc.TopRight.X + right, Y: bc.TopRight.Y - top},
+		BottomRight: Point{X: bc.BottomRight.X + right, Y: bc.BottomRight.Y + bottom},
+		BottomLeft:  Point{X: bc.BottomLeft.X - left, Y: bc.BottomLeft.Y + bottom},
+	}
+}
+
 func (bc Box2d) String() string {
 	return fmt.Sprintf("Box2d{%s,%s,%s,%s}", bc.TopLeft.String(), bc.TopRight.String(), bc.BottomRight.String(), bc.BottomLeft.String())
 }
@@ -136,8 +167,8 @@ func (p Point) Shift(x, y float64) Point {
 
 // DistanceTo calculates the distance to another point.
 func (p Point) DistanceTo(other Point) float64 {
-	dx := math.Pow(float64(p.X-other.X), 2)
-	dy := math.Pow(float64(p.Y-other.Y), 2)
+	dx := math.Pow(p.X-other.X, 2)
+	dy := math.Pow(p.Y-other.Y, 2)
 	return math.Pow(dx+dy, 0.5)
 }
 
@@ -148,5 +179,5 @@ func (p Point) Equals(other Point) bool {
 
 // String returns a string representation of the point.
 func (p Point) String() string {
-	return fmt.Sprintf("P{%.2f,%.2f}", p.X, p.Y)
+	return fmt.Sprintf("(%.2f,%.2f)", p.X, p.Y)
 }

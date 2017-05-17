@@ -99,17 +99,17 @@ func (ya YAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 		ly := canvasBox.Bottom - ra.Translate(v)
 
 		tb := r.MeasureText(t.Label)
-		tbh2 := tb.Height() >> 1
+		tbh2 := int(tb.Height()) >> 1
 		finalTextX := tx
 		if ya.AxisType == YAxisSecondary {
-			finalTextX = tx - tb.Width()
+			finalTextX = tx - int(tb.Width())
 		}
 
-		maxTextHeight = util.Math.MaxInt(tb.Height(), maxTextHeight)
+		maxTextHeight = util.Math.MaxInt(int(tb.Height()), maxTextHeight)
 
 		if ya.AxisType == YAxisPrimary {
 			minx = canvasBox.Right
-			maxx = util.Math.MaxInt(maxx, tx+tb.Width())
+			maxx = util.Math.MaxInt(maxx, tx+int(tb.Width()))
 		} else if ya.AxisType == YAxisSecondary {
 			minx = util.Math.MinInt(minx, finalTextX)
 			maxx = util.Math.MaxInt(maxx, tx)
@@ -160,18 +160,18 @@ func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 
 		tb := Draw.MeasureText(r, t.Label, tickStyle)
 
-		if tb.Width() > maxTextWidth {
-			maxTextWidth = tb.Width()
+		if int(tb.Width()) > maxTextWidth {
+			maxTextWidth = int(tb.Width())
 		}
 
 		if ya.AxisType == YAxisSecondary {
-			finalTextX = tx - tb.Width()
+			finalTextX = tx - int(tb.Width())
 		} else {
 			finalTextX = tx
 		}
 
 		if tickStyle.TextRotationDegrees == 0 {
-			finalTextY = ly + tb.Height()>>1
+			finalTextY = ly + int(tb.Height())>>1
 		} else {
 			finalTextY = ly
 		}
@@ -203,9 +203,9 @@ func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 
 		var ty int
 		if nameStyle.TextRotationDegrees == 0 {
-			ty = canvasBox.Top + (canvasBox.Height()>>1 - tb.Width()>>1)
+			ty = canvasBox.Top + (canvasBox.Height()>>1 - int(tb.Width())>>1)
 		} else {
-			ty = canvasBox.Top + (canvasBox.Height()>>1 - tb.Height()>>1)
+			ty = canvasBox.Top + (canvasBox.Height()>>1 - int(tb.Height())>>1)
 		}
 
 		Draw.Text(r, ya.Name, tx, ty, nameStyle)

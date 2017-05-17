@@ -155,7 +155,7 @@ func (mhr *MarketHoursRange) measureTimes(r Renderer, defaults Style, vf ValueFo
 		timeLabel := vf(t)
 
 		labelBox := r.MeasureText(timeLabel)
-		total += labelBox.Width()
+		total += int(labelBox.Width())
 		if index > 0 {
 			total += DefaultMinimumTickHorizontalSpacing
 		}

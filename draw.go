@@ -233,8 +233,8 @@ func (d draw) MeasureAnnotation(r Renderer, canvasBox Box, style Style, lx, ly i
 	defer r.ResetStyle()
 
 	textBox := r.MeasureText(label)
-	textWidth := textBox.Width()
-	textHeight := textBox.Height()
+	textWidth := int(textBox.Width())
+	textHeight := int(textBox.Height())
 	halfTextHeight := textHeight >> 1
 
 	pt := style.Padding.GetTop(DefaultAnnotationPadding.Top)
@@ -262,8 +262,8 @@ func (d draw) Annotation(r Renderer, canvasBox Box, style Style, lx, ly int, lab
 	defer r.ResetStyle()
 
 	textBox := r.MeasureText(label)
-	textWidth := textBox.Width()
-	halfTextHeight := textBox.Height() >> 1
+	textWidth := int(textBox.Width())
+	halfTextHeight := int(textBox.Height()) >> 1
 
 	style.GetFillAndStrokeOptions().WriteToRenderer(r)
 
@@ -337,7 +337,7 @@ func (d draw) Text(r Renderer, text string, x, y int, style Style) {
 	r.Text(text, x, y)
 }
 
-func (d draw) MeasureText(r Renderer, text string, style Style) Box {
+func (d draw) MeasureText(r Renderer, text string, style Style) Box2d {
 	style.GetTextOptions().WriteToRenderer(r)
 	defer r.ResetStyle()
 
@@ -356,9 +356,9 @@ func (d draw) TextWithin(r Renderer, text string, box Box, style Style) {
 
 	switch style.GetTextVerticalAlign() {
 	case TextVerticalAlignBottom, TextVerticalAlignBaseline: // i have to build better baseline handling into measure text
-		y = y - linesBox.Height()
+		y = y - int(linesBox.Height())
 	case TextVerticalAlignMiddle, TextVerticalAlignMiddleBaseline:
-		y = (y - linesBox.Height()) >> 1
+		y = (y - int(linesBox.Height())) >> 1
 	}
 
 	var tx, ty int
@@ -366,19 +366,19 @@ func (d draw) TextWithin(r Renderer, text string, box Box, style Style) {
 		lineBox := r.MeasureText(line)
 		switch style.GetTextHorizontalAlign() {
 		case TextHorizontalAlignCenter:
-			tx = box.Left + ((box.Width() - lineBox.Width()) >> 1)
+			tx = box.Left + ((int(box.Width()) - int(lineBox.Width())) >> 1)
 		case TextHorizontalAlignRight:
-			tx = box.Right - lineBox.Width()
+			tx = box.Right - int(lineBox.Width())
 		default:
 			tx = box.Left
 		}
 		if style.TextRotationDegrees == 0 {
-			ty = y + lineBox.Height()
+			ty = y + int(lineBox.Height())
 		} else {
 			ty = y
 		}
 
 		r.Text(line, tx, ty)
-		y += lineBox.Height() + style.GetTextLineSpacing()
+		y += int(lineBox.Height()) + style.GetTextLineSpacing()
 	}
 }

@@ -162,8 +162,8 @@ func (pc PieChart) drawSlices(r Renderer, canvasBox Box, values []Value) {
 			lx, ly = util.Math.CirclePoint(cx, cy, labelRadius, delta2)
 
 			tb := r.MeasureText(v.Label)
-			lx = lx - (tb.Width() >> 1)
-			ly = ly + (tb.Height() >> 1)
+			lx = lx - (int(tb.Width()) >> 1)
+			ly = ly + (int(tb.Height()) >> 1)
 
 			r.Text(v.Label, lx, ly)
 		}

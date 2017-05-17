@@ -85,7 +85,7 @@ func (t text) WrapFitWord(r Renderer, value string, width int, style Style) []st
 	var line string
 	var word string
 
-	var textBox Box
+	var textBox Box2d
 
 	for _, c := range value {
 		if c == rune('\n') { // commit the line to output
@@ -97,7 +97,7 @@ func (t text) WrapFitWord(r Renderer, value string, width int, style Style) []st
 
 		textBox = r.MeasureText(line + word + string(c))
 
-		if textBox.Width() >= width {
+		if int(textBox.Width()) >= width {
 			output = append(output, t.Trim(line))
 			line = word
 			word = string(c)
@@ -120,7 +120,7 @@ func (t text) WrapFitRune(r Renderer, value string, width int, style Style) []st
 
 	var output []string
 	var line string
-	var textBox Box
+	var textBox Box2d
 	for _, c := range value {
 		if c == rune('\n') {
 			output = append(output, line)
@@ -130,7 +130,7 @@ func (t text) WrapFitRune(r Renderer, value string, width int, style Style) []st
 
 		textBox = r.MeasureText(line + string(c))
 
-		if textBox.Width() >= width {
+		if int(textBox.Width()) >= width {
 			output = append(output, line)
 			line = string(c)
 			continue
@@ -144,18 +144,18 @@ func (t text) Trim(value string) string {
 	return strings.Trim(value, " \t\n\r")
 }
 
-func (t text) MeasureLines(r Renderer, lines []string, style Style) Box {
+func (t text) MeasureLines(r Renderer, lines []string, style Style) Box2d {
 	style.WriteTextOptionsToRenderer(r)
 	var output Box
 	for index, line := range lines {
 		lineBox := r.MeasureText(line)
-		output.Right = util.Math.MaxInt(lineBox.Right, output.Right)
-		output.Bottom += lineBox.Height()
+		output.Right = util.Math.MaxInt(int(lineBox.Right()), output.Right)
+		output.Bottom += int(lineBox.Height())
 		if index < len(lines)-1 {
 			output.Bottom += +style.GetTextLineSpacing()
 		}
 	}
-	return output
+	return output.Corners()
 }
 
 func (t text) appendLast(lines []string, text string) []string {

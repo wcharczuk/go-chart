@@ -67,8 +67,8 @@ func Legend(c *Chart, userDefaults ...Style) Renderable {
 				if labelCount > 0 {
 					legendContent.Bottom += DefaultMinimumTickVerticalSpacing
 				}
-				legendContent.Bottom += tb.Height()
-				right := legendContent.Left + tb.Width() + lineTextGap + lineLengthMinimum
+				legendContent.Bottom += int(tb.Height())
+				right := legendContent.Left + int(tb.Width()) + lineTextGap + lineLengthMinimum
 				legendContent.Right = util.Math.MaxInt(legendContent.Right, right)
 				labelCount++
 			}
@@ -95,12 +95,12 @@ func Legend(c *Chart, userDefaults ...Style) Renderable {
 
 				tb := r.MeasureText(label)
 
-				ty := ycursor + tb.Height()
+				ty := ycursor + int(tb.Height())
 				r.Text(label, tx, ty)
 
-				th2 := tb.Height() >> 1
+				th2 := int(tb.Height()) >> 1
 
-				lx := tx + tb.Width() + lineTextGap
+				lx := tx + int(tb.Width()) + lineTextGap
 				ly := ty - th2
 				lx2 := legendContent.Right - legendPadding.Right
 
@@ -112,7 +112,7 @@ func Legend(c *Chart, userDefaults ...Style) Renderable {
 				r.LineTo(lx2, ly)
 				r.Stroke()
 
-				ycursor += tb.Height()
+				ycursor += int(tb.Height())
 				legendCount++
 			}
 		}
@@ -160,12 +160,12 @@ func LegendThin(c *Chart, userDefaults ...Style) Renderable {
 
 		var textHeight int
 		var textWidth int
-		var textBox Box
+		var textBox Box2d
 		for x := 0; x < len(labels); x++ {
 			if len(labels[x]) > 0 {
 				textBox = r.MeasureText(labels[x])
-				textHeight = util.Math.MaxInt(textBox.Height(), textHeight)
-				textWidth = util.Math.MaxInt(textBox.Width(), textWidth)
+				textHeight = util.Math.MaxInt(int(textBox.Height()), textHeight)
+				textWidth = util.Math.MaxInt(int(textBox.Width()), textWidth)
 			}
 		}
 
@@ -200,7 +200,7 @@ func LegendThin(c *Chart, userDefaults ...Style) Renderable {
 				textBox = r.MeasureText(label)
 				r.Text(label, tx, ty)
 
-				lx = tx + textBox.Width() + lineTextGap
+				lx = tx + int(textBox.Width()) + lineTextGap
 				ly = ty - th2
 
 				r.SetStrokeColor(lines[index].GetStrokeColor())
@@ -211,7 +211,7 @@ func LegendThin(c *Chart, userDefaults ...Style) Renderable {
 				r.LineTo(lx+lineLengthMinimum, ly)
 				r.Stroke()
 
-				tx += textBox.Width() + DefaultMinimumTickHorizontalSpacing + lineTextGap + lineLengthMinimum
+				tx += int(textBox.Width()) + DefaultMinimumTickHorizontalSpacing + lineTextGap + lineLengthMinimum
 			}
 		}
 	}
@@ -279,8 +279,8 @@ func LegendLeft(c *Chart, userDefaults ...Style) Renderable {
 				if labelCount > 0 {
 					legendContent.Bottom += DefaultMinimumTickVerticalSpacing
 				}
-				legendContent.Bottom += tb.Height()
-				right := legendContent.Left + tb.Width() + lineTextGap + lineLengthMinimum
+				legendContent.Bottom += int(tb.Height())
+				right := legendContent.Left + int(tb.Width()) + lineTextGap + lineLengthMinimum
 				legendContent.Right = util.Math.MaxInt(legendContent.Right, right)
 				labelCount++
 			}
@@ -307,12 +307,12 @@ func LegendLeft(c *Chart, userDefaults ...Style) Renderable {
 
 				tb := r.MeasureText(label)
 
-				ty := ycursor + tb.Height()
+				ty := ycursor + int(tb.Height())
 				r.Text(label, tx, ty)
 
-				th2 := tb.Height() >> 1
+				th2 := int(tb.Height()) >> 1
 
-				lx := tx + tb.Width() + lineTextGap
+				lx := tx + int(tb.Width()) + lineTextGap
 				ly := ty - th2
 				lx2 := legendContent.Right - legendPadding.Right
 
@@ -324,7 +324,7 @@ func LegendLeft(c *Chart, userDefaults ...Style) Renderable {
 				r.LineTo(lx2, ly)
 				r.Stroke()
 
-				ycursor += tb.Height()
+				ycursor += int(tb.Height())
 				legendCount++
 			}
 		}

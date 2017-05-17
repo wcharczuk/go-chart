@@ -73,7 +73,7 @@ type Renderer interface {
 	Text(body string, x, y int)
 
 	// MeasureText measures text.
-	MeasureText(body string) Box
+	MeasureText(body string) Box2d
 
 	// SetTextRotatation sets a rotation for drawing elements.
 	SetTextRotation(radians float64)

@@ -91,11 +91,11 @@ func (xa XAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 		tb := Draw.MeasureText(r, t.Label, tickStyle.GetTextOptions())
 
 		tx = canvasBox.Left + ra.Translate(v)
-		ty = canvasBox.Bottom + DefaultXAxisMargin + tb.Height()
+		ty = canvasBox.Bottom + DefaultXAxisMargin + int(tb.Height())
 		switch tp {
 		case TickPositionUnderTick, TickPositionUnset:
-			ltx = tx - tb.Width()>>1
-			rtx = tx + tb.Width()>>1
+			ltx = tx - int(tb.Width())>>1
+			rtx = tx + int(tb.Width())>>1
 			break
 		case TickPositionBetweenTicks:
 			if index > 0 {
@@ -112,7 +112,7 @@ func (xa XAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 
 	if xa.NameStyle.Show && len(xa.Name) > 0 {
 		tb := Draw.MeasureText(r, xa.Name, xa.NameStyle.InheritFrom(defaults))
-		bottom += DefaultXAxisMargin + tb.Height()
+		bottom += DefaultXAxisMargin + int(tb.Height())
 	}
 
 	return Box{
@@ -153,13 +153,13 @@ func (xa XAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 		switch tp {
 		case TickPositionUnderTick, TickPositionUnset:
 			if tickStyle.TextRotationDegrees == 0 {
-				tx = tx - tb.Width()>>1
-				ty = canvasBox.Bottom + DefaultXAxisMargin + tb.Height()
+				tx = tx - int(tb.Width())>>1
+				ty = canvasBox.Bottom + DefaultXAxisMargin + int(tb.Height())
 			} else {
 				ty = canvasBox.Bottom + (1.5 * DefaultXAxisMargin)
 			}
 			Draw.Text(r, t.Label, tx, ty, tickWithAxisStyle)
-			maxTextHeight = util.Math.MaxInt(maxTextHeight, tb.Height())
+			maxTextHeight = util.Math.MaxInt(maxTextHeight, int(tb.Height()))
 			break
 		case TickPositionBetweenTicks:
 			if index > 0 {
@@ -175,7 +175,7 @@ func (xa XAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 				}, finalTickStyle)
 
 				ftb := Text.MeasureLines(r, Text.WrapFit(r, t.Label, tx-ltx, finalTickStyle), finalTickStyle)
-				maxTextHeight = util.Math.MaxInt(maxTextHeight, ftb.Height())
+				maxTextHeight = util.Math.MaxInt(maxTextHeight, int(ftb.Height()))
 			}
 			break
 		}
@@ -184,8 +184,8 @@ func (xa XAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 	nameStyle := xa.NameStyle.InheritFrom(defaults)
 	if xa.NameStyle.Show && len(xa.Name) > 0 {
 		tb := Draw.MeasureText(r, xa.Name, nameStyle)
-		tx := canvasBox.Right - (canvasBox.Width()>>1 + tb.Width()>>1)
-		ty := canvasBox.Bottom + DefaultXAxisMargin + maxTextHeight + DefaultXAxisMargin + tb.Height()
+		tx := canvasBox.Right - (canvasBox.Width()>>1 + int(tb.Width())>>1)
+		ty := canvasBox.Bottom + DefaultXAxisMargin + maxTextHeight + DefaultXAxisMargin + int(tb.Height())
 		Draw.Text(r, xa.Name, tx, ty, nameStyle)
 	}
 

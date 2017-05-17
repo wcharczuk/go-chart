@@ -261,7 +261,7 @@ func (bc BarChart) drawYAxis(r Renderer, canvasBox Box, yr Range, ticks []Tick) 
 		r.Stroke()
 
 		var ty int
-		var tb Box
+		var tb Box2d
 		for _, t := range ticks {
 			ty = canvasBox.Bottom - yr.Translate(t.Value)
 
@@ -272,7 +272,7 @@ func (bc BarChart) drawYAxis(r Renderer, canvasBox Box, yr Range, ticks []Tick) 
 
 			axisStyle.GetTextOptions().WriteToRenderer(r)
 			tb = r.MeasureText(t.Label)
-			Draw.Text(r, t.Label, canvasBox.Right+DefaultYAxisMargin+5, ty+(tb.Height()>>1), axisStyle)
+			Draw.Text(r, t.Label, canvasBox.Right+DefaultYAxisMargin+5, ty+(int(tb.Height())>>1), axisStyle)
 		}
 
 	}
@@ -369,7 +369,7 @@ func (bc BarChart) getAdjustedCanvasBox(r Renderer, canvasBox Box, yrange Range,
 				lines := Text.WrapFit(r, bar.Label, barLabelBox.Width(), axisStyle)
 				linesBox := Text.MeasureLines(r, lines, axisStyle)
 
-				xaxisHeight = util.Math.MinInt(linesBox.Height()+(2*DefaultXAxisMargin), xaxisHeight)
+				xaxisHeight = util.Math.MinInt(int(linesBox.Height())+(2*DefaultXAxisMargin), xaxisHeight)
 			}
 		}
 

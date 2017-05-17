@@ -214,7 +214,7 @@ func (sbc StackedBarChart) drawYAxis(r Renderer, canvasBox Box) {
 			text := fmt.Sprintf("%0.0f%%", t*100)
 
 			tb := r.MeasureText(text)
-			Draw.Text(r, text, canvasBox.Right+DefaultYAxisMargin+5, ty+(tb.Height()>>1), axisStyle)
+			Draw.Text(r, text, canvasBox.Right+DefaultYAxisMargin+5, ty+(int(tb.Height())>>1), axisStyle)
 		}
 
 	}
@@ -254,7 +254,7 @@ func (sbc StackedBarChart) getAdjustedCanvasBox(r Renderer, canvasBox Box) Box {
 				lines := Text.WrapFit(r, bar.Name, barLabelBox.Width(), axisStyle)
 				linesBox := Text.MeasureLines(r, lines, axisStyle)
 
-				xaxisHeight = util.Math.MaxInt(linesBox.Height()+(2*DefaultXAxisMargin), xaxisHeight)
+				xaxisHeight = util.Math.MaxInt(int(linesBox.Height())+(2*DefaultXAxisMargin), xaxisHeight)
 			}
 		}
 		return Box{

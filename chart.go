@@ -502,8 +502,8 @@ func (c Chart) drawTitle(r Renderer) {
 		textWidth := textBox.Width()
 		textHeight := textBox.Height()
 
-		titleX := (c.GetWidth() >> 1) - (textWidth >> 1)
-		titleY := c.TitleStyle.Padding.GetTop(DefaultTitleTop) + textHeight
+		titleX := (int(c.GetWidth()) >> 1) - (int(textWidth) >> 1)
+		titleY := c.TitleStyle.Padding.GetTop(DefaultTitleTop) + int(textHeight)
 
 		r.Text(c.Title, titleX, titleY)
 	}

@@ -155,13 +155,13 @@ func (rr *rasterRenderer) Text(body string, x, y int) {
 }
 
 // MeasureText returns the height and width in pixels of a string.
-func (rr *rasterRenderer) MeasureText(body string) Box {
+func (rr *rasterRenderer) MeasureText(body string) Box2d {
 	rr.gc.SetFont(rr.s.Font)
 	rr.gc.SetFontSize(rr.s.FontSize)
 	rr.gc.SetFillColor(rr.s.FontColor)
 	l, t, r, b, err := rr.gc.GetStringBounds(body)
 	if err != nil {
-		return Box{}
+		return Box2d{}
 	}
 	if l < 0 {
 		r = r - l // equivalent to r+(-1*l)
@@ -189,10 +189,10 @@ func (rr *rasterRenderer) MeasureText(body string) Box {
 		Bottom: int(math.Ceil(b)),
 	}
 	if rr.rotateRadians == nil {
-		return textBox
+		return textBox.Corners()
 	}
 
-	return textBox.Corners().Rotate(util.Math.RadiansToDegrees(*rr.rotateRadians)).Box()
+	return textBox.Corners().Rotate(util.Math.RadiansToDegrees(*rr.rotateRadians))
 }
 
 // SetTextRotation sets a text rotation.
