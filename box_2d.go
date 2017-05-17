@@ -118,7 +118,7 @@ func (bc Box2d) Overlaps(other Box2d) bool {
 }
 
 func (bc Box2d) String() string {
-	return fmt.Sprintf("BoxC{%s,%s,%s,%s}", bc.TopLeft.String(), bc.TopRight.String(), bc.BottomRight.String(), bc.BottomLeft.String())
+	return fmt.Sprintf("Box2d{%s,%s,%s,%s}", bc.TopLeft.String(), bc.TopRight.String(), bc.BottomRight.String(), bc.BottomLeft.String())
 }
 
 // Point is an X,Y pair

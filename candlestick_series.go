@@ -78,6 +78,10 @@ func (cs CandlestickSeries) GetCandleValues() []CandleValue {
 
 // GenerateCandleValues returns the candlestick values for each day represented by the inner series.
 func (cs CandlestickSeries) GenerateCandleValues() []CandleValue {
+	if cs.InnerSeries == nil {
+		return nil
+	}
+
 	totalValues := cs.InnerSeries.Len()
 	if totalValues == 0 {
 		return nil
@@ -105,7 +109,7 @@ func (cs CandlestickSeries) GenerateCandleValues() []CandleValue {
 	lv = v
 
 	for i := 1; i < totalValues; i++ {
-		tv, v = cs.InnerSeries.GetValues(0)
+		tv, v = cs.InnerSeries.GetValues(i)
 		t = util.Time.FromFloat64(tv)
 		year, month, day = t.Year(), int(t.Month()), t.Day()
 

@@ -61,6 +61,6 @@ func TestBox2dOverlaps(t *testing.T) {
 	assert.True(bc.Overlaps(bc5))
 
 	bcr := bc.Rotate(45)
-	bcr2 := bc.Rotate(45).Shift(bc.Height(), 0)
-	assert.False(bcr.Overlaps(bcr2), fmt.Sprintf("%v\n\t\tshould not overlap\n\t%v", bcr, bcr2))
+	bcr2 := bc.Rotate(45).Shift(bc.Width()/2.0, 0)
+	assert.True(bcr.Overlaps(bcr2), fmt.Sprintf("%v\n\t\tshould overlap\n\t%v", bcr, bcr2))
 }
