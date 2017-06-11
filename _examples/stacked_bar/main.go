@@ -10,6 +10,13 @@ import (
 
 func drawChart(res http.ResponseWriter, req *http.Request) {
 	sbc := chart.StackedBarChart{
+		Title:      "Test Stacked Bar Chart",
+		TitleStyle: chart.StyleShow(),
+		Background: chart.Style{
+			Padding: chart.Box{
+				Top: 40,
+			},
+		},
 		Height: 512,
 		XAxis: chart.Style{
 			Show: true,
