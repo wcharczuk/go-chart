@@ -10,8 +10,9 @@ import (
 
 func drawChart(res http.ResponseWriter, req *http.Request) {
 	sbc := chart.StackedBarChart{
-		Title:      "Test Stacked Bar Chart",
-		TitleStyle: chart.StyleShow(),
+		Title:       "Test Stacked Bar Chart",
+		TitleStyle:  chart.StyleShow(),
+		Orientation: chart.OrientationLandscape,
 		Background: chart.Style{
 			Padding: chart.Box{
 				Top: 40,

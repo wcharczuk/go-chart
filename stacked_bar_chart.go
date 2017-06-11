@@ -11,6 +11,18 @@ import (
 	util "github.com/wcharczuk/go-chart/util"
 )
 
+// Orientation is an orientation for an element.
+type Orientation int
+
+const (
+	// OrientationDefault is the default orientation.
+	OrientationDefault Orientation = iota
+	// OrientationLandscape is the landscape orientation.
+	OrientationLandscape Orientation = iota
+	// OrientationPortrait is the portrait orientation.
+	OrientationPortrait Orientation = iota
+)
+
 // StackedBar is a bar within a StackedBarChart.
 type StackedBar struct {
 	Name   string
@@ -43,7 +55,8 @@ type StackedBarChart struct {
 	XAxis Style
 	YAxis Style
 
-	BarSpacing int
+	BarSpacing  int
+	Orientation Orientation
 
 	Font        *truetype.Font
 	defaultFont *truetype.Font
@@ -95,6 +108,16 @@ func (sbc StackedBarChart) GetBarSpacing() int {
 	return sbc.BarSpacing
 }
 
+// GetOrientation gets the orientation or the default.
+func (sbc StackedBarChart) GetOrientation() Orientation {
+	switch sbc.Orientation {
+	case OrientationDefault:
+		return OrientationPortrait
+	default:
+		return sbc.Orientation
+	}
+}
+
 // Render renders the chart with the given renderer to the given io.Writer.
 func (sbc StackedBarChart) Render(rp RendererProvider, w io.Writer) error {
 	if len(sbc.Bars) == 0 {
@@ -134,33 +157,63 @@ func (sbc StackedBarChart) drawCanvas(r Renderer, canvasBox Box) {
 }
 
 func (sbc StackedBarChart) drawBars(r Renderer, canvasBox Box) {
-	xoffset := canvasBox.Left
+	var offset int
+	if sbc.GetOrientation() == OrientationPortrait {
+		offset = canvasBox.Left
+	} else {
+		offset = canvasBox.Top
+	}
+
 	for _, bar := range sbc.Bars {
-		sbc.drawBar(r, canvasBox, xoffset, bar)
-		xoffset += (sbc.GetBarSpacing() + bar.GetWidth())
+		sbc.drawBar(r, canvasBox, offset, bar)
+		offset += (sbc.GetBarSpacing() + bar.GetWidth())
 	}
 }
 
-func (sbc StackedBarChart) drawBar(r Renderer, canvasBox Box, xoffset int, bar StackedBar) int {
+func (sbc StackedBarChart) drawBar(r Renderer, canvasBox Box, offset int, bar StackedBar) int {
 	barSpacing2 := sbc.GetBarSpacing() >> 1
-	bxl := xoffset + barSpacing2
-	bxr := bxl + bar.GetWidth()
 
 	normalizedBarComponents := Values(bar.Values).Normalize()
-	yoffset := canvasBox.Top
+
+	if sbc.GetOrientation() == OrientationPortrait {
+		bxl := offset + barSpacing2
+		bxr := bxl + bar.GetWidth()
+
+		normalizedBarComponents := Values(bar.Values).Normalize()
+		yoffset := canvasBox.Top
+		for index, bv := range normalizedBarComponents {
+			barHeight := int(math.Ceil(bv.Value * float64(canvasBox.Height())))
+			barBox := Box{
+				Top:    yoffset,
+				Left:   bxl,
+				Right:  bxr,
+				Bottom: util.Math.MinInt(yoffset+barHeight, canvasBox.Bottom-DefaultStrokeWidth),
+			}
+			Draw.Box(r, barBox, bv.Style.InheritFrom(sbc.styleDefaultsStackedBarValue(index)))
+			yoffset += barHeight
+		}
+
+		return bxr
+	}
+
+	bxt := offset + barSpacing2
+	bxb := bxt + bar.GetWidth()
+
+	xoffset := canvasBox.Left
 	for index, bv := range normalizedBarComponents {
 		barHeight := int(math.Ceil(bv.Value * float64(canvasBox.Height())))
 		barBox := Box{
-			Top:    yoffset,
-			Left:   bxl,
-			Right:  bxr,
-			Bottom: util.Math.MinInt(yoffset+barHeight, canvasBox.Bottom-DefaultStrokeWidth),
+			Top:    bxt,
+			Left:   xoffset,
+			Right:  util.Math.MinInt(xoffset+barHeight, canvasBox.Right-DefaultStrokeWidth),
+			Bottom: bxb,
 		}
 		Draw.Box(r, barBox, bv.Style.InheritFrom(sbc.styleDefaultsStackedBarValue(index)))
-		yoffset += barHeight
+		xoffset += barHeight
 	}
 
-	return bxr
+	return bxb
+
 }
 
 func (sbc StackedBarChart) drawXAxis(r Renderer, canvasBox Box) {
@@ -178,7 +231,6 @@ func (sbc StackedBarChart) drawXAxis(r Renderer, canvasBox Box) {
 
 		cursor := canvasBox.Left
 		for _, bar := range sbc.Bars {
-
 			barLabelBox := Box{
 				Top:    canvasBox.Bottom + DefaultXAxisMargin,
 				Left:   cursor,
@@ -271,46 +323,93 @@ func (sbc StackedBarChart) getDefaultCanvasBox() Box {
 }
 
 func (sbc StackedBarChart) getAdjustedCanvasBox(r Renderer, canvasBox Box) Box {
-	var totalWidth int
+	var total int
+
 	for _, bar := range sbc.Bars {
-		totalWidth += bar.GetWidth() + sbc.GetBarSpacing()
+		total += bar.GetWidth() + sbc.GetBarSpacing()
 	}
 
 	if sbc.XAxis.Show {
-		xaxisHeight := DefaultVerticalTickHeight
-
-		axisStyle := sbc.XAxis.InheritFrom(sbc.styleDefaultsAxes())
-		axisStyle.WriteToRenderer(r)
-
-		cursor := canvasBox.Left
-		for _, bar := range sbc.Bars {
-			if len(bar.Name) > 0 {
-				barLabelBox := Box{
-					Top:    canvasBox.Bottom + DefaultXAxisMargin,
-					Left:   cursor,
-					Right:  cursor + bar.GetWidth() + sbc.GetBarSpacing(),
-					Bottom: sbc.GetHeight(),
-				}
-				lines := Text.WrapFit(r, bar.Name, barLabelBox.Width(), axisStyle)
-				linesBox := Text.MeasureLines(r, lines, axisStyle)
-
-				xaxisHeight = util.Math.MaxInt(linesBox.Height()+(2*DefaultXAxisMargin), xaxisHeight)
+		if sbc.GetOrientation() == OrientationPortrait {
+			return Box{
+				Top:    canvasBox.Top,
+				Left:   canvasBox.Left,
+				Right:  canvasBox.Left + total,
+				Bottom: sbc.GetHeight() - sbc.measurePortraitAxisHeight(r, canvasBox),
 			}
 		}
+
 		return Box{
 			Top:    canvasBox.Top,
 			Left:   canvasBox.Left,
-			Right:  canvasBox.Left + totalWidth,
-			Bottom: sbc.GetHeight() - xaxisHeight,
+			Right:  sbc.GetWidth() - sbc.measureLandscapeAxisWidth(r, canvasBox),
+			Bottom: canvasBox.Top + total,
+		}
+	}
+
+	if sbc.GetOrientation() == OrientationPortrait {
+		return Box{
+			Top:    canvasBox.Top,
+			Left:   canvasBox.Left,
+			Right:  canvasBox.Left,
+			Bottom: canvasBox.Top + total,
 		}
 	}
 	return Box{
 		Top:    canvasBox.Top,
 		Left:   canvasBox.Left,
-		Right:  canvasBox.Left + totalWidth,
+		Right:  canvasBox.Left + total,
 		Bottom: canvasBox.Bottom,
 	}
+}
 
+func (sbc StackedBarChart) measurePortraitAxisHeight(r Renderer, canvasBox Box) int {
+	xaxisHeight := DefaultVerticalTickHeight
+
+	axisStyle := sbc.XAxis.InheritFrom(sbc.styleDefaultsAxes())
+	axisStyle.WriteToRenderer(r)
+
+	cursor := canvasBox.Left
+	for _, bar := range sbc.Bars {
+		if len(bar.Name) > 0 {
+			barLabelBox := Box{
+				Top:    canvasBox.Bottom + DefaultXAxisMargin,
+				Left:   cursor,
+				Right:  cursor + bar.GetWidth() + sbc.GetBarSpacing(),
+				Bottom: sbc.GetHeight(),
+			}
+			lines := Text.WrapFit(r, bar.Name, barLabelBox.Width(), axisStyle)
+			linesBox := Text.MeasureLines(r, lines, axisStyle)
+
+			xaxisHeight = util.Math.MaxInt(linesBox.Height()+(2*DefaultXAxisMargin), xaxisHeight)
+		}
+	}
+	return xaxisHeight
+}
+
+func (sbc StackedBarChart) measureLandscapeAxisWidth(r Renderer, canvasBox Box) int {
+	axisWidth := DefaultVerticalTickHeight
+
+	axisStyle := sbc.XAxis.InheritFrom(sbc.styleDefaultsAxes())
+	axisStyle.WriteToRenderer(r)
+
+	cursor := canvasBox.Top
+	for _, bar := range sbc.Bars {
+		if len(bar.Name) > 0 {
+			barLabelBox := Box{
+				Top:    cursor,
+				Left:   canvasBox.Right + DefaultXAxisMargin,
+				Right:  sbc.GetWidth(),
+				Bottom: cursor + bar.GetWidth() + sbc.GetBarSpacing(),
+			}
+			lines := Text.WrapFit(r, bar.Name, barLabelBox.Width(), axisStyle)
+			linesBox := Text.MeasureLines(r, lines, axisStyle)
+
+			axisWidth = util.Math.MaxInt(linesBox.Width()+(2*DefaultYAxisMargin), axisWidth)
+			cursor += bar.GetWidth() + sbc.GetBarSpacing()
+		}
+	}
+	return axisWidth
 }
 
 // Box returns the chart bounds as a box.
