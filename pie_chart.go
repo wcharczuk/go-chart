@@ -11,6 +11,7 @@ import (
 )
 
 const (
+	_pi  = math.Pi
 	_pi2 = math.Pi / 2.0
 	_pi4 = math.Pi / 4.0
 )

@@ -107,7 +107,12 @@ func (vr *vectorRenderer) ArcTo(cx, cy int, rx, ry, startAngle, delta float64) {
 
 	dd := util.Math.RadiansToDegrees(delta)
 
-	vr.p = append(vr.p, fmt.Sprintf("A %d %d %0.2f 0 1 %d %d", int(rx), int(ry), dd, endx, endy))
+	largeArcFlag := 0
+	if delta > _pi {
+		largeArcFlag = 1
+	}
+
+	vr.p = append(vr.p, fmt.Sprintf("A %d %d %0.2f %d 1 %d %d", int(rx), int(ry), dd, largeArcFlag, endx, endy))
 }
 
 // Close closes a shape.
