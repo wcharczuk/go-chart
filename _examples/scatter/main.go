@@ -44,10 +44,10 @@ func unit(res http.ResponseWriter, req *http.Request) {
 		Height: 50,
 		Width:  50,
 		Canvas: chart.Style{
-			Padding: chart.Box{IsSet: true},
+			Padding: chart.BoxZero,
 		},
 		Background: chart.Style{
-			Padding: chart.Box{IsSet: true},
+			Padding: chart.BoxZero,
 		},
 		Series: []chart.Series{
 			chart.ContinuousSeries{

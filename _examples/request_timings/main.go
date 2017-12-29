@@ -105,9 +105,7 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 			},
 		},
 		XAxis: chart.XAxis{
-			Style: chart.Style{
-				Show: true,
-			},
+			Style:          chart.StyleShow(),
 			ValueFormatter: chart.TimeHourValueFormatter,
 			GridMajorStyle: chart.Style{
 				Show:        true,

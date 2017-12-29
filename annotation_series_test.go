@@ -4,7 +4,7 @@ import (
 	"image/color"
 	"testing"
 
-	"github.com/blendlabs/go-assert"
+	assert "github.com/blendlabs/go-assert"
 	"github.com/wcharczuk/go-chart/drawing"
 )
 
@@ -12,9 +12,7 @@ func TestAnnotationSeriesMeasure(t *testing.T) {
 	assert := assert.New(t)
 
 	as := AnnotationSeries{
-		Style: Style{
-			Show: true,
-		},
+		Style: StyleShow(),
 		Annotations: []Value2{
 			{XValue: 1.0, YValue: 1.0, Label: "1.0"},
 			{XValue: 2.0, YValue: 2.0, Label: "2.0"},

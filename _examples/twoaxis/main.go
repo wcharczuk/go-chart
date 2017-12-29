@@ -18,9 +18,7 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 
 	graph := chart.Chart{
 		XAxis: chart.XAxis{
-			Style: chart.Style{
-				Show: true, //enables / displays the x-axis
-			},
+			Style:        chart.StyleShow(), //enables / displays the x-axis
 			TickPosition: chart.TickPositionBetweenTicks,
 			ValueFormatter: func(v interface{}) string {
 				typed := v.(float64)
@@ -29,14 +27,10 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 			},
 		},
 		YAxis: chart.YAxis{
-			Style: chart.Style{
-				Show: true, //enables / displays the y-axis
-			},
+			Style: chart.StyleShow(), //enables / displays the y-axis
 		},
 		YAxisSecondary: chart.YAxis{
-			Style: chart.Style{
-				Show: true, //enables / displays the secondary y-axis
-			},
+			Style: chart.StyleShow(), //enables / displays the secondary y-axis
 		},
 		Series: []chart.Series{
 			chart.ContinuousSeries{

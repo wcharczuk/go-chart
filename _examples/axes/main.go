@@ -15,14 +15,10 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 
 	graph := chart.Chart{
 		XAxis: chart.XAxis{
-			Style: chart.Style{
-				Show: true, //enables / displays the x-axis
-			},
+			Style: chart.StyleShow(), //enables / displays the x-axis
 		},
 		YAxis: chart.YAxis{
-			Style: chart.Style{
-				Show: true, //enables / displays the y-axis
-			},
+			Style: chart.StyleShow(), //enables / displays the y-axis
 		},
 		Series: []chart.Series{
 			chart.ContinuousSeries{

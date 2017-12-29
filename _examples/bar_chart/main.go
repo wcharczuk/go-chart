@@ -13,13 +13,9 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 	sbc := chart.BarChart{
 		Height:   512,
 		BarWidth: 60,
-		XAxis: chart.Style{
-			Show: true,
-		},
+		XAxis:    chart.StyleShow(),
 		YAxis: chart.YAxis{
-			Style: chart.Style{
-				Show: true,
-			},
+			Style: chart.StyleShow(),
 		},
 		Bars: []chart.Value{
 			{Value: 5.25, Label: "Blue"},

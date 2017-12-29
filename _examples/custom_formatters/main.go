@@ -16,9 +16,7 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 
 	graph := chart.Chart{
 		YAxis: chart.YAxis{
-			Style: chart.Style{
-				Show: true,
-			},
+			Style: chart.StyleShow(),
 			ValueFormatter: func(v interface{}) string {
 				if vf, isFloat := v.(float64); isFloat {
 					return fmt.Sprintf("%0.6f", vf)
