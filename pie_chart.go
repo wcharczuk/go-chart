@@ -138,19 +138,26 @@ func (pc PieChart) drawSlices(r Renderer, canvasBox Box, values []Value) {
 	// draw the pie slices
 	var rads, delta, delta2, total float64
 	var lx, ly int
-	for index, v := range values {
-		v.Style.InheritFrom(pc.stylePieChartValue(index)).WriteToRenderer(r)
 
+	if len(values) == 1 {
+		pc.stylePieChartValue(0).WriteToRenderer(r)
 		r.MoveTo(cx, cy)
-		rads = util.Math.PercentToRadians(total)
-		delta = util.Math.PercentToRadians(v.Value)
+		r.Circle(radius, cx, cy)
+	} else {
+		for index, v := range values {
+			v.Style.InheritFrom(pc.stylePieChartValue(index)).WriteToRenderer(r)
 
-		r.ArcTo(cx, cy, radius, radius, rads, delta)
+			r.MoveTo(cx, cy)
+			rads = util.Math.PercentToRadians(total)
+			delta = util.Math.PercentToRadians(v.Value)
 
-		r.LineTo(cx, cy)
-		r.Close()
-		r.FillStroke()
-		total = total + v.Value
+			r.ArcTo(cx, cy, radius, radius, rads, delta)
+
+			r.LineTo(cx, cy)
+			r.Close()
+			r.FillStroke()
+			total = total + v.Value
+		}
 	}
 
 	// draw the labels
@@ -165,6 +172,13 @@ func (pc PieChart) drawSlices(r Renderer, canvasBox Box, values []Value) {
 			tb := r.MeasureText(v.Label)
 			lx = lx - (tb.Width() >> 1)
 			ly = ly + (tb.Height() >> 1)
+
+			if lx < 0 {
+				lx = 0
+			}
+			if ly < 0 {
+				lx = 0
+			}
 
 			r.Text(v.Label, lx, ly)
 		}
