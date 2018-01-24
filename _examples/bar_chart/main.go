@@ -11,6 +11,13 @@ import (
 
 func drawChart(res http.ResponseWriter, req *http.Request) {
 	sbc := chart.BarChart{
+		Title:      "Test Bar Chart",
+		TitleStyle: chart.StyleShow(),
+		Background: chart.Style{
+			Padding: chart.Box{
+				Top: 40,
+			},
+		},
 		Height:   512,
 		BarWidth: 60,
 		XAxis: chart.Style{
