@@ -443,22 +443,6 @@ func TestChartCheckRanges(t *testing.T) {
 	assert.Nil(c.checkRanges(xr, yr, yra))
 }
 
-func TestChartCheckRangesFailure(t *testing.T) {
-	assert := assert.New(t)
-
-	c := Chart{
-		Series: []Series{
-			ContinuousSeries{
-				XValues: []float64{1.0, 2.0},
-				YValues: []float64{3.14, 3.14},
-			},
-		},
-	}
-
-	xr, yr, yra := c.getRanges()
-	assert.NotNil(c.checkRanges(xr, yr, yra))
-}
-
 func TestChartCheckRangesWithRanges(t *testing.T) {
 	assert := assert.New(t)
 

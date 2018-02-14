@@ -78,6 +78,7 @@ func TestRoundUp(t *testing.T) {
 	assert.Equal(0.5, Math.RoundUp(0.49, 0.1))
 	assert.Equal(1.0, Math.RoundUp(0.51, 1.0))
 	assert.Equal(0.4999, Math.RoundUp(0.49988, 0.0001))
+	assert.Equal(0.123, Math.RoundUp(0.123, 0))
 }
 
 func TestRoundDown(t *testing.T) {
@@ -85,6 +86,7 @@ func TestRoundDown(t *testing.T) {
 	assert.Equal(0.5, Math.RoundDown(0.51, 0.1))
 	assert.Equal(1.0, Math.RoundDown(1.01, 1.0))
 	assert.Equal(0.5001, Math.RoundDown(0.50011, 0.0001))
+	assert.Equal(0.123, Math.RoundDown(0.123, 0))
 }
 
 func TestPercentDifference(t *testing.T) {
