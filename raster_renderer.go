@@ -6,9 +6,9 @@ import (
 	"io"
 	"math"
 
-	util "github.com/blendlabs/go-util"
 	"github.com/golang/freetype/truetype"
 	"github.com/wcharczuk/go-chart/drawing"
+	"github.com/wcharczuk/go-chart/util"
 )
 
 // PNG returns a new png/raster renderer.

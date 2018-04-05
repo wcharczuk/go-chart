@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	util "github.com/blendlabs/go-util"
 	"github.com/golang/freetype/truetype"
 	"github.com/wcharczuk/go-chart/drawing"
+	"github.com/wcharczuk/go-chart/util"
 )
 
 const (
