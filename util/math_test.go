@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/blendlabs/go-assert"
+	"github.co/blend/go-sdk/assert"
 )
 
 func TestMinAndMax(t *testing.T) {

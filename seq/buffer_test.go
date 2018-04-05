@@ -3,7 +3,7 @@ package seq
 import (
 	"testing"
 
-	"github.com/blendlabs/go-assert"
+	"github.co/blend/go-sdk/assert"
 )
 
 func TestBuffer(t *testing.T) {

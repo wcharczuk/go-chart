@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	assert "github.com/blendlabs/go-assert"
+	assert "github.co/blend/go-sdk/assert"
 	"github.com/wcharczuk/go-chart/seq"
 )
 

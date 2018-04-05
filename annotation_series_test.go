@@ -4,7 +4,7 @@ import (
 	"image/color"
 	"testing"
 
-	"github.com/blendlabs/go-assert"
+	"github.co/blend/go-sdk/assert"
 	"github.com/wcharczuk/go-chart/drawing"
 )
 

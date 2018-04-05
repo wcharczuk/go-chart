@@ -5,7 +5,7 @@ import (
 
 	"image/color"
 
-	"github.com/blendlabs/go-assert"
+	"github.co/blend/go-sdk/assert"
 )
 
 func TestColorFromHex(t *testing.T) {

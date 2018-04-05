@@ -3,7 +3,7 @@ package chart
 import (
 	"testing"
 
-	"github.com/blendlabs/go-assert"
+	"github.co/blend/go-sdk/assert"
 )
 
 func TestYAxisGetTicks(t *testing.T) {

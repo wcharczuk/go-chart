@@ -3,7 +3,7 @@ package chart
 import (
 	"testing"
 
-	assert "github.com/blendlabs/go-assert"
+	assert "github.co/blend/go-sdk/assert"
 )
 
 func TestValuesValues(t *testing.T) {
