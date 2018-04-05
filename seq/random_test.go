@@ -15,6 +15,6 @@ func TestRandomRegression(t *testing.T) {
 
 	randomSequence := New(randomProvider)
 	randomValues := randomSequence.Array()
-	assert.Len(randomValues, 4096)
+	assert.Len(4096, randomValues)
 	assert.InDelta(128, randomSequence.Average(), 10.0)
 }

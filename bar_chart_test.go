@@ -242,7 +242,7 @@ func TestBarChartGetAxesTicks(t *testing.T) {
 
 	bc.YAxis.Style.Show = true
 	ticks = bc.getAxesTicks(r, yr, yf)
-	assert.Len(ticks, 2)
+	assert.Len(2, ticks)
 }
 
 func TestBarChartCalculateEffectiveBarSpacing(t *testing.T) {

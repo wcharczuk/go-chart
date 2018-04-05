@@ -10,7 +10,7 @@ func TestRange(t *testing.T) {
 	assert := assert.New(t)
 
 	values := Range(1, 100)
-	assert.Len(values, 100)
+	assert.Len(100, values)
 	assert.Equal(1, values[0])
 	assert.Equal(100, values[99])
 }
@@ -20,7 +20,7 @@ func TestRangeWithStep(t *testing.T) {
 
 	values := RangeWithStep(0, 100, 5)
 	assert.Equal(100, values[20])
-	assert.Len(values, 21)
+	assert.Len(21, values)
 }
 
 func TestRangeReversed(t *testing.T) {
@@ -42,7 +42,7 @@ func TestValuesRegression(t *testing.T) {
 	assert.Equal(100, linearProvider.Len())
 
 	values := Seq{Provider: linearProvider}.Array()
-	assert.Len(values, 100)
+	assert.Len(100, values)
 	assert.Equal(1.0, values[0])
 	assert.Equal(100, values[99])
 }

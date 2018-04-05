@@ -11,7 +11,7 @@ func RandomValues(count int) []float64 {
 	return Seq{NewRandom().WithLen(count)}.Array()
 }
 
-// RandomValuesWithAverage returns an array of random values with a given average.
+// RandomValuesWithMax returns an array of random values with a given average.
 func RandomValuesWithMax(count int, max float64) []float64 {
 	return Seq{NewRandom().WithMax(max).WithLen(count)}.Array()
 }

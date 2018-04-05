@@ -18,7 +18,7 @@ func TestTextWrapWord(t *testing.T) {
 
 	output := Text.WrapFitWord(r, "this is a test string", 100, basicTextStyle)
 	assert.NotEmpty(output)
-	assert.Len(output, 3)
+	assert.Len(3, output)
 
 	for _, line := range output {
 		basicTextStyle.WriteToRenderer(r)
@@ -30,16 +30,16 @@ func TestTextWrapWord(t *testing.T) {
 	assert.Equal("string", output[2])
 
 	output = Text.WrapFitWord(r, "foo", 100, basicTextStyle)
-	assert.Len(output, 1)
+	assert.Len(1, output)
 	assert.Equal("foo", output[0])
 
 	// test that it handles newlines.
 	output = Text.WrapFitWord(r, "this\nis\na\ntest\nstring", 100, basicTextStyle)
-	assert.Len(output, 5)
+	assert.Len(5, output)
 
 	// test that it handles newlines and long lines.
 	output = Text.WrapFitWord(r, "this\nis\na\ntest\nstring that is very long", 100, basicTextStyle)
-	assert.Len(output, 8)
+	assert.Len(8, output)
 }
 
 func TestTextWrapRune(t *testing.T) {
@@ -54,7 +54,7 @@ func TestTextWrapRune(t *testing.T) {
 
 	output := Text.WrapFitRune(r, "this is a test string", 150, basicTextStyle)
 	assert.NotEmpty(output)
-	assert.Len(output, 2)
+	assert.Len(2, output)
 	assert.Equal("this is a t", output[0])
 	assert.Equal("est string", output[1])
 }

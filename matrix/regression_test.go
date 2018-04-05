@@ -14,7 +14,7 @@ func TestPoly(t *testing.T) {
 
 	c, err := Poly(xGiven, yGiven, degree)
 	assert.Nil(err)
-	assert.Len(c, 3)
+	assert.Len(3, c)
 
 	assert.InDelta(c[0], 0.999999999, DefaultEpsilon)
 	assert.InDelta(c[1], 2, DefaultEpsilon)
