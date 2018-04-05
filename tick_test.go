@@ -3,7 +3,7 @@ package chart
 import (
 	"testing"
 
-	assert "github.co/blend/go-sdk/assert"
+	assert "github.com/blend/go-sdk/assert"
 )
 
 func TestGenerateContinuousTicks(t *testing.T) {

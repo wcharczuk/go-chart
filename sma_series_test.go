@@ -3,7 +3,7 @@ package chart
 import (
 	"testing"
 
-	"github.co/blend/go-sdk/assert"
+	"github.com/blend/go-sdk/assert"
 	"github.com/wcharczuk/go-chart/seq"
 	"github.com/wcharczuk/go-chart/util"
 )

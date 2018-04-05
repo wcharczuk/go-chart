@@ -3,7 +3,7 @@ package seq
 import (
 	"testing"
 
-	assert "github.co/blend/go-sdk/assert"
+	assert "github.com/blend/go-sdk/assert"
 )
 
 func TestRange(t *testing.T) {

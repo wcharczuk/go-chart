@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	assert "github.co/blend/go-sdk/assert"
+	assert "github.com/blend/go-sdk/assert"
 )
 
 func parse(v string) time.Time {

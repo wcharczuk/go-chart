@@ -4,7 +4,7 @@ import (
 	"math"
 	"testing"
 
-	"github.co/blend/go-sdk/assert"
+	"github.com/blend/go-sdk/assert"
 )
 
 func TestBoxClone(t *testing.T) {
