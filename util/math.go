@@ -93,12 +93,18 @@ func (m mathUtil) GetRoundToForDelta(delta float64) float64 {
 
 // RoundUp rounds up to a given roundTo value.
 func (m mathUtil) RoundUp(value, roundTo float64) float64 {
+	if roundTo < 0.000000000000001 {
+		return value
+	}
 	d1 := math.Ceil(value / roundTo)
 	return d1 * roundTo
 }
 
 // RoundDown rounds down to a given roundTo value.
 func (m mathUtil) RoundDown(value, roundTo float64) float64 {
+	if roundTo < 0.000000000000001 {
+		return value
+	}
 	d1 := math.Floor(value / roundTo)
 	return d1 * roundTo
 }
