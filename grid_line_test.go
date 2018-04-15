@@ -3,7 +3,7 @@ package chart
 import (
 	"testing"
 
-	"github.com/blendlabs/go-assert"
+	"github.com/blend/go-sdk/assert"
 )
 
 func TestGenerateGridLines(t *testing.T) {
@@ -17,7 +17,7 @@ func TestGenerateGridLines(t *testing.T) {
 	}
 
 	gl := GenerateGridLines(ticks, Style{}, Style{})
-	assert.Len(gl, 2)
+	assert.Len(2, gl)
 
 	assert.Equal(2.0, gl[0].Value)
 	assert.Equal(3.0, gl[1].Value)

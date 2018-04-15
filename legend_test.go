@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/blendlabs/go-assert"
+	"github.com/blend/go-sdk/assert"
 )
 
 func TestLegend(t *testing.T) {

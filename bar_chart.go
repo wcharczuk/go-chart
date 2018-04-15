@@ -126,7 +126,7 @@ func (bc BarChart) Render(rp RendererProvider, w io.Writer) error {
 		canvasBox = bc.getAdjustedCanvasBox(r, canvasBox, yr, yt)
 		yr = bc.setRangeDomains(canvasBox, yr)
 	}
-
+	bc.drawCanvas(r, canvasBox)
 	bc.drawBars(r, canvasBox, yr)
 	bc.drawXAxis(r, canvasBox)
 	bc.drawYAxis(r, canvasBox, yr, yt)
@@ -137,6 +137,10 @@ func (bc BarChart) Render(rp RendererProvider, w io.Writer) error {
 	}
 
 	return r.Save(w)
+}
+
+func (bc BarChart) drawCanvas(r Renderer, canvasBox Box) {
+	Draw.Box(r, canvasBox, bc.getCanvasStyle())
 }
 
 func (bc BarChart) getRanges() Range {
@@ -280,7 +284,32 @@ func (bc BarChart) drawYAxis(r Renderer, canvasBox Box, yr Range, ticks []Tick) 
 
 func (bc BarChart) drawTitle(r Renderer) {
 	if len(bc.Title) > 0 && bc.TitleStyle.Show {
-		Draw.TextWithin(r, bc.Title, bc.box(), bc.styleDefaultsTitle())
+		r.SetFont(bc.TitleStyle.GetFont(bc.GetFont()))
+		r.SetFontColor(bc.TitleStyle.GetFontColor(bc.GetColorPalette().TextColor()))
+		titleFontSize := bc.TitleStyle.GetFontSize(bc.getTitleFontSize())
+		r.SetFontSize(titleFontSize)
+
+		textBox := r.MeasureText(bc.Title)
+
+		textWidth := textBox.Width()
+		textHeight := textBox.Height()
+
+		titleX := (bc.GetWidth() >> 1) - (textWidth >> 1)
+		titleY := bc.TitleStyle.Padding.GetTop(DefaultTitleTop) + textHeight
+
+		r.Text(bc.Title, titleX, titleY)
+	}
+}
+
+func (bc BarChart) getCanvasStyle() Style {
+	return bc.Canvas.InheritFrom(bc.styleDefaultsCanvas())
+}
+
+func (bc BarChart) styleDefaultsCanvas() Style {
+	return Style{
+		FillColor:   bc.GetColorPalette().CanvasColor(),
+		StrokeColor: bc.GetColorPalette().CanvasStrokeColor(),
+		StrokeWidth: DefaultCanvasStrokeWidth,
 	}
 }
 
@@ -397,8 +426,8 @@ func (bc BarChart) box() Box {
 	dpb := bc.Background.Padding.GetBottom(50)
 
 	return Box{
-		Top:    20,
-		Left:   20,
+		Top:    bc.Background.Padding.GetTop(20),
+		Left:   bc.Background.Padding.GetLeft(20),
 		Right:  bc.GetWidth() - dpr,
 		Bottom: bc.GetHeight() - dpb,
 	}

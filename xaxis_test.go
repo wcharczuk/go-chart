@@ -3,7 +3,7 @@ package chart
 import (
 	"testing"
 
-	"github.com/blendlabs/go-assert"
+	"github.com/blend/go-sdk/assert"
 )
 
 func TestXAxisGetTicks(t *testing.T) {
@@ -23,7 +23,7 @@ func TestXAxisGetTicks(t *testing.T) {
 	}
 	vf := FloatValueFormatter
 	ticks := xa.GetTicks(r, xr, styleDefaults, vf)
-	assert.Len(ticks, 16)
+	assert.Len(16, ticks)
 }
 
 func TestXAxisGetTicksWithUserDefaults(t *testing.T) {
@@ -45,7 +45,7 @@ func TestXAxisGetTicksWithUserDefaults(t *testing.T) {
 	}
 	vf := FloatValueFormatter
 	ticks := xa.GetTicks(r, xr, styleDefaults, vf)
-	assert.Len(ticks, 1)
+	assert.Len(1, ticks)
 }
 
 func TestXAxisMeasure(t *testing.T) {

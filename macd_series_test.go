@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/blendlabs/go-assert"
+	"github.com/blend/go-sdk/assert"
 )
 
 var (

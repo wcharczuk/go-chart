@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/blendlabs/go-assert"
+	"github.com/blend/go-sdk/assert"
 )
 
 func TestMinAndMax(t *testing.T) {
@@ -99,7 +99,7 @@ func TestNormalize(t *testing.T) {
 
 	values := []float64{10, 9, 8, 7, 6}
 	normalized := Math.Normalize(values...)
-	assert.Len(normalized, 5)
+	assert.Len(5, normalized)
 	assert.Equal(0.25, normalized[0])
 	assert.Equal(0.1499, normalized[4])
 }

@@ -3,7 +3,7 @@ package seq
 import (
 	"testing"
 
-	"github.com/blendlabs/go-assert"
+	"github.com/blend/go-sdk/assert"
 )
 
 func TestBuffer(t *testing.T) {
@@ -132,7 +132,7 @@ func TestBufferArray(t *testing.T) {
 	buffer.Enqueue(5)
 
 	contents := buffer.Array()
-	assert.Len(contents, 5)
+	assert.Len(5, contents)
 	assert.Equal(1, contents[0])
 	assert.Equal(2, contents[1])
 	assert.Equal(3, contents[2])

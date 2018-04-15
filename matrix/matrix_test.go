@@ -3,7 +3,7 @@ package matrix
 import (
 	"testing"
 
-	assert "github.com/blendlabs/go-assert"
+	assert "github.com/blend/go-sdk/assert"
 )
 
 func TestNew(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/blendlabs/go-assert"
+	"github.com/blend/go-sdk/assert"
 )
 
 func TestTimeSeriesGetValue(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	assert "github.com/blendlabs/go-assert"
+	assert "github.com/blend/go-sdk/assert"
 	"github.com/wcharczuk/go-chart/util"
 )
 
@@ -67,7 +67,7 @@ func TestMarketHoursRangeGetTicks(t *testing.T) {
 
 	ticks := ra.GetTicks(r, defaults, TimeValueFormatter)
 	assert.NotEmpty(ticks)
-	assert.Len(ticks, 5)
+	assert.Len(5, ticks)
 	assert.NotEqual(util.Time.ToFloat64(ra.Min), ticks[0].Value)
 	assert.NotEmpty(ticks[0].Label)
 }

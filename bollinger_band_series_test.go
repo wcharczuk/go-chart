@@ -5,7 +5,7 @@ import (
 	"math"
 	"testing"
 
-	"github.com/blendlabs/go-assert"
+	"github.com/blend/go-sdk/assert"
 	"github.com/wcharczuk/go-chart/seq"
 )
 
