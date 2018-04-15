@@ -1,0 +1,8 @@
+- contains: "github.com/blend/"
+  message: "should not include go-sdk in this (outside tests)"
+  include: "*.go"
+  exclude: "*_test.go"
+- contains: "github.com/blendlabs/"
+  message: "should not include blend go-* packages in this"
+  include: "*.go"
+
