@@ -5,7 +5,7 @@ test:
 
 .PHONY: profanity
 profanity:
-	@profanity
+	@profanity -include="*.go,Makefile,README.md"
 
 cover:
 	@go test -short -covermode=set -coverprofile=profile.cov
