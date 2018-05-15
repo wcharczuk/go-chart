@@ -2,7 +2,11 @@
 
 package util
 
-import "time"
+import (
+	"time"
+
+	"4d63.com/tz"
+)
 
 // Eastern returns the eastern timezone.
 func (d date) Eastern() *time.Location {
@@ -10,7 +14,11 @@ func (d date) Eastern() *time.Location {
 		_easternLock.Lock()
 		defer _easternLock.Unlock()
 		if _eastern == nil {
-			_eastern, _ = time.LoadLocation("EST")
+			var err error
+			_eastern, err = tz.LoadLocation("EST")
+			if err != nil {
+				panic(err)
+			}
 		}
 	}
 	return _eastern
