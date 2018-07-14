@@ -13,7 +13,7 @@ func TestTimeMarketHours(t *testing.T) {
 
 	today := time.Date(2016, 07, 01, 12, 0, 0, 0, util.Date.Eastern())
 	mh := Time.MarketHours(today, today, util.NYSEOpen(), util.NYSEClose(), util.Date.IsNYSEHoliday)
-	assert.Len(8, mh)
+	assert.Len(mh, 8)
 	assert.Equal(util.Date.Eastern(), mh[0].Location())
 }
 
@@ -21,7 +21,7 @@ func TestTimeMarketHourQuarters(t *testing.T) {
 	assert := assert.New(t)
 	today := time.Date(2016, 07, 01, 12, 0, 0, 0, util.Date.Eastern())
 	mh := Time.MarketHourQuarters(today, today, util.NYSEOpen(), util.NYSEClose(), util.Date.IsNYSEHoliday)
-	assert.Len(4, mh)
+	assert.Len(mh, 4)
 	assert.Equal(9, mh[0].Hour())
 	assert.Equal(30, mh[0].Minute())
 	assert.Equal(util.Date.Eastern(), mh[0].Location())
@@ -42,7 +42,7 @@ func TestTimeHours(t *testing.T) {
 	seq := Time.Hours(today, 24)
 
 	end := Time.End(seq)
-	assert.Len(24, seq)
+	assert.Len(seq, 24)
 	assert.Equal(2016, end.Year())
 	assert.Equal(07, int(end.Month()))
 	assert.Equal(02, end.Day())
@@ -74,7 +74,7 @@ func TestSequenceHoursFill(t *testing.T) {
 
 	filledTimes, filledValues := Time.HoursFilled(xdata, ydata)
 	expected := util.Date.DiffHours(Time.Start(xdata), Time.End(xdata)) + 1
-	assert.Len(expected, filledTimes)
+	assert.Len(filledTimes, expected)
 	assert.Equal(len(filledValues), len(filledTimes))
 
 	assert.NotZero(filledValues[0])

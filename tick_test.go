@@ -26,7 +26,7 @@ func TestGenerateContinuousTicks(t *testing.T) {
 
 	ticks := GenerateContinuousTicks(r, ra, false, Style{}, vf)
 	assert.NotEmpty(ticks)
-	assert.Len(11, ticks)
+	assert.Len(ticks, 11)
 	assert.Equal(0.0, ticks[0].Value)
 	assert.Equal(10, ticks[len(ticks)-1].Value)
 }
@@ -52,7 +52,7 @@ func TestGenerateContinuousTicksDescending(t *testing.T) {
 
 	ticks := GenerateContinuousTicks(r, ra, false, Style{}, vf)
 	assert.NotEmpty(ticks)
-	assert.Len(11, ticks)
+	assert.Len(ticks, 11)
 	assert.Equal(10.0, ticks[0].Value)
 	assert.Equal(9.0, ticks[1].Value)
 	assert.Equal(1.0, ticks[len(ticks)-2].Value)

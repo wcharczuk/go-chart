@@ -17,7 +17,7 @@ func TestGenerateGridLines(t *testing.T) {
 	}
 
 	gl := GenerateGridLines(ticks, Style{}, Style{})
-	assert.Len(2, gl)
+	assert.Len(gl, 2)
 
 	assert.Equal(2.0, gl[0].Value)
 	assert.Equal(3.0, gl[1].Value)

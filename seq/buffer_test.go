@@ -132,7 +132,7 @@ func TestBufferArray(t *testing.T) {
 	buffer.Enqueue(5)
 
 	contents := buffer.Array()
-	assert.Len(5, contents)
+	assert.Len(contents, 5)
 	assert.Equal(1, contents[0])
 	assert.Equal(2, contents[1])
 	assert.Equal(3, contents[2])
