@@ -10,7 +10,7 @@ import (
 func drawChart(res http.ResponseWriter, req *http.Request) {
 	/*
 	   This is an example of using the `TimeSeries` to automatically coerce time.Time values into a continuous xrange.
-	   Note: chart.TimeSeries implements `ValueFormatterProvider` and as a result gives the XAxis the appropariate formatter to use for the ticks.
+	   Note: chart.TimeSeries implements `ValueFormatterProvider` and as a result gives the XAxis the appropriate formatter to use for the ticks.
 	*/
 	graph := chart.Chart{
 		XAxis: chart.XAxis{
