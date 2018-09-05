@@ -79,7 +79,7 @@ func drawCustomChart(res http.ResponseWriter, req *http.Request) {
 
 func main() {
 	http.HandleFunc("/", drawChart)
-	http.HandleFunc("/favico.ico", func(res http.ResponseWriter, req *http.Request) {
+	http.HandleFunc("/favicon.ico", func(res http.ResponseWriter, req *http.Request) {
 		res.Write([]byte{})
 	})
 	http.HandleFunc("/custom", drawCustomChart)
