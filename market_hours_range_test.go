@@ -67,7 +67,7 @@ func TestMarketHoursRangeGetTicks(t *testing.T) {
 
 	ticks := ra.GetTicks(r, defaults, TimeValueFormatter)
 	assert.NotEmpty(ticks)
-	assert.Len(5, ticks)
+	assert.Len(ticks, 5)
 	assert.NotEqual(util.Time.ToFloat64(ra.Min), ticks[0].Value)
 	assert.NotEmpty(ticks[0].Label)
 }
