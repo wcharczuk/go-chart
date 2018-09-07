@@ -2,6 +2,7 @@ package chart
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 )
 
@@ -49,6 +50,22 @@ func formatTime(v interface{}, dateFormat string) string {
 	return ""
 }
 
+// IntValueFormatter is a ValueFormatter for float64.
+func IntValueFormatter(v interface{}) string {
+	switch v.(type) {
+	case int:
+		return strconv.Itoa(v.(int))
+	case int64:
+		return strconv.FormatInt(v.(int64), 10)
+	case float32:
+		return strconv.FormatInt(int64(v.(float32)), 10)
+	case float64:
+		return strconv.FormatInt(int64(v.(float64)), 10)
+	default:
+		return ""
+	}
+}
+
 // FloatValueFormatter is a ValueFormatter for float64.
 func FloatValueFormatter(v interface{}) string {
 	return FloatValueFormatterWithFormat(v, DefaultFloatFormat)
@@ -65,17 +82,17 @@ func PercentValueFormatter(v interface{}) string {
 
 // FloatValueFormatterWithFormat is a ValueFormatter for float64 with a given format.
 func FloatValueFormatterWithFormat(v interface{}, floatFormat string) string {
-	if typed, isTyped := v.(float64); isTyped {
-		return fmt.Sprintf(floatFormat, typed)
-	}
-	if typed, isTyped := v.(float32); isTyped {
-		return fmt.Sprintf(floatFormat, typed)
-	}
 	if typed, isTyped := v.(int); isTyped {
 		return fmt.Sprintf(floatFormat, float64(typed))
 	}
 	if typed, isTyped := v.(int64); isTyped {
 		return fmt.Sprintf(floatFormat, float64(typed))
+	}
+	if typed, isTyped := v.(float32); isTyped {
+		return fmt.Sprintf(floatFormat, typed)
+	}
+	if typed, isTyped := v.(float64); isTyped {
+		return fmt.Sprintf(floatFormat, typed)
 	}
 	return ""
 }
