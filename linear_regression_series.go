@@ -7,6 +7,13 @@ import (
 	util "github.com/wcharczuk/go-chart/util"
 )
 
+// Interface Assertions.
+var (
+	_ Series              = (*LinearRegressionSeries)(nil)
+	_ FirstValuesProvider = (*LinearRegressionSeries)(nil)
+	_ LastValuesProvider  = (*LinearRegressionSeries)(nil)
+)
+
 // LinearRegressionSeries is a series that plots the n-nearest neighbors
 // linear regression for the values.
 type LinearRegressionSeries struct {
@@ -78,6 +85,19 @@ func (lrs *LinearRegressionSeries) GetValues(index int) (x, y float64) {
 	offset := lrs.GetOffset()
 	effectiveIndex := util.Math.MinInt(index+offset, lrs.InnerSeries.Len())
 	x, y = lrs.InnerSeries.GetValues(effectiveIndex)
+	y = (lrs.m * lrs.normalize(x)) + lrs.b
+	return
+}
+
+// GetFirstValues computes the first linear regression value.
+func (lrs *LinearRegressionSeries) GetFirstValues() (x, y float64) {
+	if lrs.InnerSeries == nil || lrs.InnerSeries.Len() == 0 {
+		return
+	}
+	if lrs.m == 0 && lrs.b == 0 {
+		lrs.computeCoefficients()
+	}
+	x, y = lrs.InnerSeries.GetValues(0)
 	y = (lrs.m * lrs.normalize(x)) + lrs.b
 	return
 }

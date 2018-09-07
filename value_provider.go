@@ -14,6 +14,11 @@ type BoundedValuesProvider interface {
 	GetBoundedValues(index int) (x, y1, y2 float64)
 }
 
+// FirstValuesProvider is a special type of value provider that can return it's (potentially computed) first value.
+type FirstValuesProvider interface {
+	GetFirstValues() (x, y float64)
+}
+
 // LastValuesProvider is a special type of value provider that can return it's (potentially computed) last value.
 type LastValuesProvider interface {
 	GetLastValues() (x, y float64)

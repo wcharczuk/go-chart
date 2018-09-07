@@ -7,6 +7,11 @@ import (
 	util "github.com/wcharczuk/go-chart/util"
 )
 
+// Interface Assertions.
+var (
+	_ Series = (*AnnotationSeries)(nil)
+)
+
 // AnnotationSeries is a series of labels on the chart.
 type AnnotationSeries struct {
 	Name        string

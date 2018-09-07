@@ -6,6 +6,11 @@ import (
 	"github.com/wcharczuk/go-chart/seq"
 )
 
+// Interface Assertions.
+var (
+	_ Series = (*BollingerBandsSeries)(nil)
+)
+
 // BollingerBandsSeries draws bollinger bands for an inner series.
 // Bollinger bands are defined by two lines, one at SMA+k*stddev, one at SMA-k*stdev.
 type BollingerBandsSeries struct {

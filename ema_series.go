@@ -7,6 +7,13 @@ const (
 	DefaultEMAPeriod = 12
 )
 
+// Interface Assertions.
+var (
+	_ Series              = (*EMASeries)(nil)
+	_ FirstValuesProvider = (*EMASeries)(nil)
+	_ LastValuesProvider  = (*EMASeries)(nil)
+)
+
 // EMASeries is a computed series.
 type EMASeries struct {
 	Name  string
@@ -63,6 +70,19 @@ func (ema *EMASeries) GetValues(index int) (x, y float64) {
 	vx, _ := ema.InnerSeries.GetValues(index)
 	x = vx
 	y = ema.cache[index]
+	return
+}
+
+// GetFirstValues computes the first moving average value.
+func (ema *EMASeries) GetFirstValues() (x, y float64) {
+	if ema.InnerSeries == nil {
+		return
+	}
+	if len(ema.cache) == 0 {
+		ema.ensureCachedValues()
+	}
+	x, _ = ema.InnerSeries.GetValues(0)
+	y = ema.cache[0]
 	return
 }
 

@@ -8,6 +8,13 @@ import (
 	util "github.com/wcharczuk/go-chart/util"
 )
 
+// Interface Assertions.
+var (
+	_ Series              = (*PolynomialRegressionSeries)(nil)
+	_ FirstValuesProvider = (*PolynomialRegressionSeries)(nil)
+	_ LastValuesProvider  = (*PolynomialRegressionSeries)(nil)
+)
+
 // PolynomialRegressionSeries implements a polynomial regression over a given
 // inner series.
 type PolynomialRegressionSeries struct {
@@ -97,6 +104,23 @@ func (prs *PolynomialRegressionSeries) GetValues(index int) (x, y float64) {
 	offset := prs.GetOffset()
 	effectiveIndex := util.Math.MinInt(index+offset, prs.InnerSeries.Len())
 	x, y = prs.InnerSeries.GetValues(effectiveIndex)
+	y = prs.apply(x)
+	return
+}
+
+// GetFirstValues computes the first poly regression value.
+func (prs *PolynomialRegressionSeries) GetFirstValues() (x, y float64) {
+	if prs.InnerSeries == nil || prs.InnerSeries.Len() == 0 {
+		return
+	}
+	if prs.coeffs == nil {
+		coeffs, err := prs.computeCoefficients()
+		if err != nil {
+			panic(err)
+		}
+		prs.coeffs = coeffs
+	}
+	x, y = prs.InnerSeries.GetValues(0)
 	y = prs.apply(x)
 	return
 }
