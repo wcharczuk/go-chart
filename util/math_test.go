@@ -2,7 +2,6 @@ package util
 
 import (
 	"testing"
-	"time"
 
 	"github.com/blend/go-sdk/assert"
 )
@@ -29,40 +28,6 @@ func TestMinAndMaxEmpty(t *testing.T) {
 	min, max := Math.MinAndMax(values...)
 	assert.Equal(0.0, min)
 	assert.Equal(0.0, max)
-}
-
-func TestMinAndMaxOfTime(t *testing.T) {
-	assert := assert.New(t)
-	values := []time.Time{
-		time.Now().AddDate(0, 0, -1),
-		time.Now().AddDate(0, 0, -2),
-		time.Now().AddDate(0, 0, -3),
-		time.Now().AddDate(0, 0, -4),
-	}
-	min, max := Math.MinAndMaxOfTime(values...)
-	assert.Equal(values[3], min)
-	assert.Equal(values[0], max)
-}
-
-func TestMinAndMaxOfTimeReversed(t *testing.T) {
-	assert := assert.New(t)
-	values := []time.Time{
-		time.Now().AddDate(0, 0, -4),
-		time.Now().AddDate(0, 0, -2),
-		time.Now().AddDate(0, 0, -3),
-		time.Now().AddDate(0, 0, -1),
-	}
-	min, max := Math.MinAndMaxOfTime(values...)
-	assert.Equal(values[0], min)
-	assert.Equal(values[3], max)
-}
-
-func TestMinAndMaxOfTimeEmpty(t *testing.T) {
-	assert := assert.New(t)
-	values := []time.Time{}
-	min, max := Math.MinAndMaxOfTime(values...)
-	assert.Equal(time.Time{}, min)
-	assert.Equal(time.Time{}, max)
 }
 
 func TestGetRoundToForDelta(t *testing.T) {

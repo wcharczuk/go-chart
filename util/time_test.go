@@ -28,3 +28,37 @@ func TestTimeDiffHours(t *testing.T) {
 	assert.Equal(68, Time.DiffHours(t2, t1))
 	assert.Equal(24, Time.DiffHours(t1, t3))
 }
+
+func TestTimeStartAndEnd(t *testing.T) {
+	assert := assert.New(t)
+	values := []time.Time{
+		time.Now().AddDate(0, 0, -1),
+		time.Now().AddDate(0, 0, -2),
+		time.Now().AddDate(0, 0, -3),
+		time.Now().AddDate(0, 0, -4),
+	}
+	min, max := Time.StartAndEnd(values...)
+	assert.Equal(values[3], min)
+	assert.Equal(values[0], max)
+}
+
+func TestTimeStartAndEndReversed(t *testing.T) {
+	assert := assert.New(t)
+	values := []time.Time{
+		time.Now().AddDate(0, 0, -4),
+		time.Now().AddDate(0, 0, -2),
+		time.Now().AddDate(0, 0, -3),
+		time.Now().AddDate(0, 0, -1),
+	}
+	min, max := Time.StartAndEnd(values...)
+	assert.Equal(values[0], min)
+	assert.Equal(values[3], max)
+}
+
+func TestTimeStartAndEndEmpty(t *testing.T) {
+	assert := assert.New(t)
+	values := []time.Time{}
+	min, max := Time.StartAndEnd(values...)
+	assert.Equal(time.Time{}, min)
+	assert.Equal(time.Time{}, max)
+}

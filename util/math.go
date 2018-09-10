@@ -2,7 +2,6 @@ package util
 
 import (
 	"math"
-	"time"
 )
 
 const (
@@ -52,27 +51,6 @@ func (m mathUtil) MinAndMax(values ...float64) (min float64, max float64) {
 			max = v
 		}
 		if min > v {
-			min = v
-		}
-	}
-	return
-}
-
-// MinAndMaxOfTime returns the min and max of a given set of times
-// in one pass.
-func (m mathUtil) MinAndMaxOfTime(values ...time.Time) (min time.Time, max time.Time) {
-	if len(values) == 0 {
-		return
-	}
-
-	min = values[0]
-	max = values[0]
-
-	for _, v := range values[1:] {
-		if max.Before(v) {
-			max = v
-		}
-		if min.After(v) {
 			min = v
 		}
 	}
