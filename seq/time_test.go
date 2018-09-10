@@ -8,40 +8,13 @@ import (
 	"github.com/wcharczuk/go-chart/util"
 )
 
-func TestTimeMarketHours(t *testing.T) {
-	assert := assert.New(t)
-
-	today := time.Date(2016, 07, 01, 12, 0, 0, 0, util.Date.Eastern())
-	mh := Time.MarketHours(today, today, util.NYSEOpen(), util.NYSEClose(), util.Date.IsNYSEHoliday)
-	assert.Len(mh, 8)
-	assert.Equal(util.Date.Eastern(), mh[0].Location())
-}
-
-func TestTimeMarketHourQuarters(t *testing.T) {
-	assert := assert.New(t)
-	today := time.Date(2016, 07, 01, 12, 0, 0, 0, util.Date.Eastern())
-	mh := Time.MarketHourQuarters(today, today, util.NYSEOpen(), util.NYSEClose(), util.Date.IsNYSEHoliday)
-	assert.Len(mh, 4)
-	assert.Equal(9, mh[0].Hour())
-	assert.Equal(30, mh[0].Minute())
-	assert.Equal(util.Date.Eastern(), mh[0].Location())
-
-	assert.Equal(12, mh[1].Hour())
-	assert.Equal(00, mh[1].Minute())
-	assert.Equal(util.Date.Eastern(), mh[1].Location())
-
-	assert.Equal(14, mh[2].Hour())
-	assert.Equal(00, mh[2].Minute())
-	assert.Equal(util.Date.Eastern(), mh[2].Location())
-}
-
 func TestTimeHours(t *testing.T) {
 	assert := assert.New(t)
 
 	today := time.Date(2016, 07, 01, 12, 0, 0, 0, time.UTC)
 	seq := Time.Hours(today, 24)
 
-	end := Time.End(seq)
+	end := util.Time.End(seq...)
 	assert.Len(seq, 24)
 	assert.Equal(2016, end.Year())
 	assert.Equal(07, int(end.Month()))
@@ -73,7 +46,7 @@ func TestSequenceHoursFill(t *testing.T) {
 	}
 
 	filledTimes, filledValues := Time.HoursFilled(xdata, ydata)
-	expected := util.Date.DiffHours(Time.Start(xdata), Time.End(xdata)) + 1
+	expected := util.Time.DiffHours(util.Time.Start(xdata...), util.Time.End(xdata...)) + 1
 	assert.Len(filledTimes, expected)
 	assert.Equal(len(filledValues), len(filledTimes))
 
@@ -94,7 +67,7 @@ func TestTimeStart(t *testing.T) {
 		time.Now().AddDate(0, 0, -5),
 	}
 
-	assert.InTimeDelta(Time.Start(times), times[4], time.Millisecond)
+	assert.InTimeDelta(util.Time.Start(times...), times[4], time.Millisecond)
 }
 
 func TestTimeEnd(t *testing.T) {
@@ -108,5 +81,5 @@ func TestTimeEnd(t *testing.T) {
 		time.Now().AddDate(0, 0, -5),
 	}
 
-	assert.InTimeDelta(Time.End(times), times[2], time.Millisecond)
+	assert.InTimeDelta(util.Time.End(times...), times[2], time.Millisecond)
 }

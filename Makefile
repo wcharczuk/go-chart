@@ -1,5 +1,9 @@
 all: test
 
+tools:
+	@go get -u github.com/blend/go-sdk/_bin/coverage
+	@go get -u github.com/blend/go-sdk/_bin/profanity
+
 test:
 	@go test ./...
 
@@ -8,9 +12,4 @@ profanity:
 	@profanity -include="*.go,Makefile,README.md"
 
 cover:
-	@go test -short -covermode=set -coverprofile=profile.cov
-	@go tool cover -html=profile.cov
-	@rm profile.cov
-
-deps:
-	@go get -u github.com/blend/go-sdk/_bin/profanity
+	@coverage
