@@ -12,6 +12,13 @@ func parse(v string) time.Time {
 	return ts
 }
 
+func TestDateEastern(t *testing.T) {
+	assert := assert.New(t)
+	eastern, err := Date.Eastern()
+	assert.Nil(err)
+	assert.NotNil(eastern)
+}
+
 func TestDateTime(t *testing.T) {
 	assert := assert.New(t)
 
@@ -36,7 +43,10 @@ func TestDateDate(t *testing.T) {
 func TestDateOnDate(t *testing.T) {
 	assert := assert.New(t)
 
-	ts := Date.OnDate(Date.Time(5, 4, 3, 2, time.UTC), Date.Date(2016, 6, 7, Date.MustEastern()))
+	eastern := Date.MustEastern()
+	assert.NotNil(eastern)
+
+	ts := Date.OnDate(Date.Time(5, 4, 3, 2, time.UTC), Date.Date(2016, 6, 7, eastern))
 	assert.Equal(2016, ts.Year())
 	assert.Equal(6, ts.Month())
 	assert.Equal(7, ts.Day())

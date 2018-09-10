@@ -61,10 +61,10 @@ func (d date) MustEastern() *time.Location {
 func (d date) Eastern() (*time.Location, error) {
 	// Try POSIX
 	est, err := time.LoadLocation("America/New_York")
-	if err == nil {
+	if err != nil {
 		// Try Windows
 		est, err = time.LoadLocation("EST")
-		if err == nil {
+		if err != nil {
 			return nil, err
 		}
 	}
@@ -83,10 +83,10 @@ func (d date) MustPacific() *time.Location {
 func (d date) Pacific() (*time.Location, error) {
 	// Try POSIX
 	pst, err := time.LoadLocation("America/Los_Angeles")
-	if err == nil {
+	if err != nil {
 		// Try Windows
 		pst, err = time.LoadLocation("PST")
-		if err == nil {
+		if err != nil {
 			return nil, err
 		}
 	}

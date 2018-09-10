@@ -24,9 +24,9 @@ func (tu timeUtil) DiffDays(t1, t2 time.Time) (days int) {
 	t2n := t2.Unix()
 	var diff int64
 	if t1n > t2n {
-		diff = t2n - t1n //yields seconds
-	} else {
 		diff = t1n - t2n //yields seconds
+	} else {
+		diff = t2n - t1n //yields seconds
 	}
 	return int(diff / (_secondsPerDay))
 }
