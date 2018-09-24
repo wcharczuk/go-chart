@@ -15,6 +15,7 @@ func inlineSVGWithClasses(res http.ResponseWriter, req *http.Request) {
 			"<body>"))
 
 	pie := chart.PieChart{
+		// Note that setting ClassName will cause all other inline styles to be dropped!
 		Background: chart.Style{ClassName: "background"},
 		Canvas: chart.Style{
 			ClassName: "canvas",
