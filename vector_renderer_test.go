@@ -71,7 +71,21 @@ func TestCanvasStyleSVG(t *testing.T) {
 
 	svgString := canvas.styleAsSVG(set)
 	assert.NotEmpty(svgString)
+	assert.True(strings.HasPrefix(svgString, "style=\""))
 	assert.True(strings.Contains(svgString, "stroke:rgba(255,255,255,1.0)"))
 	assert.True(strings.Contains(svgString, "stroke-width:5"))
 	assert.True(strings.Contains(svgString, "fill:rgba(255,255,255,1.0)"))
+	assert.True(strings.HasSuffix(svgString, "\""))
+}
+
+func TestCanvasClassSVG(t *testing.T) {
+	as := assert.New(t)
+
+	set := Style{
+		ClassName: "test-class",
+	}
+
+	canvas := &canvas{dpi: DefaultDPI}
+
+	as.Equal("class=\"test-class\"", canvas.styleAsSVG(set))
 }
