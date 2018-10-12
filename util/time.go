@@ -9,6 +9,11 @@ var (
 
 type timeUtil struct{}
 
+// Millis returns the duration as milliseconds.
+func (tu timeUtil) Millis(d time.Duration) float64 {
+	return float64(d) / float64(time.Millisecond)
+}
+
 // TimeToFloat64 returns a float64 representation of a time.
 func (tu timeUtil) ToFloat64(t time.Time) float64 {
 	return float64(t.UnixNano())
