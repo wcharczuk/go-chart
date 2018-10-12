@@ -1,0 +1,17 @@
+version: 2
+jobs:
+  build:
+    working_directory: /go/src/github.com/wcharczuk/go-chart
+    docker:
+      - image: circleci/golang:1.11
+    steps:
+      - checkout
+      - run:
+          name: new-install
+          command: make new-install
+      - run:
+          name: ci
+          command: make ci
+      - store_artifacts:
+          path: coverage.html
+          destination: coverage.html

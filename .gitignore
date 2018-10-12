@@ -16,3 +16,4 @@
 # Other
 .vscode
 .DS_Store
+coverage.html
