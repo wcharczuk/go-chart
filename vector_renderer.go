@@ -28,6 +28,25 @@ func SVG(width, height int) (Renderer, error) {
 	}, nil
 }
 
+// SVGWithCSS returns a new png/raster renderer with attached custom CSS
+// The optional nonce argument sets a CSP nonce.
+func SVGWithCSS(css string, nonce string) (func(width, height int)(Renderer, error)) {
+	return func(width, height int) (Renderer, error) {
+		buffer := bytes.NewBuffer([]byte{})
+		canvas := newCanvas(buffer)
+		canvas.css = css
+		canvas.nonce = nonce
+		canvas.Start(width, height)
+		return &vectorRenderer{
+			b:   buffer,
+			c:   canvas,
+			s:   &Style{},
+			p:   []string{},
+			dpi: DefaultDPI,
+		}, nil
+	}
+}
+
 // vectorRenderer renders chart commands to a bitmap.
 type vectorRenderer struct {
 	dpi float64
@@ -222,12 +241,23 @@ type canvas struct {
 	textTheta *float64
 	width     int
 	height    int
+	css       string
+	nonce     string
 }
 
 func (c *canvas) Start(width, height int) {
 	c.width = width
 	c.height = height
 	c.w.Write([]byte(fmt.Sprintf(`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="%d" height="%d">\n`, c.width, c.height)))
+	if c.css != "" {
+		c.w.Write([]byte(`<style type="text/css"`))
+		if c.nonce != "" {
+			// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
+			c.w.Write([]byte(fmt.Sprintf(` nonce="%s"`, c.nonce)))
+		}
+		// To avoid compatibility issues between XML and CSS (f.e. with child selectors) we should encapsulate the CSS with CDATA.
+		c.w.Write([]byte(fmt.Sprintf(`><![CDATA[%s]]></style>`, c.css)))
+	}
 }
 
 func (c *canvas) Path(d string, style Style) {

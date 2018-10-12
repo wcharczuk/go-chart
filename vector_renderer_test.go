@@ -2,6 +2,7 @@ package chart
 
 import (
 	"bytes"
+	"fmt"
 	"strings"
 	"testing"
 
@@ -88,4 +89,31 @@ func TestCanvasClassSVG(t *testing.T) {
 	canvas := &canvas{dpi: DefaultDPI}
 
 	as.Equal("class=\"test-class\"", canvas.styleAsSVG(set))
+}
+
+func TestCanvasCustomInlineStylesheet(t *testing.T) {
+	b := strings.Builder{}
+
+	canvas := &canvas{
+		w:     &b,
+		css:   ".background { fill: red }",
+	}
+
+	canvas.Start(200, 200)
+
+	assert.New(t).Contains(b.String(), fmt.Sprintf(`<style type="text/css"><![CDATA[%s]]></style>`, canvas.css))
+}
+
+func TestCanvasCustomInlineStylesheetWithNonce(t *testing.T) {
+	b := strings.Builder{}
+
+	canvas := &canvas{
+		w:     &b,
+		css:   ".background { fill: red }",
+		nonce: "RAND0MSTRING",
+	}
+
+	canvas.Start(200, 200)
+
+	assert.New(t).Contains(b.String(), fmt.Sprintf(`<style type="text/css" nonce="%s"><![CDATA[%s]]></style>`, canvas.nonce, canvas.css))
 }
