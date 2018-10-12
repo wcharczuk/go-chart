@@ -14,5 +14,5 @@ test:
 profanity:
 	@profanity -include="*.go,Makefile,README.md"
 
-cover:
+coverage:
 	@coverage
