@@ -17,7 +17,8 @@ func inlineSVGWithClasses(res http.ResponseWriter, req *http.Request) {
 			"<body>"))
 
 	pie := chart.PieChart{
-		// Note that setting ClassName will cause all other inline styles to be dropped!
+		// Notes: * Setting ClassName will cause all other inline styles to be dropped!
+		//        * The following type classes may be added additionally: stroke, fill, text
 		Background: chart.Style{ClassName: "background"},
 		Canvas: chart.Style{
 			ClassName: "canvas",
@@ -42,12 +43,12 @@ func css(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "text/css")
 	res.Write([]byte("svg .background { fill: white; }" +
 		"svg .canvas { fill: white; }" +
-		"svg path.blue { fill: blue; stroke: lightblue; }" +
-		"svg path.green { fill: green; stroke: lightgreen; }" +
-		"svg path.gray { fill: gray; stroke: lightgray; }" +
-		"svg text.blue { fill: white; }" +
-		"svg text.green { fill: white; }" +
-		"svg text.gray { fill: white; }"))
+		"svg .blue.fill.stroke { fill: blue; stroke: lightblue; }" +
+		"svg .green.fill.stroke { fill: green; stroke: lightgreen; }" +
+		"svg .gray.fill.stroke { fill: gray; stroke: lightgray; }" +
+		"svg .blue.text { fill: white; }" +
+		"svg .green.text { fill: white; }" +
+		"svg .gray.text { fill: white; }"))
 }
 
 func main() {
