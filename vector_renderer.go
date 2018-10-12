@@ -311,14 +311,27 @@ func (c *canvas) getFontFace(s Style) string {
 
 // styleAsSVG returns the style as a svg style or class string.
 func (c *canvas) styleAsSVG(s Style) string {
-	if s.ClassName != "" {
-		return fmt.Sprintf("class=\"%s\"", s.ClassName)
-	}
 	sw := s.StrokeWidth
 	sc := s.StrokeColor
 	fc := s.FillColor
 	fs := s.FontSize
 	fnc := s.FontColor
+
+	if s.ClassName != "" {
+		var classes []string
+		classes = append(classes, s.ClassName)
+		if !sc.IsZero() {
+			classes = append(classes, "stroke")
+		}
+		if !fc.IsZero() {
+			classes = append(classes, "fill")
+		}
+		if fs != 0 || s.Font != nil {
+			classes = append(classes, "text")
+		}
+
+		return fmt.Sprintf("class=\"%s\"", strings.Join(classes, " "))
+	}
 
 	var pieces []string
 
