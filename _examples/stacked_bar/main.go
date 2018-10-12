@@ -18,12 +18,8 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 			},
 		},
 		Height: 512,
-		XAxis: chart.Style{
-			Show: true,
-		},
-		YAxis: chart.Style{
-			Show: true,
-		},
+		XAxis:  chart.StyleShow(),
+		YAxis:  chart.StyleShow(),
 		Bars: []chart.StackedBar{
 			{
 				Name: "This is a very long string to test word break wrapping.",

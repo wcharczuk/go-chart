@@ -43,11 +43,11 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 
 	graph := chart.Chart{
 		XAxis: chart.XAxis{
-			Style:        chart.Style{Show: true},
+			Style:        chart.StyleShow(),
 			TickPosition: chart.TickPositionBetweenTicks,
 		},
 		YAxis: chart.YAxis{
-			Style: chart.Style{Show: true},
+			Style: chart.StyleShow(),
 			Range: &chart.ContinuousRange{
 				Max: 220.0,
 				Min: 180.0,

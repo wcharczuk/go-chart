@@ -20,17 +20,13 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 		Height: 500,
 		Width:  500,
 		XAxis: chart.XAxis{
-			Style: chart.Style{
-				Show: true,
-			},
+			Style: chart.StyleShow(),
 			/*Range: &chart.ContinuousRange{
 				Descending: true,
 			},*/
 		},
 		YAxis: chart.YAxis{
-			Style: chart.Style{
-				Show: true,
-			},
+			Style: chart.StyleShow(),
 			Range: &chart.ContinuousRange{
 				Descending: true,
 			},

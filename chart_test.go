@@ -8,7 +8,9 @@ import (
 	"testing"
 	"time"
 
+
 	"github.com/blend/go-sdk/assert"
+
 	"github.com/wcharczuk/go-chart/drawing"
 	"github.com/wcharczuk/go-chart/seq"
 )
@@ -278,27 +280,21 @@ func TestChartHasAxes(t *testing.T) {
 
 	x := Chart{
 		XAxis: XAxis{
-			Style: Style{
-				Show: true,
-			},
+			Style: StyleShow(),
 		},
 	}
 	assert.True(x.hasAxes())
 
 	y := Chart{
 		YAxis: YAxis{
-			Style: Style{
-				Show: true,
-			},
+			Style: StyleShow(),
 		},
 	}
 	assert.True(y.hasAxes())
 
 	ya := Chart{
 		YAxisSecondary: YAxis{
-			Style: Style{
-				Show: true,
-			},
+			Style: StyleShow(),
 		},
 	}
 	assert.True(ya.hasAxes())
@@ -312,15 +308,15 @@ func TestChartGetAxesTicks(t *testing.T) {
 
 	c := Chart{
 		XAxis: XAxis{
-			Style: Style{Show: true},
+			Style: StyleShow(),
 			Range: &ContinuousRange{Min: 9.8, Max: 19.8},
 		},
 		YAxis: YAxis{
-			Style: Style{Show: true},
+			Style: StyleShow(),
 			Range: &ContinuousRange{Min: 9.9, Max: 19.9},
 		},
 		YAxisSecondary: YAxis{
-			Style: Style{Show: true},
+			Style: StyleShow(),
 			Range: &ContinuousRange{Min: 9.7, Max: 19.7},
 		},
 	}
@@ -482,10 +478,10 @@ func TestChartE2ELine(t *testing.T) {
 		Height: 50,
 		Width:  50,
 		Canvas: Style{
-			Padding: Box{IsSet: true},
+			Padding: BoxZero,
 		},
 		Background: Style{
-			Padding: Box{IsSet: true},
+			Padding: BoxZero,
 		},
 		Series: []Series{
 			ContinuousSeries{
@@ -522,10 +518,10 @@ func TestChartE2ELineWithFill(t *testing.T) {
 		Height: 50,
 		Width:  50,
 		Canvas: Style{
-			Padding: Box{IsSet: true},
+			Padding: BoxZero,
 		},
 		Background: Style{
-			Padding: Box{IsSet: true},
+			Padding: BoxZero,
 		},
 		Series: []Series{
 			ContinuousSeries{

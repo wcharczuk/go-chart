@@ -14,9 +14,7 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 	*/
 	graph := chart.Chart{
 		XAxis: chart.XAxis{
-			Style: chart.Style{
-				Show: true,
-			},
+			Style: chart.StyleShow(),
 		},
 		Series: []chart.Series{
 			chart.TimeSeries{
@@ -48,9 +46,7 @@ func drawCustomChart(res http.ResponseWriter, req *http.Request) {
 	*/
 	graph := chart.Chart{
 		XAxis: chart.XAxis{
-			Style: chart.Style{
-				Show: true,
-			},
+			Style:          chart.StyleShow(),
 			ValueFormatter: chart.TimeHourValueFormatter,
 		},
 		Series: []chart.Series{

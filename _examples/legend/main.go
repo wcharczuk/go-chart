@@ -16,10 +16,10 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 
 	graph := chart.Chart{
 		XAxis: chart.XAxis{
-			Style: chart.Style{Show: true},
+			Style: chart.StyleShow(),
 		},
 		YAxis: chart.YAxis{
-			Style: chart.Style{Show: true},
+			Style: chart.StyleShow(),
 		},
 		Background: chart.Style{
 			Padding: chart.Box{

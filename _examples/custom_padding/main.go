@@ -20,14 +20,10 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 			FillColor: drawing.ColorFromHex("efefef"),
 		},
 		XAxis: chart.XAxis{
-			Style: chart.Style{
-				Show: true,
-			},
+			Style: chart.StyleShow(),
 		},
 		YAxis: chart.YAxis{
-			Style: chart.Style{
-				Show: true,
-			},
+			Style: chart.StyleShow(),
 		},
 		Series: []chart.Series{
 			chart.ContinuousSeries{
@@ -47,14 +43,10 @@ func drawChartDefault(res http.ResponseWriter, req *http.Request) {
 			FillColor: drawing.ColorFromHex("efefef"),
 		},
 		XAxis: chart.XAxis{
-			Style: chart.Style{
-				Show: true,
-			},
+			Style: chart.StyleShow(),
 		},
 		YAxis: chart.YAxis{
-			Style: chart.Style{
-				Show: true,
-			},
+			Style: chart.StyleShow(),
 		},
 		Series: []chart.Series{
 			chart.ContinuousSeries{

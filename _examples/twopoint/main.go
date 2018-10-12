@@ -14,10 +14,8 @@ func main() {
 	b = 1000
 
 	ts1 := chart.ContinuousSeries{ //TimeSeries{
-		Name: "Time Series",
-		Style: chart.Style{
-			Show: true,
-		},
+		Name:    "Time Series",
+		Style:   chart.StyleShow(),
 		XValues: []float64{10 * b, 20 * b, 30 * b, 40 * b, 50 * b, 60 * b, 70 * b, 80 * b},
 		YValues: []float64{1.0, 2.0, 30.0, 4.0, 50.0, 6.0, 7.0, 88.0},
 	}
