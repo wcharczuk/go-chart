@@ -54,6 +54,11 @@ func (vr *vectorRenderer) SetDPI(dpi float64) {
 	vr.c.dpi = dpi
 }
 
+// SetClassName implements the interface method.
+func (vr *vectorRenderer) SetClassName(classname string) {
+	vr.s.ClassName = classname
+}
+
 // SetStrokeColor implements the interface method.
 func (vr *vectorRenderer) SetStrokeColor(c drawing.Color) {
 	vr.s.StrokeColor = c
@@ -230,20 +235,20 @@ func (c *canvas) Path(d string, style Style) {
 	if len(style.StrokeDashArray) > 0 {
 		strokeDashArrayProperty = c.getStrokeDashArray(style)
 	}
-	c.w.Write([]byte(fmt.Sprintf(`<path %s d="%s" style="%s"/>`, strokeDashArrayProperty, d, c.styleAsSVG(style))))
+	c.w.Write([]byte(fmt.Sprintf(`<path %s d="%s" %s/>`, strokeDashArrayProperty, d, c.styleAsSVG(style))))
 }
 
 func (c *canvas) Text(x, y int, body string, style Style) {
 	if c.textTheta == nil {
-		c.w.Write([]byte(fmt.Sprintf(`<text x="%d" y="%d" style="%s">%s</text>`, x, y, c.styleAsSVG(style), body)))
+		c.w.Write([]byte(fmt.Sprintf(`<text x="%d" y="%d" %s>%s</text>`, x, y, c.styleAsSVG(style), body)))
 	} else {
 		transform := fmt.Sprintf(` transform="rotate(%0.2f,%d,%d)"`, util.Math.RadiansToDegrees(*c.textTheta), x, y)
-		c.w.Write([]byte(fmt.Sprintf(`<text x="%d" y="%d" style="%s"%s>%s</text>`, x, y, c.styleAsSVG(style), transform, body)))
+		c.w.Write([]byte(fmt.Sprintf(`<text x="%d" y="%d" %s%s>%s</text>`, x, y, c.styleAsSVG(style), transform, body)))
 	}
 }
 
 func (c *canvas) Circle(x, y, r int, style Style) {
-	c.w.Write([]byte(fmt.Sprintf(`<circle cx="%d" cy="%d" r="%d" style="%s"/>`, x, y, r, c.styleAsSVG(style))))
+	c.w.Write([]byte(fmt.Sprintf(`<circle cx="%d" cy="%d" r="%d" %s/>`, x, y, r, c.styleAsSVG(style))))
 }
 
 func (c *canvas) End() {
@@ -274,8 +279,11 @@ func (c *canvas) getFontFace(s Style) string {
 	return fmt.Sprintf("font-family:%s", family)
 }
 
-// styleAsSVG returns the style as a svg style string.
+// styleAsSVG returns the style as a svg style or class string.
 func (c *canvas) styleAsSVG(s Style) string {
+	if s.ClassName != "" {
+		return fmt.Sprintf("class=\"%s\"", s.ClassName)
+	}
 	sw := s.StrokeWidth
 	sc := s.StrokeColor
 	fc := s.FillColor
@@ -311,5 +319,5 @@ func (c *canvas) styleAsSVG(s Style) string {
 	if s.Font != nil {
 		pieces = append(pieces, c.getFontFace(s))
 	}
-	return strings.Join(pieces, ";")
+	return fmt.Sprintf("style=\"%s\"", strings.Join(pieces, ";"))
 }

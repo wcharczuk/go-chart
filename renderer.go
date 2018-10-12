@@ -18,6 +18,9 @@ type Renderer interface {
 	// SetDPI sets the DPI for the renderer.
 	SetDPI(dpi float64)
 
+	// SetClassName sets the current class name.
+	SetClassName(string)
+
 	// SetStrokeColor sets the current stroke color.
 	SetStrokeColor(drawing.Color)
 

@@ -49,6 +49,10 @@ func (rr *rasterRenderer) SetDPI(dpi float64) {
 	rr.gc.SetDPI(dpi)
 }
 
+// SetClassName implements the interface method. However, PNGs have no classes.
+func (vr *rasterRenderer) SetClassName(_ string) {
+}
+
 // SetStrokeColor implements the interface method.
 func (rr *rasterRenderer) SetStrokeColor(c drawing.Color) {
 	rr.s.StrokeColor = c
