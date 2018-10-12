@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="512">\n<style type="text/css"><![CDATA[svg .background { fill: white; }svg .canvas { fill: white; }svg path.blue { fill: blue; stroke: lightblue; }svg path.green { fill: green; stroke: lightgreen; }svg path.gray { fill: gray; stroke: lightgray; }svg text.blue { fill: white; }svg text.green { fill: white; }svg text.gray { fill: white; }]]></style><path  d="M 0 0
+L 512 0
+L 512 512
+L 0 512
+L 0 0" class="background"/><path  d="M 5 5
+L 507 5
+L 507 507
+L 5 507
+L 5 5" class="canvas"/><path  d="M 256 256
+L 507 256
+A 251 251 128.56 0 1 100 452
+L 256 256
+Z" class="blue"/><path  d="M 256 256
+L 100 452
+A 251 251 128.56 0 1 201 12
+L 256 256
+Z" class="green"/><path  d="M 256 256
+L 201 12
+A 251 251 102.85 0 1 506 256
+L 256 256
+Z" class="gray"/><text x="313" y="413" class="blue">Blue</text><text x="73" y="226" class="green">Green</text><text x="344" y="133" class="gray">Gray</text></svg>

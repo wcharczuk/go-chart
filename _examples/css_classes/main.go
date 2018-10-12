@@ -7,6 +7,8 @@ import (
 	"net/http"
 )
 
+// Note: Additional examples on how to add Stylesheets are in the custom_stylesheets example
+
 func inlineSVGWithClasses(res http.ResponseWriter, req *http.Request) {
 	res.Write([]byte(
 		"<!DOCTYPE html><html><head>" +
