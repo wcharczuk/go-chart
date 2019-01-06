@@ -1,15 +1,12 @@
 package main
 
 import (
-	"bytes"
-	"log"
-	"os"
+	"net/http"
 
-	"github.com/wcharczuk/go-chart"
+	chart "github.com/wcharczuk/go-chart"
 )
 
-func main() {
-
+func drawChart(res http.ResponseWriter, req *http.Request) {
 	var b float64
 	b = 1000
 
@@ -51,18 +48,11 @@ func main() {
 		},
 	}
 
-	buffer := bytes.NewBuffer([]byte{})
-	err := graph.Render(chart.PNG, buffer)
-	if err != nil {
-		log.Fatal(err)
-	}
+	res.Header().Set("Content-Type", "image/png")
+	graph.Render(chart.PNG, res)
+}
 
-	fo, err := os.Create("output.png")
-	if err != nil {
-		panic(err)
-	}
-
-	if _, err := fo.Write(buffer.Bytes()); err != nil {
-		panic(err)
-	}
+func main() {
+	http.HandleFunc("/", drawChart)
+	http.ListenAndServe(":8080", nil)
 }
