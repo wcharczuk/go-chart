@@ -82,11 +82,15 @@ func (cs ContinuousSeries) Render(r Renderer, canvasBox Box, xrange, yrange Rang
 // Validate validates the series.
 func (cs ContinuousSeries) Validate() error {
 	if len(cs.XValues) == 0 {
-		return fmt.Errorf("continuous series must have xvalues set")
+		return fmt.Errorf("continuous series; must have xvalues set")
 	}
 
 	if len(cs.YValues) == 0 {
-		return fmt.Errorf("continuous series must have yvalues set")
+		return fmt.Errorf("continuous series; must have yvalues set")
+	}
+
+	if len(cs.XValues) != len(cs.YValues) {
+		return fmt.Errorf("continuous series; must have same length xvalues as yvalues")
 	}
 	return nil
 }

@@ -224,7 +224,7 @@ func (bc BarChart) drawBars(r Renderer, canvasBox Box, yr Range) {
 }
 
 func (bc BarChart) drawXAxis(r Renderer, canvasBox Box) {
-	if bc.XAxis.Show {
+	if !bc.XAxis.Hidden {
 		axisStyle := bc.XAxis.InheritFrom(bc.styleDefaultsAxes())
 		axisStyle.WriteToRenderer(r)
 
@@ -263,7 +263,7 @@ func (bc BarChart) drawXAxis(r Renderer, canvasBox Box) {
 }
 
 func (bc BarChart) drawYAxis(r Renderer, canvasBox Box, yr Range, ticks []Tick) {
-	if bc.YAxis.Style.Show {
+	if !bc.YAxis.Style.Hidden {
 		axisStyle := bc.YAxis.Style.InheritFrom(bc.styleDefaultsAxes())
 		axisStyle.WriteToRenderer(r)
 
@@ -294,7 +294,7 @@ func (bc BarChart) drawYAxis(r Renderer, canvasBox Box, yr Range, ticks []Tick) 
 }
 
 func (bc BarChart) drawTitle(r Renderer) {
-	if len(bc.Title) > 0 && bc.TitleStyle.Show {
+	if len(bc.Title) > 0 && !bc.TitleStyle.Hidden {
 		r.SetFont(bc.TitleStyle.GetFont(bc.GetFont()))
 		r.SetFontColor(bc.TitleStyle.GetFontColor(bc.GetColorPalette().TextColor()))
 		titleFontSize := bc.TitleStyle.GetFontSize(bc.getTitleFontSize())
@@ -325,7 +325,7 @@ func (bc BarChart) styleDefaultsCanvas() Style {
 }
 
 func (bc BarChart) hasAxes() bool {
-	return bc.YAxis.Style.Show
+	return !bc.YAxis.Style.Hidden
 }
 
 func (bc BarChart) setRangeDomains(canvasBox Box, yr Range) Range {
@@ -345,7 +345,7 @@ func (bc BarChart) getValueFormatters() ValueFormatter {
 }
 
 func (bc BarChart) getAxesTicks(r Renderer, yr Range, yf ValueFormatter) (yticks []Tick) {
-	if bc.YAxis.Style.Show {
+	if !bc.YAxis.Style.Hidden {
 		yticks = bc.YAxis.GetTicks(r, yr, bc.styleDefaultsAxes(), yf)
 	}
 	return
@@ -391,7 +391,7 @@ func (bc BarChart) getAdjustedCanvasBox(r Renderer, canvasBox Box, yrange Range,
 
 	_, _, totalWidth := bc.calculateScaledTotalWidth(canvasBox)
 
-	if bc.XAxis.Show {
+	if !bc.XAxis.Hidden {
 		xaxisHeight := DefaultVerticalTickHeight
 
 		axisStyle := bc.XAxis.InheritFrom(bc.styleDefaultsAxes())
@@ -423,7 +423,7 @@ func (bc BarChart) getAdjustedCanvasBox(r Renderer, canvasBox Box, yrange Range,
 		axesOuterBox = axesOuterBox.Grow(xbox)
 	}
 
-	if bc.YAxis.Style.Show {
+	if !bc.YAxis.Style.Hidden {
 		axesBounds := bc.YAxis.Measure(r, canvasBox, yrange, bc.styleDefaultsAxes(), yticks)
 		axesOuterBox = axesOuterBox.Grow(axesBounds)
 	}

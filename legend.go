@@ -35,7 +35,7 @@ func Legend(c *Chart, userDefaults ...Style) Renderable {
 		var labels []string
 		var lines []Style
 		for index, s := range c.Series {
-			if s.GetStyle().IsZero() || s.GetStyle().Show {
+			if !s.GetStyle().Hidden {
 				if _, isAnnotationSeries := s.(AnnotationSeries); !isAnnotationSeries {
 					labels = append(labels, s.GetName())
 					lines = append(lines, s.GetStyle().InheritFrom(c.styleDefaultsSeries(index)))
@@ -149,7 +149,7 @@ func LegendThin(c *Chart, userDefaults ...Style) Renderable {
 		var labels []string
 		var lines []Style
 		for index, s := range c.Series {
-			if s.GetStyle().IsZero() || s.GetStyle().Show {
+			if !s.GetStyle().Hidden {
 				if _, isAnnotationSeries := s.(AnnotationSeries); !isAnnotationSeries {
 					labels = append(labels, s.GetName())
 					lines = append(lines, s.GetStyle().InheritFrom(c.styleDefaultsSeries(index)))
@@ -247,7 +247,7 @@ func LegendLeft(c *Chart, userDefaults ...Style) Renderable {
 		var labels []string
 		var lines []Style
 		for index, s := range c.Series {
-			if s.GetStyle().IsZero() || s.GetStyle().Show {
+			if !s.GetStyle().Hidden {
 				if _, isAnnotationSeries := s.(AnnotationSeries); !isAnnotationSeries {
 					labels = append(labels, s.GetName())
 					lines = append(lines, s.GetStyle().InheritFrom(c.styleDefaultsSeries(index)))

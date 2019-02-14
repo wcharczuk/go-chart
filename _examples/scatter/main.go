@@ -6,9 +6,8 @@ import (
 
 	_ "net/http/pprof"
 
-	"github.com/wcharczuk/go-chart"
+	chart "github.com/wcharczuk/go-chart"
 	"github.com/wcharczuk/go-chart/drawing"
-	"github.com/wcharczuk/go-chart/seq"
 )
 
 func drawChart(res http.ResponseWriter, req *http.Request) {
@@ -26,8 +25,8 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 					DotWidth:         5,
 					DotColorProvider: viridisByY,
 				},
-				XValues: seq.Range(0, 127),
-				YValues: seq.New(seq.NewRandom().WithLen(128).WithMax(1024)).Array(),
+				XValues: chart.SeqRange(0, 127),
+				YValues: chart.NewSeq(chart.NewSeqRandom().WithLen(128).WithMax(1024)).Values(),
 			},
 		},
 	}
@@ -51,8 +50,8 @@ func unit(res http.ResponseWriter, req *http.Request) {
 		},
 		Series: []chart.Series{
 			chart.ContinuousSeries{
-				XValues: seq.RangeWithStep(0, 4, 1),
-				YValues: seq.RangeWithStep(0, 4, 1),
+				XValues: chart.SeqRangeWithStep(0, 4, 1),
+				YValues: chart.SeqRangeWithStep(0, 4, 1),
 			},
 		},
 	}

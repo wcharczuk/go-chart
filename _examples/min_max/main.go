@@ -10,7 +10,7 @@ import (
 func drawChart(res http.ResponseWriter, req *http.Request) {
 	mainSeries := chart.ContinuousSeries{
 		Name:    "A test series",
-		XValues: seq.Range(1.0, 100.0),
+		XValues: SeqRange(1.0, 100.0),
 		YValues: seq.New(seq.NewRandom().WithLen(100).WithMax(150).WithMin(50)).Array(),
 	}
 

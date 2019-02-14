@@ -12,13 +12,8 @@ func TestBarChartRender(t *testing.T) {
 	assert := assert.New(t)
 
 	bc := BarChart{
-		Width:      1024,
-		Title:      "Test Title",
-		TitleStyle: StyleShow(),
-		XAxis:      StyleShow(),
-		YAxis: YAxis{
-			Style: StyleShow(),
-		},
+		Width: 1024,
+		Title: "Test Title",
 		Bars: []Value{
 			{Value: 1.0, Label: "One"},
 			{Value: 2.0, Label: "Two"},
@@ -38,13 +33,8 @@ func TestBarChartRenderZero(t *testing.T) {
 	assert := assert.New(t)
 
 	bc := BarChart{
-		Width:      1024,
-		Title:      "Test Title",
-		TitleStyle: StyleShow(),
-		XAxis:      StyleShow(),
-		YAxis: YAxis{
-			Style: StyleShow(),
-		},
+		Width: 1024,
+		Title: "Test Title",
 		Bars: []Value{
 			{Value: 0.0, Label: "One"},
 			{Value: 0.0, Label: "Two"},
@@ -183,12 +173,11 @@ func TestBarChartHasAxes(t *testing.T) {
 	assert := assert.New(t)
 
 	bc := BarChart{}
-	assert.False(bc.hasAxes())
-	bc.YAxis = YAxis{
-		Style: StyleShow(),
-	}
-
 	assert.True(bc.hasAxes())
+	bc.YAxis = YAxis{
+		Style: Hidden(),
+	}
+	assert.False(bc.hasAxes())
 }
 
 func TestBarChartGetDefaultCanvasBox(t *testing.T) {
@@ -237,10 +226,11 @@ func TestBarChartGetAxesTicks(t *testing.T) {
 	yr := bc.getRanges()
 	yf := bc.getValueFormatters()
 
+	bc.YAxis.Style.Hidden = true
 	ticks := bc.getAxesTicks(r, yr, yf)
 	assert.Empty(ticks)
 
-	bc.YAxis.Style.Show = true
+	bc.YAxis.Style.Hidden = false
 	ticks = bc.getAxesTicks(r, yr, yf)
 	assert.Len(ticks, 2)
 }

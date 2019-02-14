@@ -117,7 +117,7 @@ func (ya YAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 		maxy = MaxInt(maxy, ly+tbh2)
 	}
 
-	if ya.NameStyle.Show && len(ya.Name) > 0 {
+	if !ya.NameStyle.Hidden && len(ya.Name) > 0 {
 		maxx += (DefaultYAxisMargin + maxTextHeight)
 	}
 
@@ -188,7 +188,7 @@ func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 	}
 
 	nameStyle := ya.NameStyle.InheritFrom(defaults.InheritFrom(Style{TextRotationDegrees: 90}))
-	if ya.NameStyle.Show && len(ya.Name) > 0 {
+	if !ya.NameStyle.Hidden && len(ya.Name) > 0 {
 		nameStyle.GetTextOptions().WriteToRenderer(r)
 		tb := Draw.MeasureText(r, ya.Name, nameStyle)
 
@@ -209,13 +209,13 @@ func (ya YAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 		Draw.Text(r, ya.Name, tx, ty, nameStyle)
 	}
 
-	if ya.Zero.Style.Show {
+	if !ya.Zero.Style.Hidden {
 		ya.Zero.Render(r, canvasBox, ra, false, Style{})
 	}
 
-	if ya.GridMajorStyle.Show || ya.GridMinorStyle.Show {
+	if !ya.GridMajorStyle.Hidden || !ya.GridMinorStyle.Hidden {
 		for _, gl := range ya.GetGridLines(ticks) {
-			if (gl.IsMinor && ya.GridMinorStyle.Show) || (!gl.IsMinor && ya.GridMajorStyle.Show) {
+			if (gl.IsMinor && !ya.GridMinorStyle.Hidden) || (!gl.IsMinor && !ya.GridMajorStyle.Hidden) {
 				defaults := ya.GridMajorStyle
 				if gl.IsMinor {
 					defaults = ya.GridMinorStyle

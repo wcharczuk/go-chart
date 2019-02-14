@@ -12,8 +12,8 @@ func TestBollingerBandSeries(t *testing.T) {
 	assert := assert.New(t)
 
 	s1 := mockValuesProvider{
-		X: SeqRange(1.0, 100.0),
-		Y: SeqRandomValuesWithMax(100, 1024),
+		X: LinearRange(1.0, 100.0),
+		Y: RandomValuesWithMax(100, 1024),
 	}
 
 	bbs := &BollingerBandsSeries{
@@ -37,8 +37,8 @@ func TestBollingerBandLastValue(t *testing.T) {
 	assert := assert.New(t)
 
 	s1 := mockValuesProvider{
-		X: SeqRange(1.0, 100.0),
-		Y: SeqRange(1.0, 100.0),
+		X: LinearRange(1.0, 100.0),
+		Y: LinearRange(1.0, 100.0),
 	}
 
 	bbs := &BollingerBandsSeries{

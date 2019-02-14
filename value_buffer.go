@@ -149,7 +149,7 @@ func (b *ValueBuffer) TrimExcess() {
 }
 
 // Array returns the ring buffer, in order, as an array.
-func (b *ValueBuffer) Array() SeqArray {
+func (b *ValueBuffer) Array() Array {
 	newArray := make([]float64, b.size)
 
 	if b.size == 0 {
@@ -163,7 +163,7 @@ func (b *ValueBuffer) Array() SeqArray {
 		arrayCopy(b.array, 0, newArray, len(b.array)-b.head, b.tail)
 	}
 
-	return SeqArray(newArray)
+	return Array(newArray)
 }
 
 // Each calls the consumer for each element in the buffer.

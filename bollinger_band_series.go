@@ -79,8 +79,8 @@ func (bbs *BollingerBandsSeries) GetBoundedValues(index int) (x, y1, y2 float64)
 	bbs.valueBuffer.Enqueue(py)
 	x = px
 
-	ay := NewSeq(bbs.valueBuffer).Average()
-	std := NewSeq(bbs.valueBuffer).StdDev()
+	ay := Seq{bbs.valueBuffer}.Average()
+	std := Seq{bbs.valueBuffer}.StdDev()
 
 	y1 = ay + (bbs.GetK() * std)
 	y2 = ay - (bbs.GetK() * std)

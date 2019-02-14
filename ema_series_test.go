@@ -4,11 +4,10 @@ import (
 	"testing"
 
 	"github.com/blend/go-sdk/assert"
-	"github.com/wcharczuk/go-chart/seq"
 )
 
 var (
-	emaXValues = seq.Range(1.0, 50.0)
+	emaXValues = LinearRange(1.0, 50.0)
 	emaYValues = []float64{
 		1, 2, 3, 4, 5, 4, 3, 2,
 		1, 2, 3, 4, 5, 4, 3, 2,

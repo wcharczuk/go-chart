@@ -116,7 +116,7 @@ func (pc PieChart) drawCanvas(r Renderer, canvasBox Box) {
 }
 
 func (pc PieChart) drawTitle(r Renderer) {
-	if len(pc.Title) > 0 && pc.TitleStyle.Show {
+	if len(pc.Title) > 0 && !pc.TitleStyle.Hidden {
 		Draw.TextWithin(r, pc.Title, pc.Box(), pc.styleDefaultsTitle())
 	}
 }

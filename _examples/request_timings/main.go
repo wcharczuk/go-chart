@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 
 	chart "github.com/wcharczuk/go-chart"
@@ -24,7 +23,7 @@ func readData() ([]time.Time, []float64) {
 	var xvalues []time.Time
 	var yvalues []float64
 	err := chart.ReadLines("requests.csv", func(line string) error {
-		parts := strings.Split(line, ",")
+		parts := chart.SplitCSV(line)
 		year := parseInt(parts[0])
 		month := parseInt(parts[1])
 		day := parseInt(parts[2])
@@ -51,84 +50,84 @@ func releases() []chart.GridLine {
 	}
 }
 
-func drawChart(res http.ResponseWriter, req *http.Request) {
-	xvalues, yvalues := readData()
-	mainSeries := chart.TimeSeries{
-		Name: "Prod Request Timings",
-		Style: chart.Style{
-			Show:        true,
-			StrokeColor: chart.ColorBlue,
-			FillColor:   chart.ColorBlue.WithAlpha(100),
-		},
-		XValues: xvalues,
-		YValues: yvalues,
-	}
-
-	linreg := &chart.LinearRegressionSeries{
-		Name: "Linear Regression",
-		Style: chart.Style{
-			Show:            true,
-			StrokeColor:     chart.ColorAlternateBlue,
-			StrokeDashArray: []float64{5.0, 5.0},
-		},
-		InnerSeries: mainSeries,
-	}
-
-	sma := &chart.SMASeries{
-		Name: "SMA",
-		Style: chart.Style{
-			Show:            true,
-			StrokeColor:     chart.ColorRed,
-			StrokeDashArray: []float64{5.0, 5.0},
-		},
-		InnerSeries: mainSeries,
-	}
-
-	graph := chart.Chart{
-		Width:  1280,
-		Height: 720,
-		Background: chart.Style{
-			Padding: chart.Box{
-				Top: 50,
+func drawChart(log chart.Logger) http.HandlerFunc {
+	return func(res http.ResponseWriter, req *http.Request) {
+		xvalues, yvalues := readData()
+		mainSeries := chart.TimeSeries{
+			Name: "Prod Request Timings",
+			Style: chart.Style{
+				StrokeColor: chart.ColorBlue,
+				FillColor:   chart.ColorBlue.WithAlpha(100),
 			},
-		},
-		YAxis: chart.YAxis{
-			Name:      "Elapsed Millis",
-			NameStyle: chart.StyleShow(),
-			Style:     chart.StyleShow(),
-			TickStyle: chart.Style{
-				TextRotationDegrees: 45.0,
+			XValues: xvalues,
+			YValues: yvalues,
+		}
+
+		linreg := &chart.LinearRegressionSeries{
+			Name: "Linear Regression",
+			Style: chart.Style{
+				StrokeColor:     chart.ColorAlternateBlue,
+				StrokeDashArray: []float64{5.0, 5.0},
 			},
-			ValueFormatter: func(v interface{}) string {
-				return fmt.Sprintf("%d ms", int(v.(float64)))
+			InnerSeries: mainSeries,
+		}
+
+		sma := &chart.SMASeries{
+			Name: "SMA",
+			Style: chart.Style{
+				StrokeColor:     chart.ColorRed,
+				StrokeDashArray: []float64{5.0, 5.0},
 			},
-		},
-		XAxis: chart.XAxis{
-			Style:          chart.StyleShow(),
-			ValueFormatter: chart.TimeHourValueFormatter,
-			GridMajorStyle: chart.Style{
-				Show:        true,
-				StrokeColor: chart.ColorAlternateGray,
-				StrokeWidth: 1.0,
+			InnerSeries: mainSeries,
+		}
+
+		graph := chart.Chart{
+			Log:    log,
+			Width:  1280,
+			Height: 720,
+			Background: chart.Style{
+				Padding: chart.Box{
+					Top: 50,
+				},
 			},
-			GridLines: releases(),
-		},
-		Series: []chart.Series{
-			mainSeries,
-			linreg,
-			chart.LastValueAnnotation(linreg),
-			sma,
-			chart.LastValueAnnotation(sma),
-		},
+			YAxis: chart.YAxis{
+				Name: "Elapsed Millis",
+				TickStyle: chart.Style{
+					TextRotationDegrees: 45.0,
+				},
+				ValueFormatter: func(v interface{}) string {
+					return fmt.Sprintf("%d ms", int(v.(float64)))
+				},
+			},
+			XAxis: chart.XAxis{
+				ValueFormatter: chart.TimeHourValueFormatter,
+				GridMajorStyle: chart.Style{
+					StrokeColor: chart.ColorAlternateGray,
+					StrokeWidth: 1.0,
+				},
+				GridLines: releases(),
+			},
+			Series: []chart.Series{
+				mainSeries,
+				linreg,
+				chart.LastValueAnnotation(linreg),
+				sma,
+				chart.LastValueAnnotation(sma),
+			},
+		}
+
+		graph.Elements = []chart.Renderable{chart.LegendThin(&graph)}
+
+		res.Header().Set("Content-Type", chart.ContentTypePNG)
+		if err := graph.Render(chart.PNG, res); err != nil {
+			log.Err(err)
+		}
 	}
-
-	graph.Elements = []chart.Renderable{chart.LegendThin(&graph)}
-
-	res.Header().Set("Content-Type", chart.ContentTypePNG)
-	graph.Render(chart.PNG, res)
 }
 
 func main() {
-	http.HandleFunc("/", drawChart)
+	log := chart.NewLogger()
+	log.Infof("listening on :8080")
+	http.HandleFunc("/", drawChart(log))
 	http.ListenAndServe(":8080", nil)
 }

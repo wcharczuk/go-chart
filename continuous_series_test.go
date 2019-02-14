@@ -12,8 +12,8 @@ func TestContinuousSeries(t *testing.T) {
 
 	cs := ContinuousSeries{
 		Name:    "Test Series",
-		XValues: SeqRange(1.0, 10.0),
-		YValues: SeqRange(1.0, 10.0),
+		XValues: LinearRange(1.0, 10.0),
+		YValues: LinearRange(1.0, 10.0),
 	}
 
 	assert.Equal("Test Series", cs.GetName())
@@ -53,20 +53,20 @@ func TestContinuousSeriesValidate(t *testing.T) {
 
 	cs := ContinuousSeries{
 		Name:    "Test Series",
-		XValues: SeqRange(1.0, 10.0),
-		YValues: SeqRange(1.0, 10.0),
+		XValues: LinearRange(1.0, 10.0),
+		YValues: LinearRange(1.0, 10.0),
 	}
 	assert.Nil(cs.Validate())
 
 	cs = ContinuousSeries{
 		Name:    "Test Series",
-		XValues: SeqRange(1.0, 10.0),
+		XValues: LinearRange(1.0, 10.0),
 	}
 	assert.NotNil(cs.Validate())
 
 	cs = ContinuousSeries{
 		Name:    "Test Series",
-		YValues: SeqRange(1.0, 10.0),
+		YValues: LinearRange(1.0, 10.0),
 	}
 	assert.NotNil(cs.Validate())
 }

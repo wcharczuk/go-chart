@@ -14,10 +14,18 @@ const (
 	Disabled = -1
 )
 
-// StyleShow is a prebuilt style with the `Show` property set to true.
-func StyleShow() Style {
+// Hidden is a prebuilt style with the `Hidden` property set to true.
+func Hidden() Style {
 	return Style{
-		Show: true,
+		Hidden: true,
+	}
+}
+
+// Shown is a prebuilt style with the `Hidden` property set to false.
+// You can also think of this as the default.
+func Shown() Style {
+	return Style{
+		Hidden: false,
 	}
 }
 
@@ -26,7 +34,7 @@ func StyleShow() Style {
 func StyleTextDefaults() Style {
 	font, _ := GetDefaultFont()
 	return Style{
-		Show:      true,
+		Hidden:    false,
 		Font:      font,
 		FontColor: DefaultTextColor,
 		FontSize:  DefaultTitleFontSize,
@@ -35,7 +43,7 @@ func StyleTextDefaults() Style {
 
 // Style is a simple style set.
 type Style struct {
-	Show    bool
+	Hidden  bool
 	Padding Box
 
 	ClassName string
@@ -65,7 +73,8 @@ type Style struct {
 
 // IsZero returns if the object is set or not.
 func (s Style) IsZero() bool {
-	return s.StrokeColor.IsZero() &&
+	return !s.Hidden &&
+		s.StrokeColor.IsZero() &&
 		s.StrokeWidth == 0 &&
 		s.DotColor.IsZero() &&
 		s.DotWidth == 0 &&
@@ -83,10 +92,10 @@ func (s Style) String() string {
 	}
 
 	var output []string
-	if s.Show {
-		output = []string{"\"show\": true"}
+	if s.Hidden {
+		output = []string{"\"hidden\": true"}
 	} else {
-		output = []string{"\"show\": false"}
+		output = []string{"\"hidden\": false"}
 	}
 
 	if s.ClassName != "" {

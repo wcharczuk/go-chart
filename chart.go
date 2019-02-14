@@ -32,6 +32,8 @@ type Chart struct {
 
 	Series   []Series
 	Elements []Renderable
+
+	Log Logger
 }
 
 // GetDPI returns the dpi for the chart.
@@ -74,8 +76,8 @@ func (c Chart) Render(rp RendererProvider, w io.Writer) error {
 	if len(c.Series) == 0 {
 		return errors.New("please provide at least one series")
 	}
-	if visibleSeriesErr := c.checkHasVisibleSeries(); visibleSeriesErr != nil {
-		return visibleSeriesErr
+	if err := c.checkHasVisibleSeries(); err != nil {
+		return err
 	}
 
 	c.YAxisSecondary.AxisType = YAxisSecondary
@@ -142,16 +144,14 @@ func (c Chart) Render(rp RendererProvider, w io.Writer) error {
 }
 
 func (c Chart) checkHasVisibleSeries() error {
-	hasVisibleSeries := false
 	var style Style
 	for _, s := range c.Series {
 		style = s.GetStyle()
-		hasVisibleSeries = hasVisibleSeries || (style.IsZero() || style.Show)
+		if !style.Hidden {
+			return nil
+		}
 	}
-	if !hasVisibleSeries {
-		return fmt.Errorf("must have (1) visible series; make sure if you set a style, you set .Show = true")
-	}
-	return nil
+	return fmt.Errorf("chart render; must have (1) visible series")
 }
 
 func (c Chart) validateSeries() error {
@@ -175,7 +175,7 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 	// note: a possible future optimization is to not scan the series values if
 	// all axis are represented by either custom ticks or custom ranges.
 	for _, s := range c.Series {
-		if s.GetStyle().IsZero() || s.GetStyle().Show {
+		if !s.GetStyle().Hidden {
 			seriesAxis := s.GetYAxis()
 			if bvp, isBoundedValuesProvider := s.(BoundedValuesProvider); isBoundedValuesProvider {
 				seriesLength := bvp.Len()
@@ -262,8 +262,7 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 		yrange.SetMin(miny)
 		yrange.SetMax(maxy)
 
-		// only round if we're showing the axis
-		if c.YAxis.Style.Show {
+		if !c.YAxis.Style.Hidden {
 			delta := yrange.GetDelta()
 			roundTo := GetRoundToForDelta(delta)
 			rmin, rmax := RoundDown(yrange.GetMin(), roundTo), RoundUp(yrange.GetMax(), roundTo)
@@ -285,7 +284,7 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 		yrangeAlt.SetMin(minya)
 		yrangeAlt.SetMax(maxya)
 
-		if c.YAxisSecondary.Style.Show {
+		if !c.YAxisSecondary.Style.Hidden {
 			delta := yrangeAlt.GetDelta()
 			roundTo := GetRoundToForDelta(delta)
 			rmin, rmax := RoundDown(yrangeAlt.GetMin(), roundTo), RoundUp(yrangeAlt.GetMax(), roundTo)
@@ -298,6 +297,7 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 }
 
 func (c Chart) checkRanges(xr, yr, yra Range) error {
+	Debugf(c.Log, "checking xrange: %v", xr)
 	xDelta := xr.GetDelta()
 	if math.IsInf(xDelta, 0) {
 		return errors.New("infinite x-range delta")
@@ -309,6 +309,7 @@ func (c Chart) checkRanges(xr, yr, yra Range) error {
 		return errors.New("zero x-range delta; there needs to be at least (2) values")
 	}
 
+	Debugf(c.Log, "checking yrange: %v", yr)
 	yDelta := yr.GetDelta()
 	if math.IsInf(yDelta, 0) {
 		return errors.New("infinite y-range delta")
@@ -318,6 +319,7 @@ func (c Chart) checkRanges(xr, yr, yra Range) error {
 	}
 
 	if c.hasSecondarySeries() {
+		Debugf(c.Log, "checking secondary yrange: %v", yra)
 		yraDelta := yra.GetDelta()
 		if math.IsInf(yraDelta, 0) {
 			return errors.New("infinite secondary y-range delta")
@@ -360,17 +362,17 @@ func (c Chart) getValueFormatters() (x, y, ya ValueFormatter) {
 }
 
 func (c Chart) hasAxes() bool {
-	return c.XAxis.Style.Show || c.YAxis.Style.Show || c.YAxisSecondary.Style.Show
+	return !c.XAxis.Style.Hidden || !c.YAxis.Style.Hidden || !c.YAxisSecondary.Style.Hidden
 }
 
 func (c Chart) getAxesTicks(r Renderer, xr, yr, yar Range, xf, yf, yfa ValueFormatter) (xticks, yticks, yticksAlt []Tick) {
-	if c.XAxis.Style.Show {
+	if !c.XAxis.Style.Hidden {
 		xticks = c.XAxis.GetTicks(r, xr, c.styleDefaultsAxes(), xf)
 	}
-	if c.YAxis.Style.Show {
+	if !c.YAxis.Style.Hidden {
 		yticks = c.YAxis.GetTicks(r, yr, c.styleDefaultsAxes(), yf)
 	}
-	if c.YAxisSecondary.Style.Show {
+	if !c.YAxisSecondary.Style.Hidden {
 		yticksAlt = c.YAxisSecondary.GetTicks(r, yar, c.styleDefaultsAxes(), yfa)
 	}
 	return
@@ -378,15 +380,15 @@ func (c Chart) getAxesTicks(r Renderer, xr, yr, yar Range, xf, yf, yfa ValueForm
 
 func (c Chart) getAxesAdjustedCanvasBox(r Renderer, canvasBox Box, xr, yr, yra Range, xticks, yticks, yticksAlt []Tick) Box {
 	axesOuterBox := canvasBox.Clone()
-	if c.XAxis.Style.Show {
+	if !c.XAxis.Style.Hidden {
 		axesBounds := c.XAxis.Measure(r, canvasBox, xr, c.styleDefaultsAxes(), xticks)
 		axesOuterBox = axesOuterBox.Grow(axesBounds)
 	}
-	if c.YAxis.Style.Show {
+	if !c.YAxis.Style.Hidden {
 		axesBounds := c.YAxis.Measure(r, canvasBox, yr, c.styleDefaultsAxes(), yticks)
 		axesOuterBox = axesOuterBox.Grow(axesBounds)
 	}
-	if c.YAxisSecondary.Style.Show {
+	if !c.YAxisSecondary.Style.Hidden {
 		axesBounds := c.YAxisSecondary.Measure(r, canvasBox, yra, c.styleDefaultsAxes(), yticksAlt)
 		axesOuterBox = axesOuterBox.Grow(axesBounds)
 	}
@@ -404,7 +406,7 @@ func (c Chart) setRangeDomains(canvasBox Box, xr, yr, yra Range) (Range, Range, 
 func (c Chart) hasAnnotationSeries() bool {
 	for _, s := range c.Series {
 		if as, isAnnotationSeries := s.(AnnotationSeries); isAnnotationSeries {
-			if as.Style.IsZero() || as.Style.Show {
+			if !as.GetStyle().Hidden {
 				return true
 			}
 		}
@@ -425,7 +427,7 @@ func (c Chart) getAnnotationAdjustedCanvasBox(r Renderer, canvasBox Box, xr, yr,
 	annotationSeriesBox := canvasBox.Clone()
 	for seriesIndex, s := range c.Series {
 		if as, isAnnotationSeries := s.(AnnotationSeries); isAnnotationSeries {
-			if as.Style.IsZero() || as.Style.Show {
+			if !as.GetStyle().Hidden {
 				style := c.styleDefaultsSeries(seriesIndex)
 				var annotationBounds Box
 				if as.YAxis == YAxisPrimary {
@@ -462,19 +464,19 @@ func (c Chart) drawCanvas(r Renderer, canvasBox Box) {
 }
 
 func (c Chart) drawAxes(r Renderer, canvasBox Box, xrange, yrange, yrangeAlt Range, xticks, yticks, yticksAlt []Tick) {
-	if c.XAxis.Style.Show {
+	if !c.XAxis.Style.Hidden {
 		c.XAxis.Render(r, canvasBox, xrange, c.styleDefaultsAxes(), xticks)
 	}
-	if c.YAxis.Style.Show {
+	if !c.YAxis.Style.Hidden {
 		c.YAxis.Render(r, canvasBox, yrange, c.styleDefaultsAxes(), yticks)
 	}
-	if c.YAxisSecondary.Style.Show {
+	if !c.YAxisSecondary.Style.Hidden {
 		c.YAxisSecondary.Render(r, canvasBox, yrangeAlt, c.styleDefaultsAxes(), yticksAlt)
 	}
 }
 
 func (c Chart) drawSeries(r Renderer, canvasBox Box, xrange, yrange, yrangeAlt Range, s Series, seriesIndex int) {
-	if s.GetStyle().IsZero() || s.GetStyle().Show {
+	if !s.GetStyle().Hidden {
 		if s.GetYAxis() == YAxisPrimary {
 			s.Render(r, canvasBox, xrange, yrange, c.styleDefaultsSeries(seriesIndex))
 		} else if s.GetYAxis() == YAxisSecondary {
@@ -484,7 +486,7 @@ func (c Chart) drawSeries(r Renderer, canvasBox Box, xrange, yrange, yrangeAlt R
 }
 
 func (c Chart) drawTitle(r Renderer) {
-	if len(c.Title) > 0 && c.TitleStyle.Show {
+	if len(c.Title) > 0 && !c.TitleStyle.Hidden {
 		r.SetFont(c.TitleStyle.GetFont(c.GetFont()))
 		r.SetFontColor(c.TitleStyle.GetFontColor(c.GetColorPalette().TextColor()))
 		titleFontSize := c.TitleStyle.GetFontSize(DefaultTitleFontSize)

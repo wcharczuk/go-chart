@@ -13,7 +13,6 @@ func TestAnnotationSeriesMeasure(t *testing.T) {
 	assert := assert.New(t)
 
 	as := AnnotationSeries{
-		Style: StyleShow(),
 		Annotations: []Value2{
 			{XValue: 1.0, YValue: 1.0, Label: "1.0"},
 			{XValue: 2.0, YValue: 2.0, Label: "2.0"},
@@ -63,7 +62,6 @@ func TestAnnotationSeriesRender(t *testing.T) {
 
 	as := AnnotationSeries{
 		Style: Style{
-			Show:        true,
 			FillColor:   drawing.ColorWhite,
 			StrokeColor: drawing.ColorBlack,
 		},

@@ -10,18 +10,18 @@ func TestConcatSeries(t *testing.T) {
 	assert := assert.New(t)
 
 	s1 := ContinuousSeries{
-		XValues: SeqRange(1.0, 10.0),
-		YValues: SeqRange(1.0, 10.0),
+		XValues: LinearRange(1.0, 10.0),
+		YValues: LinearRange(1.0, 10.0),
 	}
 
 	s2 := ContinuousSeries{
-		XValues: SeqRange(11, 20.0),
-		YValues: SeqRange(10.0, 1.0),
+		XValues: LinearRange(11, 20.0),
+		YValues: LinearRange(10.0, 1.0),
 	}
 
 	s3 := ContinuousSeries{
-		XValues: SeqRange(21, 30.0),
-		YValues: SeqRange(1.0, 10.0),
+		XValues: LinearRange(21, 30.0),
+		YValues: LinearRange(1.0, 10.0),
 	}
 
 	cs := ConcatSeries([]Series{s1, s2, s3})

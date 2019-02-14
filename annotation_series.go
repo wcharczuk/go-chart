@@ -53,7 +53,7 @@ func (as AnnotationSeries) Measure(r Renderer, canvasBox Box, xrange, yrange Ran
 		Right:  0,
 		Bottom: 0,
 	}
-	if as.Style.IsZero() || as.Style.Show {
+	if !as.Style.Hidden {
 		seriesStyle := as.Style.InheritFrom(as.annotationStyleDefaults(defaults))
 		for _, a := range as.Annotations {
 			style := a.Style.InheritFrom(seriesStyle)
@@ -71,7 +71,7 @@ func (as AnnotationSeries) Measure(r Renderer, canvasBox Box, xrange, yrange Ran
 
 // Render draws the series.
 func (as AnnotationSeries) Render(r Renderer, canvasBox Box, xrange, yrange Range, defaults Style) {
-	if as.Style.IsZero() || as.Style.Show {
+	if !as.Style.Hidden {
 		seriesStyle := as.Style.InheritFrom(as.annotationStyleDefaults(defaults))
 		for _, a := range as.Annotations {
 			style := a.Style.InheritFrom(seriesStyle)

@@ -27,7 +27,7 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 		},
 		Series: []chart.Series{
 			chart.ContinuousSeries{
-				XValues: seq.Range(1.0, 100.0),
+				XValues: SeqRange(1.0, 100.0),
 				YValues: seq.RandomValuesWithMax(100, 512),
 			},
 		},
@@ -50,7 +50,7 @@ func drawChartDefault(res http.ResponseWriter, req *http.Request) {
 		},
 		Series: []chart.Series{
 			chart.ContinuousSeries{
-				XValues: seq.Range(1.0, 100.0),
+				XValues: SeqRange(1.0, 100.0),
 				YValues: seq.RandomValuesWithMax(100, 512),
 			},
 		},

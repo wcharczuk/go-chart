@@ -62,6 +62,9 @@ func (r *ContinuousRange) SetDomain(domain int) {
 
 // String returns a simple string for the ContinuousRange.
 func (r ContinuousRange) String() string {
+	if r.GetDelta() == 0 {
+		return "ContinuousRange [empty]"
+	}
 	return fmt.Sprintf("ContinuousRange [%.2f,%.2f] => %d", r.Min, r.Max, r.Domain)
 }
 

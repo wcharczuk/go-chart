@@ -108,7 +108,7 @@ func (xa XAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 		bottom = MaxInt(bottom, ty)
 	}
 
-	if xa.NameStyle.Show && len(xa.Name) > 0 {
+	if !xa.NameStyle.Hidden && len(xa.Name) > 0 {
 		tb := Draw.MeasureText(r, xa.Name, xa.NameStyle.InheritFrom(defaults))
 		bottom += DefaultXAxisMargin + tb.Height()
 	}
@@ -180,16 +180,16 @@ func (xa XAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 	}
 
 	nameStyle := xa.NameStyle.InheritFrom(defaults)
-	if xa.NameStyle.Show && len(xa.Name) > 0 {
+	if !xa.NameStyle.Hidden && len(xa.Name) > 0 {
 		tb := Draw.MeasureText(r, xa.Name, nameStyle)
 		tx := canvasBox.Right - (canvasBox.Width()>>1 + tb.Width()>>1)
 		ty := canvasBox.Bottom + DefaultXAxisMargin + maxTextHeight + DefaultXAxisMargin + tb.Height()
 		Draw.Text(r, xa.Name, tx, ty, nameStyle)
 	}
 
-	if xa.GridMajorStyle.Show || xa.GridMinorStyle.Show {
+	if !xa.GridMajorStyle.Hidden || !xa.GridMinorStyle.Hidden {
 		for _, gl := range xa.GetGridLines(ticks) {
-			if (gl.IsMinor && xa.GridMinorStyle.Show) || (!gl.IsMinor && xa.GridMajorStyle.Show) {
+			if (gl.IsMinor && !xa.GridMinorStyle.Hidden) || (!gl.IsMinor && !xa.GridMajorStyle.Hidden) {
 				defaults := xa.GridMajorStyle
 				if gl.IsMinor {
 					defaults = xa.GridMinorStyle

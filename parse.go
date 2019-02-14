@@ -2,6 +2,7 @@ package chart
 
 import (
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/blend/go-sdk/exception"
@@ -12,8 +13,13 @@ func ParseFloats(values ...string) ([]float64, error) {
 	var output []float64
 	var parsedValue float64
 	var err error
+	var cleaned string
 	for _, value := range values {
-		if parsedValue, err = strconv.ParseFloat(value, 64); err != nil {
+		cleaned = strings.TrimSpace(strings.Replace(value, ",", "", -1))
+		if cleaned == "" {
+			continue
+		}
+		if parsedValue, err = strconv.ParseFloat(cleaned, 64); err != nil {
 			return nil, exception.New(err)
 		}
 		output = append(output, parsedValue)
