@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"math"
 	"strings"
-
-	util "github.com/wcharczuk/go-chart/util"
 )
 
 // TicksProvider is a type that provides ticks.
@@ -85,15 +83,15 @@ func GenerateContinuousTicks(r Renderer, ra Range, isVertical bool, style Style,
 	rangeDelta := math.Abs(max - min)
 	tickStep := rangeDelta / float64(intermediateTickCount)
 
-	roundTo := util.Math.GetRoundToForDelta(rangeDelta) / 10
-	intermediateTickCount = util.Math.MinInt(intermediateTickCount, DefaultTickCountSanityCheck)
+	roundTo := GetRoundToForDelta(rangeDelta) / 10
+	intermediateTickCount = MinInt(intermediateTickCount, DefaultTickCountSanityCheck)
 
 	for x := 1; x < intermediateTickCount; x++ {
 		var tickValue float64
 		if ra.IsDescending() {
-			tickValue = max - util.Math.RoundUp(tickStep*float64(x), roundTo)
+			tickValue = max - RoundUp(tickStep*float64(x), roundTo)
 		} else {
-			tickValue = min + util.Math.RoundUp(tickStep*float64(x), roundTo)
+			tickValue = min + RoundUp(tickStep*float64(x), roundTo)
 		}
 		ticks = append(ticks, Tick{
 			Value: tickValue,

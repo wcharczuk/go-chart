@@ -2,9 +2,6 @@ package chart
 
 import (
 	"fmt"
-
-	"github.com/wcharczuk/go-chart/seq"
-	util "github.com/wcharczuk/go-chart/util"
 )
 
 // Interface Assertions.
@@ -62,7 +59,7 @@ func (lrs LinearRegressionSeries) GetYAxis() YAxisType {
 
 // Len returns the number of elements in the series.
 func (lrs LinearRegressionSeries) Len() int {
-	return util.Math.MinInt(lrs.GetLimit(), lrs.InnerSeries.Len()-lrs.GetOffset())
+	return MinInt(lrs.GetLimit(), lrs.InnerSeries.Len()-lrs.GetOffset())
 }
 
 // GetLimit returns the window size.
@@ -77,7 +74,7 @@ func (lrs LinearRegressionSeries) GetLimit() int {
 func (lrs LinearRegressionSeries) GetEndIndex() int {
 	windowEnd := lrs.GetOffset() + lrs.GetLimit()
 	innerSeriesLastIndex := lrs.InnerSeries.Len() - 1
-	return util.Math.MinInt(windowEnd, innerSeriesLastIndex)
+	return MinInt(windowEnd, innerSeriesLastIndex)
 }
 
 // GetOffset returns the data offset.
@@ -97,7 +94,7 @@ func (lrs *LinearRegressionSeries) GetValues(index int) (x, y float64) {
 		lrs.computeCoefficients()
 	}
 	offset := lrs.GetOffset()
-	effectiveIndex := util.Math.MinInt(index+offset, lrs.InnerSeries.Len())
+	effectiveIndex := MinInt(index+offset, lrs.InnerSeries.Len())
 	x, y = lrs.InnerSeries.GetValues(effectiveIndex)
 	y = (lrs.m * lrs.normalize(x)) + lrs.b
 	return
@@ -164,14 +161,14 @@ func (lrs *LinearRegressionSeries) computeCoefficients() {
 
 	p := float64(endIndex - startIndex)
 
-	xvalues := seq.NewBufferWithCapacity(lrs.Len())
+	xvalues := NewValueBufferWithCapacity(lrs.Len())
 	for index := startIndex; index < endIndex; index++ {
 		x, _ := lrs.InnerSeries.GetValues(index)
 		xvalues.Enqueue(x)
 	}
 
-	lrs.avgx = seq.Seq{Provider: xvalues}.Average()
-	lrs.stddevx = seq.Seq{Provider: xvalues}.StdDev()
+	lrs.avgx = Seq{xvalues}.Average()
+	lrs.stddevx = Seq{xvalues}.StdDev()
 
 	var sumx, sumy, sumxx, sumxy float64
 	for index := startIndex; index < endIndex; index++ {

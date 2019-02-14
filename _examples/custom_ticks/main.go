@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 
-	"github.com/wcharczuk/go-chart"
+	chart "github.com/wcharczuk/go-chart"
 )
 
 func drawChart(res http.ResponseWriter, req *http.Request) {
@@ -20,12 +20,12 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 				Max: 4.0,
 			},
 			Ticks: []chart.Tick{
-				{0.0, "0.00"},
-				{2.0, "2.00"},
-				{4.0, "4.00"},
-				{6.0, "6.00"},
-				{8.0, "Eight"},
-				{10.0, "Ten"},
+				{Value: 0.0, Label: "0.00"},
+				{Value: 2.0, Label: "2.00"},
+				{Value: 4.0, Label: "4.00"},
+				{Value: 6.0, Label: "6.00"},
+				{Value: 8.0, Label: "Eight"},
+				{Value: 10.0, Label: "Ten"},
 			},
 		},
 		Series: []chart.Series{

@@ -6,7 +6,6 @@ import (
 
 	"github.com/golang/freetype/truetype"
 	"github.com/wcharczuk/go-chart/drawing"
-	"github.com/wcharczuk/go-chart/util"
 )
 
 const (
@@ -164,6 +163,7 @@ func (s Style) String() string {
 	return "{" + strings.Join(output, ", ") + "}"
 }
 
+// GetClassName returns the class name or a default.
 func (s Style) GetClassName(defaults ...string) string {
 	if s.ClassName == "" {
 		if len(defaults) > 0 {
@@ -351,7 +351,7 @@ func (s Style) WriteToRenderer(r Renderer) {
 
 	r.ClearTextRotation()
 	if s.GetTextRotationDegrees() != 0 {
-		r.SetTextRotation(util.Math.DegreesToRadians(s.GetTextRotationDegrees()))
+		r.SetTextRotation(DegreesToRadians(s.GetTextRotationDegrees()))
 	}
 }
 

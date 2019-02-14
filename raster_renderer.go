@@ -8,7 +8,6 @@ import (
 
 	"github.com/golang/freetype/truetype"
 	"github.com/wcharczuk/go-chart/drawing"
-	"github.com/wcharczuk/go-chart/util"
 )
 
 // PNG returns a new png/raster renderer.
@@ -50,8 +49,7 @@ func (rr *rasterRenderer) SetDPI(dpi float64) {
 }
 
 // SetClassName implements the interface method. However, PNGs have no classes.
-func (vr *rasterRenderer) SetClassName(_ string) {
-}
+func (rr *rasterRenderer) SetClassName(_ string) {}
 
 // SetStrokeColor implements the interface method.
 func (rr *rasterRenderer) SetStrokeColor(c drawing.Color) {
@@ -196,7 +194,7 @@ func (rr *rasterRenderer) MeasureText(body string) Box {
 		return textBox
 	}
 
-	return textBox.Corners().Rotate(util.Math.RadiansToDegrees(*rr.rotateRadians)).Box()
+	return textBox.Corners().Rotate(RadiansToDegrees(*rr.rotateRadians)).Box()
 }
 
 // SetTextRotation sets a text rotation.

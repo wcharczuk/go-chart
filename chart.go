@@ -7,7 +7,6 @@ import (
 	"math"
 
 	"github.com/golang/freetype/truetype"
-	util "github.com/wcharczuk/go-chart/util"
 )
 
 // Chart is what we're drawing.
@@ -266,8 +265,8 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 		// only round if we're showing the axis
 		if c.YAxis.Style.Show {
 			delta := yrange.GetDelta()
-			roundTo := util.Math.GetRoundToForDelta(delta)
-			rmin, rmax := util.Math.RoundDown(yrange.GetMin(), roundTo), util.Math.RoundUp(yrange.GetMax(), roundTo)
+			roundTo := GetRoundToForDelta(delta)
+			rmin, rmax := RoundDown(yrange.GetMin(), roundTo), RoundUp(yrange.GetMax(), roundTo)
 
 			yrange.SetMin(rmin)
 			yrange.SetMax(rmax)
@@ -288,8 +287,8 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 
 		if c.YAxisSecondary.Style.Show {
 			delta := yrangeAlt.GetDelta()
-			roundTo := util.Math.GetRoundToForDelta(delta)
-			rmin, rmax := util.Math.RoundDown(yrangeAlt.GetMin(), roundTo), util.Math.RoundUp(yrangeAlt.GetMax(), roundTo)
+			roundTo := GetRoundToForDelta(delta)
+			rmin, rmax := RoundDown(yrangeAlt.GetMin(), roundTo), RoundUp(yrangeAlt.GetMax(), roundTo)
 			yrangeAlt.SetMin(rmin)
 			yrangeAlt.SetMax(rmax)
 		}

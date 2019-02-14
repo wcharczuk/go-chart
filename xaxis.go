@@ -2,8 +2,6 @@ package chart
 
 import (
 	"math"
-
-	util "github.com/wcharczuk/go-chart/util"
 )
 
 // XAxis represents the horizontal axis.
@@ -105,9 +103,9 @@ func (xa XAxis) Measure(r Renderer, canvasBox Box, ra Range, defaults Style, tic
 			break
 		}
 
-		left = util.Math.MinInt(left, ltx)
-		right = util.Math.MaxInt(right, rtx)
-		bottom = util.Math.MaxInt(bottom, ty)
+		left = MinInt(left, ltx)
+		right = MaxInt(right, rtx)
+		bottom = MaxInt(bottom, ty)
 	}
 
 	if xa.NameStyle.Show && len(xa.Name) > 0 {
@@ -159,7 +157,7 @@ func (xa XAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 				ty = canvasBox.Bottom + (2 * DefaultXAxisMargin)
 			}
 			Draw.Text(r, t.Label, tx, ty, tickWithAxisStyle)
-			maxTextHeight = util.Math.MaxInt(maxTextHeight, tb.Height())
+			maxTextHeight = MaxInt(maxTextHeight, tb.Height())
 			break
 		case TickPositionBetweenTicks:
 			if index > 0 {
@@ -175,7 +173,7 @@ func (xa XAxis) Render(r Renderer, canvasBox Box, ra Range, defaults Style, tick
 				}, finalTickStyle)
 
 				ftb := Text.MeasureLines(r, Text.WrapFit(r, t.Label, tx-ltx, finalTickStyle), finalTickStyle)
-				maxTextHeight = util.Math.MaxInt(maxTextHeight, ftb.Height())
+				maxTextHeight = MaxInt(maxTextHeight, ftb.Height())
 			}
 			break
 		}

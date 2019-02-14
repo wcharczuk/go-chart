@@ -8,11 +8,9 @@ import (
 	"testing"
 	"time"
 
-
 	"github.com/blend/go-sdk/assert"
 
 	"github.com/wcharczuk/go-chart/drawing"
-	"github.com/wcharczuk/go-chart/seq"
 )
 
 func TestChartGetDPI(t *testing.T) {
@@ -388,8 +386,8 @@ func TestChartRegressionBadRangesByUser(t *testing.T) {
 		},
 		Series: []Series{
 			ContinuousSeries{
-				XValues: seq.Range(1.0, 10.0),
-				YValues: seq.Range(1.0, 10.0),
+				XValues: SeqRange(1.0, 10.0),
+				YValues: SeqRange(1.0, 10.0),
 			},
 		},
 	}
@@ -404,8 +402,8 @@ func TestChartValidatesSeries(t *testing.T) {
 	c := Chart{
 		Series: []Series{
 			ContinuousSeries{
-				XValues: seq.Range(1.0, 10.0),
-				YValues: seq.Range(1.0, 10.0),
+				XValues: SeqRange(1.0, 10.0),
+				YValues: SeqRange(1.0, 10.0),
 			},
 		},
 	}
@@ -415,7 +413,7 @@ func TestChartValidatesSeries(t *testing.T) {
 	c = Chart{
 		Series: []Series{
 			ContinuousSeries{
-				XValues: seq.Range(1.0, 10.0),
+				XValues: SeqRange(1.0, 10.0),
 			},
 		},
 	}

@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 
-	"github.com/wcharczuk/go-chart"
+	chart "github.com/wcharczuk/go-chart"
 	"github.com/wcharczuk/go-chart/drawing"
 	"github.com/wcharczuk/go-chart/seq"
 )

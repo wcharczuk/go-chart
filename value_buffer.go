@@ -1,10 +1,8 @@
-package seq
+package chart
 
 import (
 	"fmt"
 	"strings"
-
-	util "github.com/wcharczuk/go-chart/util"
 )
 
 const (
@@ -14,19 +12,15 @@ const (
 	bufferDefaultCapacity = 4
 )
 
-var (
-	emptyArray = make([]float64, 0)
-)
-
-// NewBuffer creates a new value buffer with an optional set of values.
-func NewBuffer(values ...float64) *Buffer {
+// NewValueBuffer creates a new value buffer with an optional set of values.
+func NewValueBuffer(values ...float64) *ValueBuffer {
 	var tail int
-	array := make([]float64, util.Math.MaxInt(len(values), bufferDefaultCapacity))
+	array := make([]float64, MaxInt(len(values), bufferDefaultCapacity))
 	if len(values) > 0 {
 		copy(array, values)
 		tail = len(values)
 	}
-	return &Buffer{
+	return &ValueBuffer{
 		array: array,
 		head:  0,
 		tail:  tail,
@@ -34,9 +28,9 @@ func NewBuffer(values ...float64) *Buffer {
 	}
 }
 
-// NewBufferWithCapacity creates a new ValueBuffer pre-allocated with the given capacity.
-func NewBufferWithCapacity(capacity int) *Buffer {
-	return &Buffer{
+// NewValueBufferWithCapacity creates a new ValueBuffer pre-allocated with the given capacity.
+func NewValueBufferWithCapacity(capacity int) *ValueBuffer {
+	return &ValueBuffer{
 		array: make([]float64, capacity),
 		head:  0,
 		tail:  0,
@@ -44,11 +38,11 @@ func NewBufferWithCapacity(capacity int) *Buffer {
 	}
 }
 
-// Buffer is a fifo datastructure that is backed by a pre-allocated array.
+// ValueBuffer is a fifo datastructure that is backed by a pre-allocated array.
 // Instead of allocating a whole new node object for each element, array elements are re-used (which saves GC churn).
 // Enqueue can be O(n), Dequeue is generally O(1).
 // Buffer implements `seq.Provider`
-type Buffer struct {
+type ValueBuffer struct {
 	array []float64
 	head  int
 	tail  int
@@ -57,23 +51,23 @@ type Buffer struct {
 
 // Len returns the length of the Buffer (as it is currently populated).
 // Actual memory footprint may be different.
-func (b *Buffer) Len() int {
+func (b *ValueBuffer) Len() int {
 	return b.size
 }
 
 // GetValue implements seq provider.
-func (b *Buffer) GetValue(index int) float64 {
+func (b *ValueBuffer) GetValue(index int) float64 {
 	effectiveIndex := (b.head + index) % len(b.array)
 	return b.array[effectiveIndex]
 }
 
 // Capacity returns the total size of the Buffer, including empty elements.
-func (b *Buffer) Capacity() int {
+func (b *ValueBuffer) Capacity() int {
 	return len(b.array)
 }
 
 // SetCapacity sets the capacity of the Buffer.
-func (b *Buffer) SetCapacity(capacity int) {
+func (b *ValueBuffer) SetCapacity(capacity int) {
 	newArray := make([]float64, capacity)
 	if b.size > 0 {
 		if b.head < b.tail {
@@ -93,7 +87,7 @@ func (b *Buffer) SetCapacity(capacity int) {
 }
 
 // Clear removes all objects from the Buffer.
-func (b *Buffer) Clear() {
+func (b *ValueBuffer) Clear() {
 	b.array = make([]float64, bufferDefaultCapacity)
 	b.head = 0
 	b.tail = 0
@@ -101,7 +95,7 @@ func (b *Buffer) Clear() {
 }
 
 // Enqueue adds an element to the "back" of the Buffer.
-func (b *Buffer) Enqueue(value float64) {
+func (b *ValueBuffer) Enqueue(value float64) {
 	if b.size == len(b.array) {
 		newCapacity := int(len(b.array) * int(bufferGrowFactor/100))
 		if newCapacity < (len(b.array) + bufferMinimumGrow) {
@@ -116,7 +110,7 @@ func (b *Buffer) Enqueue(value float64) {
 }
 
 // Dequeue removes the first element from the RingBuffer.
-func (b *Buffer) Dequeue() float64 {
+func (b *ValueBuffer) Dequeue() float64 {
 	if b.size == 0 {
 		return 0
 	}
@@ -128,7 +122,7 @@ func (b *Buffer) Dequeue() float64 {
 }
 
 // Peek returns but does not remove the first element.
-func (b *Buffer) Peek() float64 {
+func (b *ValueBuffer) Peek() float64 {
 	if b.size == 0 {
 		return 0
 	}
@@ -136,7 +130,7 @@ func (b *Buffer) Peek() float64 {
 }
 
 // PeekBack returns but does not remove the last element.
-func (b *Buffer) PeekBack() float64 {
+func (b *ValueBuffer) PeekBack() float64 {
 	if b.size == 0 {
 		return 0
 	}
@@ -147,7 +141,7 @@ func (b *Buffer) PeekBack() float64 {
 }
 
 // TrimExcess resizes the capacity of the buffer to better fit the contents.
-func (b *Buffer) TrimExcess() {
+func (b *ValueBuffer) TrimExcess() {
 	threshold := float64(len(b.array)) * 0.9
 	if b.size < int(threshold) {
 		b.SetCapacity(b.size)
@@ -155,7 +149,7 @@ func (b *Buffer) TrimExcess() {
 }
 
 // Array returns the ring buffer, in order, as an array.
-func (b *Buffer) Array() Array {
+func (b *ValueBuffer) Array() SeqArray {
 	newArray := make([]float64, b.size)
 
 	if b.size == 0 {
@@ -169,11 +163,11 @@ func (b *Buffer) Array() Array {
 		arrayCopy(b.array, 0, newArray, len(b.array)-b.head, b.tail)
 	}
 
-	return Array(newArray)
+	return SeqArray(newArray)
 }
 
 // Each calls the consumer for each element in the buffer.
-func (b *Buffer) Each(mapfn func(int, float64)) {
+func (b *ValueBuffer) Each(mapfn func(int, float64)) {
 	if b.size == 0 {
 		return
 	}
@@ -197,7 +191,7 @@ func (b *Buffer) Each(mapfn func(int, float64)) {
 }
 
 // String returns a string representation for value buffers.
-func (b *Buffer) String() string {
+func (b *ValueBuffer) String() string {
 	var values []string
 	for _, elem := range b.Array() {
 		values = append(values, fmt.Sprintf("%v", elem))

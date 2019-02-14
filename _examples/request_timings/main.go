@@ -7,8 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/wcharczuk/go-chart"
-	util "github.com/wcharczuk/go-chart/util"
+	chart "github.com/wcharczuk/go-chart"
 )
 
 func parseInt(str string) int {
@@ -24,7 +23,7 @@ func parseFloat64(str string) float64 {
 func readData() ([]time.Time, []float64) {
 	var xvalues []time.Time
 	var yvalues []float64
-	err := util.File.ReadByLines("requests.csv", func(line string) error {
+	err := chart.ReadLines("requests.csv", func(line string) error {
 		parts := strings.Split(line, ",")
 		year := parseInt(parts[0])
 		month := parseInt(parts[1])
@@ -43,12 +42,12 @@ func readData() ([]time.Time, []float64) {
 
 func releases() []chart.GridLine {
 	return []chart.GridLine{
-		{Value: util.Time.ToFloat64(time.Date(2016, 8, 1, 9, 30, 0, 0, time.UTC))},
-		{Value: util.Time.ToFloat64(time.Date(2016, 8, 2, 9, 30, 0, 0, time.UTC))},
-		{Value: util.Time.ToFloat64(time.Date(2016, 8, 2, 15, 30, 0, 0, time.UTC))},
-		{Value: util.Time.ToFloat64(time.Date(2016, 8, 4, 9, 30, 0, 0, time.UTC))},
-		{Value: util.Time.ToFloat64(time.Date(2016, 8, 5, 9, 30, 0, 0, time.UTC))},
-		{Value: util.Time.ToFloat64(time.Date(2016, 8, 6, 9, 30, 0, 0, time.UTC))},
+		{Value: chart.TimeToFloat64(time.Date(2016, 8, 1, 9, 30, 0, 0, time.UTC))},
+		{Value: chart.TimeToFloat64(time.Date(2016, 8, 2, 9, 30, 0, 0, time.UTC))},
+		{Value: chart.TimeToFloat64(time.Date(2016, 8, 2, 15, 30, 0, 0, time.UTC))},
+		{Value: chart.TimeToFloat64(time.Date(2016, 8, 4, 9, 30, 0, 0, time.UTC))},
+		{Value: chart.TimeToFloat64(time.Date(2016, 8, 5, 9, 30, 0, 0, time.UTC))},
+		{Value: chart.TimeToFloat64(time.Date(2016, 8, 6, 9, 30, 0, 0, time.UTC))},
 	}
 }
 

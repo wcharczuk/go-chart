@@ -2,8 +2,6 @@ package chart
 
 import (
 	"fmt"
-
-	util "github.com/wcharczuk/go-chart/util"
 )
 
 const (
@@ -96,7 +94,7 @@ func (sma SMASeries) GetLastValues() (x, y float64) {
 
 func (sma SMASeries) getAverage(index int) float64 {
 	period := sma.GetPeriod()
-	floor := util.Math.MaxInt(0, index-period)
+	floor := MaxInt(0, index-period)
 	var accum float64
 	var count float64
 	for x := index; x >= floor; x-- {

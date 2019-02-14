@@ -6,8 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/wcharczuk/go-chart/util"
-
 	chart "github.com/wcharczuk/go-chart"
 )
 
@@ -18,7 +16,7 @@ var ts *chart.TimeSeries
 func addData(t time.Time, e time.Duration) {
 	lock.Lock()
 	ts.XValues = append(ts.XValues, t)
-	ts.YValues = append(ts.YValues, util.Time.Millis(e))
+	ts.YValues = append(ts.YValues, chart.TimeMillis(e))
 	lock.Unlock()
 }
 

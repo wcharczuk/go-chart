@@ -1,4 +1,4 @@
-package seq
+package chart
 
 import (
 	"testing"
@@ -6,10 +6,10 @@ import (
 	"github.com/blend/go-sdk/assert"
 )
 
-func TestBuffer(t *testing.T) {
+func TestRingBuffer(t *testing.T) {
 	assert := assert.New(t)
 
-	buffer := NewBuffer()
+	buffer := NewRingBuffer()
 
 	buffer.Enqueue(1)
 	assert.Equal(1, buffer.Len())
@@ -96,14 +96,14 @@ func TestBuffer(t *testing.T) {
 	value = buffer.Dequeue()
 	assert.Equal(8, value)
 	assert.Equal(0, buffer.Len())
-	assert.Zero(buffer.Peek())
-	assert.Zero(buffer.PeekBack())
+	assert.Nil(buffer.Peek())
+	assert.Nil(buffer.PeekBack())
 }
 
-func TestBufferClear(t *testing.T) {
+func TestRingBufferClear(t *testing.T) {
 	assert := assert.New(t)
 
-	buffer := NewBuffer()
+	buffer := NewRingBuffer()
 	buffer.Enqueue(1)
 	buffer.Enqueue(1)
 	buffer.Enqueue(1)
@@ -117,21 +117,21 @@ func TestBufferClear(t *testing.T) {
 
 	buffer.Clear()
 	assert.Equal(0, buffer.Len())
-	assert.Zero(buffer.Peek())
-	assert.Zero(buffer.PeekBack())
+	assert.Nil(buffer.Peek())
+	assert.Nil(buffer.PeekBack())
 }
 
-func TestBufferArray(t *testing.T) {
+func TestRingBufferContents(t *testing.T) {
 	assert := assert.New(t)
 
-	buffer := NewBuffer()
+	buffer := NewRingBuffer()
 	buffer.Enqueue(1)
 	buffer.Enqueue(2)
 	buffer.Enqueue(3)
 	buffer.Enqueue(4)
 	buffer.Enqueue(5)
 
-	contents := buffer.Array()
+	contents := buffer.Contents()
 	assert.Len(contents, 5)
 	assert.Equal(1, contents[0])
 	assert.Equal(2, contents[1])
@@ -140,53 +140,145 @@ func TestBufferArray(t *testing.T) {
 	assert.Equal(5, contents[4])
 }
 
-func TestBufferEach(t *testing.T) {
+func TestRingBufferDrain(t *testing.T) {
 	assert := assert.New(t)
 
-	buffer := NewBuffer()
+	buffer := NewRingBuffer()
+	buffer.Enqueue(1)
+	buffer.Enqueue(2)
+	buffer.Enqueue(3)
+	buffer.Enqueue(4)
+	buffer.Enqueue(5)
+
+	contents := buffer.Drain()
+	assert.Len(contents, 5)
+	assert.Equal(1, contents[0])
+	assert.Equal(2, contents[1])
+	assert.Equal(3, contents[2])
+	assert.Equal(4, contents[3])
+	assert.Equal(5, contents[4])
+
+	assert.Equal(0, buffer.Len())
+	assert.Nil(buffer.Peek())
+	assert.Nil(buffer.PeekBack())
+}
+
+func TestRingBufferEach(t *testing.T) {
+	assert := assert.New(t)
+
+	buffer := NewRingBuffer()
 
 	for x := 1; x < 17; x++ {
-		buffer.Enqueue(float64(x))
+		buffer.Enqueue(x)
 	}
 
 	called := 0
-	buffer.Each(func(_ int, v float64) {
-		if v == float64(called+1) {
-			called++
+	buffer.Each(func(v interface{}) {
+		if typed, isTyped := v.(int); isTyped {
+			if typed == (called + 1) {
+				called++
+			}
 		}
 	})
 
 	assert.Equal(16, called)
 }
 
-func TestNewBuffer(t *testing.T) {
+func TestRingBufferEachUntil(t *testing.T) {
 	assert := assert.New(t)
 
-	empty := NewBuffer()
-	assert.NotNil(empty)
-	assert.Zero(empty.Len())
-	assert.Equal(bufferDefaultCapacity, empty.Capacity())
-	assert.Zero(empty.Peek())
-	assert.Zero(empty.PeekBack())
-}
+	buffer := NewRingBuffer()
 
-func TestNewBufferWithValues(t *testing.T) {
-	assert := assert.New(t)
-
-	values := NewBuffer(1, 2, 3, 4, 5)
-	assert.NotNil(values)
-	assert.Equal(5, values.Len())
-	assert.Equal(1, values.Peek())
-	assert.Equal(5, values.PeekBack())
-}
-
-func TestBufferGrowth(t *testing.T) {
-	assert := assert.New(t)
-
-	values := NewBuffer(1, 2, 3, 4, 5)
-	for i := 0; i < 1<<10; i++ {
-		values.Enqueue(float64(i))
+	for x := 1; x < 17; x++ {
+		buffer.Enqueue(x)
 	}
 
-	assert.Equal(1<<10-1, values.PeekBack())
+	called := 0
+	buffer.EachUntil(func(v interface{}) bool {
+		if typed, isTyped := v.(int); isTyped {
+			if typed > 10 {
+				return false
+			}
+			if typed == (called + 1) {
+				called++
+			}
+		}
+		return true
+	})
+
+	assert.Equal(10, called)
+}
+
+func TestRingBufferReverseEachUntil(t *testing.T) {
+	assert := assert.New(t)
+
+	buffer := NewRingBufferWithCapacity(32)
+
+	for x := 1; x < 17; x++ {
+		buffer.Enqueue(x)
+	}
+
+	var values []int
+	buffer.ReverseEachUntil(func(v interface{}) bool {
+		if typed, isTyped := v.(int); isTyped {
+			if typed < 10 {
+				return false
+			}
+			values = append(values, typed)
+			return true
+		}
+		panic("value is not an integer")
+	})
+
+	assert.Len(values, 7)
+	assert.Equal(16, values[0])
+	assert.Equal(10, values[6])
+}
+
+func TestRingBufferReverseEachUntilUndersized(t *testing.T) {
+	assert := assert.New(t)
+
+	buffer := NewRingBuffer()
+
+	for x := 1; x < 17; x++ {
+		buffer.Enqueue(x)
+	}
+
+	var values []int
+	buffer.ReverseEachUntil(func(v interface{}) bool {
+		if typed, isTyped := v.(int); isTyped {
+			if typed < 10 {
+				return false
+			}
+			values = append(values, typed)
+			return true
+		}
+		panic("value is not an integer")
+	})
+
+	assert.Len(values, 7)
+	assert.Equal(16, values[0])
+	assert.Equal(10, values[6])
+}
+
+func TestRingBufferConsume(t *testing.T) {
+	assert := assert.New(t)
+
+	buffer := NewRingBuffer()
+
+	for x := 1; x < 17; x++ {
+		buffer.Enqueue(x)
+	}
+
+	assert.Equal(16, buffer.Len())
+
+	var called int
+	buffer.Consume(func(v interface{}) {
+		if _, isTyped := v.(int); isTyped {
+			called++
+		}
+	})
+
+	assert.Equal(16, called)
+	assert.Zero(buffer.Len())
 }

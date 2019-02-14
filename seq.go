@@ -1,33 +1,25 @@
-package seq
+package chart
 
 import (
 	"math"
 	"sort"
+	"time"
+
+	"github.com/blend/go-sdk/timeutil"
 )
 
-// New wraps a provider with a seq.
-func New(provider Provider) Seq {
-	return Seq{Provider: provider}
-}
-
-// Values returns a new seq composed of a given set of values.
-func Values(values ...float64) Seq {
-	return Seq{Provider: Array(values)}
-}
-
-// Provider is a provider for values for a seq.
-type Provider interface {
-	Len() int
-	GetValue(int) float64
+// NewSeq wraps a provider with a seq.
+func NewSeq(provider SeqProvider) Seq {
+	return Seq{SeqProvider: provider}
 }
 
 // Seq is a utility wrapper for seq providers.
 type Seq struct {
-	Provider
+	SeqProvider
 }
 
-// Array enumerates the seq into a slice.
-func (s Seq) Array() (output []float64) {
+// Values enumerates the seq into a slice.
+func (s Seq) Values() (output []float64) {
 	if s.Len() == 0 {
 		return
 	}
@@ -53,7 +45,7 @@ func (s Seq) Map(mapfn func(i int, v float64) float64) Seq {
 	for i := 0; i < s.Len(); i++ {
 		mapfn(i, s.GetValue(i))
 	}
-	return Seq{Array(output)}
+	return Seq{SeqArray(output)}
 }
 
 // FoldLeft collapses a seq from left to right.
@@ -148,9 +140,9 @@ func (s Seq) Sort() Seq {
 	if s.Len() == 0 {
 		return s
 	}
-	values := s.Array()
+	values := s.Values()
 	sort.Float64s(values)
-	return Seq{Provider: Array(values)}
+	return Seq{SeqArray(values)}
 }
 
 // Median returns the median or middle value in the sorted seq.
@@ -255,5 +247,160 @@ func (s Seq) Normalize() Seq {
 		output[i] = (s.GetValue(i) - min) / delta
 	}
 
-	return Seq{Provider: Array(output)}
+	return Seq{SeqProvider: SeqArray(output)}
+}
+
+// SeqProvider is a provider for values for a seq.
+type SeqProvider interface {
+	Len() int
+	GetValue(int) float64
+}
+
+// SeqArray is a wrapper for an array of floats that implements `ValuesProvider`.
+type SeqArray []float64
+
+// Len returns the value provider length.
+func (a SeqArray) Len() int {
+	return len(a)
+}
+
+// GetValue returns the value at a given index.
+func (a SeqArray) GetValue(index int) float64 {
+	return a[index]
+}
+
+// SeqDays generates a seq of timestamps by day, from -days to today.
+func SeqDays(days int) []time.Time {
+	var values []time.Time
+	for day := days; day >= 0; day-- {
+		values = append(values, time.Now().AddDate(0, 0, -day))
+	}
+	return values
+}
+
+// SeqHours returns a sequence of times by the hour for a given number of hours
+// after a given start.
+func SeqHours(start time.Time, totalHours int) []time.Time {
+	times := make([]time.Time, totalHours)
+
+	last := start
+	for i := 0; i < totalHours; i++ {
+		times[i] = last
+		last = last.Add(time.Hour)
+	}
+
+	return times
+}
+
+// SeqHoursFilled adds zero values for the data bounded by the start and end of the xdata array.
+func SeqHoursFilled(xdata []time.Time, ydata []float64) ([]time.Time, []float64) {
+	start, end := TimeMinMax(xdata...)
+	totalHours := DiffHours(start, end)
+
+	finalTimes := SeqHours(start, totalHours+1)
+	finalValues := make([]float64, totalHours+1)
+
+	var hoursFromStart int
+	for i, xd := range xdata {
+		hoursFromStart = DiffHours(start, xd)
+		finalValues[hoursFromStart] = ydata[i]
+	}
+
+	return finalTimes, finalValues
+}
+
+// Assert types implement interfaces.
+var (
+	_ SeqProvider = (*SeqTimes)(nil)
+)
+
+// SeqTimes are an array of times.
+// It wraps the array with methods that implement `seq.Provider`.
+type SeqTimes []time.Time
+
+// Array returns the times to an array.
+func (t SeqTimes) Array() []time.Time {
+	return []time.Time(t)
+}
+
+// Len returns the length of the array.
+func (t SeqTimes) Len() int {
+	return len(t)
+}
+
+// GetValue returns a value at an index as a time.
+func (t SeqTimes) GetValue(index int) float64 {
+	return timeutil.ToFloat64(t[index])
+}
+
+// SeqRange returns the array values of a linear seq with a given start, end and optional step.
+func SeqRange(start, end float64) []float64 {
+	return Seq{NewSeqLinear().WithStart(start).WithEnd(end).WithStep(1.0)}.Values()
+}
+
+// SeqRangeWithStep returns the array values of a linear seq with a given start, end and optional step.
+func SeqRangeWithStep(start, end, step float64) []float64 {
+	return Seq{NewSeqLinear().WithStart(start).WithEnd(end).WithStep(step)}.Values()
+}
+
+// NewSeqLinear returns a new linear generator.
+func NewSeqLinear() *SeqLinear {
+	return &SeqLinear{step: 1.0}
+}
+
+// SeqLinear is a stepwise generator.
+type SeqLinear struct {
+	start float64
+	end   float64
+	step  float64
+}
+
+// Start returns the start value.
+func (lg SeqLinear) Start() float64 {
+	return lg.start
+}
+
+// End returns the end value.
+func (lg SeqLinear) End() float64 {
+	return lg.end
+}
+
+// Step returns the step value.
+func (lg SeqLinear) Step() float64 {
+	return lg.step
+}
+
+// Len returns the number of elements in the seq.
+func (lg SeqLinear) Len() int {
+	if lg.start < lg.end {
+		return int((lg.end-lg.start)/lg.step) + 1
+	}
+	return int((lg.start-lg.end)/lg.step) + 1
+}
+
+// GetValue returns the value at a given index.
+func (lg SeqLinear) GetValue(index int) float64 {
+	fi := float64(index)
+	if lg.start < lg.end {
+		return lg.start + (fi * lg.step)
+	}
+	return lg.start - (fi * lg.step)
+}
+
+// WithStart sets the start and returns the linear generator.
+func (lg *SeqLinear) WithStart(start float64) *SeqLinear {
+	lg.start = start
+	return lg
+}
+
+// WithEnd sets the end and returns the linear generator.
+func (lg *SeqLinear) WithEnd(end float64) *SeqLinear {
+	lg.end = end
+	return lg
+}
+
+// WithStep sets the step and returns the linear generator.
+func (lg *SeqLinear) WithStep(step float64) *SeqLinear {
+	lg.step = step
+	return lg
 }

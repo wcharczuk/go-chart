@@ -11,7 +11,6 @@ import (
 
 	"github.com/golang/freetype/truetype"
 	"github.com/wcharczuk/go-chart/drawing"
-	"github.com/wcharczuk/go-chart/util"
 )
 
 // SVG returns a new png/raster renderer.
@@ -30,7 +29,7 @@ func SVG(width, height int) (Renderer, error) {
 
 // SVGWithCSS returns a new png/raster renderer with attached custom CSS
 // The optional nonce argument sets a CSP nonce.
-func SVGWithCSS(css string, nonce string) (func(width, height int)(Renderer, error)) {
+func SVGWithCSS(css string, nonce string) func(width, height int) (Renderer, error) {
 	return func(width, height int) (Renderer, error) {
 		buffer := bytes.NewBuffer([]byte{})
 		canvas := newCanvas(buffer)
@@ -114,8 +113,8 @@ func (vr *vectorRenderer) QuadCurveTo(cx, cy, x, y int) {
 }
 
 func (vr *vectorRenderer) ArcTo(cx, cy int, rx, ry, startAngle, delta float64) {
-	startAngle = util.Math.RadianAdd(startAngle, _pi2)
-	endAngle := util.Math.RadianAdd(startAngle, delta)
+	startAngle = RadianAdd(startAngle, _pi2)
+	endAngle := RadianAdd(startAngle, delta)
 
 	startx := cx + int(rx*math.Sin(startAngle))
 	starty := cy - int(ry*math.Cos(startAngle))
@@ -129,7 +128,7 @@ func (vr *vectorRenderer) ArcTo(cx, cy int, rx, ry, startAngle, delta float64) {
 	endx := cx + int(rx*math.Sin(endAngle))
 	endy := cy - int(ry*math.Cos(endAngle))
 
-	dd := util.Math.RadiansToDegrees(delta)
+	dd := RadiansToDegrees(delta)
 
 	largeArcFlag := 0
 	if delta > _pi {
@@ -206,7 +205,7 @@ func (vr *vectorRenderer) MeasureText(body string) (box Box) {
 		if vr.c.textTheta == nil {
 			return
 		}
-		box = box.Corners().Rotate(util.Math.RadiansToDegrees(*vr.c.textTheta)).Box()
+		box = box.Corners().Rotate(RadiansToDegrees(*vr.c.textTheta)).Box()
 	}
 	return
 }
@@ -272,7 +271,7 @@ func (c *canvas) Text(x, y int, body string, style Style) {
 	if c.textTheta == nil {
 		c.w.Write([]byte(fmt.Sprintf(`<text x="%d" y="%d" %s>%s</text>`, x, y, c.styleAsSVG(style), body)))
 	} else {
-		transform := fmt.Sprintf(` transform="rotate(%0.2f,%d,%d)"`, util.Math.RadiansToDegrees(*c.textTheta), x, y)
+		transform := fmt.Sprintf(` transform="rotate(%0.2f,%d,%d)"`, RadiansToDegrees(*c.textTheta), x, y)
 		c.w.Write([]byte(fmt.Sprintf(`<text x="%d" y="%d" %s%s>%s</text>`, x, y, c.styleAsSVG(style), transform, body)))
 	}
 }

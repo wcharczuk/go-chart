@@ -3,8 +3,6 @@ package chart
 import (
 	"fmt"
 	"time"
-
-	util "github.com/wcharczuk/go-chart/util"
 )
 
 // Interface Assertions.
@@ -43,21 +41,21 @@ func (ts TimeSeries) Len() int {
 
 // GetValues gets x, y values at a given index.
 func (ts TimeSeries) GetValues(index int) (x, y float64) {
-	x = util.Time.ToFloat64(ts.XValues[index])
+	x = TimeToFloat64(ts.XValues[index])
 	y = ts.YValues[index]
 	return
 }
 
 // GetFirstValues gets the first values.
 func (ts TimeSeries) GetFirstValues() (x, y float64) {
-	x = util.Time.ToFloat64(ts.XValues[0])
+	x = TimeToFloat64(ts.XValues[0])
 	y = ts.YValues[0]
 	return
 }
 
 // GetLastValues gets the last values.
 func (ts TimeSeries) GetLastValues() (x, y float64) {
-	x = util.Time.ToFloat64(ts.XValues[len(ts.XValues)-1])
+	x = TimeToFloat64(ts.XValues[len(ts.XValues)-1])
 	y = ts.YValues[len(ts.YValues)-1]
 	return
 }

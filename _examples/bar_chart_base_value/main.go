@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/wcharczuk/go-chart"
+	chart "github.com/wcharczuk/go-chart"
 	"github.com/wcharczuk/go-chart/drawing"
 )
 
@@ -43,15 +43,15 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 				Show: true,
 			},
 			Ticks: []chart.Tick{
-				{-4.0, "-4"},
-				{-2.0, "-2"},
-				{0, "0"},
-				{2.0, "2"},
-				{4.0, "4"},
-				{6.0, "6"},
-				{8.0, "8"},
-				{10.0, "10"},
-				{12.0, "12"},
+				{Value: -4.0, Label: "-4"},
+				{Value: -2.0, Label: "-2"},
+				{Value: 0, Label: "0"},
+				{Value: 2.0, Label: "2"},
+				{Value: 4.0, Label: "4"},
+				{Value: 6.0, Label: "6"},
+				{Value: 8.0, Label: "8"},
+				{Value: 10.0, Label: "10"},
+				{Value: 12.0, Label: "12"},
 			},
 		},
 		UseBaseValue: true,
