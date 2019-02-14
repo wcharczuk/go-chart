@@ -6,7 +6,7 @@ import (
 	"github.com/blend/go-sdk/assert"
 )
 
-func TestLastValueAnnotation(t *testing.T) {
+func TestLastValueAnnotationSeries(t *testing.T) {
 	assert := assert.New(t)
 
 	series := ContinuousSeries{
@@ -14,7 +14,7 @@ func TestLastValueAnnotation(t *testing.T) {
 		YValues: []float64{5.0, 3.0, 3.0, 2.0, 1.0},
 	}
 
-	lva := LastValueAnnotation(series)
+	lva := LastValueAnnotationSeries(series)
 	assert.NotEmpty(lva.Annotations)
 	lvaa := lva.Annotations[0]
 	assert.Equal(5, lvaa.XValue)

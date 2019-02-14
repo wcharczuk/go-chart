@@ -2,8 +2,8 @@ package chart
 
 import "fmt"
 
-// LastValueAnnotation returns an annotation series of just the last value of a value provider.
-func LastValueAnnotation(innerSeries ValuesProvider, vfs ...ValueFormatter) AnnotationSeries {
+// LastValueAnnotationSeries returns an annotation series of just the last value of a value provider.
+func LastValueAnnotationSeries(innerSeries ValuesProvider, vfs ...ValueFormatter) AnnotationSeries {
 	var vf ValueFormatter
 	if len(vfs) > 0 {
 		vf = vfs[0]

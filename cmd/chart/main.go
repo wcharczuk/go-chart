@@ -11,11 +11,16 @@ import (
 )
 
 var (
-	outputPath        = flag.String("output", "", "The output file")
-	inputFormat       = flag.String("format", "csv", "The input format, either 'csv' or 'tsv' (defaults to 'csv')")
-	inputPath         = flag.String("f", "", "The input file")
-	disableLinreg     = flag.Bool("disable-linreg", false, "If we should omit linear regressions")
-	disableLastValues = flag.Bool("disable-last-values", false, "If we should omit last values")
+	outputPath = flag.String("output", "", "The output file")
+
+	inputFormat = flag.String("format", "csv", "The input format, either 'csv' or 'tsv' (defaults to 'csv')")
+	inputPath   = flag.String("f", "", "The input file")
+	reverse     = flag.Bool("reverse", false, "If we should reverse the inputs")
+
+	hideLegend     = flag.Bool("hide-legend", false, "If we should omit the chart legend")
+	hideSMA        = flag.Bool("hide-sma", false, "If we should omit simple moving average")
+	hideLinreg     = flag.Bool("hide-linreg", false, "If we should omit linear regressions")
+	hideLastValues = flag.Bool("hide-last-values", false, "If we should omit last values")
 )
 
 func main() {
@@ -58,6 +63,10 @@ func main() {
 		log.FatalErr(err)
 	}
 
+	if *reverse {
+		yvalues = chart.ValueSequence(yvalues...).Reverse().Values()
+	}
+
 	var series []chart.Series
 	mainSeries := chart.ContinuousSeries{
 		Name:    "Values",
@@ -66,15 +75,55 @@ func main() {
 	}
 	series = append(series, mainSeries)
 
-	if !*disableLinreg {
-		linRegSeries := &chart.LinearRegressionSeries{
-			InnerSeries: mainSeries,
-		}
-		series = append(series, linRegSeries)
+	smaSeries := &chart.SMASeries{
+		Name: "SMA",
+		Style: chart.Style{
+			Hidden:          *hideSMA,
+			StrokeColor:     chart.ColorRed,
+			StrokeDashArray: []float64{5.0, 5.0},
+		},
+		InnerSeries: mainSeries,
 	}
+	series = append(series, smaSeries)
+
+	linRegSeries := &chart.LinearRegressionSeries{
+		Name: "Values - Lin. Reg.",
+		Style: chart.Style{
+			Hidden: *hideLinreg,
+		},
+		InnerSeries: mainSeries,
+	}
+	series = append(series, linRegSeries)
+
+	mainLastValue := chart.LastValueAnnotationSeries(mainSeries)
+	mainLastValue.Style = chart.Style{
+		Hidden: *hideLastValues,
+	}
+	series = append(series, mainLastValue)
+
+	linregLastValue := chart.LastValueAnnotationSeries(linRegSeries)
+	linregLastValue.Style = chart.Style{
+		Hidden: (*hideLastValues || *hideLinreg),
+	}
+	series = append(series, linregLastValue)
+
+	smaLastValue := chart.LastValueAnnotationSeries(smaSeries)
+	smaLastValue.Style = chart.Style{
+		Hidden: (*hideLastValues || *hideSMA),
+	}
+	series = append(series, smaLastValue)
 
 	graph := chart.Chart{
+		Background: chart.Style{
+			Padding: chart.Box{
+				Top: 50,
+			},
+		},
 		Series: series,
+	}
+
+	if !*hideLegend {
+		graph.Elements = []chart.Renderable{chart.LegendThin(&graph)}
 	}
 
 	var output *os.File

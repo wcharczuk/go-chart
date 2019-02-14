@@ -148,6 +148,27 @@ func (s Seq) Sort() Seq {
 	return Seq{Array(values)}
 }
 
+// Reverse reverses the sequence
+func (s Seq) Reverse() Seq {
+	if s.Len() == 0 {
+		return s
+	}
+
+	values := s.Values()
+	valuesLen := len(values)
+	valuesLen1 := len(values) - 1
+	valuesLen2 := valuesLen >> 1
+	var i, j float64
+	for index := 0; index < valuesLen2; index++ {
+		i = values[index]
+		j = values[valuesLen1-index]
+		values[index] = j
+		values[valuesLen1-index] = i
+	}
+
+	return Seq{Array(values)}
+}
+
 // Median returns the median or middle value in the sorted seq.
 func (s Seq) Median() (median float64) {
 	l := s.Len()
