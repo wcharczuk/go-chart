@@ -4,6 +4,13 @@ import (
 	"math"
 )
 
+// HideYAxis hides a y-axis.
+func HideYAxis() YAxis {
+	return YAxis{
+		Style: Hidden(),
+	}
+}
+
 // YAxis is a veritcal rule of the range.
 // There can be (2) y-axes; a primary and secondary.
 type YAxis struct {

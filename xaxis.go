@@ -4,6 +4,13 @@ import (
 	"math"
 )
 
+// HideXAxis hides the x-axis.
+func HideXAxis() XAxis {
+	return XAxis{
+		Style: Hidden(),
+	}
+}
+
 // XAxis represents the horizontal axis.
 type XAxis struct {
 	Name      string

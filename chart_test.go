@@ -484,8 +484,12 @@ func TestChartE2ELine(t *testing.T) {
 	assert := assert.New(t)
 
 	c := Chart{
-		Height: 50,
-		Width:  50,
+		Height:         50,
+		Width:          50,
+		TitleStyle:     Hidden(),
+		XAxis:          HideXAxis(),
+		YAxis:          HideYAxis(),
+		YAxisSecondary: HideYAxis(),
 		Canvas: Style{
 			Padding: BoxZero,
 		},
@@ -532,6 +536,10 @@ func TestChartE2ELineWithFill(t *testing.T) {
 		Background: Style{
 			Padding: BoxZero,
 		},
+		TitleStyle:     Hidden(),
+		XAxis:          HideXAxis(),
+		YAxis:          HideYAxis(),
+		YAxisSecondary: HideYAxis(),
 		Series: []Series{
 			ContinuousSeries{
 				Style: Style{
@@ -542,6 +550,7 @@ func TestChartE2ELineWithFill(t *testing.T) {
 				YValues: LinearRangeWithStep(0, 4, 1),
 			},
 		},
+		Log: NewLogger(),
 	}
 
 	assert.Equal(5, len(c.Series[0].(ContinuousSeries).XValues))
@@ -550,8 +559,6 @@ func TestChartE2ELineWithFill(t *testing.T) {
 	var buffer = &bytes.Buffer{}
 	err := c.Render(PNG, buffer)
 	assert.Nil(err)
-
-	// do color tests ...
 
 	i, err := png.Decode(buffer)
 	assert.Nil(err)
