@@ -158,6 +158,33 @@ func (sbc StackedBarChart) drawBar(r Renderer, canvasBox Box, xoffset int, bar S
 		yoffset += barHeight
 	}
 
+	// draw the labels
+	yoffset = canvasBox.Top
+	var lx, ly int
+	for index, bv := range normalizedBarComponents {
+		barHeight := int(math.Ceil(bv.Value * float64(canvasBox.Height())))
+
+		if len(bv.Label) > 0 {
+			lx = bxl + ((bxr - bxl) / 2)
+			ly = yoffset + (barHeight / 2)
+
+			bv.Style.InheritFrom(sbc.styleDefaultsStackedBarValue(index)).WriteToRenderer(r)
+			tb := r.MeasureText(bv.Label)
+			lx = lx - (tb.Width() >> 1)
+			ly = ly + (tb.Height() >> 1)
+
+			if lx < 0 {
+				lx = 0
+			}
+			if ly < 0 {
+				lx = 0
+			}
+
+			r.Text(bv.Label, lx, ly)
+		}
+		yoffset += barHeight
+	}
+
 	return bxr
 }
 
@@ -329,6 +356,9 @@ func (sbc StackedBarChart) styleDefaultsStackedBarValue(index int) Style {
 		StrokeColor: sbc.GetColorPalette().GetSeriesColor(index),
 		StrokeWidth: 3.0,
 		FillColor:   sbc.GetColorPalette().GetSeriesColor(index),
+		FontSize:    sbc.getScaledFontSize(),
+		FontColor:   sbc.GetColorPalette().TextColor(),
+		Font:        sbc.GetFont(),
 	}
 }
 
@@ -341,6 +371,20 @@ func (sbc StackedBarChart) styleDefaultsTitle() Style {
 		TextVerticalAlign:   TextVerticalAlignTop,
 		TextWrap:            TextWrapWord,
 	})
+}
+
+func (sbc StackedBarChart) getScaledFontSize() float64 {
+	effectiveDimension := util.Math.MinInt(sbc.GetWidth(), sbc.GetHeight())
+	if effectiveDimension >= 2048 {
+		return 48.0
+	} else if effectiveDimension >= 1024 {
+		return 24.0
+	} else if effectiveDimension > 512 {
+		return 18.0
+	} else if effectiveDimension > 256 {
+		return 12.0
+	}
+	return 10.0
 }
 
 func (sbc StackedBarChart) getTitleFontSize() float64 {
