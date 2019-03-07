@@ -46,7 +46,7 @@ const (
 	TextVerticalAlignBottom TextVerticalAlign = 2
 	// TextVerticalAlignMiddle aligns the text so that there is an equal amount of space above and below the top and bottom of the ligatures.
 	TextVerticalAlignMiddle TextVerticalAlign = 3
-	// TextVerticalAlignMiddleBaseline aligns the text veritcally so that there is an equal number of pixels above and below the baseline of the string.
+	// TextVerticalAlignMiddleBaseline aligns the text vertically so that there is an equal number of pixels above and below the baseline of the string.
 	TextVerticalAlignMiddleBaseline TextVerticalAlign = 4
 	// TextVerticalAlignTop alignts the text so that the top of the ligatures are at y-pixel 0 in the container.
 	TextVerticalAlignTop TextVerticalAlign = 5
