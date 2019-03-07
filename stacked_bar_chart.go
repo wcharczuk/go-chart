@@ -316,6 +316,11 @@ func (sbc StackedBarChart) drawHorizontalXAxis(r Renderer, canvasBox Box) {
 			textBox := r.MeasureText(text)
 			textX := tx - (textBox.Width() >> 1)
 			textY := canvasBox.Bottom + DefaultXAxisMargin + 10
+
+			if t == 1 {
+				textX = canvasBox.Right - textBox.Width()
+			}
+
 			Draw.Text(r, text, textX, textY, axisStyle)
 		}
 	}
