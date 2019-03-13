@@ -373,7 +373,7 @@ func (sbc StackedBarChart) drawHorizontalYAxis(r Renderer, canvasBox Box) {
 			barLabelBox := Box{
 				Top:    cursor,
 				Left:   0,
-				Right:  canvasBox.Left + DefaultYAxisMargin,
+				Right:  canvasBox.Left - DefaultYAxisMargin,
 				Bottom: cursor + bar.GetWidth() + sbc.GetBarSpacing(),
 			}
 			if len(bar.Name) > 0 {
