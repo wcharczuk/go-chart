@@ -90,7 +90,7 @@ func (sbc StackedBarChart) GetHeight() int {
 // GetBarSpacing returns the spacing between bars.
 func (sbc StackedBarChart) GetBarSpacing() int {
 	if sbc.BarSpacing == 0 {
-		return 100
+		return DefaultBarSpacing
 	}
 	return sbc.BarSpacing
 }
