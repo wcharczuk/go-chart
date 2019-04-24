@@ -12,7 +12,7 @@ test:
 
 .PHONY: profanity
 profanity:
-	@profanity -include="*.go,Makefile,README.md"
+	@profanity
 
 coverage:
 	@coverage
