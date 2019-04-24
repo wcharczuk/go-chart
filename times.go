@@ -3,8 +3,6 @@ package chart
 import (
 	"sort"
 	"time"
-
-	"github.com/blend/go-sdk/timeutil"
 )
 
 // Assert types implement interfaces.
@@ -29,7 +27,7 @@ func (t Times) Len() int {
 
 // GetValue returns a value at an index as a time.
 func (t Times) GetValue(index int) float64 {
-	return timeutil.ToFloat64(t[index])
+	return ToFloat64(t[index])
 }
 
 // Swap implements sort.Interface.
@@ -40,4 +38,9 @@ func (t Times) Swap(i, j int) {
 // Less implements sort.Interface.
 func (t Times) Less(i, j int) bool {
 	return t[i].Before(t[j])
+}
+
+// ToFloat64 returns a float64 representation of a time.
+func ToFloat64(t time.Time) float64 {
+	return float64(t.UnixNano())
 }
