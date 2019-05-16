@@ -3,7 +3,7 @@ package chart
 import (
 	"math"
 
-	util "github.com/wcharczuk/go-chart/util"
+	"github.com/wcharczuk/go-chart/util"
 )
 
 // XAxis represents the horizontal axis.
@@ -15,9 +15,10 @@ type XAxis struct {
 	ValueFormatter ValueFormatter
 	Range          Range
 
-	TickStyle    Style
-	Ticks        []Tick
-	TickPosition TickPosition
+	TickStyle         Style
+	Ticks             []Tick
+	TickPosition      TickPosition
+	EnablePrettyTicks bool
 
 	GridLines      []GridLine
 	GridMajorStyle Style
@@ -66,6 +67,9 @@ func (xa XAxis) GetTicks(r Renderer, ra Range, defaults Style, vf ValueFormatter
 		return tp.GetTicks(r, defaults, vf)
 	}
 	tickStyle := xa.Style.InheritFrom(defaults)
+	if xa.EnablePrettyTicks {
+		return GeneratePrettyContinuousTicks(r, ra, false, tickStyle, vf)
+	}
 	return GenerateContinuousTicks(r, ra, false, tickStyle, vf)
 }
 

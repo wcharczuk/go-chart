@@ -3,7 +3,7 @@ package chart
 import (
 	"math"
 
-	util "github.com/wcharczuk/go-chart/util"
+	"github.com/wcharczuk/go-chart/util"
 )
 
 // YAxis is a veritcal rule of the range.
@@ -22,8 +22,9 @@ type YAxis struct {
 	ValueFormatter ValueFormatter
 	Range          Range
 
-	TickStyle Style
-	Ticks     []Tick
+	TickStyle         Style
+	Ticks             []Tick
+	EnablePrettyTicks bool
 
 	GridLines      []GridLine
 	GridMajorStyle Style
@@ -71,6 +72,9 @@ func (ya YAxis) GetTicks(r Renderer, ra Range, defaults Style, vf ValueFormatter
 		return tp.GetTicks(r, defaults, vf)
 	}
 	tickStyle := ya.Style.InheritFrom(defaults)
+	if ya.EnablePrettyTicks {
+		return GeneratePrettyContinuousTicks(r, ra, true, tickStyle, vf)
+	}
 	return GenerateContinuousTicks(r, ra, true, tickStyle, vf)
 }
 
