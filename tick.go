@@ -133,6 +133,10 @@ func GeneratePrettyContinuousTicks(r Renderer, ra Range, isVertical bool, style 
 
 	rangeMin, rangeMax := ra.GetMin(), ra.GetMax()
 
+	if rangeMin >= rangeMax || ra.GetDomain() == 0 {
+		return []Tick{}
+	}
+
 	renderedLabelExample := vf(rangeMin)
 	style.GetTextOptions().WriteToRenderer(r)
 	renderedLabelSizePx := r.MeasureText(renderedLabelExample)

@@ -95,6 +95,37 @@ func TestGenerateContinuousPrettyTicks(t *testing.T) {
 		{Label: "60.00", Value: 60}})
 }
 
+func TestGenerateContinuousPrettyTicksForEmptyRange(t *testing.T) {
+	assert := assert.New(t)
+
+	f, err := GetDefaultFont()
+	assert.Nil(err)
+
+	r, err := PNG(1024, 1024)
+	assert.Nil(err)
+	r.SetFont(f)
+
+	ra := &ContinuousRange{
+		Min:    1.0,
+		Max:    1.0,
+		Domain: 256,
+	}
+
+	vf := FloatValueFormatter
+
+	ticks := GeneratePrettyContinuousTicks(r, ra, false, Style{}, vf)
+	assert.Empty(ticks)
+
+	ra = &ContinuousRange{
+		Min:    1.0,
+		Max:    2.0,
+		Domain: 0,
+	}
+
+	ticks = GeneratePrettyContinuousTicks(r, ra, false, Style{}, vf)
+	assert.Empty(ticks)
+}
+
 func TestGeneratePrettyTicksForVerySmallRange(t *testing.T) {
 	assert := assert.New(t)
 
