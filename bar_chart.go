@@ -61,6 +61,8 @@ func (bc BarChart) GetFont() *truetype.Font {
 func (bc BarChart) GetWidth() int {
 	if bc.Width == 0 {
 		return DefaultChartWidth
+	} else if bc.Width == -1 {
+		return bc.autoWidth()
 	}
 	return bc.Width
 }
@@ -87,6 +89,19 @@ func (bc BarChart) GetBarWidth() int {
 		return DefaultBarWidth
 	}
 	return bc.BarWidth
+}
+
+func (bc BarChart) autoWidth() (totalWidth int) {
+
+	totalWidth = 0
+	barWidth := bc.GetBarWidth()
+	barSpacing := bc.GetBarSpacing()
+
+	for _, _ = range bc.Bars {
+		totalWidth += barWidth + barSpacing
+	}
+
+	return
 }
 
 // Render renders the chart with the given renderer to the given io.Writer.
