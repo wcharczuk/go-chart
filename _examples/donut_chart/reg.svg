@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="512">\n<path  d="M 0 0
+L 512 0
+L 512 512
+L 0 512
+L 0 0" style="stroke-width:0;stroke:rgba(255,255,255,1.0);fill:rgba(255,255,255,1.0)"/><path  d="M 5 5
+L 507 5
+L 507 507
+L 5 507
+L 5 5" style="stroke-width:0;stroke:rgba(255,255,255,1.0);fill:rgba(255,255,255,1.0)"/><path  d="M 256 256
+L 438 256
+A 182 182 225.00 1 1 127 127
+L 256 256
+Z" style="stroke-width:4;stroke:rgba(255,255,255,1.0);fill:rgba(106,195,203,1.0)"/><path  d="M 256 256
+L 127 127
+A 182 182 90.00 0 1 385 127
+L 256 256
+Z" style="stroke-width:4;stroke:rgba(255,255,255,1.0);fill:rgba(42,190,137,1.0)"/><path  d="M 256 256
+L 385 127
+A 182 182 45.00 0 1 438 256
+L 256 256
+Z" style="stroke-width:4;stroke:rgba(255,255,255,1.0);fill:rgba(110,128,139,1.0)"/><path  d="M 256 256
+L 321 256
+A 65 65 359.00 1 1 321 255
+L 256 256
+Z" style="stroke-width:4;stroke:rgba(255,255,255,1.0);fill:rgba(255,255,255,1.0)"/><text x="159" y="461" style="stroke-width:0;stroke:none;fill:rgba(51,51,51,1.0);font-size:15.3px;font-family:'Roboto Medium',sans-serif">Blue</text><text x="241" y="48" style="stroke-width:0;stroke:none;fill:rgba(51,51,51,1.0);font-size:15.3px;font-family:'Roboto Medium',sans-serif">Two</text><text x="440" y="181" style="stroke-width:0;stroke:none;fill:rgba(51,51,51,1.0);font-size:15.3px;font-family:'Roboto Medium',sans-serif">One</text></svg>
