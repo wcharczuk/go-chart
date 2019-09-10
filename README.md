@@ -4,7 +4,7 @@ go-chart
 
 Package `chart` is a very simple golang native charting library that supports timeseries and continuous line charts.
 
-Master should now be on the v3.x codebase, which overhauls the api significantly. Per usual, see `_examples` for more information.
+Master should now be on the v3.x codebase, which overhauls the api significantly. Per usual, see `examples` for more information.
 
 # Installation
 
@@ -36,17 +36,17 @@ Pie Chart:
 
 ![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/_images/pie_chart.png)
 
-The code for this chart can be found in `_examples/pie_chart/main.go`.
+The code for this chart can be found in `examples/pie_chart/main.go`.
 
 Stacked Bar:
 
 ![](https://raw.githubusercontent.com/wcharczuk/go-chart/master/_images/stacked_bar.png)
 
-The code for this chart can be found in `_examples/stacked_bar/main.go`.
+The code for this chart can be found in `examples/stacked_bar/main.go`.
 
 # Code Examples
 
-Actual chart configurations and examples can be found in the `./_examples/` directory. They are web servers, so start them with `go run main.go` then access `http://localhost:8080` to see the output.
+Actual chart configurations and examples can be found in the `./examples/` directory. They are simple CLI programs that write to `output.png` (they are also updated with `go generate`.
 
 # Usage
 
