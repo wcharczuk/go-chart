@@ -2,12 +2,9 @@ go-chart
 ========
 [![CircleCI](https://circleci.com/gh/wcharczuk/go-chart.svg?style=svg)](https://circleci.com/gh/wcharczuk/go-chart) [![Go Report Card](https://goreportcard.com/badge/github.com/wcharczuk/go-chart)](https://goreportcard.com/report/github.com/wcharczuk/go-chart)
 
-Package `chart` is a very simple golang native charting library that supports timeseries and continuous
-line charts.
+Package `chart` is a very simple golang native charting library that supports timeseries and continuous line charts.
 
-The v1.0 release has been tagged so things should be more or less stable, if something changes please log an issue.
-
-Master should now be on the v2.x codebase, which brings a couple new features and better handling of basics like axes labeling etc. Per usual, see `_examples` for more information.
+Master should now be on the v3.x codebase, which overhauls the api significantly. Per usual, see `_examples` for more information.
 
 # Installation
 
@@ -83,8 +80,7 @@ Here, we have a single series with x range values as float64s, rendered to a PNG
 
 # API Overview
 
-Everything on the `chart.Chart` object has defaults that can be overriden. Whenever a developer sets a property on the chart object, it is to be assumed that value will be used instead of the default. One complication here
-is any object's root `chart.Style` object (i.e named `Style`) and the `Show` property specifically, if any other property is set and the `Show` property is unset, it is assumed to be it's default value of `False`.
+Everything on the `chart.Chart` object has defaults that can be overriden. Whenever a developer sets a property on the chart object, it is to be assumed that value will be used instead of the default.
 
 The best way to see the api in action is to look at the examples in the `./_examples/` directory.
 
@@ -96,4 +92,4 @@ The goal with the API itself is to have the "zero value be useful", and to requi
 
 # Contributions
 
-This library is super early but contributions are welcome.
+Contributions are welcome though this library is in a holding pattern for the forseable future.

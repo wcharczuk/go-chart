@@ -7,6 +7,9 @@ new-install:
 	@go get -v -u github.com/blend/go-sdk/cmd/coverage
 	@go get -v -u github.com/blend/go-sdk/cmd/profanity
 
+generate:
+	@go generate ./...
+
 test:
 	@go test ./...
 
