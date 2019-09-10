@@ -12,12 +12,16 @@ var (
 )
 
 // NewLogger returns a new logger.
-func NewLogger() Logger {
-	return &StdoutLogger{
+func NewLogger(options ...LoggerOption) Logger {
+	stl := &StdoutLogger{
 		TimeFormat: time.RFC3339Nano,
 		Stdout:     os.Stdout,
 		Stderr:     os.Stderr,
 	}
+	for _, option := range options {
+		option(stl)
+	}
+	return stl
 }
 
 // Logger is a type that implements the logging interface.
@@ -30,8 +34,6 @@ type Logger interface {
 	FatalErr(error)
 	Error(...interface{})
 	Errorf(string, ...interface{})
-	Println(...interface{})
-	Errorln(...interface{})
 }
 
 // Info logs an info message if the logger is set.
@@ -64,6 +66,23 @@ func Debugf(log Logger, format string, arguments ...interface{}) {
 		return
 	}
 	log.Debugf(format, arguments...)
+}
+
+// LoggerOption mutates a stdout logger.
+type LoggerOption = func(*StdoutLogger)
+
+//OptLoggerStdout sets the Stdout writer.
+func OptLoggerStdout(wr io.Writer) LoggerOption {
+	return func(stl *StdoutLogger) {
+		stl.Stdout = wr
+	}
+}
+
+// OptLoggerStderr sets the Stdout writer.
+func OptLoggerStderr(wr io.Writer) LoggerOption {
+	return func(stl *StdoutLogger) {
+		stl.Stderr = wr
+	}
 }
 
 // StdoutLogger is a basic logger.
