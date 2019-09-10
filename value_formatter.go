@@ -96,3 +96,10 @@ func FloatValueFormatterWithFormat(v interface{}, floatFormat string) string {
 	}
 	return ""
 }
+
+// KValueFormatter is a formatter for K values.
+func KValueFormatter(k float64, vf ValueFormatter) ValueFormatter {
+	return func(v interface{}) string {
+		return fmt.Sprintf("%0.0fσ %s", k, vf(v))
+	}
+}

@@ -14,7 +14,6 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 	priceSeries := chart.TimeSeries{
 		Name: "SPY",
 		Style: chart.Style{
-			Show:        true,
 			StrokeColor: chart.GetDefaultColor(0),
 		},
 		XValues: xv,
@@ -24,7 +23,6 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 	smaSeries := chart.SMASeries{
 		Name: "SPY - SMA",
 		Style: chart.Style{
-			Show:            true,
 			StrokeColor:     drawing.ColorRed,
 			StrokeDashArray: []float64{5.0, 5.0},
 		},
@@ -34,7 +32,6 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 	bbSeries := &chart.BollingerBandsSeries{
 		Name: "SPY - Bol. Bands",
 		Style: chart.Style{
-			Show:        true,
 			StrokeColor: drawing.ColorFromHex("efefef"),
 			FillColor:   drawing.ColorFromHex("efefef").WithAlpha(64),
 		},
@@ -43,11 +40,9 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 
 	graph := chart.Chart{
 		XAxis: chart.XAxis{
-			Style:        chart.StyleShow(),
 			TickPosition: chart.TickPositionBetweenTicks,
 		},
 		YAxis: chart.YAxis{
-			Style: chart.StyleShow(),
 			Range: &chart.ContinuousRange{
 				Max: 220.0,
 				Min: 180.0,
