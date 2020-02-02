@@ -16,6 +16,7 @@ func main() {
 	priceSeries := chart.TimeSeries{
 		Name: "SPY",
 		Style: chart.Style{
+			Show:        true,
 			StrokeColor: chart.GetDefaultColor(0),
 		},
 		XValues: xv,
@@ -25,6 +26,7 @@ func main() {
 	smaSeries := chart.SMASeries{
 		Name: "SPY - SMA",
 		Style: chart.Style{
+			Show:            true,
 			StrokeColor:     drawing.ColorRed,
 			StrokeDashArray: []float64{5.0, 5.0},
 		},
@@ -34,6 +36,7 @@ func main() {
 	bbSeries := &chart.BollingerBandsSeries{
 		Name: "SPY - Bol. Bands",
 		Style: chart.Style{
+			Show:        true,
 			StrokeColor: drawing.ColorFromHex("efefef"),
 			FillColor:   drawing.ColorFromHex("efefef").WithAlpha(64),
 		},
