@@ -13,8 +13,8 @@ func TimeMillis(d time.Duration) float64 {
 	return float64(d) / float64(time.Millisecond)
 }
 
-// DiffHours returns the difference in hours between two times.
-func DiffHours(t1, t2 time.Time) (hours int) {
+// DiffDurations returns the difference between two times as a count of durations.
+func DiffDurations(t1, t2 time.Time, d time.Duration) int {
 	t1n := t1.Unix()
 	t2n := t2.Unix()
 	var diff int64
@@ -23,7 +23,12 @@ func DiffHours(t1, t2 time.Time) (hours int) {
 	} else {
 		diff = t2n - t1n
 	}
-	return int(diff / (SecondsPerHour))
+	return int(float64(diff) / d.Seconds())
+}
+
+// DiffHours returns the difference in hours between two times.
+func DiffHours(t1, t2 time.Time) (hours int) {
+	return DiffDurations(t1, t2, time.Hour)
 }
 
 // TimeMin returns the minimum and maximum times in a given range.
@@ -118,33 +123,44 @@ func Days(days int) []time.Time {
 	return values
 }
 
-// Hours returns a sequence of times by the hour for a given number of hours
+// Durations returns a sequence of times for a given number of durations
 // after a given start.
-func Hours(start time.Time, totalHours int) []time.Time {
-	times := make([]time.Time, totalHours)
+func Durations(start time.Time, total int, d time.Duration) []time.Time {
+	times := make([]time.Time, total)
 
 	last := start
-	for i := 0; i < totalHours; i++ {
+	for i := 0; i < total; i++ {
 		times[i] = last
-		last = last.Add(time.Hour)
+		last = last.Add(d)
 	}
 
 	return times
 }
 
-// HoursFilled adds zero values for the data bounded by the start and end of the xdata array.
-func HoursFilled(xdata []time.Time, ydata []float64) ([]time.Time, []float64) {
+// Hours returns a sequence of times by the hour for a given number of hours
+// after a given start.
+func Hours(start time.Time, totalHours int) []time.Time {
+	return Durations(start, totalHours, time.Hour)
+}
+
+// DurationsFilled adds zero values for the data bounded by the start and end of the xdata array.
+func DurationsFilled(xdata []time.Time, ydata []float64, d time.Duration) ([]time.Time, []float64) {
 	start, end := TimeMinMax(xdata...)
-	totalHours := DiffHours(start, end)
+	total := DiffDurations(start, end, d)
 
-	finalTimes := Hours(start, totalHours+1)
-	finalValues := make([]float64, totalHours+1)
+	finalTimes := Durations(start, total+1, d)
+	finalValues := make([]float64, total+1)
 
-	var hoursFromStart int
+	var durationsFromStart int
 	for i, xd := range xdata {
-		hoursFromStart = DiffHours(start, xd)
-		finalValues[hoursFromStart] = ydata[i]
+		durationsFromStart = DiffDurations(start, xd, d)
+		finalValues[durationsFromStart] = ydata[i]
 	}
 
 	return finalTimes, finalValues
+}
+
+// HoursFilled adds zero values for the data bounded by the start and end of the xdata array.
+func HoursFilled(xdata []time.Time, ydata []float64) ([]time.Time, []float64) {
+	return DurationsFilled(xdata, ydata, time.Hour)
 }
