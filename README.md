@@ -76,11 +76,11 @@ err := graph.Render(chart.PNG, buffer)
 
 Explanation of the above: A `chart` can have many `Series`, a `Series` is a collection of things that need to be drawn according to the X range and the Y range(s).
 
-Here, we have a single series with x range values as float64s, rendered to a PNG. Note; we can pass any type of `io.Writer` into `Render(...)`, meaning that we can render the chart to a file or a resonse or anything else that implements `io.Writer`.
+Here, we have a single series with x range values as float64s, rendered to a PNG. Note; we can pass any type of `io.Writer` into `Render(...)`, meaning that we can render the chart to a file or a response or anything else that implements `io.Writer`.
 
 # API Overview
 
-Everything on the `chart.Chart` object has defaults that can be overriden. Whenever a developer sets a property on the chart object, it is to be assumed that value will be used instead of the default.
+Everything on the `chart.Chart` object has defaults that can be overridden. Whenever a developer sets a property on the chart object, it is to be assumed that value will be used instead of the default.
 
 The best way to see the api in action is to look at the examples in the `./_examples/` directory.
 
@@ -92,4 +92,4 @@ The goal with the API itself is to have the "zero value be useful", and to requi
 
 # Contributions
 
-Contributions are welcome though this library is in a holding pattern for the forseable future.
+Contributions are welcome though this library is in a holding pattern for the forseeable future.
