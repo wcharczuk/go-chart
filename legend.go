@@ -179,7 +179,7 @@ func LegendThin(c *Chart, userDefaults ...Style) Renderable {
 			Bottom: legendYMargin + legendBoxHeight,
 		}
 
-		Draw.Box(r, legendBox, legendDefaults)
+		Draw.Box(r, legendBox, legendStyle)
 
 		r.SetFont(legendStyle.GetFont())
 		r.SetFontColor(legendStyle.GetFontColor())
