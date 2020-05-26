@@ -31,97 +31,97 @@ type DonutChart struct {
 }
 
 // GetDPI returns the dpi for the chart.
-func (pc DonutChart) GetDPI(defaults ...float64) float64 {
-	if pc.DPI == 0 {
+func (dc DonutChart) GetDPI(defaults ...float64) float64 {
+	if dc.DPI == 0 {
 		if len(defaults) > 0 {
 			return defaults[0]
 		}
 		return DefaultDPI
 	}
-	return pc.DPI
+	return dc.DPI
 }
 
 // GetFont returns the text font.
-func (pc DonutChart) GetFont() *truetype.Font {
-	if pc.Font == nil {
-		return pc.defaultFont
+func (dc DonutChart) GetFont() *truetype.Font {
+	if dc.Font == nil {
+		return dc.defaultFont
 	}
-	return pc.Font
+	return dc.Font
 }
 
 // GetWidth returns the chart width or the default value.
-func (pc DonutChart) GetWidth() int {
-	if pc.Width == 0 {
+func (dc DonutChart) GetWidth() int {
+	if dc.Width == 0 {
 		return DefaultChartWidth
 	}
-	return pc.Width
+	return dc.Width
 }
 
 // GetHeight returns the chart height or the default value.
-func (pc DonutChart) GetHeight() int {
-	if pc.Height == 0 {
+func (dc DonutChart) GetHeight() int {
+	if dc.Height == 0 {
 		return DefaultChartWidth
 	}
-	return pc.Height
+	return dc.Height
 }
 
 // Render renders the chart with the given renderer to the given io.Writer.
-func (pc DonutChart) Render(rp RendererProvider, w io.Writer) error {
-	if len(pc.Values) == 0 {
+func (dc DonutChart) Render(rp RendererProvider, w io.Writer) error {
+	if len(dc.Values) == 0 {
 		return errors.New("please provide at least one value")
 	}
 
-	r, err := rp(pc.GetWidth(), pc.GetHeight())
+	r, err := rp(dc.GetWidth(), dc.GetHeight())
 	if err != nil {
 		return err
 	}
 
-	if pc.Font == nil {
+	if dc.Font == nil {
 		defaultFont, err := GetDefaultFont()
 		if err != nil {
 			return err
 		}
-		pc.defaultFont = defaultFont
+		dc.defaultFont = defaultFont
 	}
-	r.SetDPI(pc.GetDPI(DefaultDPI))
+	r.SetDPI(dc.GetDPI(DefaultDPI))
 
-	canvasBox := pc.getDefaultCanvasBox()
-	canvasBox = pc.getCircleAdjustedCanvasBox(canvasBox)
+	canvasBox := dc.getDefaultCanvasBox()
+	canvasBox = dc.getCircleAdjustedCanvasBox(canvasBox)
 
-	pc.drawBackground(r)
-	pc.drawCanvas(r, canvasBox)
+	dc.drawBackground(r)
+	dc.drawCanvas(r, canvasBox)
 
-	finalValues, err := pc.finalizeValues(pc.Values)
+	finalValues, err := dc.finalizeValues(dc.Values)
 	if err != nil {
 		return err
 	}
-	pc.drawSlices(r, canvasBox, finalValues)
-	pc.drawTitle(r)
-	for _, a := range pc.Elements {
-		a(r, canvasBox, pc.styleDefaultsElements())
+	dc.drawSlices(r, canvasBox, finalValues)
+	dc.drawTitle(r)
+	for _, a := range dc.Elements {
+		a(r, canvasBox, dc.styleDefaultsElements())
 	}
 
 	return r.Save(w)
 }
 
-func (pc DonutChart) drawBackground(r Renderer) {
+func (dc DonutChart) drawBackground(r Renderer) {
 	Draw.Box(r, Box{
-		Right:  pc.GetWidth(),
-		Bottom: pc.GetHeight(),
-	}, pc.getBackgroundStyle())
+		Right:  dc.GetWidth(),
+		Bottom: dc.GetHeight(),
+	}, dc.getBackgroundStyle())
 }
 
-func (pc DonutChart) drawCanvas(r Renderer, canvasBox Box) {
-	Draw.Box(r, canvasBox, pc.getCanvasStyle())
+func (dc DonutChart) drawCanvas(r Renderer, canvasBox Box) {
+	Draw.Box(r, canvasBox, dc.getCanvasStyle())
 }
 
-func (pc DonutChart) drawTitle(r Renderer) {
-	if len(pc.Title) > 0 && !pc.TitleStyle.Hidden {
-		Draw.TextWithin(r, pc.Title, pc.Box(), pc.styleDefaultsTitle())
+func (dc DonutChart) drawTitle(r Renderer) {
+	if len(dc.Title) > 0 && !dc.TitleStyle.Hidden {
+		Draw.TextWithin(r, dc.Title, dc.Box(), dc.styleDefaultsTitle())
 	}
 }
 
-func (pc DonutChart) drawSlices(r Renderer, canvasBox Box, values []Value) {
+func (dc DonutChart) drawSlices(r Renderer, canvasBox Box, values []Value) {
 	cx, cy := canvasBox.Center()
 	diameter := MinInt(canvasBox.Width(), canvasBox.Height())
 	radius := float64(diameter>>1) / 1.1
@@ -132,12 +132,15 @@ func (pc DonutChart) drawSlices(r Renderer, canvasBox Box, values []Value) {
 	var lx, ly int
 
 	if len(values) == 1 {
-		pc.styleDonutChartValue(0).WriteToRenderer(r)
+		dc.styleDonutChartValueSingle(0).WriteToRenderer(r)
 		r.MoveTo(cx, cy)
-		r.Circle(radius, cx, cy)
+		r.ArcTo(cx, cy, (radius / 1.25), (radius / 1.25), DegreesToRadians(0), DegreesToRadians(359))
+		r.LineTo(cx, cy)
+		r.Close()
+		r.FillStroke()
 	} else {
 		for index, v := range values {
-			v.Style.InheritFrom(pc.styleDonutChartValue(index)).WriteToRenderer(r)
+			v.Style.InheritFrom(dc.styleDonutChartValue(index)).WriteToRenderer(r)
 			r.MoveTo(cx, cy)
 			rads = PercentToRadians(total)
 			delta = PercentToRadians(v.Value)
@@ -153,8 +156,8 @@ func (pc DonutChart) drawSlices(r Renderer, canvasBox Box, values []Value) {
 
 	//making the donut hole
 	v := Value{Value: 100, Label: "center"}
-	styletemp := pc.SliceStyle.InheritFrom(Style{
-		StrokeColor: ColorWhite, StrokeWidth: 4.0, FillColor: ColorWhite, FontColor: ColorWhite, //Font:        pc.GetFont(),//FontSize:    pc.getScaledFontSize(),
+	styletemp := dc.SliceStyle.InheritFrom(Style{
+		StrokeColor: ColorWhite, StrokeWidth: 4.0, FillColor: ColorWhite, FontColor: ColorWhite,
 	})
 	v.Style.InheritFrom(styletemp).WriteToRenderer(r)
 	r.MoveTo(cx, cy)
@@ -166,7 +169,7 @@ func (pc DonutChart) drawSlices(r Renderer, canvasBox Box, values []Value) {
 	// draw the labels
 	total = 0
 	for index, v := range values {
-		v.Style.InheritFrom(pc.styleDonutChartValue(index)).WriteToRenderer(r)
+		v.Style.InheritFrom(dc.styleDonutChartValue(index)).WriteToRenderer(r)
 		if len(v.Label) > 0 {
 			delta2 = PercentToRadians(total + (v.Value / 2.0))
 			delta2 = RadianAdd(delta2, _pi2)
@@ -182,7 +185,7 @@ func (pc DonutChart) drawSlices(r Renderer, canvasBox Box, values []Value) {
 	}
 }
 
-func (pc DonutChart) finalizeValues(values []Value) ([]Value, error) {
+func (dc DonutChart) finalizeValues(values []Value) ([]Value, error) {
 	finalValues := Values(values).Normalize()
 	if len(finalValues) == 0 {
 		return nil, fmt.Errorf("donut chart must contain at least (1) non-zero value")
@@ -190,11 +193,11 @@ func (pc DonutChart) finalizeValues(values []Value) ([]Value, error) {
 	return finalValues, nil
 }
 
-func (pc DonutChart) getDefaultCanvasBox() Box {
-	return pc.Box()
+func (dc DonutChart) getDefaultCanvasBox() Box {
+	return dc.Box()
 }
 
-func (pc DonutChart) getCircleAdjustedCanvasBox(canvasBox Box) Box {
+func (dc DonutChart) getCircleAdjustedCanvasBox(canvasBox Box) Box {
 	circleDiameter := MinInt(canvasBox.Width(), canvasBox.Height())
 
 	square := Box{
@@ -205,43 +208,54 @@ func (pc DonutChart) getCircleAdjustedCanvasBox(canvasBox Box) Box {
 	return canvasBox.Fit(square)
 }
 
-func (pc DonutChart) getBackgroundStyle() Style {
-	return pc.Background.InheritFrom(pc.styleDefaultsBackground())
+func (dc DonutChart) getBackgroundStyle() Style {
+	return dc.Background.InheritFrom(dc.styleDefaultsBackground())
 }
 
-func (pc DonutChart) getCanvasStyle() Style {
-	return pc.Canvas.InheritFrom(pc.styleDefaultsCanvas())
+func (dc DonutChart) getCanvasStyle() Style {
+	return dc.Canvas.InheritFrom(dc.styleDefaultsCanvas())
 }
 
-func (pc DonutChart) styleDefaultsCanvas() Style {
+func (dc DonutChart) styleDefaultsCanvas() Style {
 	return Style{
-		FillColor:   pc.GetColorPalette().CanvasColor(),
-		StrokeColor: pc.GetColorPalette().CanvasStrokeColor(),
+		FillColor:   dc.GetColorPalette().CanvasColor(),
+		StrokeColor: dc.GetColorPalette().CanvasStrokeColor(),
 		StrokeWidth: DefaultStrokeWidth,
 	}
 }
 
-func (pc DonutChart) styleDefaultsDonutChartValue() Style {
+func (dc DonutChart) styleDefaultsDonutChartValue() Style {
 	return Style{
-		StrokeColor: pc.GetColorPalette().TextColor(),
+		StrokeColor: dc.GetColorPalette().TextColor(),
 		StrokeWidth: 4.0,
-		FillColor:   pc.GetColorPalette().TextColor(),
+		FillColor:   dc.GetColorPalette().TextColor(),
 	}
 }
 
-func (pc DonutChart) styleDonutChartValue(index int) Style {
-	return pc.SliceStyle.InheritFrom(Style{
+func (dc DonutChart) styleDonutChartValue(index int) Style {
+	return dc.SliceStyle.InheritFrom(Style{
 		StrokeColor: ColorWhite,
 		StrokeWidth: 4.0,
-		FillColor:   pc.GetColorPalette().GetSeriesColor(index),
-		FontSize:    pc.getScaledFontSize(),
-		FontColor:   pc.GetColorPalette().TextColor(),
-		Font:        pc.GetFont(),
+		FillColor:   dc.GetColorPalette().GetSeriesColor(index),
+		FontSize:    dc.getScaledFontSize(),
+		FontColor:   dc.GetColorPalette().TextColor(),
+		Font:        dc.GetFont(),
 	})
 }
 
-func (pc DonutChart) getScaledFontSize() float64 {
-	effectiveDimension := MinInt(pc.GetWidth(), pc.GetHeight())
+func (dc DonutChart) styleDonutChartValueSingle(index int) Style {
+	return dc.SliceStyle.InheritFrom(Style{
+		StrokeColor: dc.GetColorPalette().GetSeriesColor(index),
+		StrokeWidth: 4.0,
+		FillColor:   dc.GetColorPalette().GetSeriesColor(index),
+		FontSize:    dc.getScaledFontSize(),
+		FontColor:   dc.GetColorPalette().TextColor(),
+		Font:        dc.GetFont(),
+	})
+}
+
+func (dc DonutChart) getScaledFontSize() float64 {
+	effectiveDimension := MinInt(dc.GetWidth(), dc.GetHeight())
 	if effectiveDimension >= 2048 {
 		return 48.0
 	} else if effectiveDimension >= 1024 {
@@ -254,33 +268,33 @@ func (pc DonutChart) getScaledFontSize() float64 {
 	return 10.0
 }
 
-func (pc DonutChart) styleDefaultsBackground() Style {
+func (dc DonutChart) styleDefaultsBackground() Style {
 	return Style{
-		FillColor:   pc.GetColorPalette().BackgroundColor(),
-		StrokeColor: pc.GetColorPalette().BackgroundStrokeColor(),
+		FillColor:   dc.GetColorPalette().BackgroundColor(),
+		StrokeColor: dc.GetColorPalette().BackgroundStrokeColor(),
 		StrokeWidth: DefaultStrokeWidth,
 	}
 }
 
-func (pc DonutChart) styleDefaultsElements() Style {
+func (dc DonutChart) styleDefaultsElements() Style {
 	return Style{
-		Font: pc.GetFont(),
+		Font: dc.GetFont(),
 	}
 }
 
-func (pc DonutChart) styleDefaultsTitle() Style {
-	return pc.TitleStyle.InheritFrom(Style{
-		FontColor:           pc.GetColorPalette().TextColor(),
-		Font:                pc.GetFont(),
-		FontSize:            pc.getTitleFontSize(),
+func (dc DonutChart) styleDefaultsTitle() Style {
+	return dc.TitleStyle.InheritFrom(Style{
+		FontColor:           dc.GetColorPalette().TextColor(),
+		Font:                dc.GetFont(),
+		FontSize:            dc.getTitleFontSize(),
 		TextHorizontalAlign: TextHorizontalAlignCenter,
 		TextVerticalAlign:   TextVerticalAlignTop,
 		TextWrap:            TextWrapWord,
 	})
 }
 
-func (pc DonutChart) getTitleFontSize() float64 {
-	effectiveDimension := MinInt(pc.GetWidth(), pc.GetHeight())
+func (dc DonutChart) getTitleFontSize() float64 {
+	effectiveDimension := MinInt(dc.GetWidth(), dc.GetHeight())
 	if effectiveDimension >= 2048 {
 		return 48
 	} else if effectiveDimension >= 1024 {
@@ -294,22 +308,22 @@ func (pc DonutChart) getTitleFontSize() float64 {
 }
 
 // GetColorPalette returns the color palette for the chart.
-func (pc DonutChart) GetColorPalette() ColorPalette {
-	if pc.ColorPalette != nil {
-		return pc.ColorPalette
+func (dc DonutChart) GetColorPalette() ColorPalette {
+	if dc.ColorPalette != nil {
+		return dc.ColorPalette
 	}
 	return AlternateColorPalette
 }
 
 // Box returns the chart bounds as a box.
-func (pc DonutChart) Box() Box {
-	dpr := pc.Background.Padding.GetRight(DefaultBackgroundPadding.Right)
-	dpb := pc.Background.Padding.GetBottom(DefaultBackgroundPadding.Bottom)
+func (dc DonutChart) Box() Box {
+	dpr := dc.Background.Padding.GetRight(DefaultBackgroundPadding.Right)
+	dpb := dc.Background.Padding.GetBottom(DefaultBackgroundPadding.Bottom)
 
 	return Box{
-		Top:    pc.Background.Padding.GetTop(DefaultBackgroundPadding.Top),
-		Left:   pc.Background.Padding.GetLeft(DefaultBackgroundPadding.Left),
-		Right:  pc.GetWidth() - dpr,
-		Bottom: pc.GetHeight() - dpb,
+		Top:    dc.Background.Padding.GetTop(DefaultBackgroundPadding.Top),
+		Left:   dc.Background.Padding.GetLeft(DefaultBackgroundPadding.Left),
+		Right:  dc.GetWidth() - dpr,
+		Bottom: dc.GetHeight() - dpb,
 	}
 }
