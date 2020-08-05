@@ -1,6 +1,6 @@
 package chart
 
-import "github.com/wcharczuk/go-chart/drawing"
+import "github.com/vrum4o/go-chart/drawing"
 
 var viridisColors = [256]drawing.Color{
 	drawing.Color{R: 0x44, G: 0x1, B: 0x54, A: 0xff},
