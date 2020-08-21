@@ -45,9 +45,9 @@ func main() {
 				{Value: 12.0, Label: "12"},
 			},
 		},
-		UseBaseValue:   true,
-		BaseValueXAxis: true,
-		BaseValue:      0.0,
+		UseBaseValue:      true,
+		UseBaseValueXAxis: true,
+		BaseValue:         0.0,
 		Bars: []chart.Value{
 			{Value: 10.0, Style: profitStyle, Label: "Profit"},
 			{Value: 12.0, Style: profitStyle, Label: "More Profit"},
