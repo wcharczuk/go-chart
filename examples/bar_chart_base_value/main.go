@@ -31,6 +31,7 @@ func main() {
 		},
 		Height:   512,
 		BarWidth: 60,
+		XAxis:    chart.Style{StrokeColor: drawing.ColorBlack, StrokeWidth: 1.0},
 		YAxis: chart.YAxis{
 			Ticks: []chart.Tick{
 				{Value: -4.0, Label: "-4"},
@@ -44,8 +45,9 @@ func main() {
 				{Value: 12.0, Label: "12"},
 			},
 		},
-		UseBaseValue: true,
-		BaseValue:    0.0,
+		UseBaseValue:   true,
+		BaseValueXAxis: true,
+		BaseValue:      0.0,
 		Bars: []chart.Value{
 			{Value: 10.0, Style: profitStyle, Label: "Profit"},
 			{Value: 12.0, Style: profitStyle, Label: "More Profit"},

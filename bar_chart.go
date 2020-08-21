@@ -30,8 +30,9 @@ type BarChart struct {
 
 	BarSpacing int
 
-	UseBaseValue bool
-	BaseValue    float64
+	UseBaseValue      bool
+	BaseValue         float64
+	UseBaseValueXAxis bool
 
 	Font        *truetype.Font
 	defaultFont *truetype.Font
@@ -130,7 +131,7 @@ func (bc BarChart) Render(rp RendererProvider, w io.Writer) error {
 	}
 	bc.drawCanvas(r, canvasBox)
 	bc.drawBars(r, canvasBox, yr)
-	bc.drawXAxis(r, canvasBox)
+	bc.drawXAxis(r, canvasBox, yr)
 	bc.drawYAxis(r, canvasBox, yr, yt)
 
 	bc.drawTitle(r)
@@ -223,25 +224,29 @@ func (bc BarChart) drawBars(r Renderer, canvasBox Box, yr Range) {
 	}
 }
 
-func (bc BarChart) drawXAxis(r Renderer, canvasBox Box) {
+func (bc BarChart) drawXAxis(r Renderer, canvasBox Box, yr Range) {
 	if !bc.XAxis.Hidden {
 		axisStyle := bc.XAxis.InheritFrom(bc.styleDefaultsAxes())
 		axisStyle.WriteToRenderer(r)
 
 		width, spacing, _ := bc.calculateScaledTotalWidth(canvasBox)
 
-		r.MoveTo(canvasBox.Left, canvasBox.Bottom)
-		r.LineTo(canvasBox.Right, canvasBox.Bottom)
+		axisYValue := canvasBox.Bottom
+		if bc.UseBaseValueXAxis {
+			axisYValue -= yr.Translate(bc.BaseValue)
+		}
+		r.MoveTo(canvasBox.Left, axisYValue)
+		r.LineTo(canvasBox.Right, axisYValue)
 		r.Stroke()
 
-		r.MoveTo(canvasBox.Left, canvasBox.Bottom)
-		r.LineTo(canvasBox.Left, canvasBox.Bottom+DefaultVerticalTickHeight)
+		r.MoveTo(canvasBox.Left, axisYValue)
+		r.LineTo(canvasBox.Left, axisYValue+DefaultVerticalTickHeight)
 		r.Stroke()
 
 		cursor := canvasBox.Left
 		for index, bar := range bc.Bars {
 			barLabelBox := Box{
-				Top:    canvasBox.Bottom + DefaultXAxisMargin,
+				Top:    axisYValue + DefaultXAxisMargin,
 				Left:   cursor,
 				Right:  cursor + width + spacing,
 				Bottom: bc.GetHeight(),
@@ -253,8 +258,8 @@ func (bc BarChart) drawXAxis(r Renderer, canvasBox Box) {
 
 			axisStyle.WriteToRenderer(r)
 			if index < len(bc.Bars)-1 {
-				r.MoveTo(barLabelBox.Right, canvasBox.Bottom)
-				r.LineTo(barLabelBox.Right, canvasBox.Bottom+DefaultVerticalTickHeight)
+				r.MoveTo(barLabelBox.Right, axisYValue)
+				r.LineTo(barLabelBox.Right, axisYValue+DefaultVerticalTickHeight)
 				r.Stroke()
 			}
 			cursor += width + spacing
