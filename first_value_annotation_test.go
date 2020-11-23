@@ -3,11 +3,11 @@ package chart
 import (
 	"testing"
 
-	"github.com/blend/go-sdk/assert"
+	"github.com/wcharczuk/go-chart/v2/testutil"
 )
 
 func TestFirstValueAnnotation(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	series := ContinuousSeries{
 		XValues: []float64{1.0, 2.0, 3.0, 4.0, 5.0},
@@ -15,8 +15,8 @@ func TestFirstValueAnnotation(t *testing.T) {
 	}
 
 	fva := FirstValueAnnotation(series)
-	assert.NotEmpty(fva.Annotations)
+	testutil.AssertNotEmpty(t, fva.Annotations)
 	fvaa := fva.Annotations[0]
-	assert.Equal(1, fvaa.XValue)
-	assert.Equal(5, fvaa.YValue)
+	testutil.AssertEqual(t, 1, fvaa.XValue)
+	testutil.AssertEqual(t, 5, fvaa.YValue)
 }

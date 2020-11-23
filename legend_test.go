@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/blend/go-sdk/assert"
+	"github.com/wcharczuk/go-chart/v2/testutil"
 )
 
 func TestLegend(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	graph := Chart{
 		Series: []Series{
@@ -26,6 +26,6 @@ func TestLegend(t *testing.T) {
 	}
 	buf := bytes.NewBuffer([]byte{})
 	err := graph.Render(PNG, buf)
-	assert.Nil(err)
-	assert.NotZero(buf.Len())
+	testutil.AssertNil(t, err)
+	testutil.AssertNotZero(t, buf.Len())
 }

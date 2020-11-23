@@ -3,11 +3,11 @@ package chart
 import (
 	"testing"
 
-	"github.com/blend/go-sdk/assert"
+	"github.com/wcharczuk/go-chart/v2/testutil"
 )
 
 func TestPercentageDifferenceSeries(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	cs := ContinuousSeries{
 		XValues: LinearRange(1.0, 10.0),
@@ -19,17 +19,17 @@ func TestPercentageDifferenceSeries(t *testing.T) {
 		InnerSeries: cs,
 	}
 
-	assert.Equal("Test Series", pcs.GetName())
-	assert.Equal(10, pcs.Len())
+	testutil.AssertEqual(t, "Test Series", pcs.GetName())
+	testutil.AssertEqual(t, 10, pcs.Len())
 	x0, y0 := pcs.GetValues(0)
-	assert.Equal(1.0, x0)
-	assert.Equal(0, y0)
+	testutil.AssertEqual(t, 1.0, x0)
+	testutil.AssertEqual(t, 0, y0)
 
 	xn, yn := pcs.GetValues(9)
-	assert.Equal(10.0, xn)
-	assert.Equal(9.0, yn)
+	testutil.AssertEqual(t, 10.0, xn)
+	testutil.AssertEqual(t, 9.0, yn)
 
 	xn, yn = pcs.GetLastValues()
-	assert.Equal(10.0, xn)
-	assert.Equal(9.0, yn)
+	testutil.AssertEqual(t, 10.0, xn)
+	testutil.AssertEqual(t, 9.0, yn)
 }

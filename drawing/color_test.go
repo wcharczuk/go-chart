@@ -5,49 +5,49 @@ import (
 
 	"image/color"
 
-	"github.com/blend/go-sdk/assert"
+	"github.com/wcharczuk/go-chart/v2/testutil"
 )
 
 func TestColorFromHex(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	white := ColorFromHex("FFFFFF")
-	assert.Equal(ColorWhite, white)
+	testutil.AssertEqual(t, ColorWhite, white)
 
 	shortWhite := ColorFromHex("FFF")
-	assert.Equal(ColorWhite, shortWhite)
+	testutil.AssertEqual(t, ColorWhite, shortWhite)
 
 	black := ColorFromHex("000000")
-	assert.Equal(ColorBlack, black)
+	testutil.AssertEqual(t, ColorBlack, black)
 
 	shortBlack := ColorFromHex("000")
-	assert.Equal(ColorBlack, shortBlack)
+	testutil.AssertEqual(t, ColorBlack, shortBlack)
 
 	red := ColorFromHex("FF0000")
-	assert.Equal(ColorRed, red)
+	testutil.AssertEqual(t, ColorRed, red)
 
 	shortRed := ColorFromHex("F00")
-	assert.Equal(ColorRed, shortRed)
+	testutil.AssertEqual(t, ColorRed, shortRed)
 
 	green := ColorFromHex("00FF00")
-	assert.Equal(ColorGreen, green)
+	testutil.AssertEqual(t, ColorGreen, green)
 
 	shortGreen := ColorFromHex("0F0")
-	assert.Equal(ColorGreen, shortGreen)
+	testutil.AssertEqual(t, ColorGreen, shortGreen)
 
 	blue := ColorFromHex("0000FF")
-	assert.Equal(ColorBlue, blue)
+	testutil.AssertEqual(t, ColorBlue, blue)
 
 	shortBlue := ColorFromHex("00F")
-	assert.Equal(ColorBlue, shortBlue)
+	testutil.AssertEqual(t, ColorBlue, shortBlue)
 }
 
 func TestColorFromAlphaMixedRGBA(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	black := ColorFromAlphaMixedRGBA(color.Black.RGBA())
-	assert.True(black.Equals(ColorBlack), black.String())
+	testutil.AssertTrue(t, black.Equals(ColorBlack), black.String())
 
 	white := ColorFromAlphaMixedRGBA(color.White.RGBA())
-	assert.True(white.Equals(ColorWhite), white.String())
+	testutil.AssertTrue(t, white.Equals(ColorWhite), white.String())
 }

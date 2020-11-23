@@ -1,6 +1,6 @@
 package chart
 
-import "github.com/wcharczuk/go-chart/drawing"
+import "github.com/wcharczuk/go-chart/v2/drawing"
 
 // Jet is a color map provider based on matlab's jet color map.
 func Jet(v, vmin, vmax float64) drawing.Color {

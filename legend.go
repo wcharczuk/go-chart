@@ -1,7 +1,7 @@
 package chart
 
 import (
-	"github.com/wcharczuk/go-chart/drawing"
+	"github.com/wcharczuk/go-chart/v2/drawing"
 )
 
 // Legend returns a legend renderable function.

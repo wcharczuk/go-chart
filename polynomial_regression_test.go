@@ -3,12 +3,12 @@ package chart
 import (
 	"testing"
 
-	assert "github.com/blend/go-sdk/assert"
-	"github.com/wcharczuk/go-chart/matrix"
+	"github.com/wcharczuk/go-chart/v2/matrix"
+	"github.com/wcharczuk/go-chart/v2/testutil"
 )
 
 func TestPolynomialRegression(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	var xv []float64
 	var yv []float64
@@ -30,6 +30,6 @@ func TestPolynomialRegression(t *testing.T) {
 
 	for i := 0; i < 100; i++ {
 		_, y := poly.GetValues(i)
-		assert.InDelta(float64(i*i), y, matrix.DefaultEpsilon)
+		testutil.AssertInDelta(t, float64(i*i), y, matrix.DefaultEpsilon)
 	}
 }

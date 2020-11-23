@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/blend/go-sdk/assert"
+	"github.com/wcharczuk/go-chart/v2/testutil"
 )
 
 var (
@@ -63,13 +63,13 @@ var (
 )
 
 func TestMACDSeries(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	mockSeries := mockValuesProvider{
 		emaXValues,
 		emaYValues,
 	}
-	assert.Equal(50, mockSeries.Len())
+	testutil.AssertEqual(t, 50, mockSeries.Len())
 
 	mas := &MACDSeries{
 		InnerSeries: mockSeries,
@@ -81,8 +81,8 @@ func TestMACDSeries(t *testing.T) {
 		yvalues = append(yvalues, y)
 	}
 
-	assert.NotEmpty(yvalues)
+	testutil.AssertNotEmpty(t, yvalues)
 	for index, vy := range yvalues {
-		assert.InDelta(vy, macdExpected[index], emaDelta, fmt.Sprintf("delta @ %d actual: %0.9f expected: %0.9f", index, vy, macdExpected[index]))
+		testutil.AssertInDelta(t, vy, macdExpected[index], emaDelta, fmt.Sprintf("delta @ %d actual: %0.9f expected: %0.9f", index, vy, macdExpected[index]))
 	}
 }

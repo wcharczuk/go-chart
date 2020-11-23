@@ -4,11 +4,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/blend/go-sdk/assert"
+	"github.com/wcharczuk/go-chart/v2/testutil"
 )
 
 func TestTimeSeriesGetValue(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	ts := TimeSeries{
 		Name: "Test",
@@ -25,12 +25,12 @@ func TestTimeSeriesGetValue(t *testing.T) {
 	}
 
 	x0, y0 := ts.GetValues(0)
-	assert.NotZero(x0)
-	assert.Equal(1.0, y0)
+	testutil.AssertNotZero(t, x0)
+	testutil.AssertEqual(t, 1.0, y0)
 }
 
 func TestTimeSeriesValidate(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	cs := TimeSeries{
 		Name: "Test Series",
@@ -45,7 +45,7 @@ func TestTimeSeriesValidate(t *testing.T) {
 			1.0, 2.0, 3.0, 4.0, 5.0,
 		},
 	}
-	assert.Nil(cs.Validate())
+	testutil.AssertNil(t, cs.Validate())
 
 	cs = TimeSeries{
 		Name: "Test Series",
@@ -57,7 +57,7 @@ func TestTimeSeriesValidate(t *testing.T) {
 			time.Now().AddDate(0, 0, -1),
 		},
 	}
-	assert.NotNil(cs.Validate())
+	testutil.AssertNotNil(t, cs.Validate())
 
 	cs = TimeSeries{
 		Name: "Test Series",
@@ -65,5 +65,5 @@ func TestTimeSeriesValidate(t *testing.T) {
 			1.0, 2.0, 3.0, 4.0, 5.0,
 		},
 	}
-	assert.NotNil(cs.Validate())
+	testutil.AssertNotNil(t, cs.Validate())
 }

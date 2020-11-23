@@ -4,11 +4,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/blend/go-sdk/assert"
+	"github.com/wcharczuk/go-chart/v2/testutil"
 )
 
 func TestTimeValueFormatterWithFormat(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	d := time.Now()
 	di := TimeToFloat64(d)
@@ -17,42 +17,42 @@ func TestTimeValueFormatterWithFormat(t *testing.T) {
 	s := formatTime(d, DefaultDateFormat)
 	si := formatTime(di, DefaultDateFormat)
 	sf := formatTime(df, DefaultDateFormat)
-	assert.Equal(s, si)
-	assert.Equal(s, sf)
+	testutil.AssertEqual(t, s, si)
+	testutil.AssertEqual(t, s, sf)
 
 	sd := TimeValueFormatter(d)
 	sdi := TimeValueFormatter(di)
 	sdf := TimeValueFormatter(df)
-	assert.Equal(s, sd)
-	assert.Equal(s, sdi)
-	assert.Equal(s, sdf)
+	testutil.AssertEqual(t, s, sd)
+	testutil.AssertEqual(t, s, sdi)
+	testutil.AssertEqual(t, s, sdf)
 }
 
 func TestFloatValueFormatter(t *testing.T) {
-	assert := assert.New(t)
-	assert.Equal("1234.00", FloatValueFormatter(1234.00))
+	// replaced new assertions helper
+	testutil.AssertEqual(t, "1234.00", FloatValueFormatter(1234.00))
 }
 
 func TestFloatValueFormatterWithFloat32Input(t *testing.T) {
-	assert := assert.New(t)
-	assert.Equal("1234.00", FloatValueFormatter(float32(1234.00)))
+	// replaced new assertions helper
+	testutil.AssertEqual(t, "1234.00", FloatValueFormatter(float32(1234.00)))
 }
 
 func TestFloatValueFormatterWithIntegerInput(t *testing.T) {
-	assert := assert.New(t)
-	assert.Equal("1234.00", FloatValueFormatter(1234))
+	// replaced new assertions helper
+	testutil.AssertEqual(t, "1234.00", FloatValueFormatter(1234))
 }
 
 func TestFloatValueFormatterWithInt64Input(t *testing.T) {
-	assert := assert.New(t)
-	assert.Equal("1234.00", FloatValueFormatter(int64(1234)))
+	// replaced new assertions helper
+	testutil.AssertEqual(t, "1234.00", FloatValueFormatter(int64(1234)))
 }
 
 func TestFloatValueFormatterWithFormat(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	v := 123.456
 	sv := FloatValueFormatterWithFormat(v, "%.3f")
-	assert.Equal("123.456", sv)
-	assert.Equal("123.000", FloatValueFormatterWithFormat(123, "%.3f"))
+	testutil.AssertEqual(t, "123.456", sv)
+	testutil.AssertEqual(t, "123.000", FloatValueFormatterWithFormat(123, "%.3f"))
 }

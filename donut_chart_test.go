@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/blend/go-sdk/assert"
+	"github.com/wcharczuk/go-chart/v2/testutil"
 )
 
 func TestDonutChart(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	pie := DonutChart{
 		Canvas: Style{
@@ -27,11 +27,11 @@ func TestDonutChart(t *testing.T) {
 
 	b := bytes.NewBuffer([]byte{})
 	pie.Render(PNG, b)
-	assert.NotZero(b.Len())
+	testutil.AssertNotZero(t, b.Len())
 }
 
 func TestDonutChartDropsZeroValues(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	pie := DonutChart{
 		Canvas: Style{
@@ -46,11 +46,11 @@ func TestDonutChartDropsZeroValues(t *testing.T) {
 
 	b := bytes.NewBuffer([]byte{})
 	err := pie.Render(PNG, b)
-	assert.Nil(err)
+	testutil.AssertNil(t, err)
 }
 
 func TestDonutChartAllZeroValues(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	pie := DonutChart{
 		Canvas: Style{
@@ -65,5 +65,5 @@ func TestDonutChartAllZeroValues(t *testing.T) {
 
 	b := bytes.NewBuffer([]byte{})
 	err := pie.Render(PNG, b)
-	assert.NotNil(err)
+	testutil.AssertNotNil(t, err)
 }

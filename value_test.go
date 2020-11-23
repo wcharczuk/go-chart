@@ -3,11 +3,11 @@ package chart
 import (
 	"testing"
 
-	assert "github.com/blend/go-sdk/assert"
+	"github.com/wcharczuk/go-chart/v2/testutil"
 )
 
 func TestValuesValues(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	vs := []Value{
 		{Value: 10, Label: "Blue"},
@@ -20,18 +20,18 @@ func TestValuesValues(t *testing.T) {
 	}
 
 	values := Values(vs).Values()
-	assert.Len(values, 7)
-	assert.Equal(10, values[0])
-	assert.Equal(9, values[1])
-	assert.Equal(8, values[2])
-	assert.Equal(7, values[3])
-	assert.Equal(6, values[4])
-	assert.Equal(5, values[5])
-	assert.Equal(2, values[6])
+	testutil.AssertLen(t, values, 7)
+	testutil.AssertEqual(t, 10, values[0])
+	testutil.AssertEqual(t, 9, values[1])
+	testutil.AssertEqual(t, 8, values[2])
+	testutil.AssertEqual(t, 7, values[3])
+	testutil.AssertEqual(t, 6, values[4])
+	testutil.AssertEqual(t, 5, values[5])
+	testutil.AssertEqual(t, 2, values[6])
 }
 
 func TestValuesValuesNormalized(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	vs := []Value{
 		{Value: 10, Label: "Blue"},
@@ -44,13 +44,13 @@ func TestValuesValuesNormalized(t *testing.T) {
 	}
 
 	values := Values(vs).ValuesNormalized()
-	assert.Len(values, 7)
-	assert.Equal(0.2127, values[0])
-	assert.Equal(0.0425, values[6])
+	testutil.AssertLen(t, values, 7)
+	testutil.AssertEqual(t, 0.2127, values[0])
+	testutil.AssertEqual(t, 0.0425, values[6])
 }
 
 func TestValuesNormalize(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	vs := []Value{
 		{Value: 10, Label: "Blue"},
@@ -63,7 +63,7 @@ func TestValuesNormalize(t *testing.T) {
 	}
 
 	values := Values(vs).Normalize()
-	assert.Len(values, 7)
-	assert.Equal(0.2127, values[0].Value)
-	assert.Equal(0.0425, values[6].Value)
+	testutil.AssertLen(t, values, 7)
+	testutil.AssertEqual(t, 0.2127, values[0].Value)
+	testutil.AssertEqual(t, 0.0425, values[6].Value)
 }

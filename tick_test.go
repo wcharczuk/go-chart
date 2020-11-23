@@ -3,17 +3,17 @@ package chart
 import (
 	"testing"
 
-	assert "github.com/blend/go-sdk/assert"
+	"github.com/wcharczuk/go-chart/v2/testutil"
 )
 
 func TestGenerateContinuousTicks(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	f, err := GetDefaultFont()
-	assert.Nil(err)
+	testutil.AssertNil(t, err)
 
 	r, err := PNG(1024, 1024)
-	assert.Nil(err)
+	testutil.AssertNil(t, err)
 	r.SetFont(f)
 
 	ra := &ContinuousRange{
@@ -25,20 +25,20 @@ func TestGenerateContinuousTicks(t *testing.T) {
 	vf := FloatValueFormatter
 
 	ticks := GenerateContinuousTicks(r, ra, false, Style{}, vf)
-	assert.NotEmpty(ticks)
-	assert.Len(ticks, 11)
-	assert.Equal(0.0, ticks[0].Value)
-	assert.Equal(10, ticks[len(ticks)-1].Value)
+	testutil.AssertNotEmpty(t, ticks)
+	testutil.AssertLen(t, ticks, 11)
+	testutil.AssertEqual(t, 0.0, ticks[0].Value)
+	testutil.AssertEqual(t, 10, ticks[len(ticks)-1].Value)
 }
 
 func TestGenerateContinuousTicksDescending(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	f, err := GetDefaultFont()
-	assert.Nil(err)
+	testutil.AssertNil(t, err)
 
 	r, err := PNG(1024, 1024)
-	assert.Nil(err)
+	testutil.AssertNil(t, err)
 	r.SetFont(f)
 
 	ra := &ContinuousRange{
@@ -51,10 +51,10 @@ func TestGenerateContinuousTicksDescending(t *testing.T) {
 	vf := FloatValueFormatter
 
 	ticks := GenerateContinuousTicks(r, ra, false, Style{}, vf)
-	assert.NotEmpty(ticks)
-	assert.Len(ticks, 11)
-	assert.Equal(10.0, ticks[0].Value)
-	assert.Equal(9.0, ticks[1].Value)
-	assert.Equal(1.0, ticks[len(ticks)-2].Value)
-	assert.Equal(0.0, ticks[len(ticks)-1].Value)
+	testutil.AssertNotEmpty(t, ticks)
+	testutil.AssertLen(t, ticks, 11)
+	testutil.AssertEqual(t, 10.0, ticks[0].Value)
+	testutil.AssertEqual(t, 9.0, ticks[1].Value)
+	testutil.AssertEqual(t, 1.0, ticks[len(ticks)-2].Value)
+	testutil.AssertEqual(t, 0.0, ticks[len(ticks)-1].Value)
 }

@@ -3,139 +3,139 @@ package matrix
 import (
 	"testing"
 
-	assert "github.com/blend/go-sdk/assert"
+	"github.com/wcharczuk/go-chart/v2/testutil"
 )
 
 func TestNew(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	m := New(10, 5)
 	rows, cols := m.Size()
-	assert.Equal(10, rows)
-	assert.Equal(5, cols)
-	assert.Zero(m.Get(0, 0))
-	assert.Zero(m.Get(9, 4))
+	testutil.AssertEqual(t, 10, rows)
+	testutil.AssertEqual(t, 5, cols)
+	testutil.AssertZero(t, m.Get(0, 0))
+	testutil.AssertZero(t, m.Get(9, 4))
 }
 
 func TestNewWithValues(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	m := New(5, 2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 	rows, cols := m.Size()
-	assert.Equal(5, rows)
-	assert.Equal(2, cols)
-	assert.Equal(1, m.Get(0, 0))
-	assert.Equal(10, m.Get(4, 1))
+	testutil.AssertEqual(t, 5, rows)
+	testutil.AssertEqual(t, 2, cols)
+	testutil.AssertEqual(t, 1, m.Get(0, 0))
+	testutil.AssertEqual(t, 10, m.Get(4, 1))
 }
 
 func TestIdentitiy(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	id := Identity(5)
 	rows, cols := id.Size()
-	assert.Equal(5, rows)
-	assert.Equal(5, cols)
-	assert.Equal(1, id.Get(0, 0))
-	assert.Equal(1, id.Get(1, 1))
-	assert.Equal(1, id.Get(2, 2))
-	assert.Equal(1, id.Get(3, 3))
-	assert.Equal(1, id.Get(4, 4))
-	assert.Equal(0, id.Get(0, 1))
-	assert.Equal(0, id.Get(1, 0))
-	assert.Equal(0, id.Get(4, 0))
-	assert.Equal(0, id.Get(0, 4))
+	testutil.AssertEqual(t, 5, rows)
+	testutil.AssertEqual(t, 5, cols)
+	testutil.AssertEqual(t, 1, id.Get(0, 0))
+	testutil.AssertEqual(t, 1, id.Get(1, 1))
+	testutil.AssertEqual(t, 1, id.Get(2, 2))
+	testutil.AssertEqual(t, 1, id.Get(3, 3))
+	testutil.AssertEqual(t, 1, id.Get(4, 4))
+	testutil.AssertEqual(t, 0, id.Get(0, 1))
+	testutil.AssertEqual(t, 0, id.Get(1, 0))
+	testutil.AssertEqual(t, 0, id.Get(4, 0))
+	testutil.AssertEqual(t, 0, id.Get(0, 4))
 }
 
 func TestNewFromArrays(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	m := NewFromArrays([][]float64{
 		{1, 2, 3, 4},
 		{5, 6, 7, 8},
 	})
-	assert.NotNil(m)
+	testutil.AssertNotNil(t, m)
 
 	rows, cols := m.Size()
-	assert.Equal(2, rows)
-	assert.Equal(4, cols)
+	testutil.AssertEqual(t, 2, rows)
+	testutil.AssertEqual(t, 4, cols)
 }
 
 func TestOnes(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	ones := Ones(5, 10)
 	rows, cols := ones.Size()
-	assert.Equal(5, rows)
-	assert.Equal(10, cols)
+	testutil.AssertEqual(t, 5, rows)
+	testutil.AssertEqual(t, 10, cols)
 
 	for row := 0; row < rows; row++ {
 		for col := 0; col < cols; col++ {
-			assert.Equal(1, ones.Get(row, col))
+			testutil.AssertEqual(t, 1, ones.Get(row, col))
 		}
 	}
 }
 
 func TestMatrixEpsilon(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	ones := Ones(2, 2)
 	ones = ones.WithEpsilon(0.001)
-	assert.Equal(0.001, ones.Epsilon())
+	testutil.AssertEqual(t, 0.001, ones.Epsilon())
 }
 
 func TestMatrixArrays(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	m := NewFromArrays([][]float64{
 		{1, 2, 3},
 		{4, 5, 6},
 	})
 
-	assert.NotNil(m)
+	testutil.AssertNotNil(t, m)
 
 	arrays := m.Arrays()
 
-	assert.Equal(arrays, [][]float64{
+	testutil.AssertEqual(t, arrays, [][]float64{
 		{1, 2, 3},
 		{4, 5, 6},
 	})
 }
 
 func TestMatrixIsSquare(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
-	assert.False(NewFromArrays([][]float64{
+	testutil.AssertFalse(t, NewFromArrays([][]float64{
 		{1, 2, 3},
 		{4, 5, 6},
 	}).IsSquare())
 
-	assert.False(NewFromArrays([][]float64{
+	testutil.AssertFalse(t, NewFromArrays([][]float64{
 		{1, 2},
 		{3, 4},
 		{5, 6},
 	}).IsSquare())
 
-	assert.True(NewFromArrays([][]float64{
+	testutil.AssertTrue(t, NewFromArrays([][]float64{
 		{1, 2},
 		{3, 4},
 	}).IsSquare())
 }
 
 func TestMatrixIsSymmetric(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
-	assert.False(NewFromArrays([][]float64{
+	testutil.AssertFalse(t, NewFromArrays([][]float64{
 		{1, 2, 3},
 		{2, 1, 2},
 	}).IsSymmetric())
 
-	assert.False(NewFromArrays([][]float64{
+	testutil.AssertFalse(t, NewFromArrays([][]float64{
 		{1, 2, 3},
 		{4, 5, 6},
 		{7, 8, 9},
 	}).IsSymmetric())
 
-	assert.True(NewFromArrays([][]float64{
+	testutil.AssertTrue(t, NewFromArrays([][]float64{
 		{1, 2, 3},
 		{2, 1, 2},
 		{3, 2, 1},
@@ -144,7 +144,7 @@ func TestMatrixIsSymmetric(t *testing.T) {
 }
 
 func TestMatrixGet(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	m := NewFromArrays([][]float64{
 		{1, 2, 3},
@@ -152,19 +152,19 @@ func TestMatrixGet(t *testing.T) {
 		{7, 8, 9},
 	})
 
-	assert.Equal(1, m.Get(0, 0))
-	assert.Equal(2, m.Get(0, 1))
-	assert.Equal(3, m.Get(0, 2))
-	assert.Equal(4, m.Get(1, 0))
-	assert.Equal(5, m.Get(1, 1))
-	assert.Equal(6, m.Get(1, 2))
-	assert.Equal(7, m.Get(2, 0))
-	assert.Equal(8, m.Get(2, 1))
-	assert.Equal(9, m.Get(2, 2))
+	testutil.AssertEqual(t, 1, m.Get(0, 0))
+	testutil.AssertEqual(t, 2, m.Get(0, 1))
+	testutil.AssertEqual(t, 3, m.Get(0, 2))
+	testutil.AssertEqual(t, 4, m.Get(1, 0))
+	testutil.AssertEqual(t, 5, m.Get(1, 1))
+	testutil.AssertEqual(t, 6, m.Get(1, 2))
+	testutil.AssertEqual(t, 7, m.Get(2, 0))
+	testutil.AssertEqual(t, 8, m.Get(2, 1))
+	testutil.AssertEqual(t, 9, m.Get(2, 2))
 }
 
 func TestMatrixSet(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	m := NewFromArrays([][]float64{
 		{1, 2, 3},
@@ -173,11 +173,11 @@ func TestMatrixSet(t *testing.T) {
 	})
 
 	m.Set(1, 1, 99)
-	assert.Equal(99, m.Get(1, 1))
+	testutil.AssertEqual(t, 99, m.Get(1, 1))
 }
 
 func TestMatrixCol(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	m := NewFromArrays([][]float64{
 		{1, 2, 3},
@@ -185,13 +185,13 @@ func TestMatrixCol(t *testing.T) {
 		{7, 8, 9},
 	})
 
-	assert.Equal([]float64{1, 4, 7}, m.Col(0))
-	assert.Equal([]float64{2, 5, 8}, m.Col(1))
-	assert.Equal([]float64{3, 6, 9}, m.Col(2))
+	testutil.AssertEqual(t, []float64{1, 4, 7}, m.Col(0))
+	testutil.AssertEqual(t, []float64{2, 5, 8}, m.Col(1))
+	testutil.AssertEqual(t, []float64{3, 6, 9}, m.Col(2))
 }
 
 func TestMatrixRow(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	m := NewFromArrays([][]float64{
 		{1, 2, 3},
@@ -199,13 +199,13 @@ func TestMatrixRow(t *testing.T) {
 		{7, 8, 9},
 	})
 
-	assert.Equal([]float64{1, 2, 3}, m.Row(0))
-	assert.Equal([]float64{4, 5, 6}, m.Row(1))
-	assert.Equal([]float64{7, 8, 9}, m.Row(2))
+	testutil.AssertEqual(t, []float64{1, 2, 3}, m.Row(0))
+	testutil.AssertEqual(t, []float64{4, 5, 6}, m.Row(1))
+	testutil.AssertEqual(t, []float64{7, 8, 9}, m.Row(2))
 }
 
 func TestMatrixSwapRows(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	m := NewFromArrays([][]float64{
 		{1, 2, 3},
@@ -215,13 +215,13 @@ func TestMatrixSwapRows(t *testing.T) {
 
 	m.SwapRows(0, 1)
 
-	assert.Equal([]float64{4, 5, 6}, m.Row(0))
-	assert.Equal([]float64{1, 2, 3}, m.Row(1))
-	assert.Equal([]float64{7, 8, 9}, m.Row(2))
+	testutil.AssertEqual(t, []float64{4, 5, 6}, m.Row(0))
+	testutil.AssertEqual(t, []float64{1, 2, 3}, m.Row(1))
+	testutil.AssertEqual(t, []float64{7, 8, 9}, m.Row(2))
 }
 
 func TestMatrixCopy(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	m := NewFromArrays([][]float64{
 		{1, 2, 3},
@@ -230,12 +230,12 @@ func TestMatrixCopy(t *testing.T) {
 	})
 
 	m2 := m.Copy()
-	assert.False(m == m2)
-	assert.True(m.Equals(m2))
+	testutil.AssertFalse(t, m == m2)
+	testutil.AssertTrue(t, m.Equals(m2))
 }
 
 func TestMatrixDiagonalVector(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	m := NewFromArrays([][]float64{
 		{1, 4, 7},
@@ -244,11 +244,11 @@ func TestMatrixDiagonalVector(t *testing.T) {
 	})
 
 	diag := m.DiagonalVector()
-	assert.Equal([]float64{1, 2, 3}, diag)
+	testutil.AssertEqual(t, []float64{1, 2, 3}, diag)
 }
 
 func TestMatrixDiagonalVectorLandscape(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	m := NewFromArrays([][]float64{
 		{1, 4, 7, 99},
@@ -256,11 +256,11 @@ func TestMatrixDiagonalVectorLandscape(t *testing.T) {
 	})
 
 	diag := m.DiagonalVector()
-	assert.Equal([]float64{1, 2}, diag)
+	testutil.AssertEqual(t, []float64{1, 2}, diag)
 }
 
 func TestMatrixDiagonalVectorPortrait(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	m := NewFromArrays([][]float64{
 		{1, 4},
@@ -269,11 +269,11 @@ func TestMatrixDiagonalVectorPortrait(t *testing.T) {
 	})
 
 	diag := m.DiagonalVector()
-	assert.Equal([]float64{1, 2}, diag)
+	testutil.AssertEqual(t, []float64{1, 2}, diag)
 }
 
 func TestMatrixDiagonal(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	m := NewFromArrays([][]float64{
 		{1, 4, 7},
@@ -287,11 +287,11 @@ func TestMatrixDiagonal(t *testing.T) {
 		{0, 0, 3},
 	})
 
-	assert.True(m.Diagonal().Equals(m2))
+	testutil.AssertTrue(t, m.Diagonal().Equals(m2))
 }
 
 func TestMatrixEquals(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	m := NewFromArrays([][]float64{
 		{1, 4, 7},
@@ -299,16 +299,16 @@ func TestMatrixEquals(t *testing.T) {
 		{7, 8, 3},
 	})
 
-	assert.False(m.Equals(nil))
+	testutil.AssertFalse(t, m.Equals(nil))
 	var nilMatrix *Matrix
-	assert.True(nilMatrix.Equals(nil))
-	assert.False(m.Equals(New(1, 1)))
-	assert.False(m.Equals(New(3, 3)))
-	assert.True(m.Equals(New(3, 3, 1, 4, 7, 4, 2, 8, 7, 8, 3)))
+	testutil.AssertTrue(t, nilMatrix.Equals(nil))
+	testutil.AssertFalse(t, m.Equals(New(1, 1)))
+	testutil.AssertFalse(t, m.Equals(New(3, 3)))
+	testutil.AssertTrue(t, m.Equals(New(3, 3, 1, 4, 7, 4, 2, 8, 7, 8, 3)))
 }
 
 func TestMatrixL(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	m := NewFromArrays([][]float64{
 		{1, 2, 3},
@@ -317,11 +317,11 @@ func TestMatrixL(t *testing.T) {
 	})
 
 	l := m.L()
-	assert.True(l.Equals(New(3, 3, 1, 2, 3, 0, 5, 6, 0, 0, 9)))
+	testutil.AssertTrue(t, l.Equals(New(3, 3, 1, 2, 3, 0, 5, 6, 0, 0, 9)))
 }
 
 func TestMatrixU(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	m := NewFromArrays([][]float64{
 		{1, 2, 3},
@@ -330,11 +330,11 @@ func TestMatrixU(t *testing.T) {
 	})
 
 	u := m.U()
-	assert.True(u.Equals(New(3, 3, 0, 0, 0, 4, 0, 0, 7, 8, 0)))
+	testutil.AssertTrue(t, u.Equals(New(3, 3, 0, 0, 0, 4, 0, 0, 7, 8, 0)))
 }
 
 func TestMatrixString(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	m := NewFromArrays([][]float64{
 		{1, 2, 3},
@@ -342,11 +342,11 @@ func TestMatrixString(t *testing.T) {
 		{7, 8, 9},
 	})
 
-	assert.Equal("1 2 3 \n4 5 6 \n7 8 9 \n", m.String())
+	testutil.AssertEqual(t, "1 2 3 \n4 5 6 \n7 8 9 \n", m.String())
 }
 
 func TestMatrixLU(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	m := NewFromArrays([][]float64{
 		{1, 3, 5},
@@ -355,13 +355,13 @@ func TestMatrixLU(t *testing.T) {
 	})
 
 	l, u, p := m.LU()
-	assert.NotNil(l)
-	assert.NotNil(u)
-	assert.NotNil(p)
+	testutil.AssertNotNil(t, l)
+	testutil.AssertNotNil(t, u)
+	testutil.AssertNotNil(t, p)
 }
 
 func TestMatrixQR(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	m := NewFromArrays([][]float64{
 		{12, -51, 4},
@@ -370,12 +370,12 @@ func TestMatrixQR(t *testing.T) {
 	})
 
 	q, r := m.QR()
-	assert.NotNil(q)
-	assert.NotNil(r)
+	testutil.AssertNotNil(t, q)
+	testutil.AssertNotNil(t, r)
 }
 
 func TestMatrixTranspose(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	m := NewFromArrays([][]float64{
 		{1, 2, 3},
@@ -387,10 +387,10 @@ func TestMatrixTranspose(t *testing.T) {
 	m2 := m.Transpose()
 
 	rows, cols := m2.Size()
-	assert.Equal(3, rows)
-	assert.Equal(4, cols)
+	testutil.AssertEqual(t, 3, rows)
+	testutil.AssertEqual(t, 4, cols)
 
-	assert.Equal(1, m2.Get(0, 0))
-	assert.Equal(10, m2.Get(0, 3))
-	assert.Equal(3, m2.Get(2, 0))
+	testutil.AssertEqual(t, 1, m2.Get(0, 0))
+	testutil.AssertEqual(t, 10, m2.Get(0, 3))
+	testutil.AssertEqual(t, 3, m2.Get(2, 0))
 }

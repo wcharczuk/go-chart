@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"testing"
 
-	assert "github.com/blend/go-sdk/assert"
+	"github.com/wcharczuk/go-chart/v2/testutil"
 )
 
 func TestContinuousSeries(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	cs := ContinuousSeries{
 		Name:    "Test Series",
@@ -16,23 +16,23 @@ func TestContinuousSeries(t *testing.T) {
 		YValues: LinearRange(1.0, 10.0),
 	}
 
-	assert.Equal("Test Series", cs.GetName())
-	assert.Equal(10, cs.Len())
+	testutil.AssertEqual(t, "Test Series", cs.GetName())
+	testutil.AssertEqual(t, 10, cs.Len())
 	x0, y0 := cs.GetValues(0)
-	assert.Equal(1.0, x0)
-	assert.Equal(1.0, y0)
+	testutil.AssertEqual(t, 1.0, x0)
+	testutil.AssertEqual(t, 1.0, y0)
 
 	xn, yn := cs.GetValues(9)
-	assert.Equal(10.0, xn)
-	assert.Equal(10.0, yn)
+	testutil.AssertEqual(t, 10.0, xn)
+	testutil.AssertEqual(t, 10.0, yn)
 
 	xn, yn = cs.GetLastValues()
-	assert.Equal(10.0, xn)
-	assert.Equal(10.0, yn)
+	testutil.AssertEqual(t, 10.0, xn)
+	testutil.AssertEqual(t, 10.0, yn)
 }
 
 func TestContinuousSeriesValueFormatter(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	cs := ContinuousSeries{
 		XValueFormatter: func(v interface{}) string {
@@ -44,29 +44,29 @@ func TestContinuousSeriesValueFormatter(t *testing.T) {
 	}
 
 	xf, yf := cs.GetValueFormatters()
-	assert.Equal("0.100000 foo", xf(0.1))
-	assert.Equal("0.100000 bar", yf(0.1))
+	testutil.AssertEqual(t, "0.100000 foo", xf(0.1))
+	testutil.AssertEqual(t, "0.100000 bar", yf(0.1))
 }
 
 func TestContinuousSeriesValidate(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	cs := ContinuousSeries{
 		Name:    "Test Series",
 		XValues: LinearRange(1.0, 10.0),
 		YValues: LinearRange(1.0, 10.0),
 	}
-	assert.Nil(cs.Validate())
+	testutil.AssertNil(t, cs.Validate())
 
 	cs = ContinuousSeries{
 		Name:    "Test Series",
 		XValues: LinearRange(1.0, 10.0),
 	}
-	assert.NotNil(cs.Validate())
+	testutil.AssertNotNil(t, cs.Validate())
 
 	cs = ContinuousSeries{
 		Name:    "Test Series",
 		YValues: LinearRange(1.0, 10.0),
 	}
-	assert.NotNil(cs.Validate())
+	testutil.AssertNotNil(t, cs.Validate())
 }

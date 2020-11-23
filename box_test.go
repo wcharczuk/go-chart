@@ -4,131 +4,131 @@ import (
 	"math"
 	"testing"
 
-	"github.com/blend/go-sdk/assert"
+	"github.com/wcharczuk/go-chart/v2/testutil"
 )
 
 func TestBoxClone(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 	a := Box{Top: 5, Left: 5, Right: 15, Bottom: 15}
 	b := a.Clone()
-	assert.True(a.Equals(b))
-	assert.True(b.Equals(a))
+	testutil.AssertTrue(t, a.Equals(b))
+	testutil.AssertTrue(t, b.Equals(a))
 }
 
 func TestBoxEquals(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	a := Box{Top: 5, Left: 5, Right: 15, Bottom: 15}
 	b := Box{Top: 10, Left: 10, Right: 30, Bottom: 30}
 	c := Box{Top: 5, Left: 5, Right: 15, Bottom: 15}
-	assert.True(a.Equals(a))
-	assert.True(a.Equals(c))
-	assert.True(c.Equals(a))
-	assert.False(a.Equals(b))
-	assert.False(c.Equals(b))
-	assert.False(b.Equals(a))
-	assert.False(b.Equals(c))
+	testutil.AssertTrue(t, a.Equals(a))
+	testutil.AssertTrue(t, a.Equals(c))
+	testutil.AssertTrue(t, c.Equals(a))
+	testutil.AssertFalse(t, a.Equals(b))
+	testutil.AssertFalse(t, c.Equals(b))
+	testutil.AssertFalse(t, b.Equals(a))
+	testutil.AssertFalse(t, b.Equals(c))
 }
 
 func TestBoxIsBiggerThan(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	a := Box{Top: 5, Left: 5, Right: 25, Bottom: 25}
 	b := Box{Top: 10, Left: 10, Right: 20, Bottom: 20} // only half bigger
 	c := Box{Top: 1, Left: 1, Right: 30, Bottom: 30}   //bigger
-	assert.True(a.IsBiggerThan(b))
-	assert.False(a.IsBiggerThan(c))
-	assert.True(c.IsBiggerThan(a))
+	testutil.AssertTrue(t, a.IsBiggerThan(b))
+	testutil.AssertFalse(t, a.IsBiggerThan(c))
+	testutil.AssertTrue(t, c.IsBiggerThan(a))
 }
 
 func TestBoxIsSmallerThan(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	a := Box{Top: 5, Left: 5, Right: 25, Bottom: 25}
 	b := Box{Top: 10, Left: 10, Right: 20, Bottom: 20} // only half bigger
 	c := Box{Top: 1, Left: 1, Right: 30, Bottom: 30}   //bigger
-	assert.False(a.IsSmallerThan(b))
-	assert.True(a.IsSmallerThan(c))
-	assert.False(c.IsSmallerThan(a))
+	testutil.AssertFalse(t, a.IsSmallerThan(b))
+	testutil.AssertTrue(t, a.IsSmallerThan(c))
+	testutil.AssertFalse(t, c.IsSmallerThan(a))
 }
 
 func TestBoxGrow(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	a := Box{Top: 1, Left: 2, Right: 15, Bottom: 15}
 	b := Box{Top: 4, Left: 5, Right: 30, Bottom: 35}
 	c := a.Grow(b)
-	assert.False(c.Equals(b))
-	assert.False(c.Equals(a))
-	assert.Equal(1, c.Top)
-	assert.Equal(2, c.Left)
-	assert.Equal(30, c.Right)
-	assert.Equal(35, c.Bottom)
+	testutil.AssertFalse(t, c.Equals(b))
+	testutil.AssertFalse(t, c.Equals(a))
+	testutil.AssertEqual(t, 1, c.Top)
+	testutil.AssertEqual(t, 2, c.Left)
+	testutil.AssertEqual(t, 30, c.Right)
+	testutil.AssertEqual(t, 35, c.Bottom)
 }
 
 func TestBoxFit(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	a := Box{Top: 64, Left: 64, Right: 192, Bottom: 192}
 	b := Box{Top: 16, Left: 16, Right: 256, Bottom: 170}
 	c := Box{Top: 16, Left: 16, Right: 170, Bottom: 256}
 
 	fab := a.Fit(b)
-	assert.Equal(a.Left, fab.Left)
-	assert.Equal(a.Right, fab.Right)
-	assert.True(fab.Top < fab.Bottom)
-	assert.True(fab.Left < fab.Right)
-	assert.True(math.Abs(b.Aspect()-fab.Aspect()) < 0.02)
+	testutil.AssertEqual(t, a.Left, fab.Left)
+	testutil.AssertEqual(t, a.Right, fab.Right)
+	testutil.AssertTrue(t, fab.Top < fab.Bottom)
+	testutil.AssertTrue(t, fab.Left < fab.Right)
+	testutil.AssertTrue(t, math.Abs(b.Aspect()-fab.Aspect()) < 0.02)
 
 	fac := a.Fit(c)
-	assert.Equal(a.Top, fac.Top)
-	assert.Equal(a.Bottom, fac.Bottom)
-	assert.True(math.Abs(c.Aspect()-fac.Aspect()) < 0.02)
+	testutil.AssertEqual(t, a.Top, fac.Top)
+	testutil.AssertEqual(t, a.Bottom, fac.Bottom)
+	testutil.AssertTrue(t, math.Abs(c.Aspect()-fac.Aspect()) < 0.02)
 }
 
 func TestBoxConstrain(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	a := Box{Top: 64, Left: 64, Right: 192, Bottom: 192}
 	b := Box{Top: 16, Left: 16, Right: 256, Bottom: 170}
 	c := Box{Top: 16, Left: 16, Right: 170, Bottom: 256}
 
 	cab := a.Constrain(b)
-	assert.Equal(64, cab.Top)
-	assert.Equal(64, cab.Left)
-	assert.Equal(192, cab.Right)
-	assert.Equal(170, cab.Bottom)
+	testutil.AssertEqual(t, 64, cab.Top)
+	testutil.AssertEqual(t, 64, cab.Left)
+	testutil.AssertEqual(t, 192, cab.Right)
+	testutil.AssertEqual(t, 170, cab.Bottom)
 
 	cac := a.Constrain(c)
-	assert.Equal(64, cac.Top)
-	assert.Equal(64, cac.Left)
-	assert.Equal(170, cac.Right)
-	assert.Equal(192, cac.Bottom)
+	testutil.AssertEqual(t, 64, cac.Top)
+	testutil.AssertEqual(t, 64, cac.Left)
+	testutil.AssertEqual(t, 170, cac.Right)
+	testutil.AssertEqual(t, 192, cac.Bottom)
 }
 
 func TestBoxOuterConstrain(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	box := NewBox(0, 0, 100, 100)
 	canvas := NewBox(5, 5, 95, 95)
 	taller := NewBox(-10, 5, 50, 50)
 
 	c := canvas.OuterConstrain(box, taller)
-	assert.Equal(15, c.Top, c.String())
-	assert.Equal(5, c.Left, c.String())
-	assert.Equal(95, c.Right, c.String())
-	assert.Equal(95, c.Bottom, c.String())
+	testutil.AssertEqual(t, 15, c.Top, c.String())
+	testutil.AssertEqual(t, 5, c.Left, c.String())
+	testutil.AssertEqual(t, 95, c.Right, c.String())
+	testutil.AssertEqual(t, 95, c.Bottom, c.String())
 
 	wider := NewBox(5, 5, 110, 50)
 	d := canvas.OuterConstrain(box, wider)
-	assert.Equal(5, d.Top, d.String())
-	assert.Equal(5, d.Left, d.String())
-	assert.Equal(85, d.Right, d.String())
-	assert.Equal(95, d.Bottom, d.String())
+	testutil.AssertEqual(t, 5, d.Top, d.String())
+	testutil.AssertEqual(t, 5, d.Left, d.String())
+	testutil.AssertEqual(t, 85, d.Right, d.String())
+	testutil.AssertEqual(t, 95, d.Bottom, d.String())
 }
 
 func TestBoxShift(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	b := Box{
 		Top:    5,
@@ -138,14 +138,14 @@ func TestBoxShift(t *testing.T) {
 	}
 
 	shifted := b.Shift(1, 2)
-	assert.Equal(7, shifted.Top)
-	assert.Equal(6, shifted.Left)
-	assert.Equal(11, shifted.Right)
-	assert.Equal(12, shifted.Bottom)
+	testutil.AssertEqual(t, 7, shifted.Top)
+	testutil.AssertEqual(t, 6, shifted.Left)
+	testutil.AssertEqual(t, 11, shifted.Right)
+	testutil.AssertEqual(t, 12, shifted.Bottom)
 }
 
 func TestBoxCenter(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	b := Box{
 		Top:    10,
@@ -154,12 +154,12 @@ func TestBoxCenter(t *testing.T) {
 		Bottom: 30,
 	}
 	cx, cy := b.Center()
-	assert.Equal(15, cx)
-	assert.Equal(20, cy)
+	testutil.AssertEqual(t, 15, cx)
+	testutil.AssertEqual(t, 20, cy)
 }
 
 func TestBoxCornersCenter(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	bc := BoxCorners{
 		TopLeft:     Point{5, 5},
@@ -169,12 +169,12 @@ func TestBoxCornersCenter(t *testing.T) {
 	}
 
 	cx, cy := bc.Center()
-	assert.Equal(10, cx)
-	assert.Equal(10, cy)
+	testutil.AssertEqual(t, 10, cx)
+	testutil.AssertEqual(t, 10, cy)
 }
 
 func TestBoxCornersRotate(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	bc := BoxCorners{
 		TopLeft:     Point{5, 5},
@@ -184,5 +184,5 @@ func TestBoxCornersRotate(t *testing.T) {
 	}
 
 	rotated := bc.Rotate(45)
-	assert.True(rotated.TopLeft.Equals(Point{10, 3}), rotated.String())
+	testutil.AssertTrue(t, rotated.TopLeft.Equals(Point{10, 3}), rotated.String())
 }

@@ -5,11 +5,11 @@ import (
 	"math"
 	"testing"
 
-	assert "github.com/blend/go-sdk/assert"
+	"github.com/wcharczuk/go-chart/v2/testutil"
 )
 
 func TestBarChartRender(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	bc := BarChart{
 		Width: 1024,
@@ -25,12 +25,12 @@ func TestBarChartRender(t *testing.T) {
 
 	buf := bytes.NewBuffer([]byte{})
 	err := bc.Render(PNG, buf)
-	assert.Nil(err)
-	assert.NotZero(buf.Len())
+	testutil.AssertNil(t, err)
+	testutil.AssertNotZero(t, buf.Len())
 }
 
 func TestBarChartRenderZero(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	bc := BarChart{
 		Width: 1024,
@@ -43,64 +43,64 @@ func TestBarChartRenderZero(t *testing.T) {
 
 	buf := bytes.NewBuffer([]byte{})
 	err := bc.Render(PNG, buf)
-	assert.NotNil(err)
+	testutil.AssertNotNil(t, err)
 }
 
 func TestBarChartProps(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	bc := BarChart{}
 
-	assert.Equal(DefaultDPI, bc.GetDPI())
+	testutil.AssertEqual(t, DefaultDPI, bc.GetDPI())
 	bc.DPI = 100
-	assert.Equal(100, bc.GetDPI())
+	testutil.AssertEqual(t, 100, bc.GetDPI())
 
-	assert.Nil(bc.GetFont())
+	testutil.AssertNil(t, bc.GetFont())
 	f, err := GetDefaultFont()
-	assert.Nil(err)
+	testutil.AssertNil(t, err)
 	bc.Font = f
-	assert.NotNil(bc.GetFont())
+	testutil.AssertNotNil(t, bc.GetFont())
 
-	assert.Equal(DefaultChartWidth, bc.GetWidth())
+	testutil.AssertEqual(t, DefaultChartWidth, bc.GetWidth())
 	bc.Width = DefaultChartWidth - 1
-	assert.Equal(DefaultChartWidth-1, bc.GetWidth())
+	testutil.AssertEqual(t, DefaultChartWidth-1, bc.GetWidth())
 
-	assert.Equal(DefaultChartHeight, bc.GetHeight())
+	testutil.AssertEqual(t, DefaultChartHeight, bc.GetHeight())
 	bc.Height = DefaultChartHeight - 1
-	assert.Equal(DefaultChartHeight-1, bc.GetHeight())
+	testutil.AssertEqual(t, DefaultChartHeight-1, bc.GetHeight())
 
-	assert.Equal(DefaultBarSpacing, bc.GetBarSpacing())
+	testutil.AssertEqual(t, DefaultBarSpacing, bc.GetBarSpacing())
 	bc.BarSpacing = 150
-	assert.Equal(150, bc.GetBarSpacing())
+	testutil.AssertEqual(t, 150, bc.GetBarSpacing())
 
-	assert.Equal(DefaultBarWidth, bc.GetBarWidth())
+	testutil.AssertEqual(t, DefaultBarWidth, bc.GetBarWidth())
 	bc.BarWidth = 75
-	assert.Equal(75, bc.GetBarWidth())
+	testutil.AssertEqual(t, 75, bc.GetBarWidth())
 }
 
 func TestBarChartRenderNoBars(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	bc := BarChart{}
 	err := bc.Render(PNG, bytes.NewBuffer([]byte{}))
-	assert.NotNil(err)
+	testutil.AssertNotNil(t, err)
 }
 
 func TestBarChartGetRanges(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	bc := BarChart{}
 
 	yr := bc.getRanges()
-	assert.NotNil(yr)
-	assert.False(yr.IsZero())
+	testutil.AssertNotNil(t, yr)
+	testutil.AssertFalse(t, yr.IsZero())
 
-	assert.Equal(-math.MaxFloat64, yr.GetMax())
-	assert.Equal(math.MaxFloat64, yr.GetMin())
+	testutil.AssertEqual(t, -math.MaxFloat64, yr.GetMax())
+	testutil.AssertEqual(t, math.MaxFloat64, yr.GetMin())
 }
 
 func TestBarChartGetRangesBarsMinMax(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	bc := BarChart{
 		Bars: []Value{
@@ -110,15 +110,15 @@ func TestBarChartGetRangesBarsMinMax(t *testing.T) {
 	}
 
 	yr := bc.getRanges()
-	assert.NotNil(yr)
-	assert.False(yr.IsZero())
+	testutil.AssertNotNil(t, yr)
+	testutil.AssertFalse(t, yr.IsZero())
 
-	assert.Equal(10, yr.GetMax())
-	assert.Equal(1, yr.GetMin())
+	testutil.AssertEqual(t, 10, yr.GetMax())
+	testutil.AssertEqual(t, 1, yr.GetMin())
 }
 
 func TestBarChartGetRangesMinMax(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	bc := BarChart{
 		YAxis: YAxis{
@@ -138,15 +138,15 @@ func TestBarChartGetRangesMinMax(t *testing.T) {
 	}
 
 	yr := bc.getRanges()
-	assert.NotNil(yr)
-	assert.False(yr.IsZero())
+	testutil.AssertNotNil(t, yr)
+	testutil.AssertFalse(t, yr.IsZero())
 
-	assert.Equal(15, yr.GetMax())
-	assert.Equal(5, yr.GetMin())
+	testutil.AssertEqual(t, 15, yr.GetMax())
+	testutil.AssertEqual(t, 5, yr.GetMin())
 }
 
 func TestBarChartGetRangesTicksMinMax(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	bc := BarChart{
 		YAxis: YAxis{
@@ -162,56 +162,56 @@ func TestBarChartGetRangesTicksMinMax(t *testing.T) {
 	}
 
 	yr := bc.getRanges()
-	assert.NotNil(yr)
-	assert.False(yr.IsZero())
+	testutil.AssertNotNil(t, yr)
+	testutil.AssertFalse(t, yr.IsZero())
 
-	assert.Equal(11, yr.GetMax())
-	assert.Equal(7, yr.GetMin())
+	testutil.AssertEqual(t, 11, yr.GetMax())
+	testutil.AssertEqual(t, 7, yr.GetMin())
 }
 
 func TestBarChartHasAxes(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	bc := BarChart{}
-	assert.True(bc.hasAxes())
+	testutil.AssertTrue(t, bc.hasAxes())
 	bc.YAxis = YAxis{
 		Style: Hidden(),
 	}
-	assert.False(bc.hasAxes())
+	testutil.AssertFalse(t, bc.hasAxes())
 }
 
 func TestBarChartGetDefaultCanvasBox(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	bc := BarChart{}
 	b := bc.getDefaultCanvasBox()
-	assert.False(b.IsZero())
+	testutil.AssertFalse(t, b.IsZero())
 }
 
 func TestBarChartSetRangeDomains(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	bc := BarChart{}
 	cb := bc.box()
 	yr := bc.getRanges()
 	yr2 := bc.setRangeDomains(cb, yr)
-	assert.NotZero(yr2.GetDomain())
+	testutil.AssertNotZero(t, yr2.GetDomain())
 }
 
 func TestBarChartGetValueFormatters(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	bc := BarChart{}
 	vf := bc.getValueFormatters()
-	assert.NotNil(vf)
-	assert.Equal("1234.00", vf(1234.0))
+	testutil.AssertNotNil(t, vf)
+	testutil.AssertEqual(t, "1234.00", vf(1234.0))
 
 	bc.YAxis.ValueFormatter = func(_ interface{}) string { return "test" }
-	assert.Equal("test", bc.getValueFormatters()(1234))
+	testutil.AssertEqual(t, "test", bc.getValueFormatters()(1234))
 }
 
 func TestBarChartGetAxesTicks(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	bc := BarChart{
 		Bars: []Value{
@@ -222,21 +222,21 @@ func TestBarChartGetAxesTicks(t *testing.T) {
 	}
 
 	r, err := PNG(128, 128)
-	assert.Nil(err)
+	testutil.AssertNil(t, err)
 	yr := bc.getRanges()
 	yf := bc.getValueFormatters()
 
 	bc.YAxis.Style.Hidden = true
 	ticks := bc.getAxesTicks(r, yr, yf)
-	assert.Empty(ticks)
+	testutil.AssertEmpty(t, ticks)
 
 	bc.YAxis.Style.Hidden = false
 	ticks = bc.getAxesTicks(r, yr, yf)
-	assert.Len(ticks, 2)
+	testutil.AssertLen(t, ticks, 2)
 }
 
 func TestBarChartCalculateEffectiveBarSpacing(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	bc := BarChart{
 		Width:    1024,
@@ -251,15 +251,15 @@ func TestBarChartCalculateEffectiveBarSpacing(t *testing.T) {
 	}
 
 	spacing := bc.calculateEffectiveBarSpacing(bc.box())
-	assert.NotZero(spacing)
+	testutil.AssertNotZero(t, spacing)
 
 	bc.BarWidth = 250
 	spacing = bc.calculateEffectiveBarSpacing(bc.box())
-	assert.Zero(spacing)
+	testutil.AssertZero(t, spacing)
 }
 
 func TestBarChartCalculateEffectiveBarWidth(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	bc := BarChart{
 		Width:    1024,
@@ -276,35 +276,35 @@ func TestBarChartCalculateEffectiveBarWidth(t *testing.T) {
 	cb := bc.box()
 
 	spacing := bc.calculateEffectiveBarSpacing(bc.box())
-	assert.NotZero(spacing)
+	testutil.AssertNotZero(t, spacing)
 
 	barWidth := bc.calculateEffectiveBarWidth(bc.box(), spacing)
-	assert.Equal(10, barWidth)
+	testutil.AssertEqual(t, 10, barWidth)
 
 	bc.BarWidth = 250
 	spacing = bc.calculateEffectiveBarSpacing(bc.box())
-	assert.Zero(spacing)
+	testutil.AssertZero(t, spacing)
 	barWidth = bc.calculateEffectiveBarWidth(bc.box(), spacing)
-	assert.Equal(199, barWidth)
+	testutil.AssertEqual(t, 199, barWidth)
 
-	assert.Equal(cb.Width()+1, bc.calculateTotalBarWidth(barWidth, spacing))
+	testutil.AssertEqual(t, cb.Width()+1, bc.calculateTotalBarWidth(barWidth, spacing))
 
 	bw, bs, total := bc.calculateScaledTotalWidth(cb)
-	assert.Equal(spacing, bs)
-	assert.Equal(barWidth, bw)
-	assert.Equal(cb.Width()+1, total)
+	testutil.AssertEqual(t, spacing, bs)
+	testutil.AssertEqual(t, barWidth, bw)
+	testutil.AssertEqual(t, cb.Width()+1, total)
 }
 
 func TestBarChatGetTitleFontSize(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 	size := BarChart{Width: 2049, Height: 2049}.getTitleFontSize()
-	assert.Equal(48, size)
+	testutil.AssertEqual(t, 48, size)
 	size = BarChart{Width: 1025, Height: 1025}.getTitleFontSize()
-	assert.Equal(24, size)
+	testutil.AssertEqual(t, 24, size)
 	size = BarChart{Width: 513, Height: 513}.getTitleFontSize()
-	assert.Equal(18, size)
+	testutil.AssertEqual(t, 18, size)
 	size = BarChart{Width: 257, Height: 257}.getTitleFontSize()
-	assert.Equal(12, size)
+	testutil.AssertEqual(t, 12, size)
 	size = BarChart{Width: 128, Height: 128}.getTitleFontSize()
-	assert.Equal(10, size)
+	testutil.AssertEqual(t, 10, size)
 }
