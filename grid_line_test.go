@@ -3,11 +3,11 @@ package chart
 import (
 	"testing"
 
-	"github.com/blend/go-sdk/assert"
+	"github.com/wcharczuk/go-chart/v2/testutil"
 )
 
 func TestGenerateGridLines(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	ticks := []Tick{
 		{Value: 1.0, Label: "1.0"},
@@ -17,8 +17,8 @@ func TestGenerateGridLines(t *testing.T) {
 	}
 
 	gl := GenerateGridLines(ticks, Style{}, Style{})
-	assert.Len(gl, 2)
+	testutil.AssertLen(t, gl, 2)
 
-	assert.Equal(2.0, gl[0].Value)
-	assert.Equal(3.0, gl[1].Value)
+	testutil.AssertEqual(t, 2.0, gl[0].Value)
+	testutil.AssertEqual(t, 3.0, gl[1].Value)
 }

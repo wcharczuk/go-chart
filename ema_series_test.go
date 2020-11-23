@@ -3,7 +3,7 @@ package chart
 import (
 	"testing"
 
-	"github.com/blend/go-sdk/assert"
+	"github.com/wcharczuk/go-chart/v2/testutil"
 )
 
 var (
@@ -73,13 +73,13 @@ var (
 )
 
 func TestEMASeries(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	mockSeries := mockValuesProvider{
 		emaXValues,
 		emaYValues,
 	}
-	assert.Equal(50, mockSeries.Len())
+	testutil.AssertEqual(t, 50, mockSeries.Len())
 
 	ema := &EMASeries{
 		InnerSeries: mockSeries,
@@ -87,7 +87,7 @@ func TestEMASeries(t *testing.T) {
 	}
 
 	sig := ema.GetSigma()
-	assert.Equal(2.0/(26.0+1), sig)
+	testutil.AssertEqual(t, 2.0/(26.0+1), sig)
 
 	var yvalues []float64
 	for x := 0; x < ema.Len(); x++ {
@@ -96,10 +96,10 @@ func TestEMASeries(t *testing.T) {
 	}
 
 	for index, yv := range yvalues {
-		assert.InDelta(yv, emaExpected[index], emaDelta)
+		testutil.AssertInDelta(t, yv, emaExpected[index], emaDelta)
 	}
 
 	lvx, lvy := ema.GetLastValues()
-	assert.Equal(50.0, lvx)
-	assert.InDelta(lvy, emaExpected[49], emaDelta)
+	testutil.AssertEqual(t, 50.0, lvx)
+	testutil.AssertInDelta(t, lvy, emaExpected[49], emaDelta)
 }

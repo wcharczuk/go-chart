@@ -5,11 +5,11 @@ import (
 	"math"
 	"testing"
 
-	"github.com/blend/go-sdk/assert"
+	"github.com/wcharczuk/go-chart/v2/testutil"
 )
 
 func TestBollingerBandSeries(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	s1 := mockValuesProvider{
 		X: LinearRange(1.0, 100.0),
@@ -29,12 +29,12 @@ func TestBollingerBandSeries(t *testing.T) {
 	}
 
 	for x := bbs.GetPeriod(); x < 100; x++ {
-		assert.True(y1values[x] > y2values[x], fmt.Sprintf("%v vs. %v", y1values[x], y2values[x]))
+		testutil.AssertTrue(t, y1values[x] > y2values[x], fmt.Sprintf("%v vs. %v", y1values[x], y2values[x]))
 	}
 }
 
 func TestBollingerBandLastValue(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	s1 := mockValuesProvider{
 		X: LinearRange(1.0, 100.0),
@@ -46,7 +46,7 @@ func TestBollingerBandLastValue(t *testing.T) {
 	}
 
 	x, y1, y2 := bbs.GetBoundedLastValues()
-	assert.Equal(100.0, x)
-	assert.Equal(101, math.Floor(y1))
-	assert.Equal(83, math.Floor(y2))
+	testutil.AssertEqual(t, 100.0, x)
+	testutil.AssertEqual(t, 101, math.Floor(y1))
+	testutil.AssertEqual(t, 83, math.Floor(y2))
 }

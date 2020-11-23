@@ -3,7 +3,7 @@ package drawing
 import (
 	"testing"
 
-	assert "github.com/blend/go-sdk/assert"
+	"github.com/wcharczuk/go-chart/v2/testutil"
 )
 
 type point struct {
@@ -23,7 +23,7 @@ func (ml mockLine) Len() int {
 }
 
 func TestTraceQuad(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	// Quad
 	// x1, y1, cpx1, cpy2, x2, y2 float64
@@ -31,5 +31,5 @@ func TestTraceQuad(t *testing.T) {
 	quad := []float64{10, 20, 20, 20, 20, 10}
 	liner := &mockLine{}
 	TraceQuad(liner, quad, 0.5)
-	assert.NotZero(liner.Len())
+	testutil.AssertNotZero(t, liner.Len())
 }

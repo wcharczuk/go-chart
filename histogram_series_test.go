@@ -3,11 +3,11 @@ package chart
 import (
 	"testing"
 
-	assert "github.com/blend/go-sdk/assert"
+	"github.com/wcharczuk/go-chart/v2/testutil"
 )
 
 func TestHistogramSeries(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	cs := ContinuousSeries{
 		Name:    "Test Series",
@@ -22,10 +22,10 @@ func TestHistogramSeries(t *testing.T) {
 	for x := 0; x < hs.Len(); x++ {
 		csx, csy := cs.GetValues(0)
 		hsx, hsy1, hsy2 := hs.GetBoundedValues(0)
-		assert.Equal(csx, hsx)
-		assert.True(hsy1 > 0)
-		assert.True(hsy2 <= 0)
-		assert.True(csy < 0 || (csy > 0 && csy == hsy1))
-		assert.True(csy > 0 || (csy < 0 && csy == hsy2))
+		testutil.AssertEqual(t, csx, hsx)
+		testutil.AssertTrue(t, hsy1 > 0)
+		testutil.AssertTrue(t, hsy2 <= 0)
+		testutil.AssertTrue(t, csy < 0 || (csy > 0 && csy == hsy1))
+		testutil.AssertTrue(t, csy > 0 || (csy < 0 && csy == hsy2))
 	}
 }

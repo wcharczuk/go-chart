@@ -4,13 +4,12 @@ import (
 	"image/color"
 	"testing"
 
-	"github.com/blend/go-sdk/assert"
-
-	"github.com/wcharczuk/go-chart/drawing"
+	"github.com/wcharczuk/go-chart/v2/drawing"
+	"github.com/wcharczuk/go-chart/v2/testutil"
 )
 
 func TestAnnotationSeriesMeasure(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	as := AnnotationSeries{
 		Annotations: []Value2{
@@ -22,10 +21,10 @@ func TestAnnotationSeriesMeasure(t *testing.T) {
 	}
 
 	r, err := PNG(110, 110)
-	assert.Nil(err)
+	testutil.AssertNil(t, err)
 
 	f, err := GetDefaultFont()
-	assert.Nil(err)
+	testutil.AssertNil(t, err)
 
 	xrange := &ContinuousRange{
 		Min:    1.0,
@@ -50,15 +49,15 @@ func TestAnnotationSeriesMeasure(t *testing.T) {
 	}
 
 	box := as.Measure(r, cb, xrange, yrange, sd)
-	assert.False(box.IsZero())
-	assert.Equal(-5.0, box.Top)
-	assert.Equal(5.0, box.Left)
-	assert.Equal(146.0, box.Right) //the top,left annotation sticks up 5px and out ~44px.
-	assert.Equal(115.0, box.Bottom)
+	testutil.AssertFalse(t, box.IsZero())
+	testutil.AssertEqual(t, -5.0, box.Top)
+	testutil.AssertEqual(t, 5.0, box.Left)
+	testutil.AssertEqual(t, 146.0, box.Right) //the top,left annotation sticks up 5px and out ~44px.
+	testutil.AssertEqual(t, 115.0, box.Bottom)
 }
 
 func TestAnnotationSeriesRender(t *testing.T) {
-	assert := assert.New(t)
+	// replaced new assertions helper
 
 	as := AnnotationSeries{
 		Style: Style{
@@ -74,10 +73,10 @@ func TestAnnotationSeriesRender(t *testing.T) {
 	}
 
 	r, err := PNG(110, 110)
-	assert.Nil(err)
+	testutil.AssertNil(t, err)
 
 	f, err := GetDefaultFont()
-	assert.Nil(err)
+	testutil.AssertNil(t, err)
 
 	xrange := &ContinuousRange{
 		Min:    1.0,
@@ -104,13 +103,13 @@ func TestAnnotationSeriesRender(t *testing.T) {
 	as.Render(r, cb, xrange, yrange, sd)
 
 	rr, isRaster := r.(*rasterRenderer)
-	assert.True(isRaster)
-	assert.NotNil(rr)
+	testutil.AssertTrue(t, isRaster)
+	testutil.AssertNotNil(t, rr)
 
 	c := rr.i.At(38, 70)
 	converted, isRGBA := color.RGBAModel.Convert(c).(color.RGBA)
-	assert.True(isRGBA)
-	assert.Equal(0, converted.R)
-	assert.Equal(0, converted.G)
-	assert.Equal(0, converted.B)
+	testutil.AssertTrue(t, isRGBA)
+	testutil.AssertEqual(t, 0, converted.R)
+	testutil.AssertEqual(t, 0, converted.G)
+	testutil.AssertEqual(t, 0, converted.B)
 }
