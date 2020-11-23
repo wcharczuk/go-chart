@@ -10,5 +10,5 @@ jobs:
           name: new-install
           command: make new-install
       - run:
-          name: ci
-          command: make ci
+          name: Continuous Integration
+          command: make

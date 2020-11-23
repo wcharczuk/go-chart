@@ -1,4 +1,4 @@
-all: test
+all: new-install test
 
 new-install:
 	@go get -v -u ./...
