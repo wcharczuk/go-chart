@@ -280,7 +280,7 @@ func (c Chart) getRanges() (xrange, yrange, yrangeAlt Range) {
 
 	if len(c.YAxisSecondary.Ticks) > 0 {
 		tickMin, tickMax := math.MaxFloat64, -math.MaxFloat64
-		for _, t := range c.YAxis.Ticks {
+		for _, t := range c.YAxisSecondary.Ticks {
 			tickMin = math.Min(tickMin, t.Value)
 			tickMax = math.Max(tickMax, t.Value)
 		}
