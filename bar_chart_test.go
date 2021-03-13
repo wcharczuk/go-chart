@@ -2,6 +2,7 @@ package chart
 
 import (
 	"bytes"
+	"errors"
 	"math"
 	"testing"
 
@@ -43,7 +44,11 @@ func TestBarChartRenderZero(t *testing.T) {
 
 	buf := bytes.NewBuffer([]byte{})
 	err := bc.Render(PNG, buf)
-	testutil.AssertNotNil(t, err)
+	if err != nil {
+		if !errors.Is(err, ErrZeroDataRange) {
+			t.Errorf("assertion failed; expected %v to equal %v", err, ErrZeroDataRange)
+		}
+	}
 }
 
 func TestBarChartProps(t *testing.T) {

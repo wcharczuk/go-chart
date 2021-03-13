@@ -2,11 +2,14 @@ package chart
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"math"
 
 	"github.com/golang/freetype/truetype"
+)
+
+var (
+	ErrZeroDataRange = errors.New("invalid data range; cannot be zero")
 )
 
 // BarChart is a chart that draws bars on a range.
@@ -118,7 +121,7 @@ func (bc BarChart) Render(rp RendererProvider, w io.Writer) error {
 	canvasBox = bc.getDefaultCanvasBox()
 	yr = bc.getRanges()
 	if yr.GetMax()-yr.GetMin() == 0 {
-		return fmt.Errorf("invalid data range; cannot be zero")
+		return ErrZeroDataRange
 	}
 	yr = bc.setRangeDomains(canvasBox, yr)
 	yf = bc.getValueFormatters()
