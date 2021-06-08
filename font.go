@@ -7,23 +7,22 @@ import (
 	"github.com/wcharczuk/go-chart/v2/roboto"
 )
 
-var (
-	_defaultFontLock sync.Mutex
-	_defaultFont     *truetype.Font
-)
+var _defaultFont defaultFont
 
 // GetDefaultFont returns the default font (Roboto-Medium).
 func GetDefaultFont() (*truetype.Font, error) {
-	if _defaultFont == nil {
-		_defaultFontLock.Lock()
-		defer _defaultFontLock.Unlock()
-		if _defaultFont == nil {
-			font, err := truetype.Parse(roboto.Roboto)
-			if err != nil {
-				return nil, err
-			}
-			_defaultFont = font
-		}
-	}
-	return _defaultFont, nil
+	return _defaultFont.Font()
+}
+
+type defaultFont struct {
+	font *truetype.Font
+	err  error
+	once sync.Once
+}
+
+func (df *defaultFont) Font() (*truetype.Font, error) {
+	df.once.Do(func() {
+		df.font, df.err = truetype.Parse(roboto.Roboto)
+	})
+	return df.font, df.err
 }
