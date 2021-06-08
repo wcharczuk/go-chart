@@ -20,9 +20,12 @@ type defaultFont struct {
 	once sync.Once
 }
 
+var _testingHook = func() {}
+
 func (df *defaultFont) Font() (*truetype.Font, error) {
 	df.once.Do(func() {
 		df.font, df.err = truetype.Parse(roboto.Roboto)
+		_testingHook()
 	})
 	return df.font, df.err
 }
