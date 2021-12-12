@@ -52,8 +52,9 @@ type Style struct {
 	StrokeColor     drawing.Color
 	StrokeDashArray []float64
 
-	DotColor drawing.Color
-	DotWidth float64
+	DotColor     drawing.Color
+	DotFillColor drawing.Color
+	DotWidth     float64
 
 	DotWidthProvider SizeProvider
 	DotColorProvider DotColorProvider
@@ -429,10 +430,14 @@ func (s Style) GetFillOptions() Style {
 
 // GetDotOptions returns the dot components.
 func (s Style) GetDotOptions() Style {
+	fillColor := s.DotColor
+	if !s.DotFillColor.IsZero() {
+		fillColor = s.DotFillColor
+	}
 	return Style{
 		ClassName:       s.ClassName,
 		StrokeDashArray: nil,
-		FillColor:       s.DotColor,
+		FillColor:       fillColor,
 		StrokeColor:     s.DotColor,
 		StrokeWidth:     1.0,
 	}
