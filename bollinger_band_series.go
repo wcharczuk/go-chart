@@ -20,7 +20,7 @@ type BollingerBandsSeries struct {
 	K           float64
 	InnerSeries ValuesProvider
 
-	valueBuffer *ValueBuffer
+	valueBuffer *ValueBuffer[float64]
 }
 
 // GetName returns the name of the time series.
@@ -70,7 +70,7 @@ func (bbs *BollingerBandsSeries) GetBoundedValues(index int) (x, y1, y2 float64)
 		return
 	}
 	if bbs.valueBuffer == nil || index == 0 {
-		bbs.valueBuffer = NewValueBufferWithCapacity(bbs.GetPeriod())
+		bbs.valueBuffer = NewValueBufferWithCapacity[float64](bbs.GetPeriod())
 	}
 	if bbs.valueBuffer.Len() >= bbs.GetPeriod() {
 		bbs.valueBuffer.Dequeue()
@@ -79,8 +79,8 @@ func (bbs *BollingerBandsSeries) GetBoundedValues(index int) (x, y1, y2 float64)
 	bbs.valueBuffer.Enqueue(py)
 	x = px
 
-	ay := Seq{bbs.valueBuffer}.Average()
-	std := Seq{bbs.valueBuffer}.StdDev()
+	ay := Seq[float64]{bbs.valueBuffer}.Average()
+	std := Seq[float64]{bbs.valueBuffer}.StdDev()
 
 	y1 = ay + (bbs.GetK() * std)
 	y2 = ay - (bbs.GetK() * std)
@@ -99,15 +99,15 @@ func (bbs *BollingerBandsSeries) GetBoundedLastValues() (x, y1, y2 float64) {
 		startAt = 0
 	}
 
-	vb := NewValueBufferWithCapacity(period)
+	vb := NewValueBufferWithCapacity[float64](period)
 	for index := startAt; index < seriesLength; index++ {
 		xn, yn := bbs.InnerSeries.GetValues(index)
 		vb.Enqueue(yn)
 		x = xn
 	}
 
-	ay := Seq{vb}.Average()
-	std := Seq{vb}.StdDev()
+	ay := Seq[float64]{vb}.Average()
+	std := Seq[float64]{vb}.StdDev()
 
 	y1 = ay + (bbs.GetK() * std)
 	y2 = ay - (bbs.GetK() * std)

@@ -11,8 +11,8 @@ import (
 func main() {
 	mainSeries := chart.ContinuousSeries{
 		Name:    "A test series",
-		XValues: chart.Seq{Sequence: chart.NewLinearSequence().WithStart(1.0).WithEnd(100.0)}.Values(),
-		YValues: chart.Seq{Sequence: chart.NewRandomSequence().WithLen(100).WithMin(50).WithMax(150)}.Values(),
+		XValues: chart.Seq[float64]{Sequence: chart.NewLinearSequence().WithStart(1.0).WithEnd(100.0)}.Values(),
+		YValues: chart.Seq[float64]{Sequence: chart.NewRandomSequence().WithLen(100).WithMin(50).WithMax(150)}.Values(),
 	}
 
 	minSeries := &chart.MinSeries{

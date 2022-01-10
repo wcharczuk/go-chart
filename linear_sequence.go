@@ -2,12 +2,12 @@ package chart
 
 // LinearRange returns an array of values representing the range from start to end, incremented by 1.0.
 func LinearRange(start, end float64) []float64 {
-	return Seq{NewLinearSequence().WithStart(start).WithEnd(end).WithStep(1.0)}.Values()
+	return Seq[float64]{NewLinearSequence().WithStart(start).WithEnd(end).WithStep(1.0)}.Values()
 }
 
 // LinearRangeWithStep returns the array values of a linear seq with a given start, end and optional step.
 func LinearRangeWithStep(start, end, step float64) []float64 {
-	return Seq{NewLinearSequence().WithStart(start).WithEnd(end).WithStep(step)}.Values()
+	return Seq[float64]{NewLinearSequence().WithStart(start).WithEnd(end).WithStep(step)}.Values()
 }
 
 // NewLinearSequence returns a new linear generator.

@@ -1,6 +1,9 @@
 package chart
 
-import "math"
+import (
+	"constraints"
+	"math"
+)
 
 const (
 	_pi   = math.Pi
@@ -17,14 +20,14 @@ const (
 )
 
 // MinMax returns the minimum and maximum of a given set of values.
-func MinMax(values ...float64) (min, max float64) {
+func MinMax[A constraints.Ordered](values ...A) (min, max A) {
 	if len(values) == 0 {
 		return
 	}
 
 	max = values[0]
 	min = values[0]
-	var value float64
+	var value A
 	for index := 1; index < len(values); index++ {
 		value = values[index]
 		if value < min {
@@ -38,13 +41,13 @@ func MinMax(values ...float64) (min, max float64) {
 }
 
 // MinInt returns the minimum int.
-func MinInt(values ...int) (min int) {
+func Min[A constraints.Ordered](values ...A) (min A) {
 	if len(values) == 0 {
 		return
 	}
 
 	min = values[0]
-	var value int
+	var value A
 	for index := 1; index < len(values); index++ {
 		value = values[index]
 		if value < min {
@@ -55,13 +58,13 @@ func MinInt(values ...int) (min int) {
 }
 
 // MaxInt returns the maximum int.
-func MaxInt(values ...int) (max int) {
+func Max[A constraints.Ordered](values ...A) (max A) {
 	if len(values) == 0 {
 		return
 	}
 
 	max = values[0]
-	var value int
+	var value A
 	for index := 1; index < len(values); index++ {
 		value = values[index]
 		if value > max {
@@ -71,9 +74,15 @@ func MaxInt(values ...int) (max int) {
 	return
 }
 
+// Number is a type that is a number.
+type Number interface {
+	~int | ~uint | ~float64
+}
+
 // AbsInt returns the absolute value of an int.
-func AbsInt(value int) int {
-	if value < 0 {
+func Abs[A Number](value A) A {
+	var zero A
+	if value < zero {
 		return -value
 	}
 	return value
@@ -173,18 +182,12 @@ func Normalize(values ...float64) []float64 {
 }
 
 // Mean returns the mean of a set of values
-func Mean(values ...float64) float64 {
-	return Sum(values...) / float64(len(values))
-}
-
-// MeanInt returns the mean of a set of integer values.
-func MeanInt(values ...int) int {
-	return SumInt(values...) / len(values)
+func Mean[A Number](values ...A) A {
+	return Sum(values...) / A(len(values))
 }
 
 // Sum sums a set of values.
-func Sum(values ...float64) float64 {
-	var total float64
+func Sum[A Number](values ...A) (total A) {
 	for _, v := range values {
 		total += v
 	}

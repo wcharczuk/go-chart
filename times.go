@@ -7,8 +7,8 @@ import (
 
 // Assert types implement interfaces.
 var (
-	_ Sequence       = (*Times)(nil)
-	_ sort.Interface = (*Times)(nil)
+	_ Sequence[float64] = (*Times)(nil)
+	_ sort.Interface    = (*Times)(nil)
 )
 
 // Times are an array of times.

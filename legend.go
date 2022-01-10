@@ -68,7 +68,7 @@ func Legend(c *Chart, userDefaults ...Style) Renderable {
 				}
 				legendContent.Bottom += tb.Height()
 				right := legendContent.Left + tb.Width() + lineTextGap + lineLengthMinimum
-				legendContent.Right = MaxInt(legendContent.Right, right)
+				legendContent.Right = Max(legendContent.Right, right)
 				labelCount++
 			}
 		}
@@ -163,8 +163,8 @@ func LegendThin(c *Chart, userDefaults ...Style) Renderable {
 		for x := 0; x < len(labels); x++ {
 			if len(labels[x]) > 0 {
 				textBox = r.MeasureText(labels[x])
-				textHeight = MaxInt(textBox.Height(), textHeight)
-				textWidth = MaxInt(textBox.Width(), textWidth)
+				textHeight = Max(textBox.Height(), textHeight)
+				textWidth = Max(textBox.Width(), textWidth)
 			}
 		}
 
@@ -280,7 +280,7 @@ func LegendLeft(c *Chart, userDefaults ...Style) Renderable {
 				}
 				legendContent.Bottom += tb.Height()
 				right := legendContent.Left + tb.Width() + lineTextGap + lineLengthMinimum
-				legendContent.Right = MaxInt(legendContent.Right, right)
+				legendContent.Right = Max(legendContent.Right, right)
 				labelCount++
 			}
 		}

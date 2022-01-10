@@ -7,17 +7,17 @@ import (
 )
 
 var (
-	_ Sequence = (*RandomSeq)(nil)
+	_ Sequence[float64] = (*RandomSeq)(nil)
 )
 
 // RandomValues returns an array of random values.
 func RandomValues(count int) []float64 {
-	return Seq{NewRandomSequence().WithLen(count)}.Values()
+	return Seq[float64]{NewRandomSequence().WithLen(count)}.Values()
 }
 
 // RandomValuesWithMax returns an array of random values with a given average.
 func RandomValuesWithMax(count int, max float64) []float64 {
-	return Seq{NewRandomSequence().WithMax(max).WithLen(count)}.Values()
+	return Seq[float64]{NewRandomSequence().WithMax(max).WithLen(count)}.Values()
 }
 
 // NewRandomSequence creates a new random seq.

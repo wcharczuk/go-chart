@@ -89,12 +89,12 @@ func (b Box) GetBottom(defaults ...int) int {
 
 // Width returns the width
 func (b Box) Width() int {
-	return AbsInt(b.Right - b.Left)
+	return Abs(b.Right - b.Left)
 }
 
 // Height returns the height
 func (b Box) Height() int {
-	return AbsInt(b.Bottom - b.Top)
+	return Abs(b.Bottom - b.Top)
 }
 
 // Center returns the center of the box
@@ -146,10 +146,10 @@ func (b Box) Equals(other Box) bool {
 // Grow grows a box based on another box.
 func (b Box) Grow(other Box) Box {
 	return Box{
-		Top:    MinInt(b.Top, other.Top),
-		Left:   MinInt(b.Left, other.Left),
-		Right:  MaxInt(b.Right, other.Right),
-		Bottom: MaxInt(b.Bottom, other.Bottom),
+		Top:    Min(b.Top, other.Top),
+		Left:   Min(b.Left, other.Left),
+		Right:  Max(b.Right, other.Right),
+		Bottom: Max(b.Bottom, other.Bottom),
 	}
 }
 
@@ -220,10 +220,10 @@ func (b Box) Fit(other Box) Box {
 func (b Box) Constrain(other Box) Box {
 	newBox := b.Clone()
 
-	newBox.Top = MaxInt(newBox.Top, other.Top)
-	newBox.Left = MaxInt(newBox.Left, other.Left)
-	newBox.Right = MinInt(newBox.Right, other.Right)
-	newBox.Bottom = MinInt(newBox.Bottom, other.Bottom)
+	newBox.Top = Max(newBox.Top, other.Top)
+	newBox.Left = Max(newBox.Left, other.Left)
+	newBox.Right = Min(newBox.Right, other.Right)
+	newBox.Bottom = Min(newBox.Bottom, other.Bottom)
 
 	return newBox
 }
@@ -262,36 +262,36 @@ type BoxCorners struct {
 // Box return the BoxCorners as a regular box.
 func (bc BoxCorners) Box() Box {
 	return Box{
-		Top:    MinInt(bc.TopLeft.Y, bc.TopRight.Y),
-		Left:   MinInt(bc.TopLeft.X, bc.BottomLeft.X),
-		Right:  MaxInt(bc.TopRight.X, bc.BottomRight.X),
-		Bottom: MaxInt(bc.BottomLeft.Y, bc.BottomRight.Y),
+		Top:    Min(bc.TopLeft.Y, bc.TopRight.Y),
+		Left:   Min(bc.TopLeft.X, bc.BottomLeft.X),
+		Right:  Max(bc.TopRight.X, bc.BottomRight.X),
+		Bottom: Max(bc.BottomLeft.Y, bc.BottomRight.Y),
 	}
 }
 
 // Width returns the width
 func (bc BoxCorners) Width() int {
-	minLeft := MinInt(bc.TopLeft.X, bc.BottomLeft.X)
-	maxRight := MaxInt(bc.TopRight.X, bc.BottomRight.X)
+	minLeft := Min(bc.TopLeft.X, bc.BottomLeft.X)
+	maxRight := Max(bc.TopRight.X, bc.BottomRight.X)
 	return maxRight - minLeft
 }
 
 // Height returns the height
 func (bc BoxCorners) Height() int {
-	minTop := MinInt(bc.TopLeft.Y, bc.TopRight.Y)
-	maxBottom := MaxInt(bc.BottomLeft.Y, bc.BottomRight.Y)
+	minTop := Min(bc.TopLeft.Y, bc.TopRight.Y)
+	maxBottom := Max(bc.BottomLeft.Y, bc.BottomRight.Y)
 	return maxBottom - minTop
 }
 
 // Center returns the center of the box
 func (bc BoxCorners) Center() (x, y int) {
 
-	left := MeanInt(bc.TopLeft.X, bc.BottomLeft.X)
-	right := MeanInt(bc.TopRight.X, bc.BottomRight.X)
+	left := Mean(bc.TopLeft.X, bc.BottomLeft.X)
+	right := Mean(bc.TopRight.X, bc.BottomRight.X)
 	x = ((right - left) >> 1) + left
 
-	top := MeanInt(bc.TopLeft.Y, bc.TopRight.Y)
-	bottom := MeanInt(bc.BottomLeft.Y, bc.BottomRight.Y)
+	top := Mean(bc.TopLeft.Y, bc.TopRight.Y)
+	bottom := Mean(bc.BottomLeft.Y, bc.BottomRight.Y)
 	y = ((bottom - top) >> 1) + top
 
 	return

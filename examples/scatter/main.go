@@ -24,8 +24,8 @@ func drawChart(res http.ResponseWriter, req *http.Request) {
 					DotWidth:         5,
 					DotColorProvider: viridisByY,
 				},
-				XValues: chart.Seq{Sequence: chart.NewLinearSequence().WithStart(0).WithEnd(127)}.Values(),
-				YValues: chart.Seq{Sequence: chart.NewRandomSequence().WithLen(128).WithMin(0).WithMax(1024)}.Values(),
+				XValues: chart.Seq[float64]{Sequence: chart.NewLinearSequence().WithStart(0).WithEnd(127)}.Values(),
+				YValues: chart.Seq[float64]{Sequence: chart.NewRandomSequence().WithLen(128).WithMin(0).WithMax(1024)}.Values(),
 			},
 		},
 	}
@@ -49,8 +49,8 @@ func unit(res http.ResponseWriter, req *http.Request) {
 		},
 		Series: []chart.Series{
 			chart.ContinuousSeries{
-				XValues: chart.Seq{Sequence: chart.NewLinearSequence().WithStart(0).WithEnd(4)}.Values(),
-				YValues: chart.Seq{Sequence: chart.NewLinearSequence().WithStart(0).WithEnd(4)}.Values(),
+				XValues: chart.Seq[float64]{Sequence: chart.NewLinearSequence().WithStart(0).WithEnd(4)}.Values(),
+				YValues: chart.Seq[float64]{Sequence: chart.NewLinearSequence().WithStart(0).WithEnd(4)}.Values(),
 			},
 		},
 	}

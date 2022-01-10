@@ -27,7 +27,7 @@ func AssertNotNil(t *testing.T, actual interface{}, message ...interface{}) {
 }
 
 // AssertEqual asserts two arguments are equal.
-func AssertEqual(t *testing.T, expected, actual interface{}, message ...interface{}) {
+func AssertEqual[A any](t *testing.T, expected, actual A, message ...interface{}) {
 	if !equal(expected, actual) {
 		t.Errorf("assertion failed; expected %v to equal %v", actual, expected)
 		if len(message) > 0 {
@@ -38,7 +38,7 @@ func AssertEqual(t *testing.T, expected, actual interface{}, message ...interfac
 }
 
 // AssertNotEqual asserts two arguments are not equal.
-func AssertNotEqual(t *testing.T, expected, actual interface{}, message ...interface{}) {
+func AssertNotEqual[A any](t *testing.T, expected, actual A, message ...interface{}) {
 	if equal(expected, actual) {
 		t.Errorf("assertion failed; expected %v to not equal %v", actual, expected)
 		if len(message) > 0 {

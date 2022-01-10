@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-func minInt(values ...int) int {
+func Min(values ...int) int {
 	min := math.MaxInt32
 
 	for x := 0; x < len(values); x++ {
@@ -16,7 +16,7 @@ func minInt(values ...int) int {
 	return min
 }
 
-func maxInt(values ...int) int {
+func Max(values ...int) int {
 	max := math.MinInt32
 
 	for x := 0; x < len(values); x++ {

@@ -1,24 +1,24 @@
 package chart
 
 var (
-	_ Sequence = (*Array)(nil)
+	_ Sequence[int] = (*array[int])(nil)
 )
 
 // NewArray returns a new array from a given set of values.
 // Array implements Sequence, which allows it to be used with the sequence helpers.
-func NewArray(values ...float64) Array {
-	return Array(values)
+func Array[A any](values ...A) Sequence[A] {
+	return array[A](values)
 }
 
 // Array is a wrapper for an array of floats that implements `ValuesProvider`.
-type Array []float64
+type array[A any] []A
 
 // Len returns the value provider length.
-func (a Array) Len() int {
+func (a array[A]) Len() int {
 	return len(a)
 }
 
 // GetValue returns the value at a given index.
-func (a Array) GetValue(index int) float64 {
+func (a array[A]) GetValue(index int) A {
 	return a[index]
 }

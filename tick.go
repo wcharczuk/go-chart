@@ -84,7 +84,7 @@ func GenerateContinuousTicks(r Renderer, ra Range, isVertical bool, style Style,
 	tickStep := rangeDelta / float64(intermediateTickCount)
 
 	roundTo := GetRoundToForDelta(rangeDelta) / 10
-	intermediateTickCount = MinInt(intermediateTickCount, DefaultTickCountSanityCheck)
+	intermediateTickCount = Min(intermediateTickCount, DefaultTickCountSanityCheck)
 
 	for x := 1; x < intermediateTickCount; x++ {
 		var tickValue float64

@@ -6,10 +6,8 @@ import (
 	"github.com/wcharczuk/go-chart/v2/testutil"
 )
 
-func TestBuffer(t *testing.T) {
-	// replaced new assertions helper
-
-	buffer := NewValueBuffer()
+func Test_ValueBuffer(t *testing.T) {
+	buffer := NewValueBuffer[int]()
 
 	buffer.Enqueue(1)
 	testutil.AssertEqual(t, 1, buffer.Len())
@@ -100,10 +98,8 @@ func TestBuffer(t *testing.T) {
 	testutil.AssertZero(t, buffer.PeekBack())
 }
 
-func TestBufferClear(t *testing.T) {
-	// replaced new assertions helper
-
-	buffer := NewValueBuffer()
+func Test_ValueBufferClear(t *testing.T) {
+	buffer := NewValueBuffer[int]()
 	buffer.Enqueue(1)
 	buffer.Enqueue(1)
 	buffer.Enqueue(1)
@@ -121,10 +117,8 @@ func TestBufferClear(t *testing.T) {
 	testutil.AssertZero(t, buffer.PeekBack())
 }
 
-func TestBufferArray(t *testing.T) {
-	// replaced new assertions helper
-
-	buffer := NewValueBuffer()
+func Test_ValueBuffer_Array(t *testing.T) {
+	buffer := NewValueBuffer[int]()
 	buffer.Enqueue(1)
 	buffer.Enqueue(2)
 	buffer.Enqueue(3)
@@ -140,10 +134,8 @@ func TestBufferArray(t *testing.T) {
 	testutil.AssertEqual(t, 5, contents[4])
 }
 
-func TestBufferEach(t *testing.T) {
-	// replaced new assertions helper
-
-	buffer := NewValueBuffer()
+func Test_ValueBuffer_Each(t *testing.T) {
+	buffer := NewValueBuffer[float64]()
 
 	for x := 1; x < 17; x++ {
 		buffer.Enqueue(float64(x))
@@ -159,10 +151,8 @@ func TestBufferEach(t *testing.T) {
 	testutil.AssertEqual(t, 16, called)
 }
 
-func TestNewBuffer(t *testing.T) {
-	// replaced new assertions helper
-
-	empty := NewValueBuffer()
+func Test_NewValueBuffer(t *testing.T) {
+	empty := NewValueBuffer[int]()
 	testutil.AssertNotNil(t, empty)
 	testutil.AssertZero(t, empty.Len())
 	testutil.AssertEqual(t, bufferDefaultCapacity, empty.Capacity())
@@ -170,9 +160,7 @@ func TestNewBuffer(t *testing.T) {
 	testutil.AssertZero(t, empty.PeekBack())
 }
 
-func TestNewBufferWithValues(t *testing.T) {
-	// replaced new assertions helper
-
+func Test_NewBuffer_withValues(t *testing.T) {
 	values := NewValueBuffer(1, 2, 3, 4, 5)
 	testutil.AssertNotNil(t, values)
 	testutil.AssertEqual(t, 5, values.Len())
@@ -180,10 +168,8 @@ func TestNewBufferWithValues(t *testing.T) {
 	testutil.AssertEqual(t, 5, values.PeekBack())
 }
 
-func TestBufferGrowth(t *testing.T) {
-	// replaced new assertions helper
-
-	values := NewValueBuffer(1, 2, 3, 4, 5)
+func Test_ValueBuffer_growth(t *testing.T) {
+	values := NewValueBuffer[float64](1, 2, 3, 4, 5)
 	for i := 0; i < 1<<10; i++ {
 		values.Enqueue(float64(i))
 	}

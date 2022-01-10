@@ -94,7 +94,7 @@ func (sma SMASeries) GetLastValues() (x, y float64) {
 
 func (sma SMASeries) getAverage(index int) float64 {
 	period := sma.GetPeriod()
-	floor := MaxInt(0, index-period)
+	floor := Max(0, index-period)
 	var accum float64
 	var count float64
 	for x := index; x >= floor; x-- {

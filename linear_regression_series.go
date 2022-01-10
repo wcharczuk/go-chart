@@ -59,7 +59,7 @@ func (lrs LinearRegressionSeries) GetYAxis() YAxisType {
 
 // Len returns the number of elements in the series.
 func (lrs LinearRegressionSeries) Len() int {
-	return MinInt(lrs.GetLimit(), lrs.InnerSeries.Len()-lrs.GetOffset())
+	return Min(lrs.GetLimit(), lrs.InnerSeries.Len()-lrs.GetOffset())
 }
 
 // GetLimit returns the window size.
@@ -74,7 +74,7 @@ func (lrs LinearRegressionSeries) GetLimit() int {
 func (lrs LinearRegressionSeries) GetEndIndex() int {
 	windowEnd := lrs.GetOffset() + lrs.GetLimit()
 	innerSeriesLastIndex := lrs.InnerSeries.Len() - 1
-	return MinInt(windowEnd, innerSeriesLastIndex)
+	return Min(windowEnd, innerSeriesLastIndex)
 }
 
 // GetOffset returns the data offset.
@@ -94,7 +94,7 @@ func (lrs *LinearRegressionSeries) GetValues(index int) (x, y float64) {
 		lrs.computeCoefficients()
 	}
 	offset := lrs.GetOffset()
-	effectiveIndex := MinInt(index+offset, lrs.InnerSeries.Len())
+	effectiveIndex := Min(index+offset, lrs.InnerSeries.Len())
 	x, y = lrs.InnerSeries.GetValues(effectiveIndex)
 	y = (lrs.m * lrs.normalize(x)) + lrs.b
 	return
@@ -161,14 +161,14 @@ func (lrs *LinearRegressionSeries) computeCoefficients() {
 
 	p := float64(endIndex - startIndex)
 
-	xvalues := NewValueBufferWithCapacity(lrs.Len())
+	xvalues := NewValueBufferWithCapacity[float64](lrs.Len())
 	for index := startIndex; index < endIndex; index++ {
 		x, _ := lrs.InnerSeries.GetValues(index)
 		xvalues.Enqueue(x)
 	}
 
-	lrs.avgx = Seq{xvalues}.Average()
-	lrs.stddevx = Seq{xvalues}.StdDev()
+	lrs.avgx = Seq[float64]{xvalues}.Average()
+	lrs.stddevx = Seq[float64]{xvalues}.StdDev()
 
 	var sumx, sumy, sumxx, sumxy float64
 	for index := startIndex; index < endIndex; index++ {

@@ -22,8 +22,8 @@ func main() {
 		},
 		Series: []chart.Series{
 			chart.ContinuousSeries{
-				XValues: chart.Seq{Sequence: chart.NewLinearSequence().WithStart(1.0).WithEnd(100.0)}.Values(),
-				YValues: chart.Seq{Sequence: chart.NewRandomSequence().WithLen(100).WithMin(100).WithMax(512)}.Values(),
+				XValues: chart.Seq[float64]{Sequence: chart.NewLinearSequence().WithStart(1.0).WithEnd(100.0)}.Values(),
+				YValues: chart.Seq[float64]{Sequence: chart.NewRandomSequence().WithLen(100).WithMin(100).WithMax(512)}.Values(),
 			},
 		},
 	}
