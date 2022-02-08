@@ -145,6 +145,7 @@ func LegendLineLeft(c *Chart, userDefaults ...Style) Renderable {
 		// DEFAULTS
 		lineTextGap := 5
 		lineLengthMinimum := 25
+		strokeLength := 17
 
 		var labels []string
 		var lines []Style
@@ -215,7 +216,7 @@ func LegendLineLeft(c *Chart, userDefaults ...Style) Renderable {
 				ly := ty - th2
 
 				// Calculate line ending x coordinate
-				lx2 := lx + lineLengthMinimum - legendStyle.Padding.Left
+				lx2 := lx + strokeLength
 
 				r.SetStrokeColor(lines[x].GetStrokeColor())
 				r.SetStrokeWidth(lines[x].GetStrokeWidth())
