@@ -127,6 +127,12 @@ func LegendLineLeft(c *Chart, userDefaults ...Style) Renderable {
 			FontSize:    8.0,
 			StrokeColor: DefaultAxisColor,
 			StrokeWidth: DefaultAxisLineWidth,
+			Padding: Box{
+				Top:    5,
+				Left:   5,
+				Right:  5,
+				Bottom: 5,
+			},
 		}
 
 		var legendStyle Style
@@ -137,12 +143,6 @@ func LegendLineLeft(c *Chart, userDefaults ...Style) Renderable {
 		}
 
 		// DEFAULTS
-		legendPadding := Box{
-			Top:    5,
-			Left:   5,
-			Right:  5,
-			Bottom: 5,
-		}
 		lineTextGap := 5
 		lineLengthMinimum := 25
 
@@ -164,10 +164,10 @@ func LegendLineLeft(c *Chart, userDefaults ...Style) Renderable {
 		}
 
 		legendContent := Box{
-			Top:    legend.Top + legendPadding.Top,
-			Left:   legend.Left + legendPadding.Left,
-			Right:  legend.Left + legendPadding.Left,
-			Bottom: legend.Top + legendPadding.Top,
+			Top:    legend.Top + legendStyle.Padding.Top,
+			Left:   legend.Left + legendStyle.Padding.Left,
+			Right:  legend.Left + legendStyle.Padding.Left,
+			Bottom: legend.Top + legendStyle.Padding.Top,
 		}
 
 		legendStyle.GetTextOptions().WriteToRenderer(r)
@@ -188,8 +188,8 @@ func LegendLineLeft(c *Chart, userDefaults ...Style) Renderable {
 		}
 
 		legend = legend.Grow(legendContent)
-		legend.Right = legendContent.Right + legendPadding.Right
-		legend.Bottom = legendContent.Bottom + legendPadding.Bottom
+		legend.Right = legendContent.Right + legendStyle.Padding.Right
+		legend.Bottom = legendContent.Bottom + legendStyle.Padding.Bottom
 
 		Draw.Box(r, legend, legendStyle)
 
@@ -215,7 +215,7 @@ func LegendLineLeft(c *Chart, userDefaults ...Style) Renderable {
 				ly := ty - th2
 
 				// Calculate line ending x coordinate
-				lx2 := lx + lineLengthMinimum
+				lx2 := lx + lineLengthMinimum - legendStyle.Padding.Left
 
 				r.SetStrokeColor(lines[x].GetStrokeColor())
 				r.SetStrokeWidth(lines[x].GetStrokeWidth())
