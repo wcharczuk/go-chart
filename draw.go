@@ -300,6 +300,8 @@ func (d draw) TextWithin(r Renderer, text string, box Box, style Style) {
 		y = y + (box.Height() >> 1) - (linesBox.Height() >> 1)
 	case TextVerticalAlignMiddleBaseline:
 		y = y + (box.Height() >> 1) - linesBox.Height()
+	case TextVerticalAlignTop:
+		y = y + box.Height()
 	}
 
 	var tx, ty int
