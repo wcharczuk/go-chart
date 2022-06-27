@@ -23,21 +23,30 @@ func PNG(width, height int) (Renderer, error) {
 	return nil, err
 }
 
-// InMemory returns an in-memory raster renderer that calls cb() with the
+// InMemory returns an in-memory raster RenderProvider that calls cb() with the
 // rendered image upon completion.
-func InMemory(width, height int, cb func(image.Image)) (Renderer, error) {
-	i := image.NewRGBA(image.Rect(0, 0, width, height))
-	gc, err := drawing.NewRasterGraphicContext(i)
-	if err == nil {
-		return &memRenderer{
-			rasterRenderer{
-				i:  i,
-				gc: gc,
-			},
-			cb,
-		}, nil
+//
+// Usage suggestion:
+//
+//     ...
+//     chart.Render(chart.InMemory(mycollector.SetImage))
+//     ...
+//
+func InMemory(cb func(image.Image)) RendererProvider {
+	return func(width, height int) (Renderer, error) {
+		i := image.NewRGBA(image.Rect(0, 0, width, height))
+		gc, err := drawing.NewRasterGraphicContext(i)
+		if err == nil {
+			return &memRenderer{
+				rasterRenderer{
+					i:  i,
+					gc: gc,
+				},
+				cb,
+			}, nil
+		}
+		return nil, err
 	}
-	return nil, err
 }
 
 // rasterRenderer renders chart commands to a bitmap.
