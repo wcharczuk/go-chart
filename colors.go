@@ -1,6 +1,6 @@
 package chart
 
-import "github.com/wcharczuk/go-chart/v2/drawing"
+import "github.com/ebudan/go-chart/v2/drawing"
 
 var (
 	// ColorWhite is white.

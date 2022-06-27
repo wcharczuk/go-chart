@@ -3,7 +3,7 @@ package matrix
 import (
 	"testing"
 
-	"github.com/wcharczuk/go-chart/v2/testutil"
+	"github.com/ebudan/go-chart/v2/testutil"
 )
 
 func TestNew(t *testing.T) {

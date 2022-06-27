@@ -5,7 +5,7 @@ import (
 
 	"image/color"
 
-	"github.com/wcharczuk/go-chart/v2/testutil"
+	"github.com/ebudan/go-chart/v2/testutil"
 )
 
 func TestColorFromHex(t *testing.T) {

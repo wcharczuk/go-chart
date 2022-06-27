@@ -1,7 +1,7 @@
 version: 2
 jobs:
   build:
-    working_directory: /go/src/github.com/wcharczuk/go-chart
+    working_directory: /go/src/github.com/ebudan/go-chart
     docker:
       - image: circleci/golang:1.15
     steps:

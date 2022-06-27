@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/wcharczuk/go-chart/v2"
+	"github.com/ebudan/go-chart/v2"
 )
 
 var lock sync.Mutex
