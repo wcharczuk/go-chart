@@ -1,4 +1,4 @@
-module github.com/ebudan/go-chart
+module github.com/ebudan/go-chart/v2
 
 go 1.15
 
