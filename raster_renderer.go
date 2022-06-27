@@ -23,6 +23,20 @@ func PNG(width, height int) (Renderer, error) {
 	return nil, err
 }
 
+func InMemory(width, height int) (Renderer, error) {
+	i := image.NewRGBA(image.Rect(0, 0, width, height))
+	gc, err := drawing.NewRasterGraphicContext(i)
+	if err == nil {
+		return &memRenderer{
+			rasterRenderer{
+				i:  i,
+				gc: gc,
+			},
+		}, nil
+	}
+	return nil, err
+}
+
 // rasterRenderer renders chart commands to a bitmap.
 type rasterRenderer struct {
 	i  *image.RGBA
@@ -227,4 +241,16 @@ func (rr *rasterRenderer) Save(w io.Writer) error {
 		return nil
 	}
 	return png.Encode(w, rr.i)
+}
+
+type memRenderer struct {
+	rasterRenderer
+}
+
+func (m *memRenderer) Save(w io.Writer) error {
+	return nil
+}
+
+func (m *memRenderer) AsImage() image.Image {
+	return m.i
 }
