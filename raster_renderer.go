@@ -23,6 +23,8 @@ func PNG(width, height int) (Renderer, error) {
 	return nil, err
 }
 
+// InMemory returns an in-memory raster renderer that calls cb() with the
+// rendered image upon completion.
 func InMemory(width, height int, cb func(image.Image)) (Renderer, error) {
 	i := image.NewRGBA(image.Rect(0, 0, width, height))
 	gc, err := drawing.NewRasterGraphicContext(i)
