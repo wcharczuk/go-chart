@@ -23,7 +23,7 @@ func PNG(width, height int) (Renderer, error) {
 	return nil, err
 }
 
-func InMemory(width, height int) (Renderer, error) {
+func InMemory(width, height int, cb func(image.Image)) (Renderer, error) {
 	i := image.NewRGBA(image.Rect(0, 0, width, height))
 	gc, err := drawing.NewRasterGraphicContext(i)
 	if err == nil {
@@ -32,6 +32,7 @@ func InMemory(width, height int) (Renderer, error) {
 				i:  i,
 				gc: gc,
 			},
+			cb,
 		}, nil
 	}
 	return nil, err
@@ -245,12 +246,12 @@ func (rr *rasterRenderer) Save(w io.Writer) error {
 
 type memRenderer struct {
 	rasterRenderer
+	cb func(image.Image)
 }
 
 func (m *memRenderer) Save(w io.Writer) error {
+	if m.cb != nil {
+		m.cb(m.i)
+	}
 	return nil
-}
-
-func (m *memRenderer) AsImage() image.Image {
-	return m.i
 }
