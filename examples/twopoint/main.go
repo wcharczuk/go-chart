@@ -4,10 +4,9 @@ package main
 
 import (
 	"bytes"
+	"github.com/d-Rickyy-b/go-chart-x/v2/pkg/chart"
 	"log"
 	"os"
-
-	"github.com/wcharczuk/go-chart/v2"
 )
 
 func main() {

@@ -4,12 +4,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/d-Rickyy-b/go-chart-x/v2/pkg/chart"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
-
-	"github.com/wcharczuk/go-chart/v2"
 )
 
 func main() {

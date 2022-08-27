@@ -1,4 +1,4 @@
-module github.com/wcharczuk/go-chart/v2
+module github.com/d-Rickyy-b/go-chart-x/v2
 
 go 1.15
 
