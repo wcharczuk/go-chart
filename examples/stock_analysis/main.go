@@ -3,11 +3,10 @@ package main
 //go:generate go run main.go
 
 import (
+	"github.com/d-Rickyy-b/go-chart-x/v2/pkg/chart"
+	"github.com/d-Rickyy-b/go-chart-x/v2/pkg/drawing"
 	"os"
 	"time"
-
-	"github.com/wcharczuk/go-chart/v2"
-	"github.com/wcharczuk/go-chart/v2/drawing"
 )
 
 func main() {

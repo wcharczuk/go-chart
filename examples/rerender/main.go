@@ -1,12 +1,11 @@
 package main
 
 import (
+	"github.com/d-Rickyy-b/go-chart-x/v2/pkg/chart"
 	"log"
 	"net/http"
 	"sync"
 	"time"
-
-	"github.com/wcharczuk/go-chart/v2"
 )
 
 var lock sync.Mutex

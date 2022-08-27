@@ -3,11 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/d-Rickyy-b/go-chart-x/v2/pkg/chart"
 	"io/ioutil"
 	"os"
 	"strings"
-
-	"github.com/wcharczuk/go-chart/v2"
 )
 
 var (

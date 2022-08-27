@@ -1,13 +1,12 @@
 package main
 
 import (
+	"github.com/d-Rickyy-b/go-chart-x/v2/pkg/chart"
+	"github.com/d-Rickyy-b/go-chart-x/v2/pkg/drawing"
 	"log"
 	"net/http"
 
 	_ "net/http/pprof"
-
-	"github.com/wcharczuk/go-chart/v2"
-	"github.com/wcharczuk/go-chart/v2/drawing"
 )
 
 func drawChart(res http.ResponseWriter, req *http.Request) {
