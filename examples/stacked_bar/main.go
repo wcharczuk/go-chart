@@ -1,9 +1,8 @@
 package main
 
 import (
+	"github.com/d-Rickyy-b/go-chart-x/v2/pkg/chart"
 	"os"
-
-	"github.com/wcharczuk/go-chart/v2"
 )
 
 func main() {

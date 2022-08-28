@@ -2,10 +2,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/d-Rickyy-b/go-chart-x/v2/pkg/chart"
 	"log"
 	"net/http"
-
-	"github.com/wcharczuk/go-chart/v2"
 )
 
 const style = "svg .background { fill: white; }" +
