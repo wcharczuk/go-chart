@@ -56,3 +56,10 @@ func TestFloatValueFormatterWithFormat(t *testing.T) {
 	testutil.AssertEqual(t, "123.456", sv)
 	testutil.AssertEqual(t, "123.000", FloatValueFormatterWithFormat(123, "%.3f"))
 }
+
+func TestExponentialValueFormatter(t *testing.T) {
+	assert := assert.New(t)
+	assert.Equal("1.23e+02", ExponentialValueFormatter(123.456))
+	assert.Equal("1.24e+07", ExponentialValueFormatter(12421243.424))
+	assert.Equal("4.50e-01", ExponentialValueFormatter(0.45))
+}

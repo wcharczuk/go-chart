@@ -103,3 +103,8 @@ func KValueFormatter(k float64, vf ValueFormatter) ValueFormatter {
 		return fmt.Sprintf("%0.0fσ %s", k, vf(v))
 	}
 }
+
+// FloatValueFormatter is a ValueFormatter for float64, exponential notation, e.g. 1.52e+08.
+func ExponentialValueFormatter(v interface{}) string {
+	return FloatValueFormatterWithFormat(v, "%.2e")
+}
