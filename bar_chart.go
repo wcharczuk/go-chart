@@ -264,32 +264,7 @@ func (bc BarChart) drawXAxis(r Renderer, canvasBox Box) {
 
 func (bc BarChart) drawYAxis(r Renderer, canvasBox Box, yr Range, ticks []Tick) {
 	if !bc.YAxis.Style.Hidden {
-		axisStyle := bc.YAxis.Style.InheritFrom(bc.styleDefaultsAxes())
-		axisStyle.WriteToRenderer(r)
-
-		r.MoveTo(canvasBox.Right, canvasBox.Top)
-		r.LineTo(canvasBox.Right, canvasBox.Bottom)
-		r.Stroke()
-
-		r.MoveTo(canvasBox.Right, canvasBox.Bottom)
-		r.LineTo(canvasBox.Right+DefaultHorizontalTickWidth, canvasBox.Bottom)
-		r.Stroke()
-
-		var ty int
-		var tb Box
-		for _, t := range ticks {
-			ty = canvasBox.Bottom - yr.Translate(t.Value)
-
-			axisStyle.GetStrokeOptions().WriteToRenderer(r)
-			r.MoveTo(canvasBox.Right, ty)
-			r.LineTo(canvasBox.Right+DefaultHorizontalTickWidth, ty)
-			r.Stroke()
-
-			axisStyle.GetTextOptions().WriteToRenderer(r)
-			tb = r.MeasureText(t.Label)
-			Draw.Text(r, t.Label, canvasBox.Right+DefaultYAxisMargin+5, ty+(tb.Height()>>1), axisStyle)
-		}
-
+		bc.YAxis.Render(r, canvasBox, yr, bc.styleDefaultsAxes(), ticks)
 	}
 }
 
