@@ -11,7 +11,7 @@ Master should now be on the v3.x codebase, which overhauls the api significantly
 To install `chart` run the following:
 
 ```bash
-> go get -u github.com/wcharczuk/go-chart
+> go get github.com/wcharczuk/go-chart@latest
 ```
 
 Most of the components are interchangeable so feel free to crib whatever you want.
