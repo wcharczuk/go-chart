@@ -1,6 +1,6 @@
 go-chart
 ========
-[![CircleCI](https://circleci.com/gh/wcharczuk/go-chart.svg?style=svg)](https://circleci.com/gh/wcharczuk/go-chart) [![Go Report Card](https://goreportcard.com/badge/github.com/wcharczuk/go-chart)](https://goreportcard.com/report/github.com/wcharczuk/go-chart)
+[![Continuous Integration](https://github.com/wcharczuk/go-chart/actions/workflows/ci.yml/badge.svg)](https://github.com/wcharczuk/go-chart/actions/workflows/ci.yml) [![Go Report Card](https://goreportcard.com/badge/github.com/wcharczuk/go-chart)](https://goreportcard.com/report/github.com/wcharczuk/go-chart)
 
 Package `chart` is a very simple golang native charting library that supports timeseries and continuous line charts.
 
