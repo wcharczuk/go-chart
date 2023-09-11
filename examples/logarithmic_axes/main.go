@@ -5,7 +5,7 @@ package main
 import (
 	"os"
 
-	"github.com/wcharczuk/go-chart"
+	"github.com/wcharczuk/go-chart/v2"
 )
 
 func main() {
@@ -31,7 +31,7 @@ func main() {
 		YAxis: chart.YAxis{
 			Style:     chart.Shown(),
 			NameStyle: chart.Shown(),
-			Range: &chart.LogarithmicRange{},
+			Range:     &chart.LogarithmicRange{},
 		},
 	}
 
