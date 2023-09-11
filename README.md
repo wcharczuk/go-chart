@@ -11,7 +11,7 @@ Master should now be on the v3.x codebase, which overhauls the api significantly
 To install `chart` run the following:
 
 ```bash
-> go get github.com/wcharczuk/go-chart@latest
+> go get github.com/wcharczuk/go-chart/v2@latest
 ```
 
 Most of the components are interchangeable so feel free to crib whatever you want.
@@ -58,7 +58,7 @@ import (
     ...
     "bytes"
     ...
-    "github.com/wcharczuk/go-chart" //exposes "chart"
+    "github.com/wcharczuk/go-chart/v2" //exposes "chart"
 )
 
 graph := chart.Chart{
