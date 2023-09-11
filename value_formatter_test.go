@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/blend/go-sdk/assert"
 	"github.com/wcharczuk/go-chart/v2/testutil"
 )
 
@@ -59,8 +58,7 @@ func TestFloatValueFormatterWithFormat(t *testing.T) {
 }
 
 func TestExponentialValueFormatter(t *testing.T) {
-	assert := assert.New(t)
-	assert.Equal("1.23e+02", ExponentialValueFormatter(123.456))
-	assert.Equal("1.24e+07", ExponentialValueFormatter(12421243.424))
-	assert.Equal("4.50e-01", ExponentialValueFormatter(0.45))
+	testutil.AssertEqual(t, "1.23e+02", ExponentialValueFormatter(123.456))
+	testutil.AssertEqual(t, "1.24e+07", ExponentialValueFormatter(12421243.424))
+	testutil.AssertEqual(t, "4.50e-01", ExponentialValueFormatter(0.45))
 }

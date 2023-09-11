@@ -23,7 +23,7 @@ func main() {
 
 	stackedBarChart := chart.StackedBarChart{
 		Title:      "Quarterly Sales",
-		TitleStyle: chart.StyleShow(),
+		TitleStyle: chart.Shown(),
 		Background: chart.Style{
 			Padding: chart.Box{
 				Top: 100,
@@ -31,8 +31,8 @@ func main() {
 		},
 		Width:      810,
 		Height:     500,
-		XAxis:      chart.StyleShow(),
-		YAxis:      chart.StyleShow(),
+		XAxis:      chart.Shown(),
+		YAxis:      chart.Shown(),
 		BarSpacing: 50,
 		Bars: []chart.StackedBar{
 			{
