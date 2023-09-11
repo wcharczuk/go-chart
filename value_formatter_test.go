@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/blend/go-sdk/assert"
 	"github.com/wcharczuk/go-chart/v2/testutil"
 )
 
