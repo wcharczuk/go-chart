@@ -7,7 +7,7 @@ import (
 
 var (
 	// ColorTransparent is a fully transparent color.
-	ColorTransparent = Color{}
+	ColorTransparent = Color{R: 255, G: 255, B: 255, A: 0}
 
 	// ColorWhite is white.
 	ColorWhite = Color{R: 255, G: 255, B: 255, A: 255}
