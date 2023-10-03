@@ -247,7 +247,7 @@ type canvas struct {
 func (c *canvas) Start(width, height int) {
 	c.width = width
 	c.height = height
-	c.w.Write([]byte(fmt.Sprintf(`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="%d" height="%d">\n`, c.width, c.height)))
+	c.w.Write([]byte(fmt.Sprintf(`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 %d %d">`, c.width, c.height)))
 	if c.css != "" {
 		c.w.Write([]byte(`<style type="text/css"`))
 		if c.nonce != "" {
