@@ -154,8 +154,11 @@ func ColorFromHex(hex string) Color {
 	return c
 }
 
+// ColorFromKnown returns an internal color from a known (basic) color name.
 func ColorFromKnown(known string) Color {
 	switch strings.ToLower(known) {
+	case "transparent":
+		return ColorTransparent
 	case "white":
 		return ColorWhite
 	case "black":
