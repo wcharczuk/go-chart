@@ -9,8 +9,6 @@ import (
 )
 
 func TestColorFromHex(t *testing.T) {
-	// replaced new assertions helper
-
 	white := ColorFromHex("FFFFFF")
 	testutil.AssertEqual(t, ColorWhite, white)
 
@@ -42,9 +40,15 @@ func TestColorFromHex(t *testing.T) {
 	testutil.AssertEqual(t, ColorBlue, shortBlue)
 }
 
-func TestColorFromAlphaMixedRGBA(t *testing.T) {
-	// replaced new assertions helper
+func TestColorFromHex_handlesHash(t *testing.T) {
+	withHash := ColorFromHex("#FF0000")
+	testutil.AssertEqual(t, ColorRed, withHash)
 
+	withoutHash := ColorFromHex("#FF0000")
+	testutil.AssertEqual(t, ColorRed, withoutHash)
+}
+
+func TestColorFromAlphaMixedRGBA(t *testing.T) {
 	black := ColorFromAlphaMixedRGBA(color.Black.RGBA())
 	testutil.AssertTrue(t, black.Equals(ColorBlack), black.String())
 

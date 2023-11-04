@@ -3,6 +3,7 @@ package drawing
 import (
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 var (
@@ -31,7 +32,12 @@ func parseHex(hex string) uint8 {
 }
 
 // ColorFromHex returns a color from a css hex code.
+//
+// NOTE: it will trim a leading '#' character if present.
 func ColorFromHex(hex string) Color {
+	if strings.HasPrefix(hex, "#") {
+		hex = strings.TrimPrefix(hex, "#")
+	}
 	var c Color
 	if len(hex) == 3 {
 		c.R = parseHex(string(hex[0])) * 0x11
