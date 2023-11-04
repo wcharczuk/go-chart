@@ -2,33 +2,135 @@ package drawing
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 )
 
+// Basic Colors from:
+// https://www.w3.org/wiki/CSS/Properties/color/keywords
 var (
 	// ColorTransparent is a fully transparent color.
 	ColorTransparent = Color{R: 255, G: 255, B: 255, A: 0}
-
 	// ColorWhite is white.
 	ColorWhite = Color{R: 255, G: 255, B: 255, A: 255}
-
 	// ColorBlack is black.
 	ColorBlack = Color{R: 0, G: 0, B: 0, A: 255}
-
 	// ColorRed is red.
 	ColorRed = Color{R: 255, G: 0, B: 0, A: 255}
-
 	// ColorGreen is green.
-	ColorGreen = Color{R: 0, G: 255, B: 0, A: 255}
-
+	ColorGreen = Color{R: 0, G: 128, B: 0, A: 255}
 	// ColorBlue is blue.
 	ColorBlue = Color{R: 0, G: 0, B: 255, A: 255}
+	// ColorSilver is a known color.
+	ColorSilver = Color{R: 192, G: 192, B: 192, A: 255}
+	// ColorMaroon is a known color.
+	ColorMaroon = Color{R: 128, G: 0, B: 0, A: 255}
+	// ColorPurple is a known color.
+	ColorPurple = Color{R: 128, G: 0, B: 128, A: 255}
+	// ColorFuchsia is a known color.
+	ColorFuchsia = Color{R: 255, G: 0, B: 255, A: 255}
+	// ColorLime is a known color.
+	ColorLime = Color{R: 0, G: 255, B: 0, A: 255}
+	// ColorOlive is a known color.
+	ColorOlive = Color{R: 128, G: 128, B: 0, A: 255}
+	// ColorYellow is a known color.
+	ColorYellow = Color{R: 255, G: 255, B: 0, A: 255}
+	// ColorNavy is a known color.
+	ColorNavy = Color{R: 0, G: 0, B: 128, A: 255}
+	// ColorTeal is a known color.
+	ColorTeal = Color{R: 0, G: 128, B: 128, A: 255}
+	// ColorAqua is a known color.
+	ColorAqua = Color{R: 0, G: 255, B: 255, A: 255}
 )
 
 func parseHex(hex string) uint8 {
 	v, _ := strconv.ParseInt(hex, 16, 16)
 	return uint8(v)
+}
+
+// ParseColor parses a color from a string.
+func ParseColor(rawColor string) Color {
+	if strings.HasPrefix(rawColor, "rgba") {
+		return ColorFromRGBA(rawColor)
+	}
+	if strings.HasPrefix(rawColor, "rgb") {
+		return ColorFromRGB(rawColor)
+	}
+	if strings.HasPrefix(rawColor, "#") {
+		return ColorFromHex(rawColor)
+	}
+	return ColorFromKnown(rawColor)
+}
+
+var rgbaexpr = regexp.MustCompile(`rgba\((?P<R>.+),(?P<G>.+),(?P<B>.+),(?P<A>.+)\)`)
+
+// ColorFromRGBA returns a color from an `rgba()` css function.
+func ColorFromRGBA(rgba string) (output Color) {
+	values := rgbaexpr.FindStringSubmatch(rgba)
+	for i, name := range rgbaexpr.SubexpNames() {
+		if i == 0 {
+			continue
+		}
+		if i >= len(values) {
+			break
+		}
+		switch name {
+		case "R":
+			value := strings.TrimSpace(values[i])
+			parsed, _ := strconv.ParseInt(value, 10, 16)
+			output.R = uint8(parsed)
+		case "G":
+			value := strings.TrimSpace(values[i])
+			parsed, _ := strconv.ParseInt(value, 10, 16)
+			output.G = uint8(parsed)
+		case "B":
+			value := strings.TrimSpace(values[i])
+			parsed, _ := strconv.ParseInt(value, 10, 16)
+			output.B = uint8(parsed)
+		case "A":
+			value := strings.TrimSpace(values[i])
+			parsed, _ := strconv.ParseFloat(value, 32)
+			if parsed > 1 {
+				parsed = 1
+			} else if parsed < 0 {
+				parsed = 0
+			}
+			output.A = uint8(parsed * 255)
+		}
+	}
+	return
+}
+
+var rgbexpr = regexp.MustCompile(`rgb\((?P<R>.+),(?P<G>.+),(?P<B>.+)\)`)
+
+// ColorFromRGB returns a color from an `rgb()` css function.
+func ColorFromRGB(rgb string) (output Color) {
+	output.A = 255
+	values := rgbexpr.FindStringSubmatch(rgb)
+	for i, name := range rgbaexpr.SubexpNames() {
+		if i == 0 {
+			continue
+		}
+		if i >= len(values) {
+			break
+		}
+		switch name {
+		case "R":
+			value := strings.TrimSpace(values[i])
+			parsed, _ := strconv.ParseInt(value, 10, 16)
+			output.R = uint8(parsed)
+		case "G":
+			value := strings.TrimSpace(values[i])
+			parsed, _ := strconv.ParseInt(value, 10, 16)
+			output.G = uint8(parsed)
+		case "B":
+			value := strings.TrimSpace(values[i])
+			parsed, _ := strconv.ParseInt(value, 10, 16)
+			output.B = uint8(parsed)
+		}
+	}
+	return
 }
 
 // ColorFromHex returns a color from a css hex code.
@@ -50,6 +152,43 @@ func ColorFromHex(hex string) Color {
 	}
 	c.A = 255
 	return c
+}
+
+func ColorFromKnown(known string) Color {
+	switch strings.ToLower(known) {
+	case "white":
+		return ColorWhite
+	case "black":
+		return ColorBlack
+	case "red":
+		return ColorRed
+	case "blue":
+		return ColorBlue
+	case "green":
+		return ColorGreen
+	case "silver":
+		return ColorSilver
+	case "maroon":
+		return ColorMaroon
+	case "purple":
+		return ColorPurple
+	case "fuchsia":
+		return ColorFuchsia
+	case "lime":
+		return ColorLime
+	case "olive":
+		return ColorOlive
+	case "yellow":
+		return ColorYellow
+	case "navy":
+		return ColorNavy
+	case "teal":
+		return ColorTeal
+	case "aqua":
+		return ColorAqua
+	default:
+		return Color{}
+	}
 }
 
 // ColorFromAlphaMixedRGBA returns the system alpha mixed rgba values.

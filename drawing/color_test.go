@@ -1,6 +1,7 @@
 package drawing
 
 import (
+	"fmt"
 	"testing"
 
 	"image/color"
@@ -27,11 +28,11 @@ func TestColorFromHex(t *testing.T) {
 	shortRed := ColorFromHex("F00")
 	testutil.AssertEqual(t, ColorRed, shortRed)
 
-	green := ColorFromHex("00FF00")
+	green := ColorFromHex("008000")
 	testutil.AssertEqual(t, ColorGreen, green)
 
-	shortGreen := ColorFromHex("0F0")
-	testutil.AssertEqual(t, ColorGreen, shortGreen)
+	// shortGreen := ColorFromHex("0F0")
+	// testutil.AssertEqual(t, ColorGreen, shortGreen)
 
 	blue := ColorFromHex("0000FF")
 	testutil.AssertEqual(t, ColorBlue, blue)
@@ -54,4 +55,60 @@ func TestColorFromAlphaMixedRGBA(t *testing.T) {
 
 	white := ColorFromAlphaMixedRGBA(color.White.RGBA())
 	testutil.AssertTrue(t, white.Equals(ColorWhite), white.String())
+}
+
+func Test_ColorFromRGBA(t *testing.T) {
+	value := "rgba(192, 192, 192, 1.0)"
+	parsed := ColorFromRGBA(value)
+	testutil.AssertEqual(t, ColorSilver, parsed)
+
+	value = "rgba(192,192,192,1.0)"
+	parsed = ColorFromRGBA(value)
+	testutil.AssertEqual(t, ColorSilver, parsed)
+
+	value = "rgba(192,192,192,1.5)"
+	parsed = ColorFromRGBA(value)
+	testutil.AssertEqual(t, ColorSilver, parsed)
+}
+
+func TestParseColor(t *testing.T) {
+	testCases := [...]struct {
+		Input    string
+		Expected Color
+	}{
+		{"", Color{}},
+		{"white", ColorWhite},
+		{"WHITE", ColorWhite}, // caps!
+		{"black", ColorBlack},
+		{"red", ColorRed},
+		{"green", ColorGreen},
+		{"blue", ColorBlue},
+		{"silver", ColorSilver},
+		{"maroon", ColorMaroon},
+		{"purple", ColorPurple},
+		{"fuchsia", ColorFuchsia},
+		{"lime", ColorLime},
+		{"olive", ColorOlive},
+		{"yellow", ColorYellow},
+		{"navy", ColorNavy},
+		{"teal", ColorTeal},
+		{"aqua", ColorAqua},
+
+		{"rgba(192, 192, 192, 1.0)", ColorSilver},
+		{"rgba(192,192,192,1.0)", ColorSilver},
+		{"rgb(192, 192, 192)", ColorSilver},
+		{"rgb(192,192,192)", ColorSilver},
+
+		{"#FF0000", ColorRed},
+		{"#008000", ColorGreen},
+		{"#0000FF", ColorBlue},
+		{"#F00", ColorRed},
+		{"#080", Color{0, 136, 0, 255}},
+		{"#00F", ColorBlue},
+	}
+
+	for index, tc := range testCases {
+		actual := ParseColor(tc.Input)
+		testutil.AssertEqual(t, tc.Expected, actual, fmt.Sprintf("test case: %d -> %s", index, tc.Input))
+	}
 }
