@@ -115,6 +115,8 @@ func (sbc StackedBarChart) Render(rp RendererProvider, w io.Writer) error {
 	}
 	r.SetDPI(sbc.GetDPI(DefaultDPI))
 
+	sbc.drawBackground(r)
+
 	var canvasBox Box
 	if sbc.IsHorizontal {
 		canvasBox = sbc.getHorizontalAdjustedCanvasBox(r, sbc.getDefaultCanvasBox())
@@ -147,6 +149,25 @@ func (sbc StackedBarChart) drawBars(r Renderer, canvasBox Box) {
 	for _, bar := range sbc.Bars {
 		sbc.drawBar(r, canvasBox, xoffset, bar)
 		xoffset += (sbc.GetBarSpacing() + bar.GetWidth())
+	}
+}
+
+func (sbc StackedBarChart) drawBackground(r Renderer) {
+	Draw.Box(r, Box{
+		Right:  sbc.GetWidth(),
+		Bottom: sbc.GetHeight(),
+	}, sbc.getBackgroundStyle())
+}
+
+func (sbc StackedBarChart) getBackgroundStyle() Style {
+	return sbc.Background.InheritFrom(sbc.styleDefaultsBackground())
+}
+
+func (sbc StackedBarChart) styleDefaultsBackground() Style {
+	return Style{
+		FillColor:   sbc.GetColorPalette().BackgroundColor(),
+		StrokeColor: sbc.GetColorPalette().BackgroundStrokeColor(),
+		StrokeWidth: DefaultStrokeWidth,
 	}
 }
 
@@ -471,7 +492,6 @@ func (sbc StackedBarChart) getAdjustedCanvasBox(r Renderer, canvasBox Box) Box {
 		Right:  canvasBox.Left + totalWidth,
 		Bottom: canvasBox.Bottom,
 	}
-
 }
 
 func (sbc StackedBarChart) getHorizontalAdjustedCanvasBox(r Renderer, canvasBox Box) Box {
