@@ -47,12 +47,26 @@ func (d draw) LineSeries(r Renderer, canvasBox Box, xrange, yrange Range, style 
 	if style.ShouldDrawStroke() {
 		style.GetStrokeOptions().WriteDrawingOptionsToRenderer(r)
 
+                vxprev := 0.0
+                if vs.Len() > 0 {
+  	                vxprev, _ = vs.GetValues( 1 ) // make sure vxprev starts at the beginning
+	        }
+	        maxspan := style.GetStrokeMaxSpanGap()
 		r.MoveTo(x0, y0)
 		for i := 1; i < vs.Len(); i++ {
 			vx, vy = vs.GetValues(i)
 			x = cl + xrange.Translate(vx)
-			y = cb - yrange.Translate(vy)
-			r.LineTo(x, y)
+		        y = cb - yrange.Translate(vy)
+		        df := vxprev - vx
+		        if df < 0 {
+			  df *= -1 // make it work, regardless of direction ox X-axis
+			}
+                        if df <= maxspan { // span the gap i.e. connect the two points
+  			  r.LineTo(x, y)
+                        } else {           // do not span the gap
+  			  r.MoveTo(x, y)
+                        }
+                        vxprev = vx
 		}
 		r.Stroke()
 	}
