@@ -51,6 +51,7 @@ type Style struct {
 	StrokeWidth     float64
 	StrokeColor     drawing.Color
 	StrokeDashArray []float64
+        StrokeMaxSpanGap float64 // in xvalue unit, nano second for timeseries
 
 	DotColor drawing.Color
 	DotWidth float64
@@ -120,6 +121,12 @@ func (s Style) String() string {
 		output = append(output, fmt.Sprintf("\"stroke_color\": %s", s.StrokeColor.String()))
 	} else {
 		output = append(output, "\"stroke_color\": null")
+	}
+
+        if s.StrokeMaxSpanGap >= 0 {
+		output = append(output, fmt.Sprintf("\"stroke_maxspangap\": %.02f", s.StrokeMaxSpanGap))
+	} else {
+		output = append(output, "\"stroke_maxspangap\": null")
 	}
 
 	if len(s.StrokeDashArray) > 0 {
@@ -192,6 +199,11 @@ func (s Style) GetStrokeColor(defaults ...drawing.Color) drawing.Color {
 		return drawing.ColorTransparent
 	}
 	return s.StrokeColor
+}
+
+// GetStrokeMaxSpanGap returns the max span gap, smaller or equal gaps are connected, larger ones are not.
+func (s Style) GetStrokeMaxSpanGap() float64 {
+	return s.StrokeMaxSpanGap
 }
 
 // GetFillColor returns the fill color.
@@ -388,6 +400,7 @@ func (s Style) InheritFrom(defaults Style) (final Style) {
 	final.StrokeColor = s.GetStrokeColor(defaults.StrokeColor)
 	final.StrokeWidth = s.GetStrokeWidth(defaults.StrokeWidth)
 	final.StrokeDashArray = s.GetStrokeDashArray(defaults.StrokeDashArray)
+	final.StrokeMaxSpanGap = s.GetStrokeMaxSpanGap()
 
 	final.DotColor = s.GetDotColor(defaults.DotColor)
 	final.DotWidth = s.GetDotWidth(defaults.DotWidth)
@@ -416,6 +429,7 @@ func (s Style) GetStrokeOptions() Style {
 		StrokeDashArray: s.StrokeDashArray,
 		StrokeColor:     s.StrokeColor,
 		StrokeWidth:     s.StrokeWidth,
+	        StrokeMaxSpanGap:s.StrokeMaxSpanGap,
 	}
 }
 
@@ -443,7 +457,8 @@ func (s Style) GetFillAndStrokeOptions() Style {
 	return Style{
 		ClassName:       s.ClassName,
 		StrokeDashArray: s.StrokeDashArray,
-		FillColor:       s.FillColor,
+	        StrokeMaxSpanGap:s.StrokeMaxSpanGap,
+	        FillColor:       s.FillColor,
 		StrokeColor:     s.StrokeColor,
 		StrokeWidth:     s.StrokeWidth,
 	}
