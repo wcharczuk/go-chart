@@ -254,6 +254,22 @@ func (b Box) OuterConstrain(bounds, other Box) Box {
 	return newBox
 }
 
+func (b Box) Validate() error {
+	if b.Left < 0 {
+		return fmt.Errorf("invalid left; must be >= 0")
+	}
+	if b.Right < 0 {
+		return fmt.Errorf("invalid right; must be > 0")
+	}
+	if b.Top < 0 {
+		return fmt.Errorf("invalid top; must be > 0")
+	}
+	if b.Bottom < 0 {
+		return fmt.Errorf("invalid bottom; must be > 0")
+	}
+	return nil
+}
+
 // BoxCorners is a box with independent corners.
 type BoxCorners struct {
 	TopLeft, TopRight, BottomRight, BottomLeft Point

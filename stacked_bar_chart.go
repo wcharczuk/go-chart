@@ -118,12 +118,18 @@ func (sbc StackedBarChart) Render(rp RendererProvider, w io.Writer) error {
 	var canvasBox Box
 	if sbc.IsHorizontal {
 		canvasBox = sbc.getHorizontalAdjustedCanvasBox(r, sbc.getDefaultCanvasBox())
+		if err := canvasBox.Validate(); err != nil {
+			return fmt.Errorf("invalid canvas box: %w", err)
+		}
 		sbc.drawCanvas(r, canvasBox)
 		sbc.drawHorizontalBars(r, canvasBox)
 		sbc.drawHorizontalXAxis(r, canvasBox)
 		sbc.drawHorizontalYAxis(r, canvasBox)
 	} else {
 		canvasBox = sbc.getAdjustedCanvasBox(r, sbc.getDefaultCanvasBox())
+		if err := canvasBox.Validate(); err != nil {
+			return fmt.Errorf("invalid canvas box: %w", err)
+		}
 		sbc.drawCanvas(r, canvasBox)
 		sbc.drawBars(r, canvasBox)
 		sbc.drawXAxis(r, canvasBox)

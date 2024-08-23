@@ -573,3 +573,22 @@ func TestChartE2ELineWithFill(t *testing.T) {
 	testutil.AssertEqual(t, defaultSeriesColor, at(i, 0, 49))
 	testutil.AssertEqual(t, defaultSeriesColor, at(i, 49, 0))
 }
+
+func Test_Chart_cve(t *testing.T) {
+	poc := StackedBarChart{
+		Title: "poc",
+		Bars: []StackedBar{
+			{
+				Name: "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+				Values: []Value{
+					{Value: 1, Label: "infinite"},
+					{Value: 1, Label: "loop"},
+				},
+			},
+		},
+	}
+
+	var imgContent bytes.Buffer
+	err := poc.Render(PNG, &imgContent)
+	testutil.AssertNotNil(t, err)
+}
