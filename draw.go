@@ -49,10 +49,10 @@ func (d draw) LineSeries(r Renderer, canvasBox Box, xrange, yrange Range, style 
 
                 vxprev := 0.0
                 if vs.Len() > 0 {
-  	                vxprev, _ = vs.GetValues( 1 ) // make sure vxprev starts at the beginning
+  	                vxprev, _ = vs.GetValues( 0 ) // make sure vxprev starts at the beginning
 	        }
 	        maxspan := style.GetStrokeMaxSpanGap()
-		r.MoveTo(x0, y0)
+	        r.MoveTo(x0, y0)
 		for i := 1; i < vs.Len(); i++ {
 			vx, vy = vs.GetValues(i)
 			x = cl + xrange.Translate(vx)
