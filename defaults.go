@@ -58,6 +58,11 @@ const (
 	// DefaultMinimumTickVerticalSpacing is the minimum distance between vertical ticks.
 	DefaultMinimumTickVerticalSpacing = 20
 
+	// DefaultLegendHorizontalSpacing is the minimum distance between two horizontal elements in the legend.
+	DefaultLegendHorizontalSpacing = 20
+	// DefaultLegendVerticalSpacing is the minimum distance between two vertical elements in the legend.
+	DefaultLegendVerticalSpacing = 10
+
 	// DefaultDateFormat is the default date format.
 	DefaultDateFormat = "2006-01-02"
 	// DefaultDateHourFormat is the date format for hour timestamp formats.
